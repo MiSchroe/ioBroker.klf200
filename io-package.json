@@ -1,6 +1,6 @@
 {
     "common": {
-        "name": "template",
+        "name": "klf200",
         "version": "0.5.0",
         "news": {
             "0.5.0": {
@@ -20,31 +20,37 @@
                 "nl": "Eerste release"
             }
         },
-        "title": "Javascript/Node.js based template adapter",
+        "title": "KLF-200 Adapter",
         "desc": {
-            "en": "ioBroker template Adapter",
-            "de": "ioBroker Template Adapter",
-            "ru": "ioBroker Template драйвер как образец",
-            "pt": "Modelo de adaptador para o ioBroker",
-            "fr": "ioBroker adaptateur modèle",
-            "nl": "ioBroker Template Adapter"
+            "en": "Runs scenes on a KLF-200 Interface",
+            "de": "Startet Szenen auf einem KLF-200 Interface"
         },
         "platform": "Javascript/Node.js",
         "mode": "daemon",
-        "icon": "template.png",
+        "icon": "klf200.png",
         "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.template/master/admin/template.png",
-        "keywords": ["template", "vis", "GUI", "graphical", "scada"],
-        "readme": "https://github.com/ioBroker/ioBroker.template/blob/master/README.md",
+        "license": "MIT",
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.klf200/master/admin/klf200.png",
+        "keywords": ["KLF-200", "vis", "GUI", "graphical"],
+        "readme": "https://github.com/ioBroker/ioBroker.klf200/blob/master/README.md",
         "loglevel": "info",
-        "type": "general",
+        "type": "hardware",
         "restartAdapters": ["vis"]
     },
     "native": {
-        "test1": true,
-        "test2": 42
+        "host": "http://velux-klf-",
+        "password": "velux123",
+        "pollInterval": 60
     },
     "objects": [
-
+        {
+            "_id": "_design/klf200",
+            "language": "javascript",
+            "views": {
+                "listSingleProductScenes": {
+                    "map": "function(doc) {\n  if (doc._id.match(/^klf200\\.[0-9]+\\.scenes\\.[0-9]+$/) && doc.native && doc.native.products.length == 1)\n  {\n  emit([doc.native.products[0].name, doc.native.products[0].status], {id: doc.native.id, name:doc.native.name});\n  }\n  }"
+                }
+            }
+        }
     ]
 }
