@@ -27,7 +27,8 @@
   },
   "dependencies": {
     "binarysearch": "^1.0.0",
-    "bluebird": "^3.5.0"
+    "bluebird": "^3.5.0",
+    "klf-200-api": "^2.0.1"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

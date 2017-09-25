@@ -45,6 +45,12 @@ let adapter = utils.adapter('klf200');
 // Define some constant values
 const deviceScenes = 'scenes';
 const deviceProducts = 'products';
+const run = 'run';
+const delayBetweenSceneRunsInMS = 30000;
+
+// Cash for previous states
+let previousStates = {};
+let sceneIsRunning = {};
 
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function (callback) {
@@ -68,24 +74,72 @@ adapter.on('stateChange', function (id, state) {
 
     // you can use the ack flag to detect if it is status (true) or command (false)
     if (state && !state.ack) {
+        // Get previous state (for rollback if state change isn't possible)
+        let oldState = null;
+        if (id.match(/^klf200\.[0-9]+\.products\.[0-9]+\.level$/)) {
+            // Set old state to 0% if no previous state was found
+            oldState = 0;
+        } else if (id.match(/^klf200\.[0-9]+\.scenes\.[0-9]+\.run$/) && state.val === true)
+        {
+            // Set old state to false if no previous state was found
+            oldState = false;
+        }
+        if (previousStates[id]) {
+            oldState = previousStates[id].state.val;
+        }
+
+        // If scene is still running => abort state change
+        if (sceneIsRunning[adapter.instance] === true)
+        {
+            adapter.log.warn('Adapter is still running a scene, please wait until finished.');
+            adapter.setStateAsync(id, oldState, true);
+            return;
+        }
+
         Promise.coroutine(function* () {
             try {
-                // TODO: Get previous state (for rollback if state change isn't possible)
-                let oldState;
-
 
                 // Check for product, e.g. id = klf200.0.products.0.level
                 if (id.match(/^klf200\.[0-9]+\.products\.[0-9]+\.level$/)) {
                     let sceneId = yield getSceneForProductLevel(id, state.val);
+                    let stateIdForScene = `${deviceScenes}.${sceneId.sceneId}.${run}`;
+                    // Set scene to running
+                    yield adapter.setStateAsync(stateIdForScene, true, true);
+                    yield runScene(sceneId.sceneId);
+                    // Set scene to not running
+                    yield adapter.setStateAsync(stateIdForScene, false, true);
+                    yield adapter.setStateAsync(id, state.val, true);
+                } else if (id.match(/^klf200\.[0-9]+\.scenes\.[0-9]+\.run$/) && state.val === true)
+                {
+                    // Check for scene, e.g. id = klf200.0.scenes.0.run and for set to running
+                    let idDCS = adapter.idToDCS(id);
+                    let sceneId = parseInt(idDCS.channel);
+                    // Get corresponding channel for native object with related products
+                    let channel = yield adapter.getObjectAsync(`${deviceScenes}.${sceneId}`);
+                    channel.native = channel.native || {};
+                    channel.native.products = channel.native.products || [];
+                    let products = yield adapter.getChannelsOfAsync(deviceProducts);
+                    // Set scene to running
+                    yield adapter.setStateAsync(id, true, true);
+                    yield runScene(sceneId);
+                    // Set scene to not running
+                    yield adapter.setStateAsync(id, false, true);
+                    // Set corresponding products to their correct level
+                    yield Promise.map(channel.native.products, function(product) {
+                        let productId = products.reduce(function(prev, prod) {
+                            if (prod.native.name === product.name) return prod.native.id;
+                        });
+                        return adapter.setStateAsync(`${deviceProducts}.${productId}.level`, product.status, true);
+                    });
                 }
 
-                // Check for scene
-
-                adapter.setState(id, state.val, true);
             } catch (err) {
                 adapter.log.error(`Error during state change for ${id}: ${err}`);
+                yield adapter.setStateAsync(id, oldState, true);
             }
         })();
+    } else if (state && state.ack) {
+        previousStates[id] = {state: state};
     }
 });
 
@@ -119,6 +173,9 @@ function main() {
 
     adapter.log.info('Host: ' + adapter.config.host);
     adapter.log.info('Polling interval (minutes): ' + adapter.config.pollInterval);
+
+    // Set internal adapter running state to false
+    sceneIsRunning[adapter.instance] = false;
 
     // Connect to KLF interface and read data
     let connection = new klf200api.connection(adapter.config.host);
@@ -185,12 +242,12 @@ function main() {
                 return createSceneStateAsync(scene);
             });
 
-            let test = yield getSceneForProductLevel('klf200.0.products.4.level', 30);
-            
             // Subscribe to all level states
             adapter.subscribeStates('*level');
             // Subscribe to all silent states
             adapter.subscribeStates('*silent');
+            // Subscribe to all run states
+            adapter.subscribeStates('*run');
         }
         catch (err) {
             adapter.log.error(`Error during initialization occured: ${err}`);
@@ -380,7 +437,6 @@ function createSceneStateAsync(scene) {
 
     const silent = 'silent';
     const productsCount = 'productsCount';
-    const run = 'run';
     const sceneId = scene.id.toString();
 
     return adapter.createChannelAsync(deviceScenes, sceneId, { name: scene.name, role: 'scene' }, scene)
@@ -435,13 +491,32 @@ function getSceneForProductLevel(id, level) {
 
             let productChannel = yield adapter.getObjectAsync(productChannelId);
             productName = productChannel.common.name;
+            let scenesKey = ['klf200', adapter.instance, 'scenes', ''].join('.');
 
             let scenes = yield adapter.objects.getObjectViewAsync(
                 'klf200', 'listSingleProductScenes',
-                {startkey: [productName, level], endkey: [productName, 101]}
+                {startkey: scenesKey, endkey: scenesKey + '\u9999'}
             );
 
-            if (!scenes || !scenes.length) return Promise.reject(new Error(`No matching scene for product ${productName} and level ${level}.`));
+            if (!scenes || !scenes.rows || !scenes.rows.length) return Promise.reject(new Error(`No matching scene for product ${productName} and level ${level}.`));
+
+            // Reduce array of products with corresponding names
+            let scenesReduced = scenes.rows.reduce(
+                function (currentResult, currentValue) {
+                    // Add product name
+                    currentResult[currentValue.id[0]] = currentResult[currentValue.id[0]] || { levels: {}};
+
+                    // Add level name and scene id and name
+                    currentResult[currentValue.id[0]].levels[currentValue.id[1]] = currentResult[currentValue.id[0]].levels[currentValue.id[1]] || { sceneId: currentValue.value.id, sceneName: currentValue.value.name };
+
+                    return currentResult;
+                },
+                {}
+            );
+
+            if (!scenesReduced[productName] || !scenesReduced[productName].levels[level]) return Promise.reject(new Error(`No matching scene for product ${productName} and level ${level}.`));
+
+            return scenesReduced[productName].levels[level];
 
         } catch (err) {
             let errHelper = err;
@@ -460,5 +535,23 @@ function getSceneForProductLevel(id, level) {
  * @returns {Promise} Returns a promise that will fulfill after the scene has run.
  */
 function runScene(sceneNameOrId) {
+    return Promise.cast(Promise.coroutine(function* () {
+        let connection = new klf200api.connection(adapter.config.host);
+        try {
+            sceneIsRunning[adapter.instance] = true;
+            yield connection.loginAsync(adapter.config.password);
+            adapter.log.info('Connected to interface.');
 
+            yield Promise.all([new klf200api.scenes(connection).runAsync(sceneNameOrId), Promise.delay(delayBetweenSceneRunsInMS)]);
+        } catch (err) {
+            adapter.log.error(`Error during running scene ${sceneNameOrId} occured: ${err}`);
+        }
+        finally {
+            sceneIsRunning[adapter.instance] = false;
+            if (connection.token) {
+                adapter.log.info('Disconnected from interface.');
+                yield connection.logoutAsync();
+            }
+        }
+    })());
 }
