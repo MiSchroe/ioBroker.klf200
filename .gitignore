@@ -1,3 +1,5 @@
 /.idea
 /node_modules
 /nbproject
+/tmp
+mockserver-netty-3.10.8-jar-with-dependencies.jar
