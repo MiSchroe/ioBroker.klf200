@@ -12,8 +12,8 @@
             "args": [
                 "-u",
                 "tdd",
-                "--timeout",
-                "999999",
+                "--debug",
+                "--no-timeouts",
                 "--colors",
                 "${workspaceRoot}/test"
             ],

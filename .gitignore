@@ -3,3 +3,6 @@
 /nbproject
 /tmp
 mockserver-netty-3.10.8-jar-with-dependencies.jar
+/.nyc_output
+/.instrument
+/coverage

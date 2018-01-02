@@ -36,6 +36,7 @@ const utils = require(__dirname + '/lib/utils'); // Get common adapter utils
 const Promise = require('bluebird');
 const klf200api = require('klf-200-api');
 const mapTypeId = require(__dirname + '/lib/mapTypeId'); // Mapping of typeId values to channel role names
+const deepdiff = require('deep-diff'); // diff utility for easier handling of changes in products and scenes
 
 // you have to call the adapter function and pass a options object
 // name has to be set and has to be equal to adapters folder name and main file name excluding extension
@@ -51,6 +52,11 @@ const delayBetweenSceneRunsInMS = 30000;
 // Cash for previous states
 let previousStates = {};
 let sceneIsRunning = {};
+
+// Trace unhandled errors
+process.on('unhandledRejection', r => {
+    adapter.log.error(`Unhandled promise rejection: ${r}`);
+});
 
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function (callback) {
@@ -259,51 +265,6 @@ function main() {
             }
         }
     })();
-
-
-    // .finally(function () {
-    //     return connection.logoutAsync();
-    // })
-    // .then(function () {
-    //     adapter.log.info('Disconnected from interface.');
-    // });
-    // connection.loginAsync(adapter.config.password)
-    //     .then(function () {
-    //         adapter.log.info('Connected to interface.');
-    //     })
-    //     .then(function () {
-    //         // Create 
-    //     })
-    //     .then(function () {
-    //         adapter.log.info('Getting installed products...');
-    //         return new klf200api.products(connection).getAsync();
-    //     })
-    //     .then(function (products) {
-    //         adapter.log.info(`Found ${products.length} product(s).`);
-    //         products.forEach(function(product) {
-    //             adapter.log.debug(`Found product ${product.name}`);
-    //         });
-    //     })
-    //     .then(function () {
-    //         adapter.log.info('Getting scenes...');
-    //         return new klf200api.scenes(connection).getAsync();
-    //     })
-    //     .then(function (scenes) {
-    //         adapter.log.info(`Found ${scenes.length} scene(s).`);
-    //         scenes.forEach(function(scene) {
-    //             adapter.log.debug(`Found scene ${scene.name}`);
-    //         });
-    //     })
-    //     .catch(function (err) {
-    //         adapter.log.error(`Error during initialization occured: ${err}`);
-    //     })
-    //     .finally(function () {
-    //         return connection.logoutAsync()
-    //             .then(function () {
-    //                 adapter.log.info('Disconnected from interface.');
-    //             });
-    //     });
-
 
     // /**
     //  *

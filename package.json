@@ -28,10 +28,12 @@
   "dependencies": {
     "binarysearch": "^1.0.0",
     "bluebird": "^3.5.0",
+    "deep-diff": "^0.3.8",
     "klf-200-api": "^2.0.1"
   },
   "devDependencies": {
     "chai": "^3.4.1",
+    "chai-fuzzy": "^1.6.1",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-http": "^1.6.0",
@@ -39,13 +41,18 @@
     "grunt-replace": "^0.9.3",
     "istanbul": "^0.4.5",
     "mocha": "^2.3.4",
+    "mock-require": "^2.0.2",
     "mockserver-client": "^1.0.16",
     "mockserver-grunt": "^1.0.42",
-    "nock": "^9.0.21"
+    "nyc": "^11.2.1",
+    "sinon": "^4.0.1"
   },
   "main": "main.js",
   "scripts": {
-    "test": "istanbul cover node_modules/mocha/bin/_mocha -- -R list"
+    "test": "nyc --reporter=html --reporter=text node_modules/mocha/bin/mocha"
+  },
+  "nyc": {
+    "instrument": true
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.klf200/issues"

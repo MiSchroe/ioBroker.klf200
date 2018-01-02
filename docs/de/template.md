@@ -1,3 +1,3 @@
 # Das ist die Dokumentation
 
-(Picture)[img/picture.png)
+(Picture)[img/picture.png]

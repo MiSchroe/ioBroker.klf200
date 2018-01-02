@@ -1,12 +1,11 @@
 ![Logo](admin/klf200.png)
 # ioBroker.klf200
-=================
 
 This adapter is a klf200 for the creation of an ioBroker adapter. You do not need it at least that you plan developing your own adapter.
 
 It includes both code running within iobroker and as vis widget. If you only plan to create a vis widget then you should use the [iobroker.vis-klf200](https://github.com/ioBroker/ioBroker.vis-klf200) instead.
 
-##Steps 
+## Steps 
 1. download and unpack this packet from github ```https://github.com/ioBroker/ioBroker.klf200/archive/master.zip```
   or clone git repository ```git clone https://github.com/ioBroker/ioBroker.klf200.git```
 

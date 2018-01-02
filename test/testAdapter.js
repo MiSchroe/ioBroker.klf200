@@ -1,10 +1,20 @@
 /* jshint -W097 */// jshint strict:false
 /*jslint node: true */
-var expect = require('chai').expect;
+var chai = require('chai');
+var expect = chai.expect;
+var chaiFuzzy = require('chai-fuzzy');
+chai.use(chaiFuzzy);    // Helps checking the logged values
+
+
+/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "[iI]gnored" }]*/
+// const systemUnderTestIgnored = require('../main');
+
+
 var setup  = require(__dirname + '/lib/setup');
-//const nock = require('nock');
 const mockserver = require('mockserver-grunt');
 const mockServerClient = require('mockserver-client').mockServerClient;
+const fs = require('fs');
+const sinon = require('sinon');
 
 var objects = null;
 var states  = null;
@@ -225,39 +235,22 @@ function sendTo(target, command, message, callback) {
     });
 }
 
-let scope;
+var mockClient;
 
 describe('Test ' + adapterShortName + ' adapter', function() {
     before('Test ' + adapterShortName + ' adapter: Start js-controller', function (_done) {
         this.timeout(600000); // because of first install from npm
 
-        // // Setup nock for simulating the web requests
-        // scope = nock(testURL)
-        //     .log(console.log)
-        //     // Login and logout
-        //     .post(authAPI, loginRequest)
-        //     .reply(200, { token: testToken, result: true, deviceStatus: 'IDLE', data: {}, errors: [] })
-        //     .post(authAPI, logoutRequest)
-        //     .reply(200, { result: true, deviceStatus: 'IDLE', data: {}, errors: [] })
-            
-        //     // Product list
-        //     .post(productsAPI, productsGetRequest)
-        //     .reply(200, productsGetResponse)
-
-        //     // Scenes list
-        //     .post(scenesAPI, scenesGetRequest)
-        //     .reply(200, scenesGetResponse)
-
-        //     // Make it permanent
-        //     .persist();
-        //     nock.emitter.on('no match', function(req) {
-        //         console.log(JSON.stringify(req));
-        //         });
+        // Remove old mock server jar from tmp
+        if (fs.existsSync("./tmp/node_modules/iobroker.klf200/mockserver-netty-3.10.8-jar-with-dependencies.jar")) {
+            fs.unlinkSync("./tmp/node_modules/iobroker.klf200/mockserver-netty-3.10.8-jar-with-dependencies.jar");
+        }
 
         // Setup mockserver for simulating the web requests
         mockserver.start_mockserver({serverPort: 1080}).then(function () {
+            mockClient = mockServerClient('localhost', 1080);
             // Mocking authentication API
-            mockServerClient('localhost', 1080).mockAnyResponse({
+            mockClient.mockAnyResponse({
                 "httpRequest": {
                     "method": 'POST',
                     "path": authAPI,
@@ -274,7 +267,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
                     "unlimited": true
                 }
             });
-            mockServerClient('localhost', 1080).mockAnyResponse({
+            mockClient.mockAnyResponse({
                 "httpRequest": {
                     "method": 'POST',
                     "path": authAPI,
@@ -293,7 +286,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
             });
 
             // Mocking products API
-            mockServerClient('localhost', 1080).mockAnyResponse({
+            mockClient.mockAnyResponse({
                 "httpRequest": {
                     "method": 'POST',
                     "path": productsAPI,
@@ -312,7 +305,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
             });
 
             // Mocking scenes API
-            mockServerClient('localhost', 1080).mockAnyResponse({
+            mockClient.mockAnyResponse({
                 "httpRequest": {
                     "method": 'POST',
                     "path": scenesAPI,
@@ -342,18 +335,49 @@ describe('Test ' + adapterShortName + ' adapter', function() {
                 config.native.password = testValidPW;
 
                 setup.setAdapterConfig(config.common, config.native);
-
+                
+                _done();
                 setup.startController(true, function(id, obj) {}, function (id, state) {
                         if (onStateChanged) onStateChanged(id, state);
                     },
                     function (_objects, _states) {
                         objects = _objects;
                         states  = _states;
+
                         _done();
                     });
             });
         });
     });
+
+//     beforeEach('Start adapter', function (done) {
+//         // setup.startAdapter(objects, states, 
+//         //     function (_objects, _states) {
+//         //         objects = _objects;
+//         //         states  = _states;
+
+//         //         done();
+//         //     }
+//         // );
+//         setup.startController(true, function(id, obj) {}, function (id, state) {
+//             if (onStateChanged) onStateChanged(id, state);
+//         },
+//         function (_objects, _states) {
+//             objects = _objects;
+//             states  = _states;
+
+//             done();
+//         });
+// });
+
+//     afterEach('Stop adapter', function (done) {
+//         // setup.stopAdapter(function () {
+//         //     setTimeout(done, 0);
+//         // });
+//         setup.stopController(function () {
+//             done();
+//         });
+// });
 
 /*
     ENABLE THIS WHEN ADAPTER RUNS IN DEAMON MODE TO CHECK THAT IT HAS STARTED SUCCESSFULLY
@@ -376,26 +400,108 @@ describe('Test ' + adapterShortName + ' adapter', function() {
         });
     });
 
-/*
-    WAIT for adapter to setup
-*/
+    /*
+        WAIT for adapter to setup
+    */
     it('Test ' + adapterShortName + ' adapter: Wait for adapter to initialize', function (done) {
         this.timeout(30000);
         setTimeout(function () {
+            // Check if login/logout was called
+            mockClient.verify(
+                {
+                    "method": 'POST',
+                    "path": authAPI,
+                    "body": {
+                        "type": 'JSON',
+                        "value": JSON.stringify(loginRequest)
+                    }
+                }, 1, true
+            );
+
+            mockClient.verify(
+                {
+                    "method": 'POST',
+                    "path": authAPI,
+                    "body": {
+                        "type": 'JSON',
+                        "value": JSON.stringify(logoutRequest)
+                    }
+                }, 1, true
+            );
+
+            // Check getScenes was called
+            mockClient.verify(
+                {
+                    "method": 'POST',
+                    "path": scenesAPI,
+                    "body": {
+                        "type": 'JSON',
+                        "value": JSON.stringify(scenesGetRequest)
+                    }
+                }, 1, true
+            );
+
+            // Check getProducts was called
+            mockClient.verify(
+                {
+                    "method": 'POST',
+                    "path": productsAPI,
+                    "body": {
+                        "type": 'JSON',
+                        "value": JSON.stringify(productsGetRequest)
+                    }
+                }, 1, true
+            );
+
             done();
         }, 10000);
     });
 
-/*
-    Check number of products
-*/
+    /*
+        Check number of products
+    */
     it('Test ' + adapterShortName + ' adapter: Check number of products found', function (done) {
         this.timeout(30000);
-        checkValueOfState('klf200.0.products.productsFound', 5, function (res) {
+        checkValueOfState(`${adapterShortName}.0.products.productsFound`, 5, function (res) {
             if (res) console.log(res);
-            expect(res, 'Cannot check number of products found').to.be.undefined;
+            expect(res, 'Number of products found not correct.').to.be.undefined;
             done();
         });
+    });
+
+    /*
+        Check number of scenes
+    */
+    it('Test ' + adapterShortName + ' adapter: Check number of scenes found', function (done) {
+        this.timeout(30000);
+        checkValueOfState(`${adapterShortName}.0.scenes.scenesFound`, 5, function (res) {
+            if (res) console.log(res);
+            expect(res, 'Number of scenes found not correct.').to.be.undefined;
+            done();
+        });
+    });
+
+    /*
+        Check new login after poll interval
+    */
+    it('Test ' + adapterShortName + ' adapter: Should login again after poll interval elapsed', function (done) {
+        this.timeout(30000);
+        
+        let pollInterval = setup.getAdapterConfig().native.pollInterval;
+        //this.clock.tick((pollInterval + 1)*60*1000);
+
+        mockClient.verify(
+            {
+                "method": 'POST',
+                "path": authAPI,
+                "body": {
+                    "type": 'JSON',
+                    "value": JSON.stringify(loginRequest)
+                }
+            }, 1, true
+        );
+
+        done();
     });
 
 /*
@@ -412,11 +518,11 @@ describe('Test ' + adapterShortName + ' adapter', function() {
 
         setup.stopController(function (normalTerminated) {
             console.log('Adapter normal terminated: ' + normalTerminated);
+
+            mockServerClient('localhost', 1080).reset();
+            mockserver.stop_mockserver();
+
             done();
         });
-
-        // nock.cleanAll();
-        mockServerClient('localhost', 1080).reset();
-        mockserver.stop_mockserver();
     });
 });
