@@ -14,13 +14,12 @@ var setup  = require(__dirname + '/lib/setup');
 const mockserver = require('mockserver-grunt');
 const mockServerClient = require('mockserver-client').mockServerClient;
 const fs = require('fs');
-const sinon = require('sinon');
 
 var objects = null;
 var states  = null;
 var onStateChanged = null;
-var onObjectChanged = null;
-var sendToID = 1;
+//var onObjectChanged = null;
+// var sendToID = 1;
 
 var adapterShortName = setup.adapterName.substring(setup.adapterName.indexOf('.')+1);
 
@@ -215,25 +214,25 @@ function checkValueOfState(id, value, cb, counter) {
     });
 }
 
-function sendTo(target, command, message, callback) {
-    onStateChanged = function (id, state) {
-        if (id === 'messagebox.system.adapter.test.0') {
-            callback(state.message);
-        }
-    };
+// function sendTo(target, command, message, callback) {
+//     onStateChanged = function (id, state) {
+//         if (id === 'messagebox.system.adapter.test.0') {
+//             callback(state.message);
+//         }
+//     };
 
-    states.pushMessage('system.adapter.' + target, {
-        command:    command,
-        message:    message,
-        from:       'system.adapter.test.0',
-        callback: {
-            message: message,
-            id:      sendToID++,
-            ack:     false,
-            time:    (new Date()).getTime()
-        }
-    });
-}
+//     states.pushMessage('system.adapter.' + target, {
+//         command:    command,
+//         message:    message,
+//         from:       'system.adapter.test.0',
+//         callback: {
+//             message: message,
+//             id:      sendToID++,
+//             ack:     false,
+//             time:    (new Date()).getTime()
+//         }
+//     });
+// }
 
 var mockClient;
 
@@ -337,7 +336,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
                 setup.setAdapterConfig(config.common, config.native);
                 
                 // _done();
-                setup.startController(true, function(id, obj) {}, function (id, state) {
+                setup.startController(true, function(/*id, obj*/) {}, function (id, state) {
                         if (onStateChanged) onStateChanged(id, state);
                     },
                     function (_objects, _states) {
