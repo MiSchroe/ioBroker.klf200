@@ -168,21 +168,7 @@ adapter.on('ready', function () {
     main();
 });
 
-function main() {
-    // The adapters config (in the instance object everything under the attribute "native") is accessible via
-    // adapter.config:
-
-    // Promisifying has to be done at this time, because some methods are generated during initialization only
-    // (e.g. setState)
-    adapter = Promise.promisifyAll(adapter);
-    adapter.objects = Promise.promisifyAll(adapter.objects);
-
-    adapter.log.info('Host: ' + adapter.config.host);
-    adapter.log.info('Polling interval (minutes): ' + adapter.config.pollInterval);
-
-    // Set internal adapter running state to false
-    sceneIsRunning[adapter.instance] = false;
-
+function initStates () {
     // Connect to KLF interface and read data
     let connection = new klf200api.connection(adapter.config.host);
     Promise.coroutine(function* () {
@@ -247,13 +233,6 @@ function main() {
                 adapter.log.debug(`Found scene ${scene.name}`);
                 return createSceneStateAsync(scene);
             });
-
-            // Subscribe to all level states
-            adapter.subscribeStates('*level');
-            // Subscribe to all silent states
-            adapter.subscribeStates('*silent');
-            // Subscribe to all run states
-            adapter.subscribeStates('*run');
         }
         catch (err) {
             adapter.log.error(`Error during initialization occured: ${err}`);
@@ -265,6 +244,33 @@ function main() {
             }
         }
     })();
+
+}
+
+function main() {
+    // The adapters config (in the instance object everything under the attribute "native") is accessible via
+    // adapter.config:
+
+    // Promisifying has to be done at this time, because some methods are generated during initialization only
+    // (e.g. setState)
+    adapter = Promise.promisifyAll(adapter);
+    adapter.objects = Promise.promisifyAll(adapter.objects);
+
+    adapter.log.info('Host: ' + adapter.config.host);
+    adapter.log.info('Polling interval (minutes): ' + adapter.config.pollInterval);
+
+    // Set internal adapter running state to false
+    sceneIsRunning[adapter.instance] = false;
+
+    initStates();
+
+    // Subscribe to all level states
+    adapter.subscribeStates('*level');
+    // Subscribe to all silent states
+    adapter.subscribeStates('*silent');
+    // Subscribe to all run states
+    adapter.subscribeStates('*run');
+    
 
     // /**
     //  *

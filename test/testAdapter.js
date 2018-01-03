@@ -336,7 +336,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
 
                 setup.setAdapterConfig(config.common, config.native);
                 
-                _done();
+                // _done();
                 setup.startController(true, function(id, obj) {}, function (id, state) {
                         if (onStateChanged) onStateChanged(id, state);
                     },
