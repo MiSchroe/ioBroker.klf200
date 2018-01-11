@@ -29,7 +29,8 @@
     "binarysearch": "^1.0.0",
     "bluebird": "^3.5.0",
     "deep-diff": "^0.3.8",
-    "klf-200-api": "^2.0.1"
+    "klf-200-api": "^2.0.1",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "chai": "^3.4.1",

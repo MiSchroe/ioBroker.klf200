@@ -449,6 +449,24 @@ function createSceneStateAsync(scene) {
         })
 }
 
+/**
+ * Gets the corresponding scene to run a product to the specified level
+ * 
+ * @param {string} id The id of the object representing the product you want to use.
+ * @param {number} level The level to which the product should be driven, usually between 0 and 100.
+ * E.g. use 50 to open a window (specified in the id parameter) to 50%.
+ * @returns {Promise} Returns a promise that will fulfill after all steps are finished.
+ * The resulting object of the fulfilled promise looks like this:
+ * <pre>
+ *      <code language="javascript">
+ *          {
+ *              sceneId: 0,
+ *              sceneName: 'Bath room window 50%'
+ *          }
+ *      </code>
+ * </pre>
+ * If no corresponding scene is found the promise will be rejected.
+ */
 function getSceneForProductLevel(id, level) {
     let productName;
     return Promise.cast(Promise.coroutine(function* () {
@@ -460,6 +478,7 @@ function getSceneForProductLevel(id, level) {
             productName = productChannel.common.name;
             let scenesKey = ['klf200', adapter.instance, 'scenes', ''].join('.');
 
+            // This will get a list of all scenes with only a single product in it.
             let scenes = yield adapter.objects.getObjectViewAsync(
                 'klf200', 'listSingleProductScenes',
                 {startkey: scenesKey, endkey: scenesKey + '\u9999'}
