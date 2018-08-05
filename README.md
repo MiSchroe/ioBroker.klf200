@@ -52,8 +52,11 @@ There are two devices: "products" and "scenes". The products device lists all re
 
 ## Changelog
 
+#### 0.9.0
+* (Michael Schroeder) Initial public beta release
+
 #### 0.0.1
-* (Michael Schroeder) Initial release
+* (Michael Schroeder) Initial developer release
 
 ## License
 The MIT License (MIT)
