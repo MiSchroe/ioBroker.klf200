@@ -1,6 +1,6 @@
 {
   "name": "iobroker.klf200",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "ioBroker klf200 Adapter",
   "author": {
     "name": "Michael Schroeder",
