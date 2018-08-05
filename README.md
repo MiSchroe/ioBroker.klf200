@@ -1,71 +1,33 @@
 ![Logo](admin/klf200.png)
 # ioBroker.klf200
 
-This adapter is a klf200 for the creation of an ioBroker adapter. You do not need it at least that you plan developing your own adapter.
+This adapter is for controlling a VELUX® KLF-200 interface. This adapter is neither an official VELUX product nor is it supported by the company that owns the VELUX products.
 
-It includes both code running within iobroker and as vis widget. If you only plan to create a vis widget then you should use the [iobroker.vis-klf200](https://github.com/ioBroker/ioBroker.vis-klf200) instead.
+The main intention of this adapter is to control electric roof windows and/or electric blinds or roller shutters. Though the KLF-200 interface is able to connect to further devices like lights, switches, canvas blinds etc. I haven't developed the adapter for use with these kind of devices. Thus, it could be possible, that these devices could be controlled by this adapter, too.
 
-## Steps 
-1. download and unpack this packet from github ```https://github.com/ioBroker/ioBroker.klf200/archive/master.zip```
-  or clone git repository ```git clone https://github.com/ioBroker/ioBroker.klf200.git```
+The adapter works with the internal REST API of the KLF-200 interface and you don't need to 
 
-2. download required npm packets. Write in ioBroker.klf200 directory:
+## Setup
 
-  ```npm install```
-  
-3. set name of this klf200. Call
-  
-  ```grunt rename --name=mynewname --email=email@mail.com --author="Author Name"```
-  
-  *mynewname* must be **lower** case and with no spaces.
+## User documentation
 
-  If grunt is not available, install grunt globally:
-  
-  ```npm install -g grunt-cli```
- 
-4. rename directory from *ioBroker.klf200* (can be *ioBroker.klf200-master*) to *iobroker.mynewname*
+Find the detailed user documentation in ...
 
-5. to use this klf200 you should copy it into *.../iobroker/node_modules* directory and then create an instance for it with iobroker.admin
+## Known restrictions
 
-6. create your adapter:
-
-  * you might want to start with main.js (code running within iobroker) and admin/index.html (the adapter settings page).
-
-  * [Adapter-Development-Documentation](https://github.com/ioBroker/ioBroker/wiki/Adapter-Development-Documentation),
-  
-  * [Installation, setup and first steps with an ioBroker Development Environment](https://github.com/ioBroker/ioBroker/wiki/Installation,-setup-and-first-steps-with-an-ioBroker-Development-Environment)
-  
-  * [Write and debug vis widgets](https://github.com/ioBroker/ioBroker/wiki/How-to-debug-vis-and-to-write-own-widget-set)
-  
-  * files under the www folders are made available under http://&lt;iobrokerIP&gt;:8082/&lt;adapter-name&gt;/
-    * for this to work the iobroker.vis adapter has to be installed
-    * delete this folder if you do not plan to export any files this way
-    * call ```iobroker upload <adapter-name>``` after you change files in the www folder to get the new files uploaded to vis
-  * the widget folder contains an example of a vis widget
-    * you might want to start with *widget/<adapter-name>.html* and *widget/js/<adapter-name>.js*
-    * call ```iobroker visdebug <adapter-name>``` to enable debugging and upload widget to "vis". (This works only from V0.7.15 of js-controller)
-    * If you do not plan to export any widget then delete the whole widget folder and remove the ```"restartAdapters": ["vis"]``` statement from *io-package.json*
-    * After admin/index.html is changed you must execute ```iobroker upload mynewname``` to see changes in admin console. The same is valid for any files in *admin* and *www* directory  
-
-7. change version: edit package.json and then call ```grunt p``` in your adapter directory.
-  
-8. share it with the community
+* The interface is restricted by storing a maximum of 32 scenes in total. 
+* The REST API doesn't provide any feedback of a scene to be finished, therefore each scene is supposed to run at least 30 seconds.
+* Currently, only single product scenes are supported to control from the product side. Thus, it is always possible to create scenes with several products and control them from the scenes part.
 
 ## Changelog
 
-### 0.5.0
-  (vegetto) include vis widget
-
-#### 0.4.0
-* (bluefox) fix errors with grunt
-
-#### 0.2.0
-* (bluefox) initial release
+#### 0.0.1
+* (Michael Schroeder) Initial release
 
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2017 Michael Schroeder <klf200@gmx.de>
+Copyright (c) 2018 Michael Schroeder <klf200@gmx.de>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -84,3 +46,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+VELUX and the VELUX logo are registered trademarks of VKR Holding A/S.
