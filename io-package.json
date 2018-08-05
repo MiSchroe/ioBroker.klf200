@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "klf200",
-    "version": "0.9.1",
+    "version": "0.9.2",
     "news": {
+      "0.9.2": {
+        "en": "Fixed version number",
+        "de": "Versionsnummer angepasst"
+      },
       "0.9.1": {
         "en": "Minor bug fixes",
         "de": "Kleinere Fehlerbehebungen"
