@@ -1,52 +1,60 @@
 {
-    "common": {
-        "name": "klf200",
-        "version": "0.9.0",
-        "news": {
-            "0.9.0": {
-                "en": "initial public beta version",
-                "de": "Initiale, öffentliche Beta-Version"
-            },
-            "0.0.1": {
-                "en": "initial adapter",
-                "de": "Initiale Version",
-                "ru": "Первоначальный адаптер",
-                "pt": "Versão inicial",
-                "fr": "Version initiale",
-                "nl": "Eerste release"
-            }
-        },
-        "title": "KLF-200 Adapter",
-        "desc": {
-            "en": "Runs scenes on a KLF-200 Interface",
-            "de": "Startet Szenen auf einem KLF-200 Interface"
-        },
-        "platform": "Javascript/Node.js",
-        "mode": "daemon",
-        "icon": "klf200.png",
-        "enabled": true,
-        "license": "MIT",
-        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.klf200/master/admin/klf200.png",
-        "keywords": ["KLF-200", "vis", "GUI", "graphical"],
-        "readme": "https://github.com/ioBroker/ioBroker.klf200/blob/master/README.md",
-        "loglevel": "info",
-        "type": "hardware",
-        "restartAdapters": ["vis"]
+  "common": {
+    "name": "klf200",
+    "version": "0.9.0",
+    "news": {
+      "0.9.0": {
+        "en": "initial public beta version",
+        "de": "Initiale, öffentliche Beta-Version"
+      },
+      "0.0.1": {
+        "en": "initial adapter",
+        "de": "Initiale Version",
+        "ru": "Первоначальный адаптер",
+        "pt": "Versão inicial",
+        "fr": "Version initiale",
+        "nl": "Eerste release"
+      }
     },
-    "native": {
-        "host": "http://velux-klf-",
-        "password": "velux123",
-        "pollInterval": 60
+    "title": "KLF-200 Adapter",
+    "desc": {
+      "en": "Runs scenes on a KLF-200 Interface",
+      "de": "Startet Szenen auf einem KLF-200 Interface"
     },
-    "objects": [
-        {
-            "_id": "_design/klf200",
-            "language": "javascript",
-            "views": {
-                "listSingleProductScenes": {
-                    "map": "function(doc) {\n  if (doc._id.match(/^klf200\\.[0-9]+\\.scenes\\.[0-9]+$/) && doc.native && doc.native.products.length == 1)\n  {\n  emit([doc.native.products[0].name, doc.native.products[0].status], {id: doc.native.id, name:doc.native.name});\n  }\n  }"
-                }
-            }
-        }
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "icon": "klf200.png",
+    "enabled": true,
+    "license": "MIT",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.klf200/master/admin/klf200.png",
+    "keywords": [
+      "KLF-200",
+      "vis",
+      "GUI",
+      "graphical"
+    ],
+    "readme": "https://github.com/ioBroker/ioBroker.klf200/blob/master/README.md",
+    "loglevel": "info",
+    "type": "hardware",
+    "restartAdapters": [
+      "vis"
     ]
+  },
+  "native": {
+    "host": "http://velux-klf-",
+    "password": "velux123",
+    "pollInterval": 60
+  },
+  "objects": [
+    {
+      "_id": "_design/klf200",
+      "language": "javascript",
+      "views": {
+        "listSingleProductScenes": {
+          "map": "function(doc) {\n  if (doc._id.match(/^klf200\\.[0-9]+\\.scenes\\.[0-9]+$/) && doc.native && doc.native.products.length == 1)\n  {\n  emit([doc.native.products[0].name, doc.native.products[0].status], {id: doc.native.id, name:doc.native.name});\n  }\n  }"
+        }
+      }
+    }
+  ],
+  "version": "0.9.0"
 }

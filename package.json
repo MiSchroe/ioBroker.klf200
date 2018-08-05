@@ -38,6 +38,7 @@
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-http": "^1.6.0",
     "grunt-jscs": "^2.0.0",
+    "grunt-release": "^0.14.0",
     "grunt-replace": "^0.9.3",
     "istanbul": "^0.4.5",
     "mocha": "^2.3.4",
