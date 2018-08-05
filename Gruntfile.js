@@ -190,6 +190,12 @@ module.exports = function (grunt) {
                 },
                 dest: 'tasks/jscsRules.js'
             }
+        },
+
+        release: {
+            options: {
+                additionalFiles: ['io-package.json']
+            }
         }
     });
 
@@ -197,6 +203,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-jscs');
     grunt.loadNpmTasks('grunt-http');
+    grunt.loadNpmTasks('grunt-release');
 
     grunt.registerTask('default', [
         'http',
