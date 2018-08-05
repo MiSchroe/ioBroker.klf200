@@ -97,65 +97,6 @@ const productsGetResponse = {
     "errors": []
 };
 
-const productsGetResponse2 = {
-    token: testToken,
-    result: true,
-    "deviceStatus": "IDLE",
-    "data": [
-        {
-            "name": "Windows bathroom",
-            "category": "Window opener",
-            "id": 0,
-            "typeId": 4,
-            "subtype": 1,
-            "scenes": [
-                "Some windows",
-                "Window bathroom 0%"
-            ]
-        },
-        {
-            "name": "Window kids room",
-            "category": "Window opener",
-            "id": 1,
-            "typeId": 4,
-            "subtype": 1,
-            "scenes": []
-        },
-        {
-            "name": "Window sleeping room",
-            "category": "Window opener",
-            "id": 2,
-            "typeId": 4,
-            "subtype": 1,
-            "scenes": [
-                "Some windows",
-                "Window sleeping room 0%",
-                "Window sleeping room 100%"
-            ]
-        },
-        {
-            "name": "Roller shutter sleeping room",
-            "category": "Roller shutter",
-            "id": 3,
-            "typeId": 2,
-            "subtype": 0,
-            "scenes": []
-        },
-        {
-            "name": "Window kitchen",
-            "category": "Window opener",
-            "id": 4,
-            "typeId": 4,
-            "subtype": 1,
-            "scenes": [
-                "Window kitchen 10%",
-                "Window kitchen 20%"
-            ]
-        }
-    ],
-    "errors": []
-};
-
 const scenesGetRequest = { action: actionScenesGet, params: {} };
 const scenesGetResponse = {
     "token": testToken,
@@ -358,27 +299,9 @@ describe('Test ' + adapterShortName + ' adapter', function() {
                     "body": JSON.stringify(productsGetResponse)
                 },
                 "times": {
-                    "remainingTimes": 1,
-                    "unlimited": false
+                    "unlimited": true
                 }
-            }).then(
-                mockClient.mockAnyResponse({
-                    "httpRequest": {
-                        "method": 'POST',
-                        "path": productsAPI,
-                        "body": {
-                            "type": 'JSON',
-                            "value": JSON.stringify(productsGetRequest)
-                        }
-                    },
-                    "httpResponse": {
-                        "statusCode": 200,
-                        "body": JSON.stringify(productsGetResponse2)
-                    },
-                    "times": {
-                        "unlimited": true
-                })
-            );
+            });
 
             // Mocking scenes API
             mockClient.mockAnyResponse({
