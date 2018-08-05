@@ -1,16 +1,8 @@
 {
     "common": {
         "name": "klf200",
-        "version": "0.5.0",
+        "version": "0.0.1",
         "news": {
-            "0.5.0": {
-                "en": "beta version",
-                "de": "Betaversion",
-                "ru": "Бета версия",
-                "pt": "Versão beta",
-                "fr": "Version bêta",
-                "nl": "Beta versie"
-            },
             "0.0.1": {
                 "en": "initial adapter",
                 "de": "Initiale Version",

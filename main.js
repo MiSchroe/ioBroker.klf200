@@ -36,7 +36,7 @@ const utils = require(__dirname + '/lib/utils'); // Get common adapter utils
 const Promise = require('bluebird');
 const klf200api = require('klf-200-api');
 const mapTypeId = require(__dirname + '/lib/mapTypeId'); // Mapping of typeId values to channel role names
-const deepdiff = require('deep-diff'); // diff utility for easier handling of changes in products and scenes
+const klfutils = require(__dirname + '/lib/klfutils');
 
 // you have to call the adapter function and pass a options object
 // name has to be set and has to be equal to adapters folder name and main file name excluding extension
@@ -47,6 +47,12 @@ let adapter = utils.adapter('klf200');
 const deviceScenes = 'scenes';
 const deviceProducts = 'products';
 const run = 'run';
+const category = 'category';
+const scenesCount = 'scenesCount';
+const silent = 'silent';
+const productsCount = 'productsCount';
+const level = 'level';
+const levelTypes = [1, 2, 3, 4, 10, 13, 16, 17, 18, 24];
 const delayBetweenSceneRunsInMS = 30000;
 
 // Cash for previous states
@@ -215,11 +221,38 @@ function initStates () {
             adapter.log.info(`Found ${products.length} product(s).`);
             yield adapter.setStateAsync(`${deviceProducts}.productsFound`, { val: products.length, ack: true });
             let productsFoundObject = yield adapter.getObjectAsync(`${deviceProducts}.productsFound`);
+
+            let oldProducts = productsFoundObject.native || [];
             productsFoundObject.native = products || {};
 
-            yield Promise.mapSeries(products, function (product) {
-                adapter.log.debug(`Found product ${product.name}`);
+            // Get differences of products
+            let productDifferences = klfutils.getKlfProductDifferences(oldProducts, products);
+
+            // Remove deleted products
+            yield Promise.mapSeries(productDifferences.deletedProducts, function (product) {
+                adapter.log.debug(`Removing product ${product.name}`);
+                return adapter.deleteChannelAsync(deviceProducts, product.id.toString());
+            });
+
+            // Add new products
+            yield Promise.mapSeries(productDifferences.newProducts, function (product) {
+                adapter.log.debug(`Found new product ${product.name}`);
                 return createProductStateAsync(product);
+            });
+
+            // Change products
+            yield Promise.mapSeries(productDifferences.changedProducts, function (product) {
+                adapter.log.debug(`Found changed product ${product.name}`);
+                const productId = product.id.toString();
+                return adapter.setStateAsync(`${deviceProducts}.${productId}.${scenesCount}`, { val: product.scenes.length || 0, ack: true })
+                    .then(
+                        function () {
+                            if (levelTypes.find((val) => { return val === product.typeId; }))
+                            {
+                                return adapter.setStateAsync(`${deviceProducts}.${productId}.${level}`, { val: 0, ack: true, q: 0x42 });    // Quality issue, because we can only assume the opening level
+                            }
+                        }
+                    );
             });
 
             adapter.log.info('Getting scenes...');
@@ -227,11 +260,30 @@ function initStates () {
             adapter.log.info(`Found ${scenes.length} scene(s).`);
             yield adapter.setStateAsync(`${deviceScenes}.scenesFound`, { val: scenes.length, ack: true });
             let scenesFoundObject = yield adapter.getObjectAsync(`${deviceScenes}.scenesFound`);
+
+            let oldScenes = scenesFoundObject.native || [];
             scenesFoundObject.native = scenes || {};
 
-            yield Promise.mapSeries(scenes, function (scene) {
-                adapter.log.debug(`Found scene ${scene.name}`);
+            // Get differences of scenes
+            let sceneDifferences = klfutils.getKlfSceneDifferences(oldScenes, scenes);
+
+            // Remove delete products
+            yield Promise.mapSeries(sceneDifferences.deletedScenes, function (scene) {
+                adapter.log.debug(`Removing scene ${scene.name}`);
+                return adapter.deleteChannelAsync(deviceScenes, scene.id.toString());
+            });
+
+            // Add new scenes
+            yield Promise.mapSeries(sceneDifferences.newScenes, function (scene) {
+                adapter.log.debug(`Found new scene ${scene.name}`);
                 return createSceneStateAsync(scene);
+            });
+
+            // Change scenes
+            yield Promise.mapSeries(sceneDifferences.changedScenes, function (scene) {
+                adapter.log.debug(`Found changed scene ${scene.name}`);
+                const sceneId = scene.id.toString();
+                return adapter.setStateAsync(`${deviceScenes}.${sceneId}.${silent}`, { val: scene.silent, ack: true });
             });
         }
         catch (err) {
@@ -338,11 +390,7 @@ function createProductStateAsync(product) {
     if (!product)
         return Promise.reject(new Error('Can\'t create states for empty product.'));
 
-    const category = 'category';
-    const scenesCount = 'scenesCount';
     const productId = product.id.toString();
-    const level = 'level';
-    const levelTypes = [1, 2, 3, 4, 10, 13, 16, 17, 18, 24];
 
     return adapter.createChannelAsync(deviceProducts, productId, { name: product.name, role: mapTypeId.getRole(product.typeId) }, product)
         .then(function () {
@@ -372,7 +420,7 @@ function createProductStateAsync(product) {
             return adapter.setStateAsync(`${deviceProducts}.${productId}.${scenesCount}`, { val: product.scenes.length || 0, ack: true });
         })
         .then(function () {
-            if (levelTypes.find((val) => { return val === product.id; }))
+            if (levelTypes.find((val) => { return val === product.typeId; }))
                 return adapter.createStateAsync(deviceProducts, productId, level, {
                     name: level,
                     role: 'level',
@@ -402,8 +450,6 @@ function createSceneStateAsync(scene) {
     if (!scene)
         return Promise.reject(new Error('Can\'t create states for empty scene.'));
 
-    const silent = 'silent';
-    const productsCount = 'productsCount';
     const sceneId = scene.id.toString();
 
     return adapter.createChannelAsync(deviceScenes, sceneId, { name: scene.name, role: 'scene' }, scene)
@@ -418,7 +464,7 @@ function createSceneStateAsync(scene) {
             });
         })
         .then(function () {
-            adapter.setState(`${deviceScenes}.${sceneId}.${silent}`, { val: scene.silent, ack: true });
+            return adapter.setStateAsync(`${deviceScenes}.${sceneId}.${silent}`, { val: scene.silent, ack: true });
         })
         .then(function () {
             return adapter.createStateAsync(deviceScenes, sceneId, productsCount, {
@@ -431,7 +477,7 @@ function createSceneStateAsync(scene) {
             });
         })
         .then(function () {
-            adapter.setState(`${deviceScenes}.${sceneId}.${productsCount}`, { val: scene.products.length || 0, ack: true });
+            return adapter.setStateAsync(`${deviceScenes}.${sceneId}.${productsCount}`, { val: scene.products.length || 0, ack: true });
         })
         .then(function () {
             return adapter.createStateAsync(deviceScenes, sceneId, run, {
@@ -444,7 +490,7 @@ function createSceneStateAsync(scene) {
                 desc: 'Shows the running state of a scene. Set to true to run a scene.'
             })
                 .then(function () {
-                    adapter.setState(`${deviceScenes}.${sceneId}.${run}`, { val: false, ack: true, q: 0x42 });    // Quality issue, because we can only assume the running state
+                    return adapter.setStateAsync(`${deviceScenes}.${sceneId}.${run}`, { val: false, ack: true, q: 0x42 });    // Quality issue, because we can only assume the running state
                 });
         })
 }

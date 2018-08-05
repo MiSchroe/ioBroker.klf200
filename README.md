@@ -9,15 +9,46 @@ The adapter works with the internal REST API of the KLF-200 interface and you do
 
 ## Setup
 
+*TODO - not finished, yet!*
+
+First, you have to setup your KLF-200 interface. It **must** be in the same network than ioBroker, but there is no difference if you use a WiFi connection or connect it via cable.
+
 ## User documentation
 
-Find the detailed user documentation in ...
+*TODO*
 
 ## Known restrictions
 
 * The interface is restricted by storing a maximum of 32 scenes in total. 
 * The REST API doesn't provide any feedback of a scene to be finished, therefore each scene is supposed to run at least 30 seconds.
 * Currently, only single product scenes are supported to control from the product side. Thus, it is always possible to create scenes with several products and control them from the scenes part.
+* The REST API doesn't let me read the current status of a product. Therefore the current level of a product is always what was set last and defaults to 0% on initialization of the adapter. This also means, that further logic implemented in other adapters won't work if you e.g. open or close your window with the original remote control.
+
+## Documentation of the data points
+
+### Devices
+
+There are two devices: "products" and "scenes". The products device lists all registered products wether they are used in a scene or not. The scenes device lists all scenes that you have created in the interface.
+
+#### Products
+
+* productsFound - number of products registered in the interface
+* 0...n - channel for each registered product
+    * category - name of the category, e.g. Window Opener, Roller Shutter
+    * scenesCount - number of scenes the product is used in
+    * level - This data point is only available when the product can be controlled from a scene.
+              You can set a value to run a scene that will drive the product to that specific value.
+
+#### Scenes
+
+* scenesFound - number of scenes found in the interface
+* 0..n - channel for each scene
+    * productsCount - number of products that are controlled through this scene
+    * silent - true/false if the scene will run in silent mode (only, if the product supports it).
+               Currently, you can only read this information.
+    * run - true/false set to true to run the scene. Will change to false again after the scene has finished
+    
+    
 
 ## Changelog
 
