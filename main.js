@@ -303,6 +303,13 @@ function main() {
     // The adapters config (in the instance object everything under the attribute "native") is accessible via
     // adapter.config:
 
+    // Promisifying has to be done at this time, because some methods are generated during initialization only
+    // (e.g. setState)
+    if (undefined === adapter.objects.getObjectViewAsync)
+    {
+        adapter.objects.getObjectViewAsync = Promise.promisify(adapter.objects.getObjectView);
+    }
+    
     adapter.log.info('Host: ' + adapter.config.host);
     adapter.log.info('Polling interval (minutes): ' + adapter.config.pollInterval);
 

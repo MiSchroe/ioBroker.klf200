@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "klf200",
-    "version": "0.9.2",
+    "version": "0.9.4",
     "news": {
+      "0.9.3": {
+        "en": "Fixed running scenes from products",
+        "de": "Starten von Szenen über das Produkt ermöglicht"
+      },
       "0.9.2": {
         "en": "Fixed version number",
         "de": "Versionsnummer angepasst"
