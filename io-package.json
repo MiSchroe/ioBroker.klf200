@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "klf200",
-    "version": "0.9.4",
+    "version": "0.9.3",
     "news": {
       "0.9.3": {
         "en": "Fixed running scenes from products",
