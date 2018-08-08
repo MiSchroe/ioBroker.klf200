@@ -3,12 +3,11 @@ os:
   - osx
 language: node_js
 node_js:
-  - "6"
-  - "8"
-  - "node"
-  - "lts/*"
+  - '4'
+  - '6'
+  - '8'
 before_script:
-  - npm install winston@2.3.0
+  - npm install winston@2.3.1
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
 env:
   - CXX=g++-4.8
