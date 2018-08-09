@@ -12,18 +12,19 @@
       "email": "klf200@gmx.de"
     }
   ],
-  "homepage": "https://github.com/ioBroker/ioBroker.klf200",
+  "homepage": "https://github.com/MiSchroe/ioBroker.klf200",
   "license": "MIT",
   "keywords": [
     "ioBroker",
     "klf200",
     "klf-200",
     "Smart Home",
-    "home automation"
+    "home automation",
+    "VELUX"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ioBroker/ioBroker.klf200"
+    "url": "https://github.com/MiSchroe/ioBroker.klf200"
   },
   "dependencies": {
     "binarysearch": "^1.0.0",
@@ -51,7 +52,7 @@
     "instrument": true
   },
   "bugs": {
-    "url": "https://github.com/ioBroker/ioBroker.klf200/issues"
+    "url": "https://github.com/MiSchroe/ioBroker.klf200/issues"
   },
   "readmeFilename": "README.md"
 }
