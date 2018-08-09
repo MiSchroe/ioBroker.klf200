@@ -29,25 +29,36 @@
       }
     },
     "title": "KLF-200 Adapter",
+    "titleLang": {
+      "en": "KLF-200 Adapter",
+      "de": "KLF-200 Adapter"
+    },
     "desc": {
       "en": "Runs scenes on a KLF-200 Interface",
       "de": "Startet Szenen auf einem KLF-200 Interface"
     },
+    "authors": [
+        "Michael Schroeder klf200@gmx.de"
+    ],
+    "docs": {
+        "en": "docs/en/admin.md",
+        "de": "docs/de/admin.md"
+    },
     "platform": "Javascript/Node.js",
     "mode": "daemon",
     "icon": "klf200.png",
+    "materialize": true,
     "enabled": true,
     "license": "MIT",
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.klf200/master/admin/klf200.png",
+    "extIcon": "https://raw.githubusercontent.com/MiSchroe/ioBroker.klf200/master/admin/klf200.png",
     "keywords": [
-      "KLF-200"
+      "KLF-200",
+      "VELUX"
     ],
-    "readme": "https://github.com/ioBroker/ioBroker.klf200/blob/master/README.md",
+    "readme": "https://github.com/MiSchroe/ioBroker.klf200/blob/master/README.md",
     "loglevel": "info",
     "type": "hardware",
-    "restartAdapters": [
-      "vis"
-    ]
+    "restartAdapters": []
   },
   "native": {
     "host": "http://velux-klf-",
