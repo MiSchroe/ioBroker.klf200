@@ -33,19 +33,19 @@ You can register new products either by
 
 If all of your products are registered you should see a list like the following:
 
-![Screenshot of "My products" of the KLF-200 interface](img/ProductList-en.PNG)
+![Screenshot of "My products" of the KLF-200 interface](img/ProductList.PNG)
 
 
 ### Setup scenes
 
 To record a scene you have to click on the button
 
-![Record program button](img/RecordProgramButton-en.PNG)
+![Record program button](img/RecordProgramButton.PNG)
 
 This will open the *Recording in progress* window. Now, use your remote control that comes with your product
 to change something, e.g. open the window to 40%. Then type in a name for the program and click on *Save program*.
 
-![Screenshot of Recording in progress](img/RecordingInProgress-en.PNG)
+![Screenshot of Recording in progress](img/RecordingInProgress.PNG)
 
 > TIP:
 > * Name your program after product and opening level, e.g. Window bathroom 40%,
@@ -58,7 +58,7 @@ to change something, e.g. open the window to 40%. Then type in a name for the pr
 
 If you have finished recording programs you will end with a list like the following:
 
-![Screenshot of the program list](img/ProgramList-en.PNG)
+![Screenshot of the program list](img/ProgramList.PNG)
 
 
 ### Setup connections
@@ -73,7 +73,7 @@ You only have to set it up in the box you don't need to wire anything! Just choo
 
 ## Configure the adapter
 
-![Screenshot of the adapter configuration](img/AdapterConfiguration-en.PNG)
+![Screenshot of the adapter configuration](img/AdapterConfiguration.PNG)
 
 ### Host
 
