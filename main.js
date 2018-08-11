@@ -43,7 +43,7 @@ const klfutils = require(__dirname + '/lib/klfutils');
 // you have to call the adapter function and pass a options object
 // name has to be set and has to be equal to adapters folder name and main file name excluding extension
 // adapter will be restarted automatically every time as the configuration changed, e.g system.adapter.klf200.0
-let adapter = utils.adapter('klf200');
+let adapter = utils.Adapter('klf200');
 
 // Define some constant values
 const deviceScenes = 'scenes';
