@@ -5,17 +5,29 @@ This adapter is for controlling a VELUX® KLF-200 interface. This adapter is nei
 
 The main intention of this adapter is to control electric roof windows and/or electric blinds or roller shutters. Though the KLF-200 interface is able to connect to further devices like lights, switches, canvas blinds etc. I haven't developed the adapter for use with these kind of devices. Thus, it could be possible, that these devices could be controlled by this adapter, too.
 
-The adapter works with the internal REST API of the KLF-200 interface and you don't need to 
-
-## Setup
-
-*TODO - not finished, yet!*
-
-First, you have to setup your KLF-200 interface. It **must** be in the same network than ioBroker, but there is no difference if you use a WiFi connection or connect it via cable.
+The adapter works with the internal REST API of the KLF-200 interface and you don't need to wire the inputs and outputs of the box.
 
 ## User documentation
 
-*TODO*
+You can find the user documentation in several languages:
+
+![English flag](img/united-kingdom-flag-round-icon-16.png) [English documentation](docs/en/ReadMe.md)
+
+![German flag](img/germany-flag-round-icon-16.png) [Deutsche Dokumentation](docs/de/ReadMe.md)
+
+![France flag](img/france-flag-round-icon-16.png) [Documentation française](docs/fr/ReadMe.md)
+
+![Italien flag](img/italy-flag-round-icon-16.png) [Documentazione italiana](docs/it/ReadMe.md)
+
+![Netherlands flag](img/netherlands-flag-round-icon-16.png) [Nederlandse documentatie](docs/nl/ReadMe.md)
+
+![Poland flag](img/poland-flag-round-icon-16.png) [Polska dokumentacja](docs/pl/ReadMe.md)
+
+![Portuguese flag](img/portugal-flag-round-icon-16.png) [Documentação portuguesa](docs/pt/ReadMe.md)
+
+![Russian flag](img/russia-flag-round-icon-16.png) [Российская документация](docs/ru/ReadMe.md)
+
+![Spanish flag](img/spain-flag-round-icon-16.png) [Documentación española](docs/es/ReadMe.md)
 
 ## Known restrictions
 
@@ -52,6 +64,9 @@ There are two devices: "products" and "scenes". The products device lists all re
 
 ## Changelog
 
+#### 0.9.4
+* (Michael Schroeder) Compatible to Admin 3, add documentation
+
 #### 0.9.0
 * (Michael Schroeder) Initial public beta release
 
@@ -80,5 +95,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+------------------------------------------------------------------------------
 
 VELUX and the VELUX logo are registered trademarks of VKR Holding A/S.
