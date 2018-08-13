@@ -1,33 +1,25 @@
 # KLF-200 adapter documentation
 
-This adapter is for controlling a VELUX® KLF-200 interface. This adapter is neither an official VELUX product 
-nor is it supported by the company that owns the VELUX products.
+This adapter is for controlling a VELUX® KLF-200 interface. This adapter is neither an official VELUX product nor is it supported by the company that owns the VELUX products.
 
-The main intention of this adapter is to control electric roof windows and/or electric blinds or roller shutters.
-Though the KLF-200 interface is able to connect to further devices like lights, switches, canvas blinds etc.
-I haven't developed the adapter for use with these kind of devices. Thus, it could be possible,
-that these devices could be controlled by this adapter, too.
+The main intention of this adapter is to control electric roof windows and/or electric blinds or roller shutters. Though the KLF-200 interface is able to connect to further devices like lights, switches, canvas blinds etc. I haven't developed the adapter for use with these kind of devices. Thus, it could be possible, that these devices could be controlled by this adapter, too.
 
-The adapter works with the internal REST API of the KLF-200 interface and you don't need to wire the inputs
-and outputs of the box, though it's still possible to use them in parallel.
+The adapter works with the internal REST API of the KLF-200 interface and you don't need to wire the inputs and outputs of the box, though it's still possible to use them in parallel.
 
 ----------------------------------------------------------------------------------------------------------------
 
 ## Prepare your KLF-200 interface
 
-To use this adapter you have to setup your KLF-200 box in the **interface mode**. It doesn't work
-if you use your box as a repeater.
+To use this adapter you have to setup your KLF-200 box in the **interface mode**. It doesn't work if you use your box as a repeater.
 
-> For a detailed explanation of how to accomplish the following tasks please read the manuals 
-> that came with your box.
+> For a detailed explanation of how to accomplish the following tasks please read the manuals that came with your box.
 >
 > It is assumed that you have successfully logged into your box in a web browser.
 
 
 ### Setup products
 
-Each product that you want to control by this adapter has to be registered on the "My products" page.
-You can register new products either by
+Each product that you want to control by this adapter has to be registered on the "My products" page. You can register new products either by
 - Copy from another remote control
 - Search for products
 
@@ -42,19 +34,14 @@ To record a scene you have to click on the button
 
 ![Record program button](img/RecordProgramButton.PNG)
 
-This will open the *Recording in progress* window. Now, use your remote control that comes with your product
-to change something, e.g. open the window to 40%. Then type in a name for the program and click on *Save program*.
+This will open the *Recording in progress* window. Now, use your remote control that comes with your product to change something, e.g. open the window to 40%. Then type in a name for the program and click on *Save program*.
 
 ![Screenshot of Recording in progress](img/RecordingInProgress.PNG)
 
 > HINT:
-> * Name your program after product and opening level, e.g. Window bathroom 40%,
->   though the adapter doesn't use any naming conventions.
-> * If your window is closed start with an opening level of 100% and go down
->   with each subsequent program until you reach 0%.
-> * You have a maximum of 32 programs you can save in the box.
->   Therefore, plan your number of steps as there is no real difference in a
->   window opened 30% or 40%.
+> * Name your program after product and opening level, e.g. Window bathroom 40%, though the adapter doesn't use any naming conventions.
+> * If your window is closed start with an opening level of 100% and go down with each subsequent program until you reach 0%.
+> * You have a maximum of 32 programs you can save in the box. Therefore, plan your number of steps as there is no real difference in a window opened 30% or 40%.
 
 If you have finished recording programs you will end with a list like the following:
 
@@ -63,9 +50,7 @@ If you have finished recording programs you will end with a list like the follow
 
 ### Setup connections
 
-This last step is optional. If you don't use the input and output wires you may have noticed
-that the tiny LED on the box is flashing all the time.
-To get rid of the annoying flashing you have to setup at least one connection.
+This last step is optional. If you don't use the input and output wires you may have noticed that the tiny LED on the box is flashing all the time. To get rid of the annoying flashing you have to setup at least one connection.
 
 You only have to set it up in the box you don't need to wire anything! Just choose anything you like.
 
@@ -77,13 +62,11 @@ You only have to set it up in the box you don't need to wire anything! Just choo
 
 ### Host
 
-Host name of your KLF-200 interface. This is the same you type into the address bar of your
-web browser to connect to your box.
+Host name of your KLF-200 interface. This is the same you type into the address bar of your web browser to connect to your box.
 
 ### Password
 
-The password you need to connect to your KLF-200 interface. It's the same you use when connecting
-to your box in your web browser.
+The password you need to connect to your KLF-200 interface. It's the same you use when connecting to your box in your web browser.
 
 > The default password of the KLF-200 is `velux123`, but you should have changed it, anyway!
 
@@ -97,8 +80,7 @@ The number of minutes after which the adapter reloads the configuration from the
 
 ## Use the adapter
 
-After the adapter has read the meta data from the KLF-200 interface you will find the following states
-in the object tree:
+After the adapter has read the meta data from the KLF-200 interface you will find the following states in the object tree:
 
 Device   | Channel | State         | Data type        | Description
 ---------|---------|---------------|------------------|------------------------------------------------------
@@ -115,15 +97,13 @@ scenes   | 0..n    | silent        | indicator.silent | Indicates if the scene i
 
 > **IMPORTANT:**
 >
-> The IDs that are used in the channels are the IDs coming from the KLF-200 interface. If you make changes 
-> at the products list or at the program list in your KLF-200 the IDs may change.
+> The IDs that are used in the channels are the IDs coming from the KLF-200 interface. If you make changes at the products list or at the program list in your KLF-200 the IDs may change.
 
 To run a scene you can either set the `run` state of the scene to `true` or you can set the `level` state of the product to a value that corresponds to a scene that sets the product to that level.
 
 ### Example
 
-Assuming your bathroom window is channel `0`. You have a scene on Channel `10` that opens the bathroom window 
-at 40%.
+Assuming your bathroom window is channel `0`. You have a scene on Channel `10` that opens the bathroom window at 40%.
 
 ````javascript
 // Variant 1: Open the bathroom window at 40% using the scenes run state:
@@ -159,17 +139,12 @@ setState('klf200.0.products.0.level', 41);
 
 ## Known limitations
 
-The adapter controls the KLF-200 using the internal REST API that is used by the web interface of the box.
-Though we use only a subset of the API there are some restrictions:
+The adapter controls the KLF-200 using the internal REST API that is used by the web interface of the box. Though we use only a subset of the API there are some restrictions:
 
-* The adapter can't read the current opening level of a window. If you control it with your remote control
-  or it will be closed due to rain the adapter doesn't know about it and it will still show the last
-  known value.
+* The adapter can't read the current opening level of a window. If you control it with your remote control or it will be closed due to rain the adapter doesn't know about it and it will still show the last known value.
 * The KLF-200 interface is limited to a maximum of 32 scenes.
-* The adapter doesn't know, when an action has finished. The running state will stay `true` for
-  at least 30 seconds.
-* Don't run scenes to fast after each other. The KLF-200 may throw errors. (You will find the errors
-  in the log.)
+* The adapter doesn't know, when an action has finished. The running state will stay `true` for at least 30 seconds.
+* Don't run scenes to fast after each other. The KLF-200 may throw errors. (You will find the errors in the log.)
 
 ----------------------------------------------------------------------------------------------------------------
 

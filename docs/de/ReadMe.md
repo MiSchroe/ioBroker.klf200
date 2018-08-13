@@ -28,26 +28,26 @@ Sie können neue Produkte registrieren entweder durch
 
 Wenn alle Ihre Produkte registriert sind, sollten Sie eine Liste wie die folgende sehen:
 
-![Screenshot of "My products" of the KLF-200 interface](../en/img/ProductList-en.PNG)
+![Screenshot of "My products" of the KLF-200 interface](img/ProductList.PNG)
 
 ### Szenen einrichten
 
 Um eine Szene aufzunehmen, klicken Sie auf die Schaltfläche
 
-![Record program button](../en/img/RecordProgramButton-en.PNG)
+![Record program button](img/RecordProgramButton.PNG)
 
 Dies öffnet das Fenster *Programmerstellung in Bearbeitung*. Verwenden Sie jetzt die mit Ihrem Produkt gelieferte Fernbedienung, um etwas zu ändern, z.B. öffne das Fenster zu 40%. Geben Sie dann einen Namen für das Programm ein und klicken Sie auf *Programm speichern*.
 
-![Screenshot of Recording in progress](../en/img/RecordingInProgress-en.PNG)
+![Screenshot of Recording in progress](img/RecordingInProgress.PNG)
 
 > TIPP:
-> - Nennen Sie Ihr Programm nach Produkt und Öffnungsgrad, zum Beispiel Fenster Badezimmer 40%,Der Adapter verwendet jedoch keine Namenskonventionen.
+> - Benennen Sie Ihr Programm nach Produkt und Öffnungsgrad, zum Beispiel Fenster Badezimmer 40%. Der Adapter verwendet allerdings keine Namenskonventionen.
 > - Wenn Ihr Fenster geschlossen ist, beginnen Sie mit einem Öffnungsgrad von 100% und gehen Sie mit jedem weiteren Programm weiter nach unten bis Sie 0% erreichen.
 > - Sie haben maximal 32 Programme, die Sie in der Box speichern können.Planen Sie daher Ihre Anzahl an Schritten, da es keinen wirklichen Unterschied zwischen einem zu 30% oder zu 40% geöffnetem Fenster gibt.
 
 Wenn Sie mit der Aufnahme von Programmen fertig sind, erhalten Sie eine Liste wie folgt:
 
-![Screenshot of the program list](../en/img/ProgramList-en.PNG)
+![Screenshot of the program list](img/ProgramList.PNG)
 
 ### Verbindungen einrichten
 
@@ -59,7 +59,7 @@ Sie müssen es nur in der Box einrichten, Sie müssen nichts verkabeln! Wählen 
 
 ## Konfigurieren Sie den Adapter
 
-![Screenshot of the adapter configuration](../en/img/AdapterConfiguration-en.PNG)
+![Screenshot of the adapter configuration](img/AdapterConfiguration.PNG)
 
 ### Host
 

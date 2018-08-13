@@ -25,17 +25,17 @@ Cada producto que desee controlar mediante este adaptador debe registrarse en la
 
 Si todos sus productos están registrados, debería ver una lista como la siguiente:
 
-![Screenshot of "My products" of the KLF-200 interface](../en/img/ProductList.PNG)
+![Screenshot of "My products" of the KLF-200 interface](img/ProductList.PNG)
 
 ### Escenas de configuración
 
 Para grabar una escena, debes hacer clic en el botón
 
-![Record program button](../en/img/RecordProgramButton.PNG)
+![Record program button](img/RecordProgramButton.PNG)
 
 Esto abrirá la ventana *Grabación en proceso*. Ahora, use su control remoto que viene con su producto para cambiar algo, p. abre la ventana al 40%. Luego escriba un nombre para el programa y haga clic en *Guardar programa*.
 
-![Screenshot of Recording in progress](../en/img/RecordingInProgress.PNG)
+![Screenshot of Recording in progress](img/RecordingInProgress.PNG)
 
 > INSINUACIÓN:
 > - Asigne un nombre a su programa después del producto y nivel de apertura, p. Baño de ventana 40%, aunque el adaptador no usa ninguna convención de nomenclatura.
@@ -44,7 +44,7 @@ Esto abrirá la ventana *Grabación en proceso*. Ahora, use su control remoto qu
 
 Si ha terminado de grabar programas, terminará con una lista como la siguiente:
 
-![Screenshot of the program list](../en/img/ProgramList.PNG)
+![Screenshot of the program list](img/ProgramList.PNG)
 
 ### Configurar conexiones
 
@@ -57,7 +57,7 @@ Para deshacerte del molesto parpadeo, debes configurar al menos una conexión.
 
 ## Configurar el adaptador
 
-![Screenshot of the adapter configuration](../en/img/AdapterConfiguration.PNG)
+![Screenshot of the adapter configuration](img/AdapterConfiguration.PNG)
 
 ### Anfitrión
 
