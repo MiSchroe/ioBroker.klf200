@@ -97,6 +97,7 @@ scenes | 0..n | run | button.play | Indique si la scène est en cours d'exécuti
 scenes | 0..n | silent | indicator.silent | Indique si la scène est exécutée en mode silencieux (si elle est prise en charge par les produits de la scène). Lecture seulement.
 
 > **IMPORTANT:**
+>
 > Les identifiants utilisés dans les canaux sont les identifiants provenant de l'interface KLF-200. Si vous apportez des modifications à la liste des produits ou à la liste des programmes de votre KLF-200, les ID peuvent changer.
 
 Pour exécuter une scène, vous pouvez définir l'état `run` de la scène sur `true` ou définir l'état `level` du produit sur une valeur. cela correspond à une scène qui définit le produit à ce niveau.

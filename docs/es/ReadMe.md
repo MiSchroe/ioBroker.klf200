@@ -96,6 +96,7 @@ scenes | 0..n | run | button.play | Indica si la escena se está ejecutando. Est
 scenes | 0..n | silent | indicator.silent | Indica si la escena se ejecuta en modo silencioso (si es compatible con los productos de la escena). Solo lectura.
 
 > **IMPORTANTE:**
+>
 > Los ID que se usan en los canales son los identificadores que provienen de la interfaz KLF-200. Si realiza cambios en la lista de productos o en la lista de programas en su KLF-200, los ID pueden cambiar.
 
 Para ejecutar una escena, puede establecer el estado `run` de la escena en `true` o puede establecer el estado `level` del producto en un valor eso corresponde a una escena que establece el producto a ese nivel.

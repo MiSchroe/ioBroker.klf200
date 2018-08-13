@@ -99,6 +99,7 @@ scenes | 0..n | run | button.play | Zeigt an, ob die Szene läuft. Setzen Sie di
 scenes | 0..n | silent | indicator.silent | Gibt an, ob die Szene im leisen Modus ausgeführt wird (sofern dies von den Produkten der Szene unterstützt wird). Schreibgeschützt.
 
 > **WICHTIG:**
+>
 > Die IDs, die in den Kanälen verwendet werden, sind die IDs, die von der KLF-200-Schnittstelle kommen. Wenn Sie Änderungen an der Produktliste oder an der Programmliste in Ihrem KLF-200 vornehmen, können sich die IDs ändern.
 
 Um eine Szene auszuführen, können Sie den Status `run` der Szene auf `true` setzen oder den Status `level` des Produkts auf einen Wert setzen, der einer Szene entspricht, die das Produkt auf dieses Level setzt.
