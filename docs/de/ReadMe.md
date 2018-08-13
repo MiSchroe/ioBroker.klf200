@@ -16,6 +16,7 @@ Der Adapter arbeitet mit der internen REST-API der KLF-200-Schnittstelle und Sie
 Um diesen Adapter verwenden zu können, müssen Sie Ihre KLF-200 Box im **Schnittstellenmodus** einrichten. Es funktioniert nicht, wenn Sie Ihre Box als Repeater verwenden.
 
 > Für eine detaillierte Erklärung der folgenden Aufgaben lesen Sie bitte die mit der Box mitgelieferten Handbücher.
+>
 > Es wird davon ausgegangen, dass Sie sich in einem Webbrowser erfolgreich bei Ihrer Box angemeldet haben.
 
 ### Produkte einrichten

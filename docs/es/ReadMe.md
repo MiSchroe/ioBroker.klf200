@@ -14,6 +14,7 @@ El adaptador funciona con la API REST interna de la interfaz KLF-200 y no es nec
 Para usar este adaptador, debe configurar su caja KLF-200 en el **modo de interfaz**. No funciona si usa su caja como repetidor.
 
 > Para una explicación detallada de cómo realizar las siguientes tareas, lea los manuales que vienen con su caja.
+>
 > Se supone que ha iniciado sesión correctamente en su cuadro en un navegador web.
 
 ### Configurar productos

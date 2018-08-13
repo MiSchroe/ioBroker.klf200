@@ -14,6 +14,7 @@ L'adaptateur fonctionne avec l'API REST interne de l'interface KLF-200 et vous n
 Pour utiliser cet adaptateur, vous devez configurer votre boîte KLF-200 en **mode d’interface**. Cela ne fonctionne pas si vous utilisez votre boîte comme un répéteur.
 
 > Pour une explication détaillée de la façon d'accomplir les tâches suivantes, veuillez lire les manuels fournis avec votre boîte.
+>
 > Il est supposé que vous vous êtes connecté avec succès à votre boîte dans un navigateur Web.
 
 ### Produits de configuration
@@ -26,17 +27,17 @@ Vous pouvez enregistrer de nouveaux produits soit par
 
 Si tous vos produits sont enregistrés, vous devriez voir une liste comme celle-ci:
 
-![Screenshot of "My products" of the KLF-200 interface](../en/img/ProductList.PNG)
+![Screenshot of "My products" of the KLF-200 interface](img/ProductList.PNG)
 
 ### Configuration des scènes
 
 Pour enregistrer une scène, il faut cliquer sur le bouton
 
-![Record program button](../en/img/RecordProgramButton.PNG)
+![Record program button](img/RecordProgramButton.PNG)
 
 Cela ouvrira la fenêtre *Enregistrement en cours*. Maintenant, utilisez votre télécommande fournie avec votre produit pour changer quelque chose, par exemple ouvrez la fenêtre à 40%. Saisissez ensuite un nom pour le programme et cliquez sur *Enregistrer programme*.
 
-![Screenshot of Recording in progress](../en/img/RecordingInProgress.PNG)
+![Screenshot of Recording in progress](img/RecordingInProgress.PNG)
 
 > ALLUSION:
 > - Nommez votre programme après le produit et le niveau d'ouverture, par ex. Window bathroom 40%, bien que l'adaptateur n'utilise aucune convention de nommage.
@@ -45,7 +46,7 @@ Cela ouvrira la fenêtre *Enregistrement en cours*. Maintenant, utilisez votre t
 
 Si vous avez fini d’enregistrer des programmes, vous finirez avec une liste comme celle-ci:
 
-![Screenshot of the program list](../en/img/ProgramList.PNG)
+![Screenshot of the program list](img/ProgramList.PNG)
 
 ### Configuration des connexions
 
@@ -58,7 +59,7 @@ Vous n'avez qu'à le configurer dans la boîte, vous n'avez pas besoin de câble
 
 ## Configurez l'adaptateur
 
-![Screenshot of the adapter configuration](../en/img/AdapterConfiguration.PNG)
+![Screenshot of the adapter configuration](img/AdapterConfiguration.PNG)
 
 ### Hôte
 
