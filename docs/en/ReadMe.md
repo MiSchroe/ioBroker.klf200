@@ -47,7 +47,7 @@ to change something, e.g. open the window to 40%. Then type in a name for the pr
 
 ![Screenshot of Recording in progress](img/RecordingInProgress.PNG)
 
-> TIP:
+> HINT:
 > * Name your program after product and opening level, e.g. Window bathroom 40%,
 >   though the adapter doesn't use any naming conventions.
 > * If your window is closed start with an opening level of 100% and go down
@@ -82,7 +82,7 @@ web browser to connect to your box.
 
 ### Password
 
-The password you need to connect to your KLF-200 interface. It's the same you use when connection
+The password you need to connect to your KLF-200 interface. It's the same you use when connecting
 to your box in your web browser.
 
 > The default password of the KLF-200 is `velux123`, but you should have changed it, anyway!
