@@ -13,6 +13,9 @@ chai.use(chaiFuzzy);    // Helps checking the logged values
 var setup  = require(__dirname + '/lib/setup');
 const mockserver = require('mockserver-grunt');
 const mockServerClient = require('mockserver-client').mockServerClient;
+
+const mockServerOptions = {serverPort: 1080};
+
 const fs = require('fs');
 
 var objects = null;
@@ -246,7 +249,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
         }
 
         // Setup mockserver for simulating the web requests
-        mockserver.start_mockserver({serverPort: 1080}).then(function () {
+        mockserver.start_mockserver(mockServerOptions).then(function () {
             mockClient = mockServerClient('localhost', 1080);
             // Mocking authentication API
             mockClient.mockAnyResponse({
@@ -519,7 +522,7 @@ describe('Test ' + adapterShortName + ' adapter', function() {
             console.log('Adapter normal terminated: ' + normalTerminated);
 
             mockServerClient('localhost', 1080).reset();
-            mockserver.stop_mockserver();
+            mockserver.stop_mockserver(mockServerOptions);
 
             done();
         });

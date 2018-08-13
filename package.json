@@ -46,8 +46,7 @@
   },
   "main": "main.js",
   "scripts": {
-    "coverage": "nyc --reporter=html --reporter=text node_modules/mocha/bin/mocha",
-    "test": "node node_modules/mocha/bin/mocha"
+    "test": "nyc --reporter=html --reporter=text node_modules/mocha/bin/mocha --produce-source-map"
   },
   "nyc": {
     "instrument": true
