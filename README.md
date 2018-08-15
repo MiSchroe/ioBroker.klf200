@@ -74,6 +74,9 @@ There are two devices: "products" and "scenes". The products device lists all re
 
 ## Changelog
 
+#### 0.9.5
+* (Michael Schroeder) Bug fixes
+
 #### 0.9.4
 * (Michael Schroeder) Compatible to Admin 3, add documentation
 

@@ -1,18 +1,29 @@
 {
     "common": {
         "name": "klf200",
-        "version": "0.9.4",
+        "version": "0.9.5",
         "news": {
+            "0.9.5": {
+                "en": "Bug fixes",
+                "de": "Fehlerbehebung",
+                "ru": "Исправление ошибок",
+                "pt": "Correções de bugs",
+                "nl": "Bugfixes",
+                "fr": "Corrections de bugs",
+                "it": "Correzioni di bug",
+                "es": "Corrección de errores",
+                "pl": "Poprawki błędów"
+              },
             "0.9.4": {
-              "en": "Compatible to Admin 3, add documentation",
-              "de": "Kompatibel mit Admin 3, Dokumentation hinzufügen",
-              "ru": "Совместимость с Admin 3, добавьте документацию",
-              "pt": "Compatível com o Admin 3, adicione documentação",
-              "nl": "Compatibel met Admin 3, voeg documentatie toe",
-              "fr": "Compatible avec Admin 3, ajouter de la documentation",
-              "it": "Compatibile con Admin 3, aggiungere documentazione",
-              "es": "Compatible con Admin 3, agregar documentación",
-              "pl": "Zgodny z Admin 3, dodaj dokumentację"
+                "en": "Compatible to Admin 3, add documentation",
+                "de": "Kompatibel mit Admin 3, Dokumentation hinzufügen",
+                "ru": "Совместимость с Admin 3, добавьте документацию",
+                "pt": "Compatível com o Admin 3, adicione documentação",
+                "nl": "Compatibel met Admin 3, voeg documentatie toe",
+                "fr": "Compatible avec Admin 3, ajouter de la documentation",
+                "it": "Compatibile con Admin 3, aggiungere documentazione",
+                "es": "Compatible con Admin 3, agregar documentación",
+                "pl": "Zgodny z Admin 3, dodaj dokumentację"
             },
             "0.9.3": {
                 "en": "Run scenes from products possible",

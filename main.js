@@ -427,7 +427,7 @@ function createProductStateAsync(product) {
             if (levelTypes.find((val) => { return val === product.typeId; }))
                 return adapter.createStateAsync(deviceProducts, productId, level, {
                     name: level,
-                    role: 'level',
+                    role: mapTypeId.getLevelType(product.typeId),
                     type: 'number',
                     min: 0,
                     max: 100,
@@ -460,7 +460,7 @@ function createSceneStateAsync(scene) {
         .then(function () {
             return adapter.createStateAsync(deviceScenes, sceneId, silent, {
                 name: silent,
-                role: 'indicator.silent',
+                role: 'switch',
                 type: 'boolean',
                 read: true,
                 write: true,
