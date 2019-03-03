@@ -42,7 +42,8 @@
     "mockserver-client": "^1.0.16",
     "mockserver-grunt": "^1.0.42",
     "nyc": "^11.2.1",
-    "sinon": "^4.0.1"
+    "sinon": "^4.0.1",
+    "@iobroker/adapter-core": "^1.0.3"
   },
   "main": "main.js",
   "scripts": {
