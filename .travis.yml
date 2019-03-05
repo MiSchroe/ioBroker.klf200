@@ -15,6 +15,7 @@ before_script:
   - npm -v
   - npm install winston@3.2.1
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; sudo $(which setcap) cap_net_bind_service=+ep $(which node)
 env:
   - CXX=g++-4.9
 addons:
@@ -23,3 +24,5 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.9
+      - libcap-ng-dev
+      - libcap-ng-utils
