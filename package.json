@@ -34,9 +34,10 @@
     "@iobroker/adapter-core": "^1.0.3"
   },
   "devDependencies": {
-    "gulp": "^3.9.1",
     "chai": "^4.1.2",
     "chai-fuzzy": "^1.6.1",
+    "grunt": "^1.0.4",
+    "gulp": "^3.9.1",
     "istanbul": "^0.4.5",
     "mocha": "^4.1.0",
     "mock-require": "^2.0.2",

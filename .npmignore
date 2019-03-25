@@ -11,3 +11,4 @@ appveyor.yml
 /.nyc_output
 /.vscode
 /.instrument
+mockserver-netty-3.10.8-jar-with-dependencies.jar
