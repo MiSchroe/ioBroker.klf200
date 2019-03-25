@@ -34,7 +34,7 @@
 'use strict';
 
 // you have to require the utils module and call adapter function
-const utils = require(__dirname + '/lib/utils'); // Get common adapter utils
+const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const Promise = require('bluebird');
 const klf200api = require('klf-200-api');
 const mapTypeId = require(__dirname + '/lib/mapTypeId'); // Mapping of typeId values to channel role names

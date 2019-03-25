@@ -5,7 +5,7 @@ nbproject
 admin/i18n/flat.txt
 admin/i18n/*/flat.txt
 /tmp
-mockserver-netty-3.10.8-jar-with-dependencies.jar
+# mockserver-netty-3.10.8-jar-with-dependencies.jar  # Automatic download doesn't work anymore, therefore we include the file in the repository
 /.nyc_output
 /.instrument
 /coverage

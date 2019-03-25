@@ -1,6 +1,6 @@
 ![Logo](admin/klf200.png)
 # ioBroker.klf200
-
+![Number of Installations](http://iobroker.live/badges/klf200-installed.svg) ![Number of Installations](http://iobroker.live/badges/klf200-stable.svg) 
 [![Travis CI](https://travis-ci.org/MiSchroe/ioBroker.klf200.svg?branch=master)](https://travis-ci.org/MiSchroe/ioBroker.klf200)
 [![Build status](https://ci.appveyor.com/api/projects/status/t28nlps5c99jy5v7/branch/master?svg=true)](https://ci.appveyor.com/project/MiSchroe/iobroker-klf200/branch/master)
 [![GitHub issues](https://img.shields.io/github/issues/MiSchroe/ioBroker.klf200.svg)](https://github.com/MiSchroe/ioBroker.klf200/issues)
