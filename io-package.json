@@ -105,7 +105,7 @@
             "pl": "Uruchamia sceny w interfejsie KLF-200"
         },
         "authors": [
-            "Michael Schroeder klf200@gmx.de"
+            "Michael Schroeder <klf200@gmx.de>"
         ],
         "docs": {
             "en": "docs/en/ReadMe.md",
