@@ -1,10 +1,41 @@
 /*global systemDictionary:true */
-'use strict';
+"use strict";
 
 systemDictionary = {
-    "KLF-200 adapter settings": {                    "en": "KLF-200 adapter settings",                        "de": "Einstellungen des KLF-200 Adapters",              "ru": "Настройки адаптера KLF-200",                      "pt": "Configurações do adaptador KLF-200",              "nl": "KLF-200 adapterinstellingen",                     "fr": "Paramètres de l'adaptateur KLF-200",              "it": "Impostazioni dell'adattatore KLF-200",            "es": "Configuraciones del adaptador KLF-200",           "pl": "Ustawienia adaptera KLF-200"},
-    "host": {                                        "en": "Host",                                            "de": "Host",                                            "ru": "хозяин",                                          "pt": "Hospedeiro",                                      "nl": "Gastheer",                                        "fr": "Hôte",                                            "it": "Ospite",                                          "es": "Anfitrión",                                       "pl": "Gospodarz"},
-    "on save adapter restarts with new config immediately": {"en": "On save the adapter restarts with new configuration immediately", "de": "Beim Speichern von Einstellungen wird der Adapter sofort neu gestartet.", "ru": "При перезагрузке адаптер перезагружается с новой конфигурацией немедленно", "pt": "Ao salvar, o adaptador é reiniciado com a nova configuração imediatamente", "nl": "Bij opslaan wordt de adapter onmiddellijk opnieuw opgestart met een nieuwe configuratie", "fr": "A l'enregistrement, l'adaptateur redémarre immédiatement avec la nouvelle configuration", "it": "Al salvataggio, l'adattatore si riavvia immediatamente con la nuova configurazione", "es": "Al guardar, el adaptador se reinicia con una nueva configuración de inmediato", "pl": "Po zapisaniu adapter natychmiast uruchamia się ponownie z nową konfiguracją"},
-    "password": {                                    "en": "Password",                                        "de": "Passwort",                                        "ru": "пароль",                                          "pt": "Senha",                                           "nl": "Wachtwoord",                                      "fr": "Mot de passe",                                    "it": "Parola d'ordine",                                 "es": "Contraseña",                                      "pl": "Hasło"},
-    "pollInterval": {                                "en": "Polling interval in minutes",                     "de": "Abfragehäufigkeit in Minuten",                    "ru": "Интервал опроса в минутах",                       "pt": "Intervalo de pesquisa em minutos",                "nl": "Polling-interval in minuten",                     "fr": "Intervalle d'interrogation en minutes",           "it": "Intervallo di polling in minuti",                 "es": "Intervalo de sondeo en minutos",                  "pl": "Interwał odpytywania w minutach"},
+	"klf200 adapter settings": {
+		en: "Adapter settings for klf200",
+		de: "Adaptereinstellungen für klf200",
+		ru: "Настройки адаптера для klf200",
+		pt: "Configurações do adaptador para klf200",
+		nl: "Adapterinstellingen voor klf200",
+		fr: "Paramètres d'adaptateur pour klf200",
+		it: "Impostazioni dell'adattatore per klf200",
+		es: "Ajustes del adaptador para klf200",
+		pl: "Ustawienia adaptera dla klf200",
+		"zh-cn": "klf200的适配器设置",
+	},
+	option1: {
+		en: "option1",
+		de: "Option 1",
+		ru: "Опция 1",
+		pt: "Opção 1",
+		nl: "Optie 1",
+		fr: "Option 1",
+		it: "opzione 1",
+		es: "Opción 1",
+		pl: "opcja 1",
+		"zh-cn": "选项1",
+	},
+	option2: {
+		en: "option2",
+		de: "Option 2",
+		ru: "option2",
+		pt: "opção 2",
+		nl: "Optie 2",
+		fr: "Option 2",
+		it: "opzione 2",
+		es: "opcion 2",
+		pl: "Opcja 2",
+		"zh-cn": "选项2",
+	},
 };

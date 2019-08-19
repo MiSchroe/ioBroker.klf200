@@ -1,3 +1,11 @@
-// Platzieren Sie Ihre Einstellungen in dieser Datei, um Standard- und Benutzereinstellungen zu überschreiben.
 {
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"eslint.enable": true,
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[typescript]": {
+		"editor.codeActionsOnSave": {
+			"source.organizeImports": true
+		}
+	}
 }
