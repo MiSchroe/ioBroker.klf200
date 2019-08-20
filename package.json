@@ -58,7 +58,7 @@
     "watch": "npm run watch:ts",
     "test:ts": "mocha --opts test/mocha.custom.opts",
     "test:package": "mocha test/package --exit",
-    "test:unit": "mocha test/unit --exit",
+    "test:unit": "mocha test/unit --require test/mocha.setup.js --exit",
     "test:integration": "mocha test/integration --exit",
     "test": "npm run test:ts && npm run test:package",
     "coverage": "nyc npm run test:ts",

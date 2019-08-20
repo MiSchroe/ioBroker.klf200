@@ -3,5 +3,8 @@
 	"compilerOptions": {
 		"noImplicitAny": false
 	},
-	"include": ["./**/*.js"]
+	"include": [
+		"./**/*.js",
+		"unit.js"
+	]
 }

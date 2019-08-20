@@ -85,12 +85,12 @@ class Klf200 extends utils.Adapter {
 		// same thing, but the state is deleted after 30s (getState will return null afterwards)
 		await this.setStateAsync("testVariable", { val: true, ack: true, expire: 30 });
 
-		// examples for the checkPassword/checkGroup functions
-		let result = await this.checkPasswordAsync("admin", "iobroker");
-		this.log.info("check user admin pw ioboker: " + result);
+		// // examples for the checkPassword/checkGroup functions
+		// let result = await this.checkPasswordAsync("admin", "iobroker");
+		// this.log.info("check user admin pw ioboker: " + result);
 
-		result = await this.checkGroupAsync("admin", "admin");
-		this.log.info("check group user admin group admin: " + result);
+		// result = await this.checkGroupAsync("admin", "admin");
+		// this.log.info("check group user admin group admin: " + result);
 	}
 
 	/**
@@ -150,7 +150,7 @@ class Klf200 extends utils.Adapter {
 
 if (module.parent) {
 	// Export the constructor in compact mode
-	module.exports = (options: Partial<ioBroker.AdapterOptions> | undefined) => new Klf200(options);
+	module.exports = (options?: Partial<ioBroker.AdapterOptions>) => new Klf200(options);
 } else {
 	// otherwise start the instance directly
 	(() => new Klf200())();

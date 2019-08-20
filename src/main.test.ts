@@ -6,7 +6,6 @@
  */
 
 import { expect } from "chai";
-// import { functionToTest } from "./moduleToTest";
 
 describe("module to test => function to test", () => {
 	// initializing logic

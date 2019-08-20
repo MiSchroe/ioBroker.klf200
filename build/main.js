@@ -64,11 +64,11 @@ class Klf200 extends utils.Adapter {
             yield this.setStateAsync("testVariable", { val: true, ack: true });
             // same thing, but the state is deleted after 30s (getState will return null afterwards)
             yield this.setStateAsync("testVariable", { val: true, ack: true, expire: 30 });
-            // examples for the checkPassword/checkGroup functions
-            let result = yield this.checkPasswordAsync("admin", "iobroker");
-            this.log.info("check user admin pw ioboker: " + result);
-            result = yield this.checkGroupAsync("admin", "admin");
-            this.log.info("check group user admin group admin: " + result);
+            // // examples for the checkPassword/checkGroup functions
+            // let result = await this.checkPasswordAsync("admin", "iobroker");
+            // this.log.info("check user admin pw ioboker: " + result);
+            // result = await this.checkGroupAsync("admin", "admin");
+            // this.log.info("check group user admin group admin: " + result);
         });
     }
     /**
