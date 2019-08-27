@@ -6,7 +6,7 @@
 		"noEmit": true,
 		// check JS files, but do not compile them => tsconfig.build.json
 		"allowJs": true,
-		"checkJs": true,
+		"checkJs": false,
 		"noEmitOnError": true,
 		"outDir": "./build/",
 		"removeComments": false,
@@ -20,23 +20,15 @@
 		// "strictNullChecks": true,
 		// "strictPropertyInitialization": true,
 		// "strictBindCallApply": true,
-		// "noImplicitAny": true,
+		"noImplicitAny": true,
 		// "noUnusedLocals": true,
 		// "noUnusedParameters": true,
 		// Consider targetting es2017 or higher if you require the new NodeJS 8+ features
-		"target": "es2015",
+		"target": "es2017",
 		"sourceMap": false,
 		"inlineSourceMap": false,
 		"watch": false
 	},
-	"include": [
-		"**/*.ts",
-		"test/mocha.setup.js",
-		"test/unit.js"
-	],
-	"exclude": [
-		"build/**",
-		"node_modules/**",
-		"admin/**"
-	]
+	"include": ["**/*.ts", "test/mocha.setup.js", "test/unit.js"],
+	"exclude": ["build/**", "node_modules/**", "admin/**"]
 }
