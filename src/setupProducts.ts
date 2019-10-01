@@ -1,12 +1,33 @@
 "use strict";
 
 import { Product } from "klf-200-api";
+import { PropertyChangedEvent } from "klf-200-api/dist/utils/PropertyChangedEvent";
 import { levelConverter, roleConverter } from "./util/converter";
+
+const mapPropertyToState = {
+	CurrentPosition: "level",
+	CurrentPositionRaw: "currentPositionRaw",
+	FP1CurrentPositionRaw: "FP1CurrentPositionRaw",
+	FP2CurrentPositionRaw: "FP2CurrentPositionRaw",
+	FP3CurrentPositionRaw: "FP3CurrentPositionRaw",
+	FP4CurrentPositionRaw: "FP4CurrentPositionRaw",
+	NodeVariation: "nodeVariation",
+	Order: "order",
+	Placement: "placement",
+	RemainingTime: "remainingTime",
+	RunStatus: "runStatus",
+	State: "state",
+	StatusReply: "statusReply",
+	TargetPositionRaw: "targetPositionRaw",
+	Velocity: "velocity",
+};
 
 export class setupProducts {
 	public static async createProductsAsync(adapter: ioBroker.Adapter, products: Product[]) {
 		for (const product of products) {
-			await this.createProductAsync(adapter, product);
+			if (products) {
+				await this.createProductAsync(adapter, product);
+			}
 		}
 
 		// Write number of products
@@ -437,6 +458,14 @@ export class setupProducts {
 			{},
 			false,
 		);
+
+		// Setup product listener
+		product.propertyChangedEvent.on(async function(event: PropertyChangedEvent) {
+			const stateName = mapPropertyToState[event.propertyName as keyof typeof mapPropertyToState];
+			const productID = (event.o as Product).NodeID;
+
+			await adapter.setStateAsync(`products.${productID}.${stateName}`, event.propertyValue, true);
+		});
 	}
 
 	private static async createAndSetStateAsync(

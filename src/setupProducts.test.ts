@@ -329,6 +329,110 @@ describe("setupProducts", function() {
 				assertStateIsAcked(`test.0.products.0.${expectedState}`, true);
 			});
 		}
+
+		const testCasesForChanges = [
+			{
+				state: "level",
+				propertyName: "CurrentPosition",
+				value: 0.5,
+			},
+			{
+				state: "currentPositionRaw",
+				propertyName: "CurrentPositionRaw",
+				value: 0xc900,
+			},
+			{
+				state: "FP1CurrentPositionRaw",
+				propertyName: "FP1CurrentPositionRaw",
+				value: 0xc900,
+			},
+			{
+				state: "FP2CurrentPositionRaw",
+				propertyName: "FP2CurrentPositionRaw",
+				value: 0xc900,
+			},
+			{
+				state: "FP3CurrentPositionRaw",
+				propertyName: "FP3CurrentPositionRaw",
+				value: 0xc900,
+			},
+			{
+				state: "FP4CurrentPositionRaw",
+				propertyName: "FP4CurrentPositionRaw",
+				value: 0xc900,
+			},
+			{
+				state: "nodeVariation",
+				propertyName: "NodeVariation",
+				value: NodeVariation.Kip,
+			},
+			{
+				state: "order",
+				propertyName: "Order",
+				value: 2,
+			},
+			{
+				state: "placement",
+				propertyName: "Placement",
+				value: 1,
+			},
+			{
+				state: "remainingTime",
+				propertyName: "RemainingTime",
+				value: 8,
+			},
+			{
+				state: "runStatus",
+				propertyName: "RunStatus",
+				value: RunStatus.ExecutionActive,
+			},
+			{
+				state: "state",
+				propertyName: "State",
+				value: NodeOperatingState.Executing,
+			},
+			{
+				state: "statusReply",
+				propertyName: "StatusReply",
+				value: StatusReply.UserAction,
+			},
+			{
+				state: "targetPositionRaw",
+				propertyName: "TargetPositionRaw",
+				value: 0xc900,
+			},
+			{
+				state: "velocity",
+				propertyName: "Velocity",
+				value: Velocity.Fast,
+			},
+		];
+
+		for (const test of testCasesForChanges) {
+			this.beforeEach(async function() {
+				await setupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+			});
+
+			it(`should write the ${test.state} state with '${test.value}' after change notificiation`, function() {
+				const expectedState = test.state;
+				mockProduct.propertyChangedEvent.emit({
+					o: mockProduct,
+					propertyName: test.propertyName,
+					propertyValue: test.value,
+				});
+				assertStateHasValue(`test.0.products.0.${expectedState}`, test.value);
+			});
+
+			it(`should write the ${test.state} state ack after change notificiation`, async function() {
+				const expectedState = test.state;
+				mockProduct.propertyChangedEvent.emit({
+					o: mockProduct,
+					propertyName: test.propertyName,
+					propertyValue: test.value,
+				});
+				assertStateIsAcked(`test.0.products.0.${expectedState}`, true);
+			});
+		}
 	});
 
 	describe("createProductsAsync", function() {

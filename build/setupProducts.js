@@ -1,10 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const converter_1 = require("./util/converter");
+const mapPropertyToState = {
+    CurrentPosition: "level",
+    CurrentPositionRaw: "currentPositionRaw",
+    FP1CurrentPositionRaw: "FP1CurrentPositionRaw",
+    FP2CurrentPositionRaw: "FP2CurrentPositionRaw",
+    FP3CurrentPositionRaw: "FP3CurrentPositionRaw",
+    FP4CurrentPositionRaw: "FP4CurrentPositionRaw",
+    NodeVariation: "nodeVariation",
+    Order: "order",
+    Placement: "placement",
+    RemainingTime: "remainingTime",
+    RunStatus: "runStatus",
+    State: "state",
+    StatusReply: "statusReply",
+    TargetPositionRaw: "targetPositionRaw",
+    Velocity: "velocity",
+};
 class setupProducts {
     static async createProductsAsync(adapter, products) {
         for (const product of products) {
-            await this.createProductAsync(adapter, product);
+            if (products) {
+                await this.createProductAsync(adapter, product);
+            }
         }
         // Write number of products
         await this.createAndSetStateAsync(adapter, `products.productsFound`, {
@@ -259,6 +278,12 @@ class setupProducts {
             write: true,
             desc: "Set to true to let the product wink",
         }, {}, false);
+        // Setup product listener
+        product.propertyChangedEvent.on(async function (event) {
+            const stateName = mapPropertyToState[event.propertyName];
+            const productID = event.o.NodeID;
+            await adapter.setStateAsync(`products.${productID}.${stateName}`, event.propertyValue, true);
+        });
     }
     static async createAndSetStateAsync(adapter, stateID, common, native, value) {
         await adapter.setObjectNotExistsAsync(stateID, {
