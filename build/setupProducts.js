@@ -2,6 +2,21 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const converter_1 = require("./util/converter");
 class setupProducts {
+    static async createProductsAsync(adapter, products) {
+        for (const product of products) {
+            await this.createProductAsync(adapter, product);
+        }
+        // Write number of products
+        await this.createAndSetStateAsync(adapter, `products.productsFound`, {
+            name: "Number of products found",
+            role: "value",
+            type: "number",
+            read: true,
+            write: false,
+            min: 0,
+            desc: "Number of products connected to the interface",
+        }, {}, products.length);
+    }
     static async createProductAsync(adapter, product) {
         await adapter.setObjectNotExistsAsync(`products.${product.NodeID}`, {
             type: "channel",

@@ -8,7 +8,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const utils = require("@iobroker/adapter-core");
 class Klf200 extends utils.Adapter {
     constructor(options = {}) {
-        super(Object.assign({}, options, { name: "klf200" }));
+        super(Object.assign(Object.assign({}, options), { name: "klf200" }));
         this.on("ready", this.onReady.bind(this));
         this.on("objectChange", this.onObjectChange.bind(this));
         this.on("stateChange", this.onStateChange.bind(this));

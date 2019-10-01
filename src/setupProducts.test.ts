@@ -167,6 +167,8 @@ const mockProduct = new Product(
 	),
 );
 
+const mockProducts = [mockProduct];
+
 describe("setupProducts", function() {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
@@ -327,5 +329,13 @@ describe("setupProducts", function() {
 				assertStateIsAcked(`test.0.products.0.${expectedState}`, true);
 			});
 		}
+	});
+
+	describe("createProductsAsync", function() {
+		it("should have 1 in the value of products.productsFound state", async function() {
+			const expectedValue = 1;
+			await setupProducts.createProductsAsync((adapter as unknown) as ioBroker.Adapter, mockProducts);
+			assertStateHasValue("products.productsFound", expectedValue);
+		});
 	});
 });

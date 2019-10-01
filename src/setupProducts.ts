@@ -4,6 +4,29 @@ import { Product } from "klf-200-api";
 import { levelConverter, roleConverter } from "./util/converter";
 
 export class setupProducts {
+	public static async createProductsAsync(adapter: ioBroker.Adapter, products: Product[]) {
+		for (const product of products) {
+			await this.createProductAsync(adapter, product);
+		}
+
+		// Write number of products
+		await this.createAndSetStateAsync(
+			adapter,
+			`products.productsFound`,
+			{
+				name: "Number of products found",
+				role: "value",
+				type: "number",
+				read: true,
+				write: false,
+				min: 0,
+				desc: "Number of products connected to the interface",
+			},
+			{},
+			products.length,
+		);
+	}
+
 	public static async createProductAsync(adapter: ioBroker.Adapter, product: Product) {
 		await adapter.setObjectNotExistsAsync(`products.${product.NodeID}`, {
 			type: "channel",
