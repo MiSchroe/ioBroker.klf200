@@ -3,24 +3,24 @@ os:
   - osx
 language: node_js
 node_js:
-  - '6'
   - '8'
   - '10'
   - lts/*
+  - '12'
 before_script:
   - export NPMVERSION=$(echo "$($(which npm) -v)"|cut -c1)
   - 'if [[ $NPMVERSION == 5 ]]; then npm install -g npm@5; fi'
   - npm -v
   - npm install winston@3.2.1
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo $(which setcap) cap_net_bind_service=+ep $(which node); fi
+  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo $(which setcap) cap_net_bind_service=+ep $(which node); fi'
 env:
-  - CXX=g++-4.9
+  - CXX=g++-6
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-4.9
+      - g++-6
       - libcap-ng-dev
       - libcap-ng-utils
