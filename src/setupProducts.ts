@@ -3,6 +3,7 @@
 import { Product } from "klf-200-api";
 import { PropertyChangedEvent } from "klf-200-api/dist/utils/PropertyChangedEvent";
 import { levelConverter, roleConverter } from "./util/converter";
+import { StateHelper } from "./util/stateHelper";
 
 const mapPropertyToState = {
 	CurrentPosition: "level",
@@ -22,8 +23,8 @@ const mapPropertyToState = {
 	Velocity: "velocity",
 };
 
-export class setupProducts {
-	public static async createProductsAsync(adapter: ioBroker.Adapter, products: Product[]) {
+export class SetupProducts {
+	public static async createProductsAsync(adapter: ioBroker.Adapter, products: Product[]): Promise<void> {
 		for (const product of products) {
 			if (products) {
 				await this.createProductAsync(adapter, product);
@@ -31,7 +32,7 @@ export class setupProducts {
 		}
 
 		// Write number of products
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.productsFound`,
 			{
@@ -41,6 +42,7 @@ export class setupProducts {
 				read: true,
 				write: false,
 				min: 0,
+				def: 0,
 				desc: "Number of products connected to the interface",
 			},
 			{},
@@ -48,17 +50,17 @@ export class setupProducts {
 		);
 	}
 
-	public static async createProductAsync(adapter: ioBroker.Adapter, product: Product) {
+	public static async createProductAsync(adapter: ioBroker.Adapter, product: Product): Promise<void> {
 		await adapter.setObjectNotExistsAsync(`products.${product.NodeID}`, {
 			type: "channel",
 			common: {
 				name: product.Name,
 				role: roleConverter.convert(product.TypeID),
 			},
-			native: product,
+			native: {},
 		});
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.category`,
 			{
@@ -73,7 +75,7 @@ export class setupProducts {
 			product.Category,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.level`,
 			{
@@ -91,7 +93,7 @@ export class setupProducts {
 			product.CurrentPosition * 100,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.currentPositionRaw`,
 			{
@@ -108,7 +110,7 @@ export class setupProducts {
 			product.CurrentPositionRaw,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.FP1CurrentPositionRaw`,
 			{
@@ -125,7 +127,7 @@ export class setupProducts {
 			product.FP1CurrentPositionRaw,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.FP2CurrentPositionRaw`,
 			{
@@ -142,7 +144,7 @@ export class setupProducts {
 			product.FP2CurrentPositionRaw,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.FP3CurrentPositionRaw`,
 			{
@@ -159,7 +161,7 @@ export class setupProducts {
 			product.FP3CurrentPositionRaw,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.FP4CurrentPositionRaw`,
 			{
@@ -176,7 +178,7 @@ export class setupProducts {
 			product.FP4CurrentPositionRaw,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.nodeVariation`,
 			{
@@ -193,7 +195,7 @@ export class setupProducts {
 			product.NodeVariation,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.order`,
 			{
@@ -210,7 +212,7 @@ export class setupProducts {
 			product.Order,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.placement`,
 			{
@@ -227,7 +229,7 @@ export class setupProducts {
 			product.Placement,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.powerSaveMode`,
 			{
@@ -244,7 +246,7 @@ export class setupProducts {
 			product.PowerSaveMode,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.productType`,
 			{
@@ -261,7 +263,7 @@ export class setupProducts {
 			product.ProductType,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.remainingTime`,
 			{
@@ -278,7 +280,7 @@ export class setupProducts {
 			product.RemainingTime,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.runStatus`,
 			{
@@ -295,7 +297,7 @@ export class setupProducts {
 			product.RunStatus,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.serialNumber`,
 			{
@@ -307,12 +309,10 @@ export class setupProducts {
 				desc: "Serial number",
 			},
 			{},
-			`${product.SerialNumber.toString("hex")
-				.replace(/(..)/g, ":$1")
-				.slice(1)}`,
+			`${product.SerialNumber.toString("hex").replace(/(..)/g, ":$1").slice(1)}`,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.state`,
 			{
@@ -329,7 +329,7 @@ export class setupProducts {
 			product.State,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.statusReply`,
 			{
@@ -346,7 +346,7 @@ export class setupProducts {
 			product.StatusReply,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.subType`,
 			{
@@ -363,7 +363,7 @@ export class setupProducts {
 			product.SubType,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.targetPositionRaw`,
 			{
@@ -380,7 +380,7 @@ export class setupProducts {
 			product.TargetPositionRaw,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.timestamp`,
 			{
@@ -395,7 +395,7 @@ export class setupProducts {
 			product.TimeStamp.toString(),
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.typeID`,
 			{
@@ -412,7 +412,7 @@ export class setupProducts {
 			product.TypeID,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.velocity`,
 			{
@@ -429,7 +429,7 @@ export class setupProducts {
 			product.Velocity,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.stop`,
 			{
@@ -444,7 +444,7 @@ export class setupProducts {
 			false,
 		);
 
-		await this.createAndSetStateAsync(
+		await StateHelper.createAndSetStateAsync(
 			adapter,
 			`products.${product.NodeID}.wink`,
 			{
@@ -460,26 +460,11 @@ export class setupProducts {
 		);
 
 		// Setup product listener
-		product.propertyChangedEvent.on(async function(event: PropertyChangedEvent) {
+		product.propertyChangedEvent.on(async function (event: PropertyChangedEvent) {
 			const stateName = mapPropertyToState[event.propertyName as keyof typeof mapPropertyToState];
 			const productID = (event.o as Product).NodeID;
 
 			await adapter.setStateAsync(`products.${productID}.${stateName}`, event.propertyValue, true);
 		});
-	}
-
-	private static async createAndSetStateAsync(
-		adapter: ioBroker.Adapter,
-		stateID: string,
-		common: ioBroker.StateCommon,
-		native: Record<string, any>,
-		value: string | number | boolean | ioBroker.State | Partial<ioBroker.State>,
-	): Promise<void> {
-		await adapter.setObjectNotExistsAsync(stateID, {
-			type: "state",
-			common: common,
-			native: native,
-		});
-		await adapter.setStateAsync(stateID, value, true);
 	}
 }

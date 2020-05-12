@@ -25,7 +25,7 @@ declare global {
 }
 
 class Klf200 extends utils.Adapter {
-	public constructor(options: Partial<ioBroker.AdapterOptions> = {}) {
+	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
 			...options,
 			name: "klf200",
@@ -150,7 +150,7 @@ class Klf200 extends utils.Adapter {
 
 if (module.parent) {
 	// Export the constructor in compact mode
-	module.exports = (options?: Partial<ioBroker.AdapterOptions>) => new Klf200(options);
+	module.exports = (options?: Partial<utils.AdapterOptions>) => new Klf200(options);
 } else {
 	// otherwise start the instance directly
 	(() => new Klf200())();

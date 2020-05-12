@@ -1,6 +1,6 @@
 "use strict";
 
-export class setup {
+export class Setup {
 	public static async setupGlobalAsync(adapter: ioBroker.Adapter): Promise<void> {
 		// Setup products device
 		await adapter.setObjectNotExistsAsync("products", {

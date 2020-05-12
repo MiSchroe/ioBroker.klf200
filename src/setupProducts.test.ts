@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable prettier/prettier */
 import { utils } from "@iobroker/testing";
 import { use } from "chai";
 import {
@@ -14,7 +12,7 @@ import {
 	StatusReply,
 	Velocity,
 } from "klf-200-api";
-import { setupProducts } from "./setupProducts";
+import { SetupProducts } from "./setupProducts";
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
 import chaiAsPromised = require("chai-as-promised");
@@ -169,7 +167,7 @@ const mockProduct = new Product(
 
 const mockProducts = [mockProduct];
 
-describe("setupProducts", function() {
+describe("setupProducts", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
 	const {
@@ -187,22 +185,22 @@ describe("setupProducts", function() {
 		database.clear();
 	});
 
-	describe("createProductAsync", function() {
-		it("should create the channel for product ID 0", async function() {
-			await setupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+	describe("createProductAsync", function () {
+		it("should create the channel for product ID 0", async function () {
+			await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
 			assertObjectExists("products.0");
 		});
 
-		it("should have the name 'Fenster Badezimmer' for its channel name", async function() {
+		it("should have the name 'Fenster Badezimmer' for its channel name", async function () {
 			const expectedName = "Fenster Badezimmer";
-			await setupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+			await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
 			assertObjectCommon("products.0", { name: expectedName });
 		});
 
-		it("should have the role 'window' for its channel role", async function() {
+		it("should have the role 'window' for its channel role", async function () {
 			const expectedName = "Fenster Badezimmer";
 			const expectedRole = "window";
-			await setupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+			await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
 			assertObjectCommon("products.0", { name: expectedName, role: expectedRole });
 		});
 
@@ -305,27 +303,27 @@ describe("setupProducts", function() {
 			},
 		];
 		for (const test of testCases) {
-			it(`should create the ${test.state} state object`, async function() {
+			it(`should create the ${test.state} state object`, async function () {
 				const expectedState = test.state;
-				await setupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+				await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
 				assertObjectExists(`test.0.products.0.${expectedState}`);
 			});
 
-			it(`should write the ${test.state} state`, async function() {
+			it(`should write the ${test.state} state`, async function () {
 				const expectedState = test.state;
-				await setupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+				await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
 				assertStateExists(`test.0.products.0.${expectedState}`);
 			});
 
-			it(`should write the ${test.state} state with '${test.value}'`, async function() {
+			it(`should write the ${test.state} state with '${test.value}'`, async function () {
 				const expectedState = test.state;
-				await setupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+				await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
 				assertStateHasValue(`test.0.products.0.${expectedState}`, test.value);
 			});
 
-			it(`should write the ${test.state} state ack`, async function() {
+			it(`should write the ${test.state} state ack`, async function () {
 				const expectedState = test.state;
-				await setupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+				await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
 				assertStateIsAcked(`test.0.products.0.${expectedState}`, true);
 			});
 		}
@@ -409,11 +407,11 @@ describe("setupProducts", function() {
 		];
 
 		for (const test of testCasesForChanges) {
-			this.beforeEach(async function() {
-				await setupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+			this.beforeEach(async function () {
+				await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
 			});
 
-			it(`should write the ${test.state} state with '${test.value}' after change notificiation`, function() {
+			it(`should write the ${test.state} state with '${test.value}' after change notificiation`, function () {
 				const expectedState = test.state;
 				mockProduct.propertyChangedEvent.emit({
 					o: mockProduct,
@@ -423,7 +421,7 @@ describe("setupProducts", function() {
 				assertStateHasValue(`test.0.products.0.${expectedState}`, test.value);
 			});
 
-			it(`should write the ${test.state} state ack after change notificiation`, async function() {
+			it(`should write the ${test.state} state ack after change notificiation`, async function () {
 				const expectedState = test.state;
 				mockProduct.propertyChangedEvent.emit({
 					o: mockProduct,
@@ -435,10 +433,10 @@ describe("setupProducts", function() {
 		}
 	});
 
-	describe("createProductsAsync", function() {
-		it("should have 1 in the value of products.productsFound state", async function() {
+	describe("createProductsAsync", function () {
+		it("should have 1 in the value of products.productsFound state", async function () {
 			const expectedValue = 1;
-			await setupProducts.createProductsAsync((adapter as unknown) as ioBroker.Adapter, mockProducts);
+			await SetupProducts.createProductsAsync((adapter as unknown) as ioBroker.Adapter, mockProducts);
 			assertStateHasValue("products.productsFound", expectedValue);
 		});
 	});

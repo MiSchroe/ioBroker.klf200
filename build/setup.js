@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class setup {
+class Setup {
     static async setupGlobalAsync(adapter) {
         // Setup products device
         await adapter.setObjectNotExistsAsync("products", {
@@ -134,4 +134,4 @@ class setup {
         });
     }
 }
-exports.setup = setup;
+exports.Setup = Setup;

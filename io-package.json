@@ -54,6 +54,8 @@
 		"mode": "daemon",
 		"type": "hardware",
 		"compact": true,
+		"connectionType": "local",
+		"dataSource": "push",
 		"materialize": true,
 		"dependencies": [
 			{
@@ -61,10 +63,7 @@
 			}
 		]
 	},
-	"native": {
-		"option1": true,
-		"option2": "42"
-	},
+	"native": {},
 	"objects": [],
 	"instanceObjects": [
 		{
