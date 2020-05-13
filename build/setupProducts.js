@@ -21,9 +21,10 @@ const mapPropertyToState = {
 };
 class SetupProducts {
     static async createProductsAsync(adapter, products) {
+        const disposableEvents = [];
         for (const product of products) {
             if (products) {
-                await this.createProductAsync(adapter, product);
+                disposableEvents.push(...(await this.createProductAsync(adapter, product)));
             }
         }
         // Write number of products
@@ -37,8 +38,10 @@ class SetupProducts {
             def: 0,
             desc: "Number of products connected to the interface",
         }, {}, products.length);
+        return disposableEvents;
     }
     static async createProductAsync(adapter, product) {
+        const disposableEvents = [];
         await adapter.setObjectNotExistsAsync(`products.${product.NodeID}`, {
             type: "channel",
             common: {
@@ -279,11 +282,12 @@ class SetupProducts {
             desc: "Set to true to let the product wink",
         }, {}, false);
         // Setup product listener
-        product.propertyChangedEvent.on(async function (event) {
+        disposableEvents.push(product.propertyChangedEvent.on(async function (event) {
             const stateName = mapPropertyToState[event.propertyName];
             const productID = event.o.NodeID;
             await adapter.setStateAsync(`products.${productID}.${stateName}`, event.propertyValue, true);
-        });
+        }));
+        return disposableEvents;
     }
 }
 exports.SetupProducts = SetupProducts;

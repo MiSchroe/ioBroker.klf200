@@ -1,7 +1,11 @@
 "use strict";
 
+import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+
 export class Setup {
-	public static async setupGlobalAsync(adapter: ioBroker.Adapter): Promise<void> {
+	public static async setupGlobalAsync(adapter: ioBroker.Adapter): Promise<Disposable[]> {
+		const disposableEvents: Disposable[] = [];
+
 		// Setup products device
 		await adapter.setObjectNotExistsAsync("products", {
 			type: "device",
@@ -135,5 +139,7 @@ export class Setup {
 			},
 			native: {},
 		});
+
+		return disposableEvents;
 	}
 }

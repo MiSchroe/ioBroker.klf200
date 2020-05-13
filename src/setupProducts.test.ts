@@ -12,6 +12,7 @@ import {
 	StatusReply,
 	Velocity,
 } from "klf-200-api";
+import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { SetupProducts } from "./setupProducts";
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
@@ -187,21 +188,48 @@ describe("setupProducts", function () {
 
 	describe("createProductAsync", function () {
 		it("should create the channel for product ID 0", async function () {
-			await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
-			assertObjectExists("products.0");
+			const disposables = await SetupProducts.createProductAsync(
+				(adapter as unknown) as ioBroker.Adapter,
+				mockProduct,
+			);
+			try {
+				assertObjectExists("products.0");
+			} finally {
+				for (const disposable of await disposables) {
+					disposable.dispose();
+				}
+			}
 		});
 
 		it("should have the name 'Fenster Badezimmer' for its channel name", async function () {
 			const expectedName = "Fenster Badezimmer";
-			await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
-			assertObjectCommon("products.0", { name: expectedName });
+			const disposables = await SetupProducts.createProductAsync(
+				(adapter as unknown) as ioBroker.Adapter,
+				mockProduct,
+			);
+			try {
+				assertObjectCommon("products.0", { name: expectedName });
+			} finally {
+				for (const disposable of await disposables) {
+					disposable.dispose();
+				}
+			}
 		});
 
 		it("should have the role 'window' for its channel role", async function () {
 			const expectedName = "Fenster Badezimmer";
 			const expectedRole = "window";
-			await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
-			assertObjectCommon("products.0", { name: expectedName, role: expectedRole });
+			const disposables = await SetupProducts.createProductAsync(
+				(adapter as unknown) as ioBroker.Adapter,
+				mockProduct,
+			);
+			try {
+				assertObjectCommon("products.0", { name: expectedName, role: expectedRole });
+			} finally {
+				for (const disposable of await disposables) {
+					disposable.dispose();
+				}
+			}
 		});
 
 		const testCases = [
@@ -305,26 +333,62 @@ describe("setupProducts", function () {
 		for (const test of testCases) {
 			it(`should create the ${test.state} state object`, async function () {
 				const expectedState = test.state;
-				await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
-				assertObjectExists(`test.0.products.0.${expectedState}`);
+				const disposables = await SetupProducts.createProductAsync(
+					(adapter as unknown) as ioBroker.Adapter,
+					mockProduct,
+				);
+				try {
+					assertObjectExists(`test.0.products.0.${expectedState}`);
+				} finally {
+					for (const disposable of await disposables) {
+						disposable.dispose();
+					}
+				}
 			});
 
 			it(`should write the ${test.state} state`, async function () {
 				const expectedState = test.state;
-				await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
-				assertStateExists(`test.0.products.0.${expectedState}`);
+				const disposables = await SetupProducts.createProductAsync(
+					(adapter as unknown) as ioBroker.Adapter,
+					mockProduct,
+				);
+				try {
+					assertStateExists(`test.0.products.0.${expectedState}`);
+				} finally {
+					for (const disposable of await disposables) {
+						disposable.dispose();
+					}
+				}
 			});
 
 			it(`should write the ${test.state} state with '${test.value}'`, async function () {
 				const expectedState = test.state;
-				await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
-				assertStateHasValue(`test.0.products.0.${expectedState}`, test.value);
+				const disposables = await SetupProducts.createProductAsync(
+					(adapter as unknown) as ioBroker.Adapter,
+					mockProduct,
+				);
+				try {
+					assertStateHasValue(`test.0.products.0.${expectedState}`, test.value);
+				} finally {
+					for (const disposable of await disposables) {
+						disposable.dispose();
+					}
+				}
 			});
 
 			it(`should write the ${test.state} state ack`, async function () {
 				const expectedState = test.state;
-				await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
-				assertStateIsAcked(`test.0.products.0.${expectedState}`, true);
+				const disposables = await SetupProducts.createProductAsync(
+					(adapter as unknown) as ioBroker.Adapter,
+					mockProduct,
+				);
+				try {
+					assertStateIsAcked(`test.0.products.0.${expectedState}`, true);
+				} finally {
+					for (const disposable of await disposables) {
+						disposable.dispose();
+					}
+				}
 			});
 		}
 
@@ -407,8 +471,18 @@ describe("setupProducts", function () {
 		];
 
 		for (const test of testCasesForChanges) {
+			let disposables: Disposable[] = [];
 			this.beforeEach(async function () {
-				await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+				disposables = await SetupProducts.createProductAsync(
+					(adapter as unknown) as ioBroker.Adapter,
+					mockProduct,
+				);
+			});
+			this.afterEach(function () {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+				disposables.length = 0;
 			});
 
 			it(`should write the ${test.state} state with '${test.value}' after change notificiation`, function () {
@@ -436,8 +510,17 @@ describe("setupProducts", function () {
 	describe("createProductsAsync", function () {
 		it("should have 1 in the value of products.productsFound state", async function () {
 			const expectedValue = 1;
-			await SetupProducts.createProductsAsync((adapter as unknown) as ioBroker.Adapter, mockProducts);
-			assertStateHasValue("products.productsFound", expectedValue);
+			const disposables = await SetupProducts.createProductsAsync(
+				(adapter as unknown) as ioBroker.Adapter,
+				mockProducts,
+			);
+			try {
+				assertStateHasValue("products.productsFound", expectedValue);
+			} finally {
+				for (const disposable of await disposables) {
+					disposable.dispose();
+				}
+			}
 		});
 	});
 });

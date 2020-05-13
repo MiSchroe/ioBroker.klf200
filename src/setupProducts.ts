@@ -2,6 +2,7 @@
 
 import { Product } from "klf-200-api";
 import { PropertyChangedEvent } from "klf-200-api/dist/utils/PropertyChangedEvent";
+import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { levelConverter, roleConverter } from "./util/converter";
 import { StateHelper } from "./util/stateHelper";
 
@@ -24,10 +25,12 @@ const mapPropertyToState = {
 };
 
 export class SetupProducts {
-	public static async createProductsAsync(adapter: ioBroker.Adapter, products: Product[]): Promise<void> {
+	public static async createProductsAsync(adapter: ioBroker.Adapter, products: Product[]): Promise<Disposable[]> {
+		const disposableEvents: Disposable[] = [];
+
 		for (const product of products) {
 			if (products) {
-				await this.createProductAsync(adapter, product);
+				disposableEvents.push(...(await this.createProductAsync(adapter, product)));
 			}
 		}
 
@@ -48,9 +51,13 @@ export class SetupProducts {
 			{},
 			products.length,
 		);
+
+		return disposableEvents;
 	}
 
-	public static async createProductAsync(adapter: ioBroker.Adapter, product: Product): Promise<void> {
+	public static async createProductAsync(adapter: ioBroker.Adapter, product: Product): Promise<Disposable[]> {
+		const disposableEvents: Disposable[] = [];
+
 		await adapter.setObjectNotExistsAsync(`products.${product.NodeID}`, {
 			type: "channel",
 			common: {
@@ -460,11 +467,15 @@ export class SetupProducts {
 		);
 
 		// Setup product listener
-		product.propertyChangedEvent.on(async function (event: PropertyChangedEvent) {
-			const stateName = mapPropertyToState[event.propertyName as keyof typeof mapPropertyToState];
-			const productID = (event.o as Product).NodeID;
+		disposableEvents.push(
+			product.propertyChangedEvent.on(async function (event: PropertyChangedEvent) {
+				const stateName = mapPropertyToState[event.propertyName as keyof typeof mapPropertyToState];
+				const productID = (event.o as Product).NodeID;
 
-			await adapter.setStateAsync(`products.${productID}.${stateName}`, event.propertyValue, true);
-		});
+				await adapter.setStateAsync(`products.${productID}.${stateName}`, event.propertyValue, true);
+			}),
+		);
+
+		return disposableEvents;
 	}
 }

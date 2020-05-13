@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class Setup {
     static async setupGlobalAsync(adapter) {
+        const disposableEvents = [];
         // Setup products device
         await adapter.setObjectNotExistsAsync("products", {
             type: "device",
@@ -132,6 +133,7 @@ class Setup {
             },
             native: {},
         });
+        return disposableEvents;
     }
 }
 exports.Setup = Setup;

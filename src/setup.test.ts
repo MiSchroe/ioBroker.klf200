@@ -23,8 +23,14 @@ describe("Setup", function () {
 	describe(`setupGlobalAsync`, function () {
 		for (const deviceName of ["products", "scenes", "groups"]) {
 			it(`should generate ${deviceName} device`, async function () {
-				await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
-				assertObjectExists(`${deviceName}`);
+				const disposables = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
+				try {
+					assertObjectExists(`${deviceName}`);
+				} finally {
+					for (const disposable of disposables) {
+						disposable.dispose();
+					}
+				}
 			});
 
 			it(`shouldn't throw if ${deviceName} device already exists`, async function () {
@@ -35,18 +41,37 @@ describe("Setup", function () {
 					},
 					native: {},
 				});
-				return Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter).should.be.fulfilled;
+				const disposables = Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
+				try {
+					return disposables.should.be.fulfilled;
+				} finally {
+					for (const disposable of await disposables) {
+						disposable.dispose();
+					}
+				}
 			});
 
 			it(`should generate ${deviceName}Found state`, async function () {
-				await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
-				assertObjectExists(`${deviceName}.${deviceName}Found`);
+				const disposables = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
+				try {
+					assertObjectExists(`${deviceName}.${deviceName}Found`);
+				} finally {
+					for (const disposable of await disposables) {
+						disposable.dispose();
+					}
+				}
 			});
 		}
 
 		it(`should generate gateway device`, async function () {
-			await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
-			assertObjectExists(`gateway`);
+			const disposables = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
+			try {
+				assertObjectExists(`gateway`);
+			} finally {
+				for (const disposable of await disposables) {
+					disposable.dispose();
+				}
+			}
 		});
 
 		it(`shouldn't throw if gateway device already exists`, async function () {
@@ -57,27 +82,58 @@ describe("Setup", function () {
 				},
 				native: {},
 			});
-			return Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter).should.be.fulfilled;
+			const disposables = Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
+			try {
+				return disposables.should.be.fulfilled;
+			} finally {
+				for (const disposable of await disposables) {
+					disposable.dispose();
+				}
+			}
 		});
 
 		it(`should generate gateway ProtocolVersion state`, async function () {
-			await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
-			assertObjectExists(`gateway.ProtocolVersion`);
+			const disposables = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
+			try {
+				assertObjectExists(`gateway.ProtocolVersion`);
+			} finally {
+				for (const disposable of await disposables) {
+					disposable.dispose();
+				}
+			}
 		});
 
 		it(`should generate gateway Version state`, async function () {
-			await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
-			assertObjectExists(`gateway.Version`);
+			const disposables = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
+			try {
+				assertObjectExists(`gateway.Version`);
+			} finally {
+				for (const disposable of await disposables) {
+					disposable.dispose();
+				}
+			}
 		});
 
 		it(`should generate gateway GatewayState`, async function () {
-			await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
-			assertObjectExists(`gateway.GatewayState`);
+			const disposables = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
+			try {
+				assertObjectExists(`gateway.GatewayState`);
+			} finally {
+				for (const disposable of await disposables) {
+					disposable.dispose();
+				}
+			}
 		});
 
 		it(`should generate gateway GatewaySubState`, async function () {
-			await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
-			assertObjectExists(`gateway.GatewaySubState`);
+			const disposables = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter);
+			try {
+				assertObjectExists(`gateway.GatewaySubState`);
+			} finally {
+				for (const disposable of await disposables) {
+					disposable.dispose();
+				}
+			}
 		});
 	});
 });
