@@ -1,6 +1,6 @@
 "use strict";
 
-import { ActuatorType } from "klf-200-api";
+import { ActuatorType, GroupType } from "klf-200-api";
 
 export type EnumConversionInfo = {
 	[value: number]: string;
@@ -39,7 +39,15 @@ const actuatorTypeMap = {
 	[ActuatorType.SwingingShutter]: "shutter.swinging",
 };
 
+const groupTypeMap = {
+	[GroupType.UserGroup]: "group.user",
+	[GroupType.Room]: "group.room",
+	[GroupType.House]: "group.house",
+	[GroupType.All]: "group.all",
+};
+
 export const roleConverter = new EnumConverter<ActuatorType>(actuatorTypeMap);
+export const roleGroupTypeConverter = new EnumConverter<GroupType>(groupTypeMap);
 
 const levelTypeMap = {
 	[ActuatorType.VenetianBlind]: "level.blind",

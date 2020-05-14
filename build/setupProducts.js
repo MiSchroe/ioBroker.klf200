@@ -23,7 +23,7 @@ class SetupProducts {
     static async createProductsAsync(adapter, products) {
         const disposableEvents = [];
         for (const product of products) {
-            if (products) {
+            if (product) {
                 disposableEvents.push(...(await this.createProductAsync(adapter, product)));
             }
         }

@@ -34,7 +34,14 @@ const actuatorTypeMap = {
     [klf_200_api_1.ActuatorType.IntrusionAlarm]: "alarm.intrusion",
     [klf_200_api_1.ActuatorType.SwingingShutter]: "shutter.swinging",
 };
+const groupTypeMap = {
+    [klf_200_api_1.GroupType.UserGroup]: "group.user",
+    [klf_200_api_1.GroupType.Room]: "group.room",
+    [klf_200_api_1.GroupType.House]: "group.house",
+    [klf_200_api_1.GroupType.All]: "group.all",
+};
 exports.roleConverter = new EnumConverter(actuatorTypeMap);
+exports.roleGroupTypeConverter = new EnumConverter(groupTypeMap);
 const levelTypeMap = {
     [klf_200_api_1.ActuatorType.VenetianBlind]: "level.blind",
     [klf_200_api_1.ActuatorType.RollerShutter]: "level.blind",

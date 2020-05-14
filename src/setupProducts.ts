@@ -29,7 +29,7 @@ export class SetupProducts {
 		const disposableEvents: Disposable[] = [];
 
 		for (const product of products) {
-			if (products) {
+			if (product) {
 				disposableEvents.push(...(await this.createProductAsync(adapter, product)));
 			}
 		}
