@@ -1,4 +1,4 @@
-import { utils } from "@iobroker/testing";
+import { MockAdapter, utils } from "@iobroker/testing";
 import { use } from "chai";
 import {
 	ActuatorType,
@@ -13,6 +13,7 @@ import {
 	Velocity,
 } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { promisify } from "util";
 import { SetupProducts } from "./setupProducts";
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
@@ -178,6 +179,16 @@ describe("setupProducts", function () {
 		assertStateIsAcked,
 		assertObjectCommon,
 	} = utils.unit.createAsserts(database, adapter);
+
+	// Promisify additional methods
+	for (const method of ["unsubscribeStates"]) {
+		Object.defineProperty(adapter, `${method}Async`, {
+			configurable: true,
+			enumerable: true,
+			value: promisify(adapter[method as keyof MockAdapter]),
+			writable: true,
+		});
+	}
 
 	afterEach(() => {
 		// The mocks keep track of all method invocations - reset them after each single test

@@ -1,7 +1,8 @@
-import { utils } from "@iobroker/testing";
+import { MockAdapter, utils } from "@iobroker/testing";
 import { use } from "chai";
 import { IConnection, ParameterActive, Scene } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { promisify } from "util";
 import { SetupScenes } from "./setupScenes";
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
@@ -53,6 +54,16 @@ describe("setupScenes", function () {
 		assertStateIsAcked,
 		assertObjectCommon,
 	} = utils.unit.createAsserts(database, adapter);
+
+	// Promisify additional methods
+	for (const method of ["unsubscribeStates"]) {
+		Object.defineProperty(adapter, `${method}Async`, {
+			configurable: true,
+			enumerable: true,
+			value: promisify(adapter[method as keyof MockAdapter]),
+			writable: true,
+		});
+	}
 
 	afterEach(() => {
 		// The mocks keep track of all method invocations - reset them after each single test
@@ -201,12 +212,22 @@ describe("setupScenes", function () {
 					false,
 				);
 				assertStateIsAcked(`test.0.scenes.0.${expectedState}`, false);
-				mockScene.propertyChangedEvent.emit({
-					o: mockScene,
-					propertyName: test.propertyName,
-					propertyValue: test.value,
+
+				// Mock the object property to reflect the desired change
+				const stubGetter = sinon.stub(mockScene, test.propertyName as keyof Scene).get(() => {
+					return test.value;
 				});
-				assertStateHasValue(`test.0.scenes.0.${expectedState}`, test.value);
+
+				try {
+					mockScene.propertyChangedEvent.emit({
+						o: mockScene,
+						propertyName: test.propertyName,
+						propertyValue: test.value,
+					});
+					assertStateHasValue(`test.0.scenes.0.${expectedState}`, test.value);
+				} finally {
+					stubGetter.reset();
+				}
 			});
 
 			it(`should write the ${test.state} state ack after change notificiation`, async function () {

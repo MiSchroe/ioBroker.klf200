@@ -1,8 +1,8 @@
 "use strict";
 
-import { Product, Scene } from "klf-200-api";
-import { PropertyChangedEvent } from "klf-200-api/dist/utils/PropertyChangedEvent";
+import { Scene, SceneInformationEntry } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { ComplexPropertyChangedHandler, ComplexStateChangeHandler } from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
 
 export class SetupScenes {
@@ -93,36 +93,46 @@ export class SetupScenes {
 			false,
 		);
 
-		// Setup scene listener
+		// Setup scene listeners
 		disposableEvents.push(
-			scene.propertyChangedEvent.on(async function (event: PropertyChangedEvent) {
-				const sceneID = (event.o as Scene).SceneID;
-
-				switch (event.propertyName) {
-					case "IsRunning":
-						await adapter.setStateAsync(`scenes.${sceneID}.run`, event.propertyValue, true);
-						if ((event.propertyValue as boolean) === false) {
-							/*
-                            If a running scene was stopped by using the stop state,
-                            the stop state should be reset to false.
-                        */
-							await adapter.setStateChangedAsync(`scenes.${sceneID}.stop`, false, true);
-						}
-						break;
-
-					case "Products":
-						await adapter.setStateAsync(
-							`scenes.${sceneID}.productsCount`,
-							(event.propertyValue as Product[]).length,
-							true,
-						);
-						break;
-
-					default:
-						break;
+			new ComplexPropertyChangedHandler<Scene>(adapter, "IsRunning", scene, async (newValue) => {
+				const result = await adapter.setStateAsync(`scenes.${scene.SceneID}.run`, newValue as boolean, true);
+				if (newValue === false) {
+					/*
+						If a running scene was stopped by using the stop state,
+						the stop state should be reset to false.
+					*/
+					await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.stop`, false, true);
 				}
+				return result;
+			}),
+			new ComplexPropertyChangedHandler<Scene>(adapter, "Products", scene, async (newValue) => {
+				return await adapter.setStateChangedAsync(
+					`scenes.${scene.SceneID}.productsCount`,
+					(newValue as SceneInformationEntry[]).length,
+					true,
+				);
 			}),
 		);
+
+		// Setup state listeners
+		const stopListener = new ComplexStateChangeHandler(adapter, "stop", async (state) => {
+			if (state !== undefined) {
+				if (state?.val === true) {
+					// If the scene is running, acknowledge the stop state and stop the scene.
+					if (scene.IsRunning) {
+						// Acknowledge stop state first
+						await adapter.setStateAsync("stop", state, true);
+						await scene.stopAsync();
+					} else {
+						// Set the stop state back to false, directly.
+						await adapter.setStateAsync("stop", false, true);
+					}
+				}
+			}
+		});
+		await stopListener.Initialize();
+		disposableEvents.push(stopListener);
 
 		return disposableEvents;
 	}

@@ -58,10 +58,12 @@
     "watch:ts": "tsc -p tsconfig.build.json --watch",
     "watch": "npm run watch:ts",
     "test:ts": "mocha --opts test/mocha.custom.opts",
+    "test:tstap": "mocha --opts test/mocha.custom.opts --reporter tap",
     "test:package": "mocha test/package --exit",
+    "test:packagetap": "mocha test/package --exit --reporter tap",
     "test:unit": "mocha test/unit --require test/mocha.setup.js --exit",
     "test:integration": "mocha test/integration --exit",
-    "test": "npm run test:ts && npm run test:package",
+    "test": "npm run test:tstap && npm run test:packagetap",
     "coverage": "nyc npm run test:ts",
     "lint": "eslint --ext .ts src"
   },
