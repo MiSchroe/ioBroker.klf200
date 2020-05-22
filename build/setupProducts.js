@@ -1,24 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const converter_1 = require("./util/converter");
+const propertyLink_1 = require("./util/propertyLink");
 const stateHelper_1 = require("./util/stateHelper");
-const mapPropertyToState = {
-    CurrentPosition: "level",
-    CurrentPositionRaw: "currentPositionRaw",
-    FP1CurrentPositionRaw: "FP1CurrentPositionRaw",
-    FP2CurrentPositionRaw: "FP2CurrentPositionRaw",
-    FP3CurrentPositionRaw: "FP3CurrentPositionRaw",
-    FP4CurrentPositionRaw: "FP4CurrentPositionRaw",
-    NodeVariation: "nodeVariation",
-    Order: "order",
-    Placement: "placement",
-    RemainingTime: "remainingTime",
-    RunStatus: "runStatus",
-    State: "state",
-    StatusReply: "statusReply",
-    TargetPositionRaw: "targetPositionRaw",
-    Velocity: "velocity",
-};
 class SetupProducts {
     static async createProductsAsync(adapter, products) {
         const disposableEvents = [];
@@ -282,11 +266,41 @@ class SetupProducts {
             desc: "Set to true to let the product wink",
         }, {}, false);
         // Setup product listener
-        disposableEvents.push(product.propertyChangedEvent.on(async function (event) {
-            const stateName = mapPropertyToState[event.propertyName];
-            const productID = event.o.NodeID;
-            await adapter.setStateAsync(`products.${productID}.${stateName}`, event.propertyValue, true);
-        }));
+        disposableEvents.push(new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.nodeVariation`, "NodeVariation", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.order`, "Order", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.placement`, "Placement", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.state`, "State", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.currentPositionRaw`, "CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.level`, "CurrentPosition", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.targetPositionRaw`, "TargetPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.targetPosition`, "TargetPosition", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.FP1CurrentPositionRaw`, "FP1CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.FP2CurrentPositionRaw`, "FP2CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.FP3CurrentPositionRaw`, "FP3CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.FP4CurrentPositionRaw`, "FP4CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.remainingTime`, "RemainingTime", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.timeStamp`, "TimeStamp", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.runStatus`, "RunStatus", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.statusReply`, "StatusReply", product));
+        const nodeVariationHandler = new propertyLink_1.SimpleStateChangeHandler(adapter, `products.${product.NodeID}.nodeVariation`, "NodeVariation", product);
+        await nodeVariationHandler.Initialize();
+        disposableEvents.push(nodeVariationHandler);
+        const orderHandler = new propertyLink_1.SimpleStateChangeHandler(adapter, `products.${product.NodeID}.order`, "Order", product);
+        await orderHandler.Initialize();
+        disposableEvents.push(orderHandler);
+        const placementHandler = new propertyLink_1.SimpleStateChangeHandler(adapter, `products.${product.NodeID}.placement`, "Placement", product);
+        await placementHandler.Initialize();
+        disposableEvents.push(placementHandler);
+        const levelHandler = new propertyLink_1.SimpleStateChangeHandler(adapter, `products.${product.NodeID}.level`, "TargetPosition", product);
+        await levelHandler.Initialize();
+        disposableEvents.push(levelHandler);
+        const stopListener = new propertyLink_1.ComplexStateChangeHandler(adapter, `products.${product.NodeID}.stop`, async (state) => {
+            if (state !== undefined) {
+                if ((state === null || state === void 0 ? void 0 : state.val) === true) {
+                    // Acknowledge stop state first
+                    await adapter.setStateAsync(`products.${product.NodeID}.stop`, state, true);
+                    await product.stopAsync();
+                }
+            }
+        });
+        await stopListener.Initialize();
+        disposableEvents.push(stopListener);
+        const winkListener = new propertyLink_1.ComplexStateChangeHandler(adapter, `products.${product.NodeID}.wink`, async (state) => {
+            if (state !== undefined) {
+                if ((state === null || state === void 0 ? void 0 : state.val) === true) {
+                    // Acknowledge wink state first
+                    await adapter.setStateAsync(`products.${product.NodeID}.wink`, state, true);
+                    await product.winkAsync();
+                }
+            }
+        });
+        await winkListener.Initialize();
+        disposableEvents.push(winkListener);
         return disposableEvents;
     }
 }

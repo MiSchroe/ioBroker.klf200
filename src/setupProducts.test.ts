@@ -474,11 +474,6 @@ describe("setupProducts", function () {
 				propertyName: "TargetPositionRaw",
 				value: 0xc900,
 			},
-			{
-				state: "velocity",
-				propertyName: "Velocity",
-				value: Velocity.Fast,
-			},
 		];
 
 		for (const test of testCasesForChanges) {

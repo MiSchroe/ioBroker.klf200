@@ -116,17 +116,17 @@ export class SetupScenes {
 		);
 
 		// Setup state listeners
-		const stopListener = new ComplexStateChangeHandler(adapter, "stop", async (state) => {
+		const stopListener = new ComplexStateChangeHandler(adapter, `scenes.${scene.SceneID}.stop`, async (state) => {
 			if (state !== undefined) {
 				if (state?.val === true) {
 					// If the scene is running, acknowledge the stop state and stop the scene.
 					if (scene.IsRunning) {
 						// Acknowledge stop state first
-						await adapter.setStateAsync("stop", state, true);
+						await adapter.setStateAsync(`scenes.${scene.SceneID}.stop`, state, true);
 						await scene.stopAsync();
 					} else {
 						// Set the stop state back to false, directly.
-						await adapter.setStateAsync("stop", false, true);
+						await adapter.setStateAsync(`scenes.${scene.SceneID}.stop`, false, true);
 					}
 				}
 			}

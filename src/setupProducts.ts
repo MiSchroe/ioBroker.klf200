@@ -1,28 +1,10 @@
 "use strict";
 
 import { Product } from "klf-200-api";
-import { PropertyChangedEvent } from "klf-200-api/dist/utils/PropertyChangedEvent";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { levelConverter, roleConverter } from "./util/converter";
+import { ComplexStateChangeHandler, SimplePropertyChangedHandler, SimpleStateChangeHandler } from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
-
-const mapPropertyToState = {
-	CurrentPosition: "level",
-	CurrentPositionRaw: "currentPositionRaw",
-	FP1CurrentPositionRaw: "FP1CurrentPositionRaw",
-	FP2CurrentPositionRaw: "FP2CurrentPositionRaw",
-	FP3CurrentPositionRaw: "FP3CurrentPositionRaw",
-	FP4CurrentPositionRaw: "FP4CurrentPositionRaw",
-	NodeVariation: "nodeVariation",
-	Order: "order",
-	Placement: "placement",
-	RemainingTime: "remainingTime",
-	RunStatus: "runStatus",
-	State: "state",
-	StatusReply: "statusReply",
-	TargetPositionRaw: "targetPositionRaw",
-	Velocity: "velocity",
-};
 
 export class SetupProducts {
 	public static async createProductsAsync(adapter: ioBroker.Adapter, products: Product[]): Promise<Disposable[]> {
@@ -468,13 +450,161 @@ export class SetupProducts {
 
 		// Setup product listener
 		disposableEvents.push(
-			product.propertyChangedEvent.on(async function (event: PropertyChangedEvent) {
-				const stateName = mapPropertyToState[event.propertyName as keyof typeof mapPropertyToState];
-				const productID = (event.o as Product).NodeID;
-
-				await adapter.setStateAsync(`products.${productID}.${stateName}`, event.propertyValue, true);
-			}),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.nodeVariation`,
+				"NodeVariation",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(adapter, `products.${product.NodeID}.order`, "Order", product),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.placement`,
+				"Placement",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(adapter, `products.${product.NodeID}.state`, "State", product),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.currentPositionRaw`,
+				"CurrentPositionRaw",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.level`,
+				"CurrentPosition",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.targetPositionRaw`,
+				"TargetPositionRaw",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.targetPosition`,
+				"TargetPosition",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.FP1CurrentPositionRaw`,
+				"FP1CurrentPositionRaw",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.FP2CurrentPositionRaw`,
+				"FP2CurrentPositionRaw",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.FP3CurrentPositionRaw`,
+				"FP3CurrentPositionRaw",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.FP4CurrentPositionRaw`,
+				"FP4CurrentPositionRaw",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.remainingTime`,
+				"RemainingTime",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.timeStamp`,
+				"TimeStamp",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.runStatus`,
+				"RunStatus",
+				product,
+			),
+			new SimplePropertyChangedHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.statusReply`,
+				"StatusReply",
+				product,
+			),
 		);
+
+		const nodeVariationHandler = new SimpleStateChangeHandler<Product>(
+			adapter,
+			`products.${product.NodeID}.nodeVariation`,
+			"NodeVariation",
+			product,
+		);
+		await nodeVariationHandler.Initialize();
+		disposableEvents.push(nodeVariationHandler);
+
+		const orderHandler = new SimpleStateChangeHandler<Product>(
+			adapter,
+			`products.${product.NodeID}.order`,
+			"Order",
+			product,
+		);
+		await orderHandler.Initialize();
+		disposableEvents.push(orderHandler);
+
+		const placementHandler = new SimpleStateChangeHandler<Product>(
+			adapter,
+			`products.${product.NodeID}.placement`,
+			"Placement",
+			product,
+		);
+		await placementHandler.Initialize();
+		disposableEvents.push(placementHandler);
+
+		const levelHandler = new SimpleStateChangeHandler<Product>(
+			adapter,
+			`products.${product.NodeID}.level`,
+			"TargetPosition",
+			product,
+		);
+		await levelHandler.Initialize();
+		disposableEvents.push(levelHandler);
+
+		const stopListener = new ComplexStateChangeHandler(
+			adapter,
+			`products.${product.NodeID}.stop`,
+			async (state) => {
+				if (state !== undefined) {
+					if (state?.val === true) {
+						// Acknowledge stop state first
+						await adapter.setStateAsync(`products.${product.NodeID}.stop`, state, true);
+						await product.stopAsync();
+					}
+				}
+			},
+		);
+		await stopListener.Initialize();
+		disposableEvents.push(stopListener);
+
+		const winkListener = new ComplexStateChangeHandler(
+			adapter,
+			`products.${product.NodeID}.wink`,
+			async (state) => {
+				if (state !== undefined) {
+					if (state?.val === true) {
+						// Acknowledge wink state first
+						await adapter.setStateAsync(`products.${product.NodeID}.wink`, state, true);
+						await product.winkAsync();
+					}
+				}
+			},
+		);
+		await winkListener.Initialize();
+		disposableEvents.push(winkListener);
 
 		return disposableEvents;
 	}
