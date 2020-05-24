@@ -65,7 +65,8 @@
     "test:integration": "mocha test/integration --exit",
     "test": "npm run test:tstap && npm run test:packagetap",
     "coverage": "nyc npm run test:ts",
-    "lint": "eslint --ext .ts src"
+    "lint": "eslint --ext .ts src",
+    "prepare": "npm run build"
   },
   "nyc": {
     "include": [
