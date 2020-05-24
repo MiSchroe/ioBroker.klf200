@@ -1,19 +1,88 @@
 {
 	"common": {
 		"name": "klf200",
-		"version": "0.0.1",
+		"version": "1.0.0",
 		"news": {
+			"1.0.0": {
+				"en": "Support for KLF firmware 2.0.0.71",
+				"de": "Umstellung auf KLF-Firmware 2.0.0.71"
+			},
+			"0.9.5": {
+				"en": "Bug fixes",
+				"de": "Fehlerbehebung",
+				"ru": "Исправление ошибок",
+				"pt": "Correções de bugs",
+				"nl": "Bugfixes",
+				"fr": "Corrections de bugs",
+				"it": "Correzioni di bug",
+				"es": "Corrección de errores",
+				"pl": "Poprawki błędów"
+			},
+			"0.9.4": {
+				"en": "Compatible to Admin 3, add documentation",
+				"de": "Kompatibel mit Admin 3, Dokumentation hinzufügen",
+				"ru": "Совместимость с Admin 3, добавьте документацию",
+				"pt": "Compatível com o Admin 3, adicione documentação",
+				"nl": "Compatibel met Admin 3, voeg documentatie toe",
+				"fr": "Compatible avec Admin 3, ajouter de la documentation",
+				"it": "Compatibile con Admin 3, aggiungere documentazione",
+				"es": "Compatible con Admin 3, agregar documentación",
+				"pl": "Zgodny z Admin 3, dodaj dokumentację"
+			},
+			"0.9.3": {
+				"en": "Run scenes from products possible",
+				"de": "Szenen aus Produkten ausführen",
+				"ru": "Выполнить сцены из возможных продуктов",
+				"pt": "Executar cenas de produtos possíveis",
+				"nl": "Run scènes van producten mogelijk",
+				"fr": "Exécuter des scènes de produits possibles",
+				"it": "Esegui scene dai prodotti possibili",
+				"es": "Ejecutar escenas de productos posibles",
+				"pl": "Uruchamiaj sceny z możliwych produktów"
+			},
+			"0.9.2": {
+				"en": "Corrected version number",
+				"de": "Die Versionsnummer wurde korrigiert",
+				"ru": "Исправленный номер версии",
+				"pt": "Número de versão corrigido",
+				"nl": "Gecorrigeerd versienummer",
+				"fr": "Numéro de version corrigé",
+				"it": "Numero di versione corretto",
+				"es": "Número de versión corregida",
+				"pl": "Poprawiony numer wersji"
+			},
+			"0.9.1": {
+				"en": "Minor bug fixes",
+				"de": "Kleinere Fehlerkorrekturen",
+				"ru": "Мелкие исправления",
+				"pt": "Pequenas correções de bugs",
+				"nl": "Kleine bugfixes",
+				"fr": "Corrections de bugs mineurs",
+				"it": "Correzioni di bug minori",
+				"es": "Correcciones de errores menores",
+				"pl": "Drobne poprawki błędów"
+			},
+			"0.9.0": {
+				"en": "Initial public beta version",
+				"de": "Erste öffentliche Beta-Version",
+				"ru": "Первая публичная бета-версия",
+				"pt": "Versão beta pública inicial",
+				"nl": "Initiële openbare bètaversie",
+				"fr": "Version bêta publique initiale",
+				"it": "Versione beta pubblica iniziale",
+				"es": "Versión beta pública inicial",
+				"pl": "Pierwsza publiczna wersja beta"
+			},
 			"0.0.1": {
-				"en": "initial release",
-				"de": "Erstveröffentlichung",
-				"ru": "Начальная версия",
-				"pt": "lançamento inicial",
-				"nl": "Eerste uitgave",
-				"fr": "Première version",
-				"it": "Versione iniziale",
-				"es": "Versión inicial",
-				"pl": "Pierwsze wydanie",
-				"zh-cn": "首次出版"
+				"en": "initial adapter",
+				"de": "Anfangsadapter",
+				"ru": "первоначальный адаптер",
+				"pt": "adaptador inicial",
+				"nl": "eerste adapter",
+				"fr": "adaptateur initial",
+				"it": "adattatore iniziale",
+				"es": "adaptador inicial",
+				"pl": "początkowy adapter"
 			}
 		},
 		"title": "KLF-200",
@@ -63,7 +132,10 @@
 			}
 		]
 	},
-	"native": {},
+	"native": {
+		"host": "velux-klf-",
+		"password": ""
+	},
 	"objects": [],
 	"instanceObjects": [
 		{
