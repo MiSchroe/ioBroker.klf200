@@ -1,9 +1,13 @@
 "use strict";
 
 import { Group, GroupType, Product } from "klf-200-api";
-import { PropertyChangedEvent } from "klf-200-api/dist/utils/PropertyChangedEvent";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { levelConverter, roleGroupTypeConverter } from "./util/converter";
+import {
+	ComplexPropertyChangedHandler,
+	SimplePropertyChangedHandler,
+	SimpleStateChangeHandler,
+} from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
 
 const mapPropertyToState = {
@@ -154,7 +158,7 @@ export class SetupGroups {
 				role: "value",
 				type: "number",
 				read: true,
-				write: false,
+				write: true,
 				min: 0,
 				max: 0xff,
 				desc: "Velocity of the group",
@@ -200,15 +204,62 @@ export class SetupGroups {
 			native: {},
 		});
 
-		// Setup product listener
+		// Setup group listener
 		disposableEvents.push(
-			group.propertyChangedEvent.on(async function (event: PropertyChangedEvent) {
-				const stateName = mapPropertyToState[event.propertyName as keyof typeof mapPropertyToState];
-				const groupID = (event.o as Group).GroupID;
-
-				await adapter.setStateAsync(`groups.${groupID}.${stateName}`, event.propertyValue, true);
+			new SimplePropertyChangedHandler<Group>(
+				adapter,
+				`groups.${group.GroupID}.nodeVariation`,
+				"NodeVariation",
+				group,
+			),
+			new SimplePropertyChangedHandler<Group>(adapter, `groups.${group.GroupID}.order`, "Order", group),
+			new SimplePropertyChangedHandler<Group>(adapter, `groups.${group.GroupID}.placement`, "Placement", group),
+			new SimplePropertyChangedHandler<Group>(adapter, `groups.${group.GroupID}.velocity`, "Velocity", group),
+			new SimplePropertyChangedHandler<Group>(adapter, `groups.${group.GroupID}.groupType`, "GroupType", group),
+			new ComplexPropertyChangedHandler<Group>(adapter, "Nodes", group, async (newValue) => {
+				return await adapter.setStateChangedAsync(
+					`groups.${group.GroupID}.productsCount`,
+					(newValue as number[]).length,
+					true,
+				);
 			}),
 		);
+
+		const nodeVariationHandler = new SimpleStateChangeHandler<Group>(
+			adapter,
+			`groups.${group.GroupID}.nodeVariation`,
+			"NodeVariation",
+			group,
+		);
+		await nodeVariationHandler.Initialize();
+		disposableEvents.push(nodeVariationHandler);
+
+		const orderHandler = new SimpleStateChangeHandler<Group>(
+			adapter,
+			`groups.${group.GroupID}.order`,
+			"Order",
+			group,
+		);
+		await orderHandler.Initialize();
+		disposableEvents.push(orderHandler);
+
+		const placementHandler = new SimpleStateChangeHandler<Group>(
+			adapter,
+			`groups.${group.GroupID}.placement`,
+			"Placement",
+			group,
+		);
+		await placementHandler.Initialize();
+		disposableEvents.push(placementHandler);
+
+		const velocityHandler = new SimpleStateChangeHandler<Group>(
+			adapter,
+			`groups.${group.GroupID}.velocity`,
+			"Velocity",
+			group,
+		);
+		await velocityHandler.Initialize();
+		disposableEvents.push(velocityHandler);
 
 		return disposableEvents;
 	}

@@ -5,6 +5,12 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from "@iobroker/adapter-core";
+import { Connection, Gateway, Groups, IConnection, Products, Scenes } from "klf-200-api";
+import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { Setup } from "../build/setup";
+import { SetupGroups } from "./setupGroups";
+import { SetupProducts } from "./setupProducts";
+import { SetupScenes } from "./setupScenes";
 
 // Load your modules here, e.g.:
 // import * as fs from "fs";
@@ -25,14 +31,41 @@ declare global {
 }
 
 class Klf200 extends utils.Adapter {
+	private disposables: Disposable[] = [];
+
+	private _Connection?: IConnection;
+	public get Connection(): IConnection | undefined {
+		return this._Connection;
+	}
+
+	private _Gateway?: Gateway;
+	public get Gateway(): Gateway | undefined {
+		return this._Gateway;
+	}
+
+	private _Groups?: Groups;
+	public get Groups(): Groups | undefined {
+		return this._Groups;
+	}
+
+	private _Scenes?: Scenes;
+	public get Scenes(): Scenes | undefined {
+		return this._Scenes;
+	}
+
+	private _Products?: Products;
+	public get Products(): Products | undefined {
+		return this._Products;
+	}
+
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
 			...options,
 			name: "klf200",
 		});
 		this.on("ready", this.onReady.bind(this));
-		this.on("objectChange", this.onObjectChange.bind(this));
-		this.on("stateChange", this.onStateChange.bind(this));
+		// this.on("objectChange", this.onObjectChange.bind(this));
+		// this.on("stateChange", this.onStateChange.bind(this));
 		// this.on("message", this.onMessage.bind(this));
 		this.on("unload", this.onUnload.bind(this));
 	}
@@ -44,92 +77,108 @@ class Klf200 extends utils.Adapter {
 		// Initialize your adapter here
 
 		// Reset the connection indicator during startup
-		this.setState("info.connection", false, true);
+		await this.setStateAsync("info.connection", false, true);
 
-		// The adapters config (in the instance object everything under the attribute "native") is accessible via
-		// this.config:
-		// this.log.info("config option1: " + this.config.option1);
-		// this.log.info("config option2: " + this.config.option2);
+		// Setup connection and initialize objects and states
+		this._Connection = new Connection(this.config.hostname); // TODO: Add configs for CA and fingerprint
+		this.log.info(`Host: ${this.config.hostname}`);
+		try {
+			await this.Connection?.loginAsync(this.config.password);
+		} catch (error) {
+			this.terminate(`Login to KLF-200 device at ${this.config.hostname} failed.`);
+			return;
+		}
 
-		/*
-		For every state in the system there has to be also an object of type state
-		Here a simple template for a boolean variable named "testVariable"
-		Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
-		*/
-		await this.setObjectAsync("testVariable", {
-			type: "state",
-			common: {
-				name: "testVariable",
-				type: "boolean",
-				role: "indicator",
-				read: true,
-				write: true,
-			},
-			native: {},
+		// Set the connection indicator to true and register a callback for connection lost
+		await this.setStateAsync("info.connection", true, true);
+		this.log.info("Connected to interface.");
+
+		this.Connection?.KLF200SocketProtocol?.socket.on("close", async (hadError: boolean) => {
+			// Reset the connection indicator
+			await this.setStateAsync("info.connection", false, true);
+			if (hadError === true) {
+				this.log.error("The underlying connection has been closed due to some error.");
+			}
 		});
 
-		// in this template all states changes inside the adapters namespace are subscribed
-		this.subscribeStates("*");
+		// Read device info, scenes, groups and products and setup device
+		this.log.info(`Reading device information...`);
+		this._Gateway = new Gateway(this.Connection!);
 
-		/*
-		setState examples
-		you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-		*/
-		// the variable testVariable is set to true as command (ack=false)
-		await this.setStateAsync("testVariable", true);
+		this.log.info(`Enabling the house status monitor...`);
+		await this.Gateway?.enableHouseStatusMonitorAsync();
 
-		// same thing, but the value is flagged "ack"
-		// ack should be always set to true if the value is received from or acknowledged from the target system
-		await this.setStateAsync("testVariable", { val: true, ack: true });
+		this.log.info(`Setting UTC clock to the current time.`);
+		await this.Gateway?.setUTCDateTimeAsync();
 
-		// same thing, but the state is deleted after 30s (getState will return null afterwards)
-		await this.setStateAsync("testVariable", { val: true, ack: true, expire: 30 });
+		this.log.info(`Setting time zone to :GMT+1:GMT+2:0060:(1994)040102-0:110102-0`);
+		await this.Gateway?.setTimeZoneAsync(":GMT+1:GMT+2:0060:(1994)040102-0:110102-0");
 
-		// // examples for the checkPassword/checkGroup functions
-		// let result = await this.checkPasswordAsync("admin", "iobroker");
-		// this.log.info("check user admin pw ioboker: " + result);
+		this.log.info(`Reading scenes...`);
+		this._Scenes = await Scenes.createScenesAsync(this.Connection!);
 
-		// result = await this.checkGroupAsync("admin", "admin");
-		// this.log.info("check group user admin group admin: " + result);
+		this.log.info(`Reading groups...`);
+		this._Groups = await Groups.createGroupsAsync(this.Connection!);
+
+		this.log.info(`Reading products...`);
+		this._Products = await Products.createProductsAsync(this.Connection!);
+
+		// Setup states
+		await Setup.setupGlobalAsync(this);
+		this.disposables.push(...(await SetupScenes.createScenesAsync(this, this.Scenes?.Scenes ?? [])));
+		this.disposables.push(
+			...(await SetupGroups.createGroupsAsync(this, this.Groups?.Groups ?? [], this.Products?.Products ?? [])),
+		);
+		this.disposables.push(...(await SetupProducts.createProductsAsync(this, this.Products?.Products ?? [])));
 	}
 
 	/**
 	 * Is called when adapter shuts down - callback has to be called under any circumstances!
 	 */
-	private onUnload(callback: () => void): void {
+	private async onUnload(callback: () => void): Promise<void> {
 		try {
-			this.log.info("cleaned everything up...");
+			// Disconnect all event handlers
+			this.log.info(`Shutting down event handlers...`);
+			this.disposables.forEach((disposable) => {
+				disposable.dispose();
+			});
+
+			// Disconnect from the device
+			this.log.info(`Disconnecting from the KLF-200...`);
+			await this.Connection?.logoutAsync();
+
+			this.log.info("Cleaned everything up...");
 			callback();
 		} catch (e) {
 			callback();
 		}
 	}
 
-	/**
-	 * Is called if a subscribed object changes
-	 */
-	private onObjectChange(id: string, obj: ioBroker.Object | null | undefined): void {
-		if (obj) {
-			// The object was changed
-			this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-		} else {
-			// The object was deleted
-			this.log.info(`object ${id} deleted`);
-		}
-	}
+	// /**
+	//  * Is called if a subscribed object changes
+	//  */
+	// private onObjectChange(id: string, obj: ioBroker.Object | null | undefined): void {
+	// 	if (obj) {
+	// 		// The object was changed
+	// 		this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
+	// 	} else {
+	// 		// The object was deleted
+	// 		this.log.info(`object ${id} deleted`);
+	// 	}
+	// }
 
-	/**
-	 * Is called if a subscribed state changes
-	 */
-	private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
-		if (state) {
-			// The state was changed
-			this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-		} else {
-			// The state was deleted
-			this.log.info(`state ${id} deleted`);
-		}
-	}
+	// /**
+	//  * Is called if a subscribed state changes
+	//  */
+	// private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
+	// 	if (state) {
+	// 		// The state was changed
+	// 		this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+	// 	} else {
+	// 		// The state was deleted
+	// 		this.log.info(`state ${id} deleted`);
+	// 	}
+	// }
 
 	// /**
 	//  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
