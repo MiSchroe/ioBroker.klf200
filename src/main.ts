@@ -22,7 +22,7 @@ declare global {
 	namespace ioBroker {
 		interface AdapterConfig {
 			// Define the shape of your options here (recommended)
-			hostname: string;
+			host: string;
 			password: string;
 			// Or use a catch-all approach
 			// [key: string]: any;
@@ -80,12 +80,12 @@ class Klf200 extends utils.Adapter {
 		await this.setStateAsync("info.connection", false, true);
 
 		// Setup connection and initialize objects and states
-		this._Connection = new Connection(this.config.hostname); // TODO: Add configs for CA and fingerprint
-		this.log.info(`Host: ${this.config.hostname}`);
+		this._Connection = new Connection(this.config.host); // TODO: Add configs for CA and fingerprint
+		this.log.info(`Host: ${this.config.host}`);
 		try {
 			await this.Connection?.loginAsync(this.config.password);
 		} catch (error) {
-			this.terminate(`Login to KLF-200 device at ${this.config.hostname} failed.`);
+			this.terminate(`Login to KLF-200 device at ${this.config.host} failed.`);
 			return;
 		}
 
