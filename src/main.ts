@@ -7,7 +7,7 @@
 import * as utils from "@iobroker/adapter-core";
 import { Connection, Gateway, Groups, IConnection, Products, Scenes } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
-import { Setup } from "../build/setup";
+import { Setup } from "./setup";
 import { SetupGroups } from "./setupGroups";
 import { SetupProducts } from "./setupProducts";
 import { SetupScenes } from "./setupScenes";

@@ -7,9 +7,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
 const klf_200_api_1 = require("klf-200-api");
+const setup_1 = require("./setup");
+const setupGroups_1 = require("./setupGroups");
+const setupProducts_1 = require("./setupProducts");
+const setupScenes_1 = require("./setupScenes");
 class Klf200 extends utils.Adapter {
     constructor(options = {}) {
         super(Object.assign(Object.assign({}, options), { name: "klf200" }));
+        this.disposables = [];
         this.on("ready", this.onReady.bind(this));
         // this.on("objectChange", this.onObjectChange.bind(this));
         // this.on("stateChange", this.onStateChange.bind(this));
@@ -36,17 +41,17 @@ class Klf200 extends utils.Adapter {
      */
     async onReady() {
         // Initialize your adapter here
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
         // Reset the connection indicator during startup
         await this.setStateAsync("info.connection", false, true);
         // Setup connection and initialize objects and states
-        this._Connection = new klf_200_api_1.Connection(this.config.hostname); // TODO: Add configs for CA and fingerprint
-        this.log.info(`Host: ${this.config.hostname}`);
+        this._Connection = new klf_200_api_1.Connection(this.config.host); // TODO: Add configs for CA and fingerprint
+        this.log.info(`Host: ${this.config.host}`);
         try {
             await ((_a = this.Connection) === null || _a === void 0 ? void 0 : _a.loginAsync(this.config.password));
         }
         catch (error) {
-            this.terminate(`Login to KLF-200 device at ${this.config.hostname} failed.`);
+            this.terminate(`Login to KLF-200 device at ${this.config.host} failed.`);
             return;
         }
         // Set the connection indicator to true and register a callback for connection lost
@@ -74,43 +79,31 @@ class Klf200 extends utils.Adapter {
         this._Groups = await klf_200_api_1.Groups.createGroupsAsync(this.Connection);
         this.log.info(`Reading products...`);
         this._Products = await klf_200_api_1.Products.createProductsAsync(this.Connection);
+        // Setup states
+        await setup_1.Setup.setupGlobalAsync(this);
+        this.disposables.push(...(await setupScenes_1.SetupScenes.createScenesAsync(this, (_h = (_g = this.Scenes) === null || _g === void 0 ? void 0 : _g.Scenes) !== null && _h !== void 0 ? _h : [])));
+        this.disposables.push(...(await setupGroups_1.SetupGroups.createGroupsAsync(this, (_k = (_j = this.Groups) === null || _j === void 0 ? void 0 : _j.Groups) !== null && _k !== void 0 ? _k : [], (_m = (_l = this.Products) === null || _l === void 0 ? void 0 : _l.Products) !== null && _m !== void 0 ? _m : [])));
+        this.disposables.push(...(await setupProducts_1.SetupProducts.createProductsAsync(this, (_p = (_o = this.Products) === null || _o === void 0 ? void 0 : _o.Products) !== null && _p !== void 0 ? _p : [])));
     }
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
      */
-    onUnload(callback) {
+    async onUnload(callback) {
+        var _a;
         try {
-            this.log.info("cleaned everything up...");
+            // Disconnect all event handlers
+            this.log.info(`Shutting down event handlers...`);
+            this.disposables.forEach((disposable) => {
+                disposable.dispose();
+            });
+            // Disconnect from the device
+            this.log.info(`Disconnecting from the KLF-200...`);
+            await ((_a = this.Connection) === null || _a === void 0 ? void 0 : _a.logoutAsync());
+            this.log.info("Cleaned everything up...");
             callback();
         }
         catch (e) {
             callback();
-        }
-    }
-    /**
-     * Is called if a subscribed object changes
-     */
-    onObjectChange(id, obj) {
-        if (obj) {
-            // The object was changed
-            this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-        }
-        else {
-            // The object was deleted
-            this.log.info(`object ${id} deleted`);
-        }
-    }
-    /**
-     * Is called if a subscribed state changes
-     */
-    onStateChange(id, state) {
-        if (state) {
-            // The state was changed
-            this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-        }
-        else {
-            // The state was deleted
-            this.log.info(`state ${id} deleted`);
         }
     }
 }
