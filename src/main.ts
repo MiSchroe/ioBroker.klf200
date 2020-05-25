@@ -74,62 +74,78 @@ class Klf200 extends utils.Adapter {
 	 * Is called when databases are connected and adapter received configuration.
 	 */
 	private async onReady(): Promise<void> {
-		// Initialize your adapter here
-
-		// Reset the connection indicator during startup
-		await this.setStateAsync("info.connection", false, true);
-
-		// Setup connection and initialize objects and states
-		this._Connection = new Connection(this.config.host); // TODO: Add configs for CA and fingerprint
-		this.log.info(`Host: ${this.config.host}`);
 		try {
-			await this.Connection?.loginAsync(this.config.password);
-		} catch (error) {
-			this.terminate(`Login to KLF-200 device at ${this.config.host} failed.`);
-			return;
-		}
+			// Initialize your adapter here
 
-		// Set the connection indicator to true and register a callback for connection lost
-		await this.setStateAsync("info.connection", true, true);
-		this.log.info("Connected to interface.");
-
-		this.Connection?.KLF200SocketProtocol?.socket.on("close", async (hadError: boolean) => {
-			// Reset the connection indicator
+			// Reset the connection indicator during startup
 			await this.setStateAsync("info.connection", false, true);
-			if (hadError === true) {
-				this.log.error("The underlying connection has been closed due to some error.");
+
+			// Setup connection and initialize objects and states
+			this._Connection = new Connection(this.config.host); // TODO: Add configs for CA and fingerprint
+			this.log.info(`Host: ${this.config.host}`);
+			try {
+				await this.Connection?.loginAsync(this.config.password);
+			} catch (error) {
+				this.terminate(`Login to KLF-200 device at ${this.config.host} failed.`);
+				return;
 			}
-		});
 
-		// Read device info, scenes, groups and products and setup device
-		this.log.info(`Reading device information...`);
-		this._Gateway = new Gateway(this.Connection!);
+			// Set the connection indicator to true and register a callback for connection lost
+			await this.setStateAsync("info.connection", true, true);
+			this.log.info("Connected to interface.");
 
-		this.log.info(`Enabling the house status monitor...`);
-		await this.Gateway?.enableHouseStatusMonitorAsync();
+			this.Connection?.KLF200SocketProtocol?.socket.on("close", async (hadError: boolean) => {
+				// Reset the connection indicator
+				await this.setStateAsync("info.connection", false, true);
+				if (hadError === true) {
+					this.log.error("The underlying connection has been closed due to some error.");
+				}
+			});
 
-		this.log.info(`Setting UTC clock to the current time.`);
-		await this.Gateway?.setUTCDateTimeAsync();
+			// Read device info, scenes, groups and products and setup device
+			this.log.info(`Reading device information...`);
+			this._Gateway = new Gateway(this.Connection!);
 
-		this.log.info(`Setting time zone to :GMT+1:GMT+2:0060:(1994)040102-0:110102-0`);
-		await this.Gateway?.setTimeZoneAsync(":GMT+1:GMT+2:0060:(1994)040102-0:110102-0");
+			this.log.info(`Enabling the house status monitor...`);
+			await this.Gateway?.enableHouseStatusMonitorAsync();
 
-		this.log.info(`Reading scenes...`);
-		this._Scenes = await Scenes.createScenesAsync(this.Connection!);
+			this.log.info(`Setting UTC clock to the current time.`);
+			await this.Gateway?.setUTCDateTimeAsync();
 
-		this.log.info(`Reading groups...`);
-		this._Groups = await Groups.createGroupsAsync(this.Connection!);
+			this.log.info(`Setting time zone to :GMT+1:GMT+2:0060:(1994)040102-0:110102-0`);
+			await this.Gateway?.setTimeZoneAsync(":GMT+1:GMT+2:0060:(1994)040102-0:110102-0");
 
-		this.log.info(`Reading products...`);
-		this._Products = await Products.createProductsAsync(this.Connection!);
+			this.log.info(`Reading scenes...`);
+			this._Scenes = await Scenes.createScenesAsync(this.Connection!);
+			this.log.info(`${this.Scenes?.Scenes.length} scenes found.`);
 
-		// Setup states
-		await Setup.setupGlobalAsync(this);
-		this.disposables.push(...(await SetupScenes.createScenesAsync(this, this.Scenes?.Scenes ?? [])));
-		this.disposables.push(
-			...(await SetupGroups.createGroupsAsync(this, this.Groups?.Groups ?? [], this.Products?.Products ?? [])),
-		);
-		this.disposables.push(...(await SetupProducts.createProductsAsync(this, this.Products?.Products ?? [])));
+			this.log.info(`Reading groups...`);
+			this._Groups = await Groups.createGroupsAsync(this.Connection!);
+			this.log.info(`${this.Groups?.Groups.length} groups found.`);
+
+			this.log.info(`Reading products...`);
+			this._Products = await Products.createProductsAsync(this.Connection!);
+			this.log.info(`${this.Products?.Products.length} products found.`);
+
+			// Setup states
+			await Setup.setupGlobalAsync(this);
+			this.disposables.push(...(await SetupScenes.createScenesAsync(this, this.Scenes?.Scenes ?? [])));
+			this.disposables.push(
+				...(await SetupGroups.createGroupsAsync(
+					this,
+					this.Groups?.Groups ?? [],
+					this.Products?.Products ?? [],
+				)),
+			);
+			this.disposables.push(...(await SetupProducts.createProductsAsync(this, this.Products?.Products ?? [])));
+
+			// Write a finish setup log entry
+			this.log.info(`Adapter is ready for use.`);
+		} catch (e) {
+			this.log.error(`Error during initialization of the adapter.`);
+			this.log.error(e);
+			this.terminate(e);
+		}
 	}
 
 	/**
