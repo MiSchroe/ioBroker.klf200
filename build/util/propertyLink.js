@@ -99,6 +99,9 @@ class SimpleStateChangeHandler extends BaseStateChangeHandler {
         if (SetterMethodName === undefined) {
             this.SetterMethodName = `set${Property}Async`;
         }
+        this.Adapter.log.debug(`Create a simple state change handler to listen to state ${this.StateId} linked to property ${this.Property
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        } on type ${this.LinkedObject.constructor.name}.`);
         // Double check, that the setter method exists
         if (typeof LinkedObject[this.SetterMethodName] === "function") {
             this.setterFunction = LinkedObject[this.SetterMethodName];
@@ -108,6 +111,7 @@ class SimpleStateChangeHandler extends BaseStateChangeHandler {
         }
     }
     async onStateChange(state) {
+        this.Adapter.log.debug(`SimpleStateChangeHandler.onStateChange: ${state}`);
         if ((state === null || state === void 0 ? void 0 : state.ack) === false) {
             await this.setterFunction.call(this.LinkedObject, state.val);
         }

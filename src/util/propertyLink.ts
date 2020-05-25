@@ -138,6 +138,13 @@ export class SimpleStateChangeHandler<T extends Component> extends BaseStateChan
 			this.SetterMethodName = `set${Property}Async` as keyof T;
 		}
 
+		this.Adapter.log.debug(
+			`Create a simple state change handler to listen to state ${this.StateId} linked to property ${
+				this.Property
+				// eslint-disable-next-line @typescript-eslint/ban-types
+			} on type ${(this.LinkedObject as Object).constructor.name}.`,
+		);
+
 		// Double check, that the setter method exists
 		if (typeof LinkedObject[this.SetterMethodName!] === "function") {
 			this.setterFunction = (LinkedObject[this.SetterMethodName!] as unknown) as Function;
@@ -147,6 +154,7 @@ export class SimpleStateChangeHandler<T extends Component> extends BaseStateChan
 	}
 
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
+		this.Adapter.log.debug(`SimpleStateChangeHandler.onStateChange: ${state}`);
 		if (state?.ack === false) {
 			await this.setterFunction.call(this.LinkedObject, state.val);
 		}

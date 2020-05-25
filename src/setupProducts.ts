@@ -40,6 +40,8 @@ export class SetupProducts {
 	public static async createProductAsync(adapter: ioBroker.Adapter, product: Product): Promise<Disposable[]> {
 		const disposableEvents: Disposable[] = [];
 
+		adapter.log.info(`Setup objects for product ${product.Name}.`);
+
 		await adapter.setObjectNotExistsAsync(`products.${product.NodeID}`, {
 			type: "channel",
 			common: {
@@ -449,6 +451,7 @@ export class SetupProducts {
 		);
 
 		// Setup product listener
+		adapter.log.debug(`Setup change event listeners for product ${product.Name}.`);
 		disposableEvents.push(
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
@@ -538,6 +541,7 @@ export class SetupProducts {
 			),
 		);
 
+		adapter.log.debug(`Setup state change listeners for product ${product.Name}.`);
 		const nodeVariationHandler = new SimpleStateChangeHandler<Product>(
 			adapter,
 			`products.${product.NodeID}.nodeVariation`,
