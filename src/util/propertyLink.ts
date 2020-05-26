@@ -114,11 +114,11 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 	}
 
 	async Initialize(): Promise<void> {
-		// Bind the stateChanged function to the stateChange event
-		this.Adapter.on("stateChange", this.stateChanged.bind(this));
+		// // Bind the stateChanged function to the stateChange event
+		// this.Adapter.on("stateChange", this.stateChanged.bind(this));
 
 		// Listen to the corresponding stateChange event
-		await this.Adapter.subscribeStatesAsync(this.StateId);
+		await this.Adapter.subscribeStatesAsync(this.StateId, { stateChange: this.stateChanged.bind(this) });
 	}
 }
 
