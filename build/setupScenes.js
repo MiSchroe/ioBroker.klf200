@@ -94,3 +94,4 @@ class SetupScenes {
     }
 }
 exports.SetupScenes = SetupScenes;
+//# sourceMappingURL=setupScenes.js.map

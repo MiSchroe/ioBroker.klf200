@@ -3,7 +3,13 @@
 import { Product } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { levelConverter, roleConverter } from "./util/converter";
-import { ComplexStateChangeHandler, SimplePropertyChangedHandler, SimpleStateChangeHandler } from "./util/propertyLink";
+import {
+	ComplexStateChangeHandler,
+	PercentagePropertyChangeHandler,
+	PercentageStateChangeHandler,
+	SimplePropertyChangedHandler,
+	SimpleStateChangeHandler,
+} from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
 
 export class SetupProducts {
@@ -485,9 +491,9 @@ export class SetupProducts {
 				"TargetPositionRaw",
 				product,
 			),
-			new SimplePropertyChangedHandler<Product>(
+			new PercentagePropertyChangeHandler<Product>(
 				adapter,
-				`products.${product.NodeID}.targetPosition`,
+				`products.${product.NodeID}.level`,
 				"TargetPosition",
 				product,
 			),
@@ -569,7 +575,7 @@ export class SetupProducts {
 		await placementHandler.Initialize();
 		disposableEvents.push(placementHandler);
 
-		const levelHandler = new SimpleStateChangeHandler<Product>(
+		const levelHandler = new PercentageStateChangeHandler<Product>(
 			adapter,
 			`products.${product.NodeID}.level`,
 			"TargetPosition",

@@ -209,7 +209,7 @@ describe("PropertyLink", function () {
 			await adapter.setStateAsync(stateID, testComponent.NumberValue, true);
 		});
 
-		it("should set the property 'NumberValue' to 43 when the adapter state is set.", async function () {
+		it.skip("should set the property 'NumberValue' to 43 when the adapter state is set.", async function () {
 			const expectedResult = 43;
 
 			const SUT = new SimpleStateChangeHandler<TestComponent>(
@@ -236,7 +236,7 @@ describe("PropertyLink", function () {
 			}
 		});
 
-		it("should set the property 'NumberValue' to 43 when the adapter state is set with explicit setterMethodName.", async function () {
+		it.skip("should set the property 'NumberValue' to 43 when the adapter state is set with explicit setterMethodName.", async function () {
 			const expectedResult = 43;
 
 			const SUT = new SimpleStateChangeHandler<TestComponent>(
@@ -287,7 +287,7 @@ describe("PropertyLink", function () {
 			await adapter.setStateAsync(stateID, testComponent.NumberValue, true);
 		});
 
-		it("should call the provided handly exaclty once.", async function () {
+		it.skip("should call the provided handly exaclty once.", async function () {
 			const expectedResult = 43;
 
 			const handler = sinon.stub<[ioBroker.State | null | undefined], Promise<void>>();

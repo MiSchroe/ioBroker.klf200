@@ -95,6 +95,12 @@ export class SimplePropertyChangedHandler<T extends Component> extends BasePrope
 	}
 }
 
+export class PercentagePropertyChangeHandler<T extends Component> extends SimplePropertyChangedHandler<T> {
+	async onPropertyChangedTypedEvent(newValue: T[keyof T]): Promise<string> {
+		return await this.Adapter.setStateAsync(this.StateId, (MapAnyPropertyToState(newValue) as number) * 100, true);
+	}
+}
+
 export abstract class BaseStateChangeHandler implements StateChangedEventHandler, Disposable {
 	constructor(readonly Adapter: ioBroker.Adapter, readonly StateId: string) {}
 
@@ -104,7 +110,7 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 	}
 
 	private async stateChanged(id: string, obj: ioBroker.State | null | undefined): Promise<void> {
-		if (id === this.StateId) {
+		if (id === `${this.Adapter.namespace}.${this.StateId}`) {
 			await this.onStateChange(obj);
 		}
 	}
@@ -114,17 +120,15 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 	}
 
 	async Initialize(): Promise<void> {
-		// // Bind the stateChanged function to the stateChange event
-		// this.Adapter.on("stateChange", this.stateChanged.bind(this));
+		// Bind the stateChanged function to the stateChange event
+		this.Adapter.on("stateChange", this.stateChanged.bind(this));
 
 		// Listen to the corresponding stateChange event
-		await this.Adapter.subscribeStatesAsync(this.StateId, { stateChange: this.stateChanged.bind(this) });
+		await this.Adapter.subscribeStatesAsync(this.StateId);
 	}
 }
 
 export class SimpleStateChangeHandler<T extends Component> extends BaseStateChangeHandler {
-	private setterFunction: Function;
-
 	constructor(
 		Adapter: ioBroker.Adapter,
 		StateId: string,
@@ -153,10 +157,23 @@ export class SimpleStateChangeHandler<T extends Component> extends BaseStateChan
 		}
 	}
 
+	private setterFunction: Function;
+	get SetterFunction(): Function {
+		return this.setterFunction;
+	}
+
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
 		this.Adapter.log.debug(`SimpleStateChangeHandler.onStateChange: ${state}`);
 		if (state?.ack === false) {
 			await this.setterFunction.call(this.LinkedObject, state.val);
+		}
+	}
+}
+
+export class PercentageStateChangeHandler<T extends Component> extends SimpleStateChangeHandler<T> {
+	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
+		if (state?.ack === false) {
+			await this.SetterFunction.call(this.LinkedObject, (state.val as number) / 100);
 		}
 	}
 }

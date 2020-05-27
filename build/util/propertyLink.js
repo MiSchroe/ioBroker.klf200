@@ -65,6 +65,12 @@ class SimplePropertyChangedHandler extends BasePropertyChangedHandler {
     }
 }
 exports.SimplePropertyChangedHandler = SimplePropertyChangedHandler;
+class PercentagePropertyChangeHandler extends SimplePropertyChangedHandler {
+    async onPropertyChangedTypedEvent(newValue) {
+        return await this.Adapter.setStateAsync(this.StateId, MapAnyPropertyToState(newValue) * 100, true);
+    }
+}
+exports.PercentagePropertyChangeHandler = PercentagePropertyChangeHandler;
 class BaseStateChangeHandler {
     constructor(Adapter, StateId) {
         this.Adapter = Adapter;
@@ -75,7 +81,7 @@ class BaseStateChangeHandler {
         throw new Error("Method not implemented.");
     }
     async stateChanged(id, obj) {
-        if (id === this.StateId) {
+        if (id === `${this.Adapter.namespace}.${this.StateId}`) {
             await this.onStateChange(obj);
         }
     }
@@ -83,10 +89,10 @@ class BaseStateChangeHandler {
         await this.Adapter.unsubscribeStatesAsync(this.StateId);
     }
     async Initialize() {
-        // // Bind the stateChanged function to the stateChange event
-        // this.Adapter.on("stateChange", this.stateChanged.bind(this));
+        // Bind the stateChanged function to the stateChange event
+        this.Adapter.on("stateChange", this.stateChanged.bind(this));
         // Listen to the corresponding stateChange event
-        await this.Adapter.subscribeStatesAsync(this.StateId, { stateChange: this.stateChanged.bind(this) });
+        await this.Adapter.subscribeStatesAsync(this.StateId);
     }
 }
 exports.BaseStateChangeHandler = BaseStateChangeHandler;
@@ -110,6 +116,9 @@ class SimpleStateChangeHandler extends BaseStateChangeHandler {
             throw new Error(`${this.SetterMethodName} is not a function.`);
         }
     }
+    get SetterFunction() {
+        return this.setterFunction;
+    }
     async onStateChange(state) {
         this.Adapter.log.debug(`SimpleStateChangeHandler.onStateChange: ${state}`);
         if ((state === null || state === void 0 ? void 0 : state.ack) === false) {
@@ -118,6 +127,14 @@ class SimpleStateChangeHandler extends BaseStateChangeHandler {
     }
 }
 exports.SimpleStateChangeHandler = SimpleStateChangeHandler;
+class PercentageStateChangeHandler extends SimpleStateChangeHandler {
+    async onStateChange(state) {
+        if ((state === null || state === void 0 ? void 0 : state.ack) === false) {
+            await this.SetterFunction.call(this.LinkedObject, state.val / 100);
+        }
+    }
+}
+exports.PercentageStateChangeHandler = PercentageStateChangeHandler;
 class ComplexStateChangeHandler extends BaseStateChangeHandler {
     constructor(Adapter, StateId, Handler) {
         super(Adapter, StateId);
@@ -130,3 +147,4 @@ class ComplexStateChangeHandler extends BaseStateChangeHandler {
     }
 }
 exports.ComplexStateChangeHandler = ComplexStateChangeHandler;
+//# sourceMappingURL=propertyLink.js.map

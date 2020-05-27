@@ -60,3 +60,4 @@ const levelTypeMap = {
     [klf_200_api_1.ActuatorType.SwingingShutter]: "level.blind",
 };
 exports.levelConverter = new EnumConverter(levelTypeMap);
+//# sourceMappingURL=converter.js.map
