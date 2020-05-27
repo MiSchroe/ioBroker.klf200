@@ -11,6 +11,7 @@ import {
 	SimpleStateChangeHandler,
 } from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
+import { ArrayCount } from "./util/utils";
 
 export class SetupProducts {
 	public static async createProductsAsync(adapter: ioBroker.Adapter, products: Product[]): Promise<Disposable[]> {
@@ -37,7 +38,7 @@ export class SetupProducts {
 				desc: "Number of products connected to the interface",
 			},
 			{},
-			products.length,
+			ArrayCount(products),
 		);
 
 		return disposableEvents;

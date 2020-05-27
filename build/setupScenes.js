@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const propertyLink_1 = require("./util/propertyLink");
 const stateHelper_1 = require("./util/stateHelper");
+const utils_1 = require("./util/utils");
 class SetupScenes {
     static async createScenesAsync(adapter, scenes) {
         const disposableEvents = [];
@@ -20,7 +21,7 @@ class SetupScenes {
             min: 0,
             def: 0,
             desc: "Number of scenes defined in the interface",
-        }, {}, scenes.length);
+        }, {}, utils_1.ArrayCount(scenes));
         return disposableEvents;
     }
     static async createSceneAsync(adapter, scene) {
@@ -40,7 +41,7 @@ class SetupScenes {
             read: true,
             write: false,
             desc: "Number of products in the scene",
-        }, {}, scene.Products.length);
+        }, {}, utils_1.ArrayCount(scene.Products));
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `scenes.${scene.SceneID}.run`, {
             name: "run",
             role: "button.play",
@@ -69,7 +70,7 @@ class SetupScenes {
             }
             return result;
         }), new propertyLink_1.ComplexPropertyChangedHandler(adapter, "Products", scene, async (newValue) => {
-            return await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.productsCount`, newValue.length, true);
+            return await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.productsCount`, utils_1.ArrayCount(newValue), true);
         }));
         // Setup state listeners
         const stopListener = new propertyLink_1.ComplexStateChangeHandler(adapter, `scenes.${scene.SceneID}.stop`, async (state) => {

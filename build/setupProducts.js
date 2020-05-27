@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const converter_1 = require("./util/converter");
 const propertyLink_1 = require("./util/propertyLink");
 const stateHelper_1 = require("./util/stateHelper");
+const utils_1 = require("./util/utils");
 class SetupProducts {
     static async createProductsAsync(adapter, products) {
         const disposableEvents = [];
@@ -21,7 +22,7 @@ class SetupProducts {
             min: 0,
             def: 0,
             desc: "Number of products connected to the interface",
-        }, {}, products.length);
+        }, {}, utils_1.ArrayCount(products));
         return disposableEvents;
     }
     static async createProductAsync(adapter, product) {

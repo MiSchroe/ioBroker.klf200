@@ -9,6 +9,7 @@ import {
 	SimpleStateChangeHandler,
 } from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
+import { ArrayCount } from "./util/utils";
 
 const mapPropertyToState = {
 	NodeVariation: "nodeVariation",
@@ -47,7 +48,7 @@ export class SetupGroups {
 				desc: "Number of groups defined in the interface",
 			},
 			{},
-			groups.length,
+			ArrayCount(groups),
 		);
 
 		return disposableEvents;
@@ -96,7 +97,7 @@ export class SetupGroups {
 				desc: `Number of products that are contained in the group.`,
 			},
 			{},
-			group.Nodes.length,
+			ArrayCount(group.Nodes),
 		);
 
 		await StateHelper.createAndSetStateAsync(
@@ -219,7 +220,7 @@ export class SetupGroups {
 			new ComplexPropertyChangedHandler<Group>(adapter, "Nodes", group, async (newValue) => {
 				return await adapter.setStateChangedAsync(
 					`groups.${group.GroupID}.productsCount`,
-					(newValue as number[]).length,
+					ArrayCount(newValue as number[]),
 					true,
 				);
 			}),

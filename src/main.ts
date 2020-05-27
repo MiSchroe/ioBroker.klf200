@@ -11,6 +11,7 @@ import { Setup } from "./setup";
 import { SetupGroups } from "./setupGroups";
 import { SetupProducts } from "./setupProducts";
 import { SetupScenes } from "./setupScenes";
+import { ArrayCount } from "./util/utils";
 
 // Load your modules here, e.g.:
 // import * as fs from "fs";
@@ -117,15 +118,15 @@ class Klf200 extends utils.Adapter {
 
 			this.log.info(`Reading scenes...`);
 			this._Scenes = await Scenes.createScenesAsync(this.Connection!);
-			this.log.info(`${this.Scenes?.Scenes.length} scenes found.`);
+			this.log.info(`${ArrayCount(this.Scenes!.Scenes)} scenes found.`);
 
 			this.log.info(`Reading groups...`);
 			this._Groups = await Groups.createGroupsAsync(this.Connection!);
-			this.log.info(`${this.Groups?.Groups.length} groups found.`);
+			this.log.info(`${ArrayCount(this.Groups!.Groups)} groups found.`);
 
 			this.log.info(`Reading products...`);
 			this._Products = await Products.createProductsAsync(this.Connection!);
-			this.log.info(`${this.Products?.Products.length} products found.`);
+			this.log.info(`${ArrayCount(this.Products!.Products)} products found.`);
 
 			// Setup states
 			await Setup.setupGlobalAsync(this);

@@ -4,6 +4,7 @@ import { Scene, SceneInformationEntry } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { ComplexPropertyChangedHandler, ComplexStateChangeHandler } from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
+import { ArrayCount } from "./util/utils";
 
 export class SetupScenes {
 	public static async createScenesAsync(adapter: ioBroker.Adapter, scenes: Scene[]): Promise<Disposable[]> {
@@ -30,7 +31,7 @@ export class SetupScenes {
 				desc: "Number of scenes defined in the interface",
 			},
 			{},
-			scenes.length,
+			ArrayCount(scenes),
 		);
 
 		return disposableEvents;
@@ -60,7 +61,7 @@ export class SetupScenes {
 				desc: "Number of products in the scene",
 			},
 			{},
-			scene.Products.length,
+			ArrayCount(scene.Products),
 		);
 
 		await StateHelper.createAndSetStateAsync(
@@ -109,7 +110,7 @@ export class SetupScenes {
 			new ComplexPropertyChangedHandler<Scene>(adapter, "Products", scene, async (newValue) => {
 				return await adapter.setStateChangedAsync(
 					`scenes.${scene.SceneID}.productsCount`,
-					(newValue as SceneInformationEntry[]).length,
+					ArrayCount(newValue as SceneInformationEntry[]),
 					true,
 				);
 			}),
