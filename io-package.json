@@ -1,163 +1,168 @@
 {
-	"common": {
-		"name": "klf200",
-		"version": "1.0.0",
-		"news": {
-			"1.0.0": {
-				"en": "Support for KLF firmware 2.0.0.71",
-				"de": "Umstellung auf KLF-Firmware 2.0.0.71"
-			},
-			"0.9.5": {
-				"en": "Bug fixes",
-				"de": "Fehlerbehebung",
-				"ru": "Исправление ошибок",
-				"pt": "Correções de bugs",
-				"nl": "Bugfixes",
-				"fr": "Corrections de bugs",
-				"it": "Correzioni di bug",
-				"es": "Corrección de errores",
-				"pl": "Poprawki błędów"
-			},
-			"0.9.4": {
-				"en": "Compatible to Admin 3, add documentation",
-				"de": "Kompatibel mit Admin 3, Dokumentation hinzufügen",
-				"ru": "Совместимость с Admin 3, добавьте документацию",
-				"pt": "Compatível com o Admin 3, adicione documentação",
-				"nl": "Compatibel met Admin 3, voeg documentatie toe",
-				"fr": "Compatible avec Admin 3, ajouter de la documentation",
-				"it": "Compatibile con Admin 3, aggiungere documentazione",
-				"es": "Compatible con Admin 3, agregar documentación",
-				"pl": "Zgodny z Admin 3, dodaj dokumentację"
-			},
-			"0.9.3": {
-				"en": "Run scenes from products possible",
-				"de": "Szenen aus Produkten ausführen",
-				"ru": "Выполнить сцены из возможных продуктов",
-				"pt": "Executar cenas de produtos possíveis",
-				"nl": "Run scènes van producten mogelijk",
-				"fr": "Exécuter des scènes de produits possibles",
-				"it": "Esegui scene dai prodotti possibili",
-				"es": "Ejecutar escenas de productos posibles",
-				"pl": "Uruchamiaj sceny z możliwych produktów"
-			},
-			"0.9.2": {
-				"en": "Corrected version number",
-				"de": "Die Versionsnummer wurde korrigiert",
-				"ru": "Исправленный номер версии",
-				"pt": "Número de versão corrigido",
-				"nl": "Gecorrigeerd versienummer",
-				"fr": "Numéro de version corrigé",
-				"it": "Numero di versione corretto",
-				"es": "Número de versión corregida",
-				"pl": "Poprawiony numer wersji"
-			},
-			"0.9.1": {
-				"en": "Minor bug fixes",
-				"de": "Kleinere Fehlerkorrekturen",
-				"ru": "Мелкие исправления",
-				"pt": "Pequenas correções de bugs",
-				"nl": "Kleine bugfixes",
-				"fr": "Corrections de bugs mineurs",
-				"it": "Correzioni di bug minori",
-				"es": "Correcciones de errores menores",
-				"pl": "Drobne poprawki błędów"
-			},
-			"0.9.0": {
-				"en": "Initial public beta version",
-				"de": "Erste öffentliche Beta-Version",
-				"ru": "Первая публичная бета-версия",
-				"pt": "Versão beta pública inicial",
-				"nl": "Initiële openbare bètaversie",
-				"fr": "Version bêta publique initiale",
-				"it": "Versione beta pubblica iniziale",
-				"es": "Versión beta pública inicial",
-				"pl": "Pierwsza publiczna wersja beta"
-			},
-			"0.0.1": {
-				"en": "initial adapter",
-				"de": "Anfangsadapter",
-				"ru": "первоначальный адаптер",
-				"pt": "adaptador inicial",
-				"nl": "eerste adapter",
-				"fr": "adaptateur initial",
-				"it": "adattatore iniziale",
-				"es": "adaptador inicial",
-				"pl": "początkowy adapter"
-			}
-		},
-		"title": "KLF-200",
-		"titleLang": {
-			"en": "KLF-200",
-			"de": "KLF-200",
-			"ru": "KLF-200",
-			"pt": "KLF-200",
-			"nl": "KLF-200",
-			"fr": "KLF-200",
-			"it": "KLF-200",
-			"es": "KLF-200",
-			"pl": "KLF-200",
-			"zh-cn": "KLF-200"
-		},
-		"desc": {
-			"en": "Controls products and scenes connected to a KLF-200 interface",
-			"de": "Steuert Produkte und Szenen, die an eine KLF-200-Schnittstelle angeschlossen sind",
-			"ru": "Управляет продуктами и сценами, подключенными к интерфейсу KLF-200",
-			"pt": "Controla produtos e cenas conectadas a uma interface KLF-200",
-			"nl": "Bestuurt producten en scènes die zijn aangesloten op een KLF-200-interface",
-			"fr": "Contrôle des produits et des scènes connectés à une interface KLF-200",
-			"it": "Controlla i prodotti e le scene connesse a un'interfaccia KLF-200",
-			"es": "Controla productos y escenas conectadas a una interfaz KLF-200",
-			"pl": "Kontroluje produkty i sceny podłączone do interfejsu KLF-200",
-			"zh-cn": "控制连接到KLF-200接口的产品和场景"
-		},
-		"authors": ["Michael Schroeder <klf200@gmx.de>"],
-		"keywords": ["KLF-200", "VELUX"],
-		"license": "MIT",
-		"platform": "Javascript/Node.js",
-		"main": "build/main.js",
-		"icon": "klf200.png",
-		"enabled": true,
-		"extIcon": "https://raw.githubusercontent.com/MiSchroe/ioBroker.klf200/master/admin/klf200.png",
-		"readme": "https://github.com/MiSchroe/ioBroker.klf200/blob/master/README.md",
-		"loglevel": "info",
-		"mode": "daemon",
-		"type": "hardware",
-		"compact": true,
-		"connectionType": "local",
-		"dataSource": "push",
-		"materialize": true,
-		"dependencies": [
-			{
-				"js-controller": ">=1.4.2"
-			}
-		]
-	},
-	"native": {
-		"host": "velux-klf-",
-		"password": ""
-	},
-	"objects": [],
-	"instanceObjects": [
-		{
-			"_id": "info",
-			"type": "channel",
-			"common": {
-				"name": "Information"
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.connection",
-			"type": "state",
-			"common": {
-				"role": "indicator.connected",
-				"name": "Device or service connected",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		}
-	]
+    "common": {
+        "name": "klf200",
+        "version": "1.0.0",
+        "news": {
+            "1.0.0": {
+                "en": "Support for KLF firmware 2.0.0.71",
+                "de": "Umstellung auf KLF-Firmware 2.0.0.71"
+            },
+            "0.9.5": {
+                "en": "Bug fixes",
+                "de": "Fehlerbehebung",
+                "ru": "Исправление ошибок",
+                "pt": "Correções de bugs",
+                "nl": "Bugfixes",
+                "fr": "Corrections de bugs",
+                "it": "Correzioni di bug",
+                "es": "Corrección de errores",
+                "pl": "Poprawki błędów"
+            },
+            "0.9.4": {
+                "en": "Compatible to Admin 3, add documentation",
+                "de": "Kompatibel mit Admin 3, Dokumentation hinzufügen",
+                "ru": "Совместимость с Admin 3, добавьте документацию",
+                "pt": "Compatível com o Admin 3, adicione documentação",
+                "nl": "Compatibel met Admin 3, voeg documentatie toe",
+                "fr": "Compatible avec Admin 3, ajouter de la documentation",
+                "it": "Compatibile con Admin 3, aggiungere documentazione",
+                "es": "Compatible con Admin 3, agregar documentación",
+                "pl": "Zgodny z Admin 3, dodaj dokumentację"
+            },
+            "0.9.3": {
+                "en": "Run scenes from products possible",
+                "de": "Szenen aus Produkten ausführen",
+                "ru": "Выполнить сцены из возможных продуктов",
+                "pt": "Executar cenas de produtos possíveis",
+                "nl": "Run scènes van producten mogelijk",
+                "fr": "Exécuter des scènes de produits possibles",
+                "it": "Esegui scene dai prodotti possibili",
+                "es": "Ejecutar escenas de productos posibles",
+                "pl": "Uruchamiaj sceny z możliwych produktów"
+            },
+            "0.9.2": {
+                "en": "Corrected version number",
+                "de": "Die Versionsnummer wurde korrigiert",
+                "ru": "Исправленный номер версии",
+                "pt": "Número de versão corrigido",
+                "nl": "Gecorrigeerd versienummer",
+                "fr": "Numéro de version corrigé",
+                "it": "Numero di versione corretto",
+                "es": "Número de versión corregida",
+                "pl": "Poprawiony numer wersji"
+            },
+            "0.9.1": {
+                "en": "Minor bug fixes",
+                "de": "Kleinere Fehlerkorrekturen",
+                "ru": "Мелкие исправления",
+                "pt": "Pequenas correções de bugs",
+                "nl": "Kleine bugfixes",
+                "fr": "Corrections de bugs mineurs",
+                "it": "Correzioni di bug minori",
+                "es": "Correcciones de errores menores",
+                "pl": "Drobne poprawki błędów"
+            },
+            "0.9.0": {
+                "en": "Initial public beta version",
+                "de": "Erste öffentliche Beta-Version",
+                "ru": "Первая публичная бета-версия",
+                "pt": "Versão beta pública inicial",
+                "nl": "Initiële openbare bètaversie",
+                "fr": "Version bêta publique initiale",
+                "it": "Versione beta pubblica iniziale",
+                "es": "Versión beta pública inicial",
+                "pl": "Pierwsza publiczna wersja beta"
+            },
+            "0.0.1": {
+                "en": "initial adapter",
+                "de": "Anfangsadapter",
+                "ru": "первоначальный адаптер",
+                "pt": "adaptador inicial",
+                "nl": "eerste adapter",
+                "fr": "adaptateur initial",
+                "it": "adattatore iniziale",
+                "es": "adaptador inicial",
+                "pl": "początkowy adapter"
+            }
+        },
+        "title": "KLF-200",
+        "titleLang": {
+            "en": "KLF-200",
+            "de": "KLF-200",
+            "ru": "KLF-200",
+            "pt": "KLF-200",
+            "nl": "KLF-200",
+            "fr": "KLF-200",
+            "it": "KLF-200",
+            "es": "KLF-200",
+            "pl": "KLF-200",
+            "zh-cn": "KLF-200"
+        },
+        "desc": {
+            "en": "Controls products and scenes connected to a KLF-200 interface",
+            "de": "Steuert Produkte und Szenen, die an eine KLF-200-Schnittstelle angeschlossen sind",
+            "ru": "Управляет продуктами и сценами, подключенными к интерфейсу KLF-200",
+            "pt": "Controla produtos e cenas conectadas a uma interface KLF-200",
+            "nl": "Bestuurt producten en scènes die zijn aangesloten op een KLF-200-interface",
+            "fr": "Contrôle des produits et des scènes connectés à une interface KLF-200",
+            "it": "Controlla i prodotti e le scene connesse a un'interfaccia KLF-200",
+            "es": "Controla productos y escenas conectadas a una interfaz KLF-200",
+            "pl": "Kontroluje produkty i sceny podłączone do interfejsu KLF-200",
+            "zh-cn": "控制连接到KLF-200接口的产品和场景"
+        },
+        "authors": [
+            "Michael Schroeder <klf200@gmx.de>"
+        ],
+        "keywords": [
+            "KLF-200",
+            "VELUX"
+        ],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "main": "build/main.js",
+        "icon": "klf200.png",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/MiSchroe/ioBroker.klf200/master/admin/klf200.png",
+        "readme": "https://github.com/MiSchroe/ioBroker.klf200/blob/master/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "hardware",
+        "compact": true,
+        "connectionType": "local",
+        "dataSource": "push",
+        "materialize": true,
+        "dependencies": [
+            {
+                "js-controller": ">=1.4.2"
+            }
+        ]
+    },
+    "native": {
+        "host": "velux-klf-",
+        "password": ""
+    },
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "Device or service connected",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        }
+    ]
 }
