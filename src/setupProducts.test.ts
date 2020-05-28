@@ -249,7 +249,7 @@ describe("setupProducts", function () {
 				value: "Window opener with integrated rain sensor",
 			},
 			{
-				state: "level",
+				state: "currentPosition",
 				value: 0,
 			},
 			{
@@ -405,9 +405,10 @@ describe("setupProducts", function () {
 
 		const testCasesForChanges = [
 			{
-				state: "level",
-				propertyName: "CurrentPosition",
+				state: "targetPosition",
+				propertyName: "TargetPosition",
 				value: 0.5,
+				expectedValue: 50,
 			},
 			{
 				state: "currentPositionRaw",
@@ -491,14 +492,16 @@ describe("setupProducts", function () {
 				disposables.length = 0;
 			});
 
-			it(`should write the ${test.state} state with '${test.value}' after change notificiation`, function () {
+			it(`should write the ${test.state} state with '${
+				test.expectedValue ?? test.value
+			}' after change notificiation`, function () {
 				const expectedState = test.state;
 				mockProduct.propertyChangedEvent.emit({
 					o: mockProduct,
 					propertyName: test.propertyName,
 					propertyValue: test.value,
 				});
-				assertStateHasValue(`test.0.products.0.${expectedState}`, test.value);
+				assertStateHasValue(`test.0.products.0.${expectedState}`, test.expectedValue ?? test.value);
 			});
 
 			it(`should write the ${test.state} state ack after change notificiation`, async function () {

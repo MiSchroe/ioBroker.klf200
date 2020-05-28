@@ -95,9 +95,13 @@ export class SimplePropertyChangedHandler<T extends Component> extends BasePrope
 	}
 }
 
-export class PercentagePropertyChangeHandler<T extends Component> extends SimplePropertyChangedHandler<T> {
+export class PercentagePropertyChangedHandler<T extends Component> extends SimplePropertyChangedHandler<T> {
 	async onPropertyChangedTypedEvent(newValue: T[keyof T]): Promise<string> {
-		return await this.Adapter.setStateAsync(this.StateId, (MapAnyPropertyToState(newValue) as number) * 100, true);
+		return await this.Adapter.setStateAsync(
+			this.StateId,
+			Math.round((MapAnyPropertyToState(newValue) as number) * 100),
+			true,
+		);
 	}
 }
 

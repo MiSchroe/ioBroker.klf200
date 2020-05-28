@@ -44,17 +44,17 @@ class SetupProducts {
             write: false,
             desc: "Category of the registered product",
         }, {}, product.Category);
-        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `products.${product.NodeID}.level`, {
-            name: "level",
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `products.${product.NodeID}.currentPosition`, {
+            name: "currentPosition",
             role: converter_1.levelConverter.convert(product.TypeID),
             type: "number",
             read: true,
-            write: true,
+            write: false,
             min: 0,
             max: 100,
             unit: "%",
             desc: "Opening level in percent",
-        }, {}, product.CurrentPosition * 100);
+        }, {}, Math.round(product.CurrentPosition * 100));
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `products.${product.NodeID}.currentPositionRaw`, {
             name: "currentPositionRaw",
             role: "value",
@@ -213,6 +213,17 @@ class SetupProducts {
             max: 0b00111111,
             desc: "",
         }, {}, product.SubType);
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `products.${product.NodeID}.targetPosition`, {
+            name: "targetPosition",
+            role: converter_1.levelConverter.convert(product.TypeID),
+            type: "number",
+            read: true,
+            write: true,
+            min: 0,
+            max: 100,
+            unit: "%",
+            desc: "Target opening level in percent. Set this value to move the product to that value, e.g. open a window, move a roller shutter.",
+        }, {}, Math.round(product.TargetPosition * 100));
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `products.${product.NodeID}.targetPositionRaw`, {
             name: "targetPositionRaw",
             role: "value",
@@ -269,7 +280,7 @@ class SetupProducts {
         }, {}, false);
         // Setup product listener
         adapter.log.debug(`Setup change event listeners for product ${product.Name}.`);
-        disposableEvents.push(new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.nodeVariation`, "NodeVariation", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.order`, "Order", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.placement`, "Placement", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.state`, "State", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.currentPositionRaw`, "CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.level`, "CurrentPosition", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.targetPositionRaw`, "TargetPositionRaw", product), new propertyLink_1.PercentagePropertyChangeHandler(adapter, `products.${product.NodeID}.level`, "TargetPosition", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.FP1CurrentPositionRaw`, "FP1CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.FP2CurrentPositionRaw`, "FP2CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.FP3CurrentPositionRaw`, "FP3CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.FP4CurrentPositionRaw`, "FP4CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.remainingTime`, "RemainingTime", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.timeStamp`, "TimeStamp", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.runStatus`, "RunStatus", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.statusReply`, "StatusReply", product));
+        disposableEvents.push(new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.nodeVariation`, "NodeVariation", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.order`, "Order", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.placement`, "Placement", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.state`, "State", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.currentPositionRaw`, "CurrentPositionRaw", product), new propertyLink_1.PercentagePropertyChangedHandler(adapter, `products.${product.NodeID}.currentPosition`, "CurrentPosition", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.targetPositionRaw`, "TargetPositionRaw", product), new propertyLink_1.PercentagePropertyChangedHandler(adapter, `products.${product.NodeID}.targetPosition`, "TargetPosition", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.FP1CurrentPositionRaw`, "FP1CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.FP2CurrentPositionRaw`, "FP2CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.FP3CurrentPositionRaw`, "FP3CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.FP4CurrentPositionRaw`, "FP4CurrentPositionRaw", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.remainingTime`, "RemainingTime", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.timeStamp`, "TimeStamp", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.runStatus`, "RunStatus", product), new propertyLink_1.SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.statusReply`, "StatusReply", product));
         adapter.log.debug(`Setup state change listeners for product ${product.Name}.`);
         const nodeVariationHandler = new propertyLink_1.SimpleStateChangeHandler(adapter, `products.${product.NodeID}.nodeVariation`, "NodeVariation", product);
         await nodeVariationHandler.Initialize();
@@ -280,7 +291,7 @@ class SetupProducts {
         const placementHandler = new propertyLink_1.SimpleStateChangeHandler(adapter, `products.${product.NodeID}.placement`, "Placement", product);
         await placementHandler.Initialize();
         disposableEvents.push(placementHandler);
-        const levelHandler = new propertyLink_1.PercentageStateChangeHandler(adapter, `products.${product.NodeID}.level`, "TargetPosition", product);
+        const levelHandler = new propertyLink_1.PercentageStateChangeHandler(adapter, `products.${product.NodeID}.targetPosition`, "TargetPosition", product);
         await levelHandler.Initialize();
         disposableEvents.push(levelHandler);
         const stopListener = new propertyLink_1.ComplexStateChangeHandler(adapter, `products.${product.NodeID}.stop`, async (state) => {

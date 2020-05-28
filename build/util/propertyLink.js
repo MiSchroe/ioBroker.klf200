@@ -65,12 +65,12 @@ class SimplePropertyChangedHandler extends BasePropertyChangedHandler {
     }
 }
 exports.SimplePropertyChangedHandler = SimplePropertyChangedHandler;
-class PercentagePropertyChangeHandler extends SimplePropertyChangedHandler {
+class PercentagePropertyChangedHandler extends SimplePropertyChangedHandler {
     async onPropertyChangedTypedEvent(newValue) {
-        return await this.Adapter.setStateAsync(this.StateId, MapAnyPropertyToState(newValue) * 100, true);
+        return await this.Adapter.setStateAsync(this.StateId, Math.round(MapAnyPropertyToState(newValue) * 100), true);
     }
 }
-exports.PercentagePropertyChangeHandler = PercentagePropertyChangeHandler;
+exports.PercentagePropertyChangedHandler = PercentagePropertyChangedHandler;
 class BaseStateChangeHandler {
     constructor(Adapter, StateId) {
         this.Adapter = Adapter;

@@ -5,7 +5,7 @@ import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { levelConverter, roleConverter } from "./util/converter";
 import {
 	ComplexStateChangeHandler,
-	PercentagePropertyChangeHandler,
+	PercentagePropertyChangedHandler,
 	PercentageStateChangeHandler,
 	SimplePropertyChangedHandler,
 	SimpleStateChangeHandler,
@@ -75,20 +75,20 @@ export class SetupProducts {
 
 		await StateHelper.createAndSetStateAsync(
 			adapter,
-			`products.${product.NodeID}.level`,
+			`products.${product.NodeID}.currentPosition`,
 			{
-				name: "level",
+				name: "currentPosition",
 				role: levelConverter.convert(product.TypeID),
 				type: "number",
 				read: true,
-				write: true,
+				write: false,
 				min: 0,
 				max: 100,
 				unit: "%",
 				desc: "Opening level in percent",
 			},
 			{},
-			product.CurrentPosition * 100,
+			Math.round(product.CurrentPosition * 100),
 		);
 
 		await StateHelper.createAndSetStateAsync(
@@ -363,6 +363,25 @@ export class SetupProducts {
 
 		await StateHelper.createAndSetStateAsync(
 			adapter,
+			`products.${product.NodeID}.targetPosition`,
+			{
+				name: "targetPosition",
+				role: levelConverter.convert(product.TypeID),
+				type: "number",
+				read: true,
+				write: true,
+				min: 0,
+				max: 100,
+				unit: "%",
+				desc:
+					"Target opening level in percent. Set this value to move the product to that value, e.g. open a window, move a roller shutter.",
+			},
+			{},
+			Math.round(product.TargetPosition * 100),
+		);
+
+		await StateHelper.createAndSetStateAsync(
+			adapter,
 			`products.${product.NodeID}.targetPositionRaw`,
 			{
 				name: "targetPositionRaw",
@@ -480,9 +499,9 @@ export class SetupProducts {
 				"CurrentPositionRaw",
 				product,
 			),
-			new SimplePropertyChangedHandler<Product>(
+			new PercentagePropertyChangedHandler<Product>(
 				adapter,
-				`products.${product.NodeID}.level`,
+				`products.${product.NodeID}.currentPosition`,
 				"CurrentPosition",
 				product,
 			),
@@ -492,9 +511,9 @@ export class SetupProducts {
 				"TargetPositionRaw",
 				product,
 			),
-			new PercentagePropertyChangeHandler<Product>(
+			new PercentagePropertyChangedHandler<Product>(
 				adapter,
-				`products.${product.NodeID}.level`,
+				`products.${product.NodeID}.targetPosition`,
 				"TargetPosition",
 				product,
 			),
@@ -578,7 +597,7 @@ export class SetupProducts {
 
 		const levelHandler = new PercentageStateChangeHandler<Product>(
 			adapter,
-			`products.${product.NodeID}.level`,
+			`products.${product.NodeID}.targetPosition`,
 			"TargetPosition",
 			product,
 		);
