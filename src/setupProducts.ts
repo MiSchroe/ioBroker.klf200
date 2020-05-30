@@ -388,7 +388,7 @@ export class SetupProducts {
 				role: "value",
 				type: "number",
 				read: true,
-				write: true,
+				write: false,
 				min: 0,
 				max: 0xffff,
 				desc: "Target position raw value",
@@ -595,14 +595,14 @@ export class SetupProducts {
 		await placementHandler.Initialize();
 		disposableEvents.push(placementHandler);
 
-		const levelHandler = new PercentageStateChangeHandler<Product>(
+		const targetPositionHandler = new PercentageStateChangeHandler<Product>(
 			adapter,
 			`products.${product.NodeID}.targetPosition`,
 			"TargetPosition",
 			product,
 		);
-		await levelHandler.Initialize();
-		disposableEvents.push(levelHandler);
+		await targetPositionHandler.Initialize();
+		disposableEvents.push(targetPositionHandler);
 
 		const stopListener = new ComplexStateChangeHandler(
 			adapter,

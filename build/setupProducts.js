@@ -229,7 +229,7 @@ class SetupProducts {
             role: "value",
             type: "number",
             read: true,
-            write: true,
+            write: false,
             min: 0,
             max: 0xffff,
             desc: "Target position raw value",
@@ -291,9 +291,9 @@ class SetupProducts {
         const placementHandler = new propertyLink_1.SimpleStateChangeHandler(adapter, `products.${product.NodeID}.placement`, "Placement", product);
         await placementHandler.Initialize();
         disposableEvents.push(placementHandler);
-        const levelHandler = new propertyLink_1.PercentageStateChangeHandler(adapter, `products.${product.NodeID}.targetPosition`, "TargetPosition", product);
-        await levelHandler.Initialize();
-        disposableEvents.push(levelHandler);
+        const targetPositionHandler = new propertyLink_1.PercentageStateChangeHandler(adapter, `products.${product.NodeID}.targetPosition`, "TargetPosition", product);
+        await targetPositionHandler.Initialize();
+        disposableEvents.push(targetPositionHandler);
         const stopListener = new propertyLink_1.ComplexStateChangeHandler(adapter, `products.${product.NodeID}.stop`, async (state) => {
             if (state !== undefined) {
                 if ((state === null || state === void 0 ? void 0 : state.val) === true) {
