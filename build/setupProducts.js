@@ -291,7 +291,7 @@ class SetupProducts {
         const placementHandler = new propertyLink_1.SimpleStateChangeHandler(adapter, `products.${product.NodeID}.placement`, "Placement", product);
         await placementHandler.Initialize();
         disposableEvents.push(placementHandler);
-        const targetPositionHandler = new propertyLink_1.PercentageStateChangeHandler(adapter, `products.${product.NodeID}.targetPosition`, "TargetPosition", product);
+        const targetPositionHandler = new propertyLink_1.PercentageStateChangeHandler(adapter, `products.${product.NodeID}.targetPosition`, product, "setTargetPositionAsync");
         await targetPositionHandler.Initialize();
         disposableEvents.push(targetPositionHandler);
         const stopListener = new propertyLink_1.ComplexStateChangeHandler(adapter, `products.${product.NodeID}.stop`, async (state) => {

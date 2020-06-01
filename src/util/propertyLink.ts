@@ -132,23 +132,18 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 	}
 }
 
-export class SimpleStateChangeHandler<T extends Component> extends BaseStateChangeHandler {
+export class SetterStateChangeHandler<T extends Component> extends BaseStateChangeHandler {
 	constructor(
 		Adapter: ioBroker.Adapter,
 		StateId: string,
-		readonly Property: keyof T,
 		readonly LinkedObject: T,
-		readonly SetterMethodName?: keyof T,
+		readonly SetterMethodName: keyof T,
 	) {
 		super(Adapter, StateId);
 
-		if (SetterMethodName === undefined) {
-			this.SetterMethodName = `set${Property}Async` as keyof T;
-		}
-
 		this.Adapter.log.debug(
-			`Create a simple state change handler to listen to state ${this.StateId} linked to property ${
-				this.Property
+			`Create a setter state change handler to listen to state ${this.StateId} linked to property ${
+				((this.SetterMethodName as unknown) as Function).name
 				// eslint-disable-next-line @typescript-eslint/ban-types
 			} on type ${(this.LinkedObject as Object).constructor.name}.`,
 		);
@@ -167,14 +162,33 @@ export class SimpleStateChangeHandler<T extends Component> extends BaseStateChan
 	}
 
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
-		this.Adapter.log.debug(`SimpleStateChangeHandler.onStateChange: ${state}`);
+		this.Adapter.log.debug(`SetterStateChangeHandler.onStateChange: ${state}`);
 		if (state?.ack === false) {
 			await this.setterFunction.call(this.LinkedObject, state.val);
 		}
 	}
 }
 
-export class PercentageStateChangeHandler<T extends Component> extends SimpleStateChangeHandler<T> {
+export class SimpleStateChangeHandler<T extends Component> extends SetterStateChangeHandler<T> {
+	constructor(
+		Adapter: ioBroker.Adapter,
+		StateId: string,
+		readonly Property: keyof T,
+		LinkedObject: T,
+		SetterMethodName?: keyof T,
+	) {
+		super(Adapter, StateId, LinkedObject, SetterMethodName ?? (`set${Property}Async` as keyof T));
+
+		this.Adapter.log.debug(
+			`Create a simple state change handler to listen to state ${this.StateId} linked to property ${
+				this.Property
+				// eslint-disable-next-line @typescript-eslint/ban-types
+			} on type ${(this.LinkedObject as Object).constructor.name}.`,
+		);
+	}
+}
+
+export class PercentageStateChangeHandler<T extends Component> extends SetterStateChangeHandler<T> {
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
 		if (state?.ack === false) {
 			await this.SetterFunction.call(this.LinkedObject, (state.val as number) / 100);

@@ -598,8 +598,8 @@ export class SetupProducts {
 		const targetPositionHandler = new PercentageStateChangeHandler<Product>(
 			adapter,
 			`products.${product.NodeID}.targetPosition`,
-			"TargetPosition",
 			product,
+			"setTargetPositionAsync",
 		);
 		await targetPositionHandler.Initialize();
 		disposableEvents.push(targetPositionHandler);

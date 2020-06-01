@@ -1,5 +1,5 @@
 import { MockAdapter, utils } from "@iobroker/testing";
-import { use } from "chai";
+import { expect, use } from "chai";
 import {
 	Group,
 	GroupType,
@@ -13,6 +13,11 @@ import {
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { promisify } from "util";
 import { SetupGroups } from "./setupGroups";
+import {
+	BaseStateChangeHandler,
+	ComplexPropertyChangedHandler,
+	SimplePropertyChangedHandler,
+} from "./util/propertyLink";
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
 import chaiAsPromised = require("chai-as-promised");
@@ -531,6 +536,118 @@ describe("setupGroups", function () {
 				assertStateIsAcked(`test.0.groups.50.${expectedState}`, true);
 			});
 		}
+
+		it(`Each writable state should be bound to a state change handler`, async function () {
+			let disposables: Disposable[] = [];
+			disposables = await SetupGroups.createGroupAsync(
+				(adapter as unknown) as ioBroker.Adapter,
+				mockGroup,
+				mockProducts,
+			);
+			try {
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> = await adapter.getObjectListAsync(
+					{
+						startKey: `${adapter.namespace}.groups.${mockGroup.GroupID}.`,
+						endkey: `${adapter.namespace}.groups.${mockGroup.GroupID}.\u9999`,
+					},
+				);
+				const unmappedWritableStates = objectList.rows
+					.map((value) => {
+						// Find state in disposables (only for writable states)
+						if (
+							value.doc.type !== "state" ||
+							value.doc.common.write === false ||
+							disposables.some((disposable) => {
+								if (disposable instanceof BaseStateChangeHandler) {
+									return (
+										`${((adapter as unknown) as ioBroker.Adapter).namespace}.${
+											disposable.StateId
+										}` === value.id
+									);
+								} else {
+									return false;
+								}
+							})
+						) {
+							// State found -> state is mapped
+							return undefined;
+						} else {
+							// State not mapped -> add to unmapped writable states list
+							return value.id;
+						}
+					})
+					.filter((value) => value !== undefined);
+
+				expect(
+					unmappedWritableStates,
+					`There are unmapped writable states: ${JSON.stringify(unmappedWritableStates)}`,
+				).to.be.an("Array").empty;
+			} finally {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+			}
+		});
+
+		it(`Each readable state should be bound to a property change handler`, async function () {
+			let disposables: Disposable[] = [];
+			disposables = await SetupGroups.createGroupsAsync(
+				(adapter as unknown) as ioBroker.Adapter,
+				mockGroups,
+				mockProducts,
+			);
+			try {
+				const allowedUnmappedStates: string[] = [];
+				const complexStatesMapping: { [prop: string]: string[] } = {
+					Nodes: ["test.0.groups.50.productsCount"],
+				};
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> = await adapter.getObjectListAsync(
+					{
+						startKey: `${adapter.namespace}.groups.${mockGroup.GroupID}.`,
+						endkey: `${adapter.namespace}.groups.${mockGroup.GroupID}.\u9999`,
+					},
+				);
+				const unmappedWritableStates = objectList.rows
+					.map((value) => {
+						// Find state in disposables (only for writable states)
+						if (
+							value.doc.type !== "state" ||
+							value.doc.common.read === false ||
+							disposables.some((disposable) => {
+								if (disposable instanceof SimplePropertyChangedHandler) {
+									return (
+										`${((adapter as unknown) as ioBroker.Adapter).namespace}.${
+											disposable.StateId
+										}` === value.id
+									);
+								} else if (disposable instanceof ComplexPropertyChangedHandler) {
+									return complexStatesMapping[disposable.Property as string].includes(value.id);
+								} else if (allowedUnmappedStates.includes(value.id)) {
+									return true;
+								} else {
+									return false;
+								}
+							})
+						) {
+							// State found -> state is mapped
+							return undefined;
+						} else {
+							// State not mapped -> add to unmapped writable states list
+							return value.id;
+						}
+					})
+					.filter((value) => value !== undefined);
+
+				expect(
+					unmappedWritableStates,
+					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
+				).to.be.an("Array").empty;
+			} finally {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+			}
+		});
 	});
 
 	describe("createGroupsAsync", function () {
