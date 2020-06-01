@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const stateHelper_1 = require("./util/stateHelper");
 class Setup {
-    static async setupGlobalAsync(adapter) {
+    static async setupGlobalAsync(adapter, gateway) {
         const disposableEvents = [];
         // Setup products device
         await adapter.setObjectNotExistsAsync("products", {
@@ -77,62 +78,49 @@ class Setup {
             },
             native: {},
         });
-        await adapter.setObjectNotExistsAsync("gateway.ProtocolVersion", {
-            type: "state",
-            common: {
-                name: "Protocol version",
-                role: "value",
-                type: "string",
-                def: "",
-                read: true,
-                write: false,
-                desc: "Version of the protocol with which the software of the gateway is compatible",
-            },
-            native: {},
-        });
-        await adapter.setObjectNotExistsAsync("gateway.Version", {
-            type: "state",
-            common: {
-                name: "Version",
-                role: "value",
-                type: "string",
-                def: "",
-                read: true,
-                write: false,
-                desc: "Firmware version number",
-            },
-            native: {},
-        });
-        await adapter.setObjectNotExistsAsync("gateway.GatewayState", {
-            type: "state",
-            common: {
-                name: "GatewayState",
-                role: "value",
-                type: "number",
-                min: 0,
-                max: 255,
-                def: 0,
-                read: true,
-                write: false,
-                desc: "Gateway state",
-            },
-            native: {},
-        });
-        await adapter.setObjectNotExistsAsync("gateway.GatewaySubState", {
-            type: "state",
-            common: {
-                name: "GatewaySubState",
-                role: "value",
-                type: "number",
-                min: 0,
-                max: 255,
-                def: 0,
-                read: true,
-                write: false,
-                desc: "Gateway sub state",
-            },
-            native: {},
-        });
+        const ProtocolVersion = await gateway.getProtocolVersionAsync();
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.ProtocolVersion", {
+            name: "Protocol version",
+            role: "value",
+            type: "string",
+            def: "",
+            read: true,
+            write: false,
+            desc: "Version of the protocol with which the software of the gateway is compatible",
+        }, {}, `${ProtocolVersion.MajorVersion}.${ProtocolVersion.MinorVersion}`);
+        const Version = await gateway.getVersionAsync();
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.Version", {
+            name: "Version",
+            role: "value",
+            type: "string",
+            def: "",
+            read: true,
+            write: false,
+            desc: "Firmware version number",
+        }, {}, JSON.stringify(Version));
+        const GatewayState = await gateway.getStateAsync();
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.GatewayState", {
+            name: "GatewayState",
+            role: "value",
+            type: "number",
+            min: 0,
+            max: 255,
+            def: 0,
+            read: true,
+            write: false,
+            desc: "Gateway state",
+        }, {}, GatewayState.GatewayState);
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.GatewaySubState", {
+            name: "GatewaySubState",
+            role: "value",
+            type: "number",
+            min: 0,
+            max: 255,
+            def: 0,
+            read: true,
+            write: false,
+            desc: "Gateway sub state",
+        }, {}, GatewayState.SubState);
         return disposableEvents;
     }
 }

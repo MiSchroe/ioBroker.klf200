@@ -129,7 +129,7 @@ class Klf200 extends utils.Adapter {
 			this.log.info(`${ArrayCount(this.Products!.Products)} products found.`);
 
 			// Setup states
-			await Setup.setupGlobalAsync(this);
+			await Setup.setupGlobalAsync(this, this.Gateway!);
 			this.disposables.push(...(await SetupScenes.createScenesAsync(this, this.Scenes?.Scenes ?? [])));
 			this.disposables.push(
 				...(await SetupGroups.createGroupsAsync(

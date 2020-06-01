@@ -1,9 +1,11 @@
 "use strict";
 
+import { Gateway } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { StateHelper } from "./util/stateHelper";
 
 export class Setup {
-	public static async setupGlobalAsync(adapter: ioBroker.Adapter): Promise<Disposable[]> {
+	public static async setupGlobalAsync(adapter: ioBroker.Adapter, gateway: Gateway): Promise<Disposable[]> {
 		const disposableEvents: Disposable[] = [];
 
 		// Setup products device
@@ -83,9 +85,13 @@ export class Setup {
 			},
 			native: {},
 		});
-		await adapter.setObjectNotExistsAsync("gateway.ProtocolVersion", {
-			type: "state",
-			common: {
+
+		const ProtocolVersion = await gateway.getProtocolVersionAsync();
+
+		await StateHelper.createAndSetStateAsync(
+			adapter,
+			"gateway.ProtocolVersion",
+			{
 				name: "Protocol version",
 				role: "value",
 				type: "string",
@@ -94,11 +100,16 @@ export class Setup {
 				write: false,
 				desc: "Version of the protocol with which the software of the gateway is compatible",
 			},
-			native: {},
-		});
-		await adapter.setObjectNotExistsAsync("gateway.Version", {
-			type: "state",
-			common: {
+			{},
+			`${ProtocolVersion.MajorVersion}.${ProtocolVersion.MinorVersion}`,
+		);
+
+		const Version = await gateway.getVersionAsync();
+
+		await StateHelper.createAndSetStateAsync(
+			adapter,
+			"gateway.Version",
+			{
 				name: "Version",
 				role: "value",
 				type: "string",
@@ -107,11 +118,16 @@ export class Setup {
 				write: false,
 				desc: "Firmware version number",
 			},
-			native: {},
-		});
-		await adapter.setObjectNotExistsAsync("gateway.GatewayState", {
-			type: "state",
-			common: {
+			{},
+			JSON.stringify(Version),
+		);
+
+		const GatewayState = await gateway.getStateAsync();
+
+		await StateHelper.createAndSetStateAsync(
+			adapter,
+			"gateway.GatewayState",
+			{
 				name: "GatewayState",
 				role: "value",
 				type: "number",
@@ -122,11 +138,14 @@ export class Setup {
 				write: false,
 				desc: "Gateway state",
 			},
-			native: {},
-		});
-		await adapter.setObjectNotExistsAsync("gateway.GatewaySubState", {
-			type: "state",
-			common: {
+			{},
+			GatewayState.GatewayState,
+		);
+
+		await StateHelper.createAndSetStateAsync(
+			adapter,
+			"gateway.GatewaySubState",
+			{
 				name: "GatewaySubState",
 				role: "value",
 				type: "number",
@@ -137,8 +156,9 @@ export class Setup {
 				write: false,
 				desc: "Gateway sub state",
 			},
-			native: {},
-		});
+			{},
+			GatewayState.SubState,
+		);
 
 		return disposableEvents;
 	}
