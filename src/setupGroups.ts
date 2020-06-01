@@ -5,6 +5,8 @@ import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { levelConverter, roleGroupTypeConverter } from "./util/converter";
 import {
 	ComplexPropertyChangedHandler,
+	PercentageStateChangeHandler,
+	SetterStateChangeHandler,
 	SimplePropertyChangedHandler,
 	SimpleStateChangeHandler,
 } from "./util/propertyLink";
@@ -252,6 +254,24 @@ export class SetupGroups {
 		);
 		await placementHandler.Initialize();
 		disposableEvents.push(placementHandler);
+
+		const targetPositionHandler = new PercentageStateChangeHandler<Group>(
+			adapter,
+			`groups.${group.GroupID}.targetPosition`,
+			group,
+			"setTargetPositionAsync",
+		);
+		await targetPositionHandler.Initialize();
+		disposableEvents.push(targetPositionHandler);
+
+		const targetPositionRawHandler = new SetterStateChangeHandler<Group>(
+			adapter,
+			`groups.${group.GroupID}.targetPositionRaw`,
+			group,
+			"setTargetPositionRawAsync",
+		);
+		await targetPositionRawHandler.Initialize();
+		disposableEvents.push(targetPositionRawHandler);
 
 		const velocityHandler = new SimpleStateChangeHandler<Group>(
 			adapter,

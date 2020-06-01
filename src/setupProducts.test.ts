@@ -1,5 +1,5 @@
 import { MockAdapter, utils } from "@iobroker/testing";
-import { use } from "chai";
+import { expect, use } from "chai";
 import {
 	ActuatorType,
 	GW_GET_ALL_NODES_INFORMATION_NTF,
@@ -15,6 +15,7 @@ import {
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { promisify } from "util";
 import { SetupProducts } from "./setupProducts";
+import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink";
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
 import chaiAsPromised = require("chai-as-promised");
@@ -206,7 +207,7 @@ describe("setupProducts", function () {
 			try {
 				assertObjectExists("products.0");
 			} finally {
-				for (const disposable of await disposables) {
+				for (const disposable of disposables) {
 					disposable.dispose();
 				}
 			}
@@ -221,7 +222,7 @@ describe("setupProducts", function () {
 			try {
 				assertObjectCommon("products.0", { name: expectedName });
 			} finally {
-				for (const disposable of await disposables) {
+				for (const disposable of disposables) {
 					disposable.dispose();
 				}
 			}
@@ -237,7 +238,7 @@ describe("setupProducts", function () {
 			try {
 				assertObjectCommon("products.0", { name: expectedName, role: expectedRole });
 			} finally {
-				for (const disposable of await disposables) {
+				for (const disposable of disposables) {
 					disposable.dispose();
 				}
 			}
@@ -351,7 +352,7 @@ describe("setupProducts", function () {
 				try {
 					assertObjectExists(`test.0.products.0.${expectedState}`);
 				} finally {
-					for (const disposable of await disposables) {
+					for (const disposable of disposables) {
 						disposable.dispose();
 					}
 				}
@@ -366,7 +367,7 @@ describe("setupProducts", function () {
 				try {
 					assertStateExists(`test.0.products.0.${expectedState}`);
 				} finally {
-					for (const disposable of await disposables) {
+					for (const disposable of disposables) {
 						disposable.dispose();
 					}
 				}
@@ -381,7 +382,7 @@ describe("setupProducts", function () {
 				try {
 					assertStateHasValue(`test.0.products.0.${expectedState}`, test.value);
 				} finally {
-					for (const disposable of await disposables) {
+					for (const disposable of disposables) {
 						disposable.dispose();
 					}
 				}
@@ -396,7 +397,7 @@ describe("setupProducts", function () {
 				try {
 					assertStateIsAcked(`test.0.products.0.${expectedState}`, true);
 				} finally {
-					for (const disposable of await disposables) {
+					for (const disposable of disposables) {
 						disposable.dispose();
 					}
 				}
@@ -514,6 +515,113 @@ describe("setupProducts", function () {
 				assertStateIsAcked(`test.0.products.0.${expectedState}`, true);
 			});
 		}
+
+		it(`Each writable state should be bound to a state change handler`, async function () {
+			let disposables: Disposable[] = [];
+			disposables = await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+			try {
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> = await adapter.getObjectListAsync(
+					{
+						startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
+						endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
+					},
+				);
+				const unmappedWritableStates = objectList.rows
+					.map((value) => {
+						// Find state in disposables (only for writable states)
+						if (
+							value.doc.type !== "state" ||
+							value.doc.common.write === false ||
+							disposables.some((disposable) => {
+								if (disposable instanceof BaseStateChangeHandler) {
+									return (
+										`${((adapter as unknown) as ioBroker.Adapter).namespace}.${
+											disposable.StateId
+										}` === value.id
+									);
+								} else {
+									return false;
+								}
+							})
+						) {
+							// State found -> state is mapped
+							return undefined;
+						} else {
+							// State not mapped -> add to unmapped writable states list
+							return value.id;
+						}
+					})
+					.filter((value) => value !== undefined);
+
+				expect(
+					unmappedWritableStates,
+					`There are unmapped writable states: ${JSON.stringify(unmappedWritableStates)}`,
+				).to.be.an("Array").empty;
+			} finally {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+			}
+		});
+
+		it(`Each readable state should be bound to a property change handler`, async function () {
+			let disposables: Disposable[] = [];
+			disposables = await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+			try {
+				const allowedUnmappedStates = [
+					"test.0.products.0.category",
+					"test.0.products.0.powerSaveMode",
+					"test.0.products.0.productType",
+					"test.0.products.0.serialNumber",
+					"test.0.products.0.subType",
+					"test.0.products.0.typeID",
+					"test.0.products.0.velocity",
+				];
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> = await adapter.getObjectListAsync(
+					{
+						startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
+						endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
+					},
+				);
+				const unmappedWritableStates = objectList.rows
+					.map((value) => {
+						// Find state in disposables (only for writable states)
+						if (
+							value.doc.type !== "state" ||
+							value.doc.common.read === false ||
+							disposables.some((disposable) => {
+								if (disposable instanceof SimplePropertyChangedHandler) {
+									return (
+										`${((adapter as unknown) as ioBroker.Adapter).namespace}.${
+											disposable.StateId
+										}` === value.id
+									);
+								} else if (allowedUnmappedStates.includes(value.id)) {
+									return true;
+								} else {
+									return false;
+								}
+							})
+						) {
+							// State found -> state is mapped
+							return undefined;
+						} else {
+							// State not mapped -> add to unmapped writable states list
+							return value.id;
+						}
+					})
+					.filter((value) => value !== undefined);
+
+				expect(
+					unmappedWritableStates,
+					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
+				).to.be.an("Array").empty;
+			} finally {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+			}
+		});
 	});
 
 	describe("createProductsAsync", function () {
@@ -526,7 +634,7 @@ describe("setupProducts", function () {
 			try {
 				assertStateHasValue("products.productsFound", expectedValue);
 			} finally {
-				for (const disposable of await disposables) {
+				for (const disposable of disposables) {
 					disposable.dispose();
 				}
 			}

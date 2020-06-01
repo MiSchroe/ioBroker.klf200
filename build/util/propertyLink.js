@@ -96,16 +96,12 @@ class BaseStateChangeHandler {
     }
 }
 exports.BaseStateChangeHandler = BaseStateChangeHandler;
-class SimpleStateChangeHandler extends BaseStateChangeHandler {
-    constructor(Adapter, StateId, Property, LinkedObject, SetterMethodName) {
+class SetterStateChangeHandler extends BaseStateChangeHandler {
+    constructor(Adapter, StateId, LinkedObject, SetterMethodName) {
         super(Adapter, StateId);
-        this.Property = Property;
         this.LinkedObject = LinkedObject;
         this.SetterMethodName = SetterMethodName;
-        if (SetterMethodName === undefined) {
-            this.SetterMethodName = `set${Property}Async`;
-        }
-        this.Adapter.log.debug(`Create a simple state change handler to listen to state ${this.StateId} linked to property ${this.Property
+        this.Adapter.log.debug(`Create a setter state change handler to listen to state ${this.StateId} linked to property ${this.SetterMethodName.name
         // eslint-disable-next-line @typescript-eslint/ban-types
         } on type ${this.LinkedObject.constructor.name}.`);
         // Double check, that the setter method exists
@@ -120,14 +116,24 @@ class SimpleStateChangeHandler extends BaseStateChangeHandler {
         return this.setterFunction;
     }
     async onStateChange(state) {
-        this.Adapter.log.debug(`SimpleStateChangeHandler.onStateChange: ${state}`);
+        this.Adapter.log.debug(`SetterStateChangeHandler.onStateChange: ${state}`);
         if ((state === null || state === void 0 ? void 0 : state.ack) === false) {
             await this.setterFunction.call(this.LinkedObject, state.val);
         }
     }
 }
+exports.SetterStateChangeHandler = SetterStateChangeHandler;
+class SimpleStateChangeHandler extends SetterStateChangeHandler {
+    constructor(Adapter, StateId, Property, LinkedObject, SetterMethodName) {
+        super(Adapter, StateId, LinkedObject, SetterMethodName !== null && SetterMethodName !== void 0 ? SetterMethodName : `set${Property}Async`);
+        this.Property = Property;
+        this.Adapter.log.debug(`Create a simple state change handler to listen to state ${this.StateId} linked to property ${this.Property
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        } on type ${this.LinkedObject.constructor.name}.`);
+    }
+}
 exports.SimpleStateChangeHandler = SimpleStateChangeHandler;
-class PercentageStateChangeHandler extends SimpleStateChangeHandler {
+class PercentageStateChangeHandler extends SetterStateChangeHandler {
     async onStateChange(state) {
         if ((state === null || state === void 0 ? void 0 : state.ack) === false) {
             await this.SetterFunction.call(this.LinkedObject, state.val / 100);

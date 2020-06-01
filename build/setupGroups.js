@@ -147,6 +147,12 @@ class SetupGroups {
         const placementHandler = new propertyLink_1.SimpleStateChangeHandler(adapter, `groups.${group.GroupID}.placement`, "Placement", group);
         await placementHandler.Initialize();
         disposableEvents.push(placementHandler);
+        const targetPositionHandler = new propertyLink_1.PercentageStateChangeHandler(adapter, `groups.${group.GroupID}.targetPosition`, group, "setTargetPositionAsync");
+        await targetPositionHandler.Initialize();
+        disposableEvents.push(targetPositionHandler);
+        const targetPositionRawHandler = new propertyLink_1.SetterStateChangeHandler(adapter, `groups.${group.GroupID}.targetPositionRaw`, group, "setTargetPositionRawAsync");
+        await targetPositionRawHandler.Initialize();
+        disposableEvents.push(targetPositionRawHandler);
         const velocityHandler = new propertyLink_1.SimpleStateChangeHandler(adapter, `groups.${group.GroupID}.velocity`, "Velocity", group);
         await velocityHandler.Initialize();
         disposableEvents.push(velocityHandler);

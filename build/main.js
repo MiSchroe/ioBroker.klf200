@@ -85,7 +85,7 @@ class Klf200 extends utils.Adapter {
             this._Products = await klf_200_api_1.Products.createProductsAsync(this.Connection);
             this.log.info(`${utils_1.ArrayCount(this.Products.Products)} products found.`);
             // Setup states
-            await setup_1.Setup.setupGlobalAsync(this);
+            await setup_1.Setup.setupGlobalAsync(this, this.Gateway);
             this.disposables.push(...(await setupScenes_1.SetupScenes.createScenesAsync(this, (_h = (_g = this.Scenes) === null || _g === void 0 ? void 0 : _g.Scenes) !== null && _h !== void 0 ? _h : [])));
             this.disposables.push(...(await setupGroups_1.SetupGroups.createGroupsAsync(this, (_k = (_j = this.Groups) === null || _j === void 0 ? void 0 : _j.Groups) !== null && _k !== void 0 ? _k : [], (_m = (_l = this.Products) === null || _l === void 0 ? void 0 : _l.Products) !== null && _m !== void 0 ? _m : [])));
             this.disposables.push(...(await setupProducts_1.SetupProducts.createProductsAsync(this, (_p = (_o = this.Products) === null || _o === void 0 ? void 0 : _o.Products) !== null && _p !== void 0 ? _p : [])));
