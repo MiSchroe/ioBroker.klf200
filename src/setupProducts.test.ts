@@ -15,7 +15,7 @@ import {
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { promisify } from "util";
 import { SetupProducts } from "./setupProducts";
-import { BaseStateChangeHandler } from "./util/propertyLink";
+import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink";
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
 import chaiAsPromised = require("chai-as-promised");
@@ -516,7 +516,7 @@ describe("setupProducts", function () {
 			});
 		}
 
-		it(`Each writable state should be bound to a change handler`, async function () {
+		it(`Each writable state should be bound to a state change handler`, async function () {
 			let disposables: Disposable[] = [];
 			disposables = await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
 			try {
@@ -556,6 +556,65 @@ describe("setupProducts", function () {
 				expect(
 					unmappedWritableStates,
 					`There are unmapped writable states: ${JSON.stringify(unmappedWritableStates)}`,
+				).to.be.an("Array").empty;
+			} finally {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+			}
+		});
+
+		it(`Each readable state should be bound to a property change handler`, async function () {
+			let disposables: Disposable[] = [];
+			disposables = await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+			try {
+				const allowedUnmappedStates = [
+					"test.0.products.0.category",
+					"test.0.products.0.powerSaveMode",
+					"test.0.products.0.productType",
+					"test.0.products.0.serialNumber",
+					"test.0.products.0.subType",
+					"test.0.products.0.typeID",
+					"test.0.products.0.velocity",
+				];
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> = await adapter.getObjectListAsync(
+					{
+						startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
+						endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
+					},
+				);
+				const unmappedWritableStates = objectList.rows
+					.map((value) => {
+						// Find state in disposables (only for writable states)
+						if (
+							value.doc.type !== "state" ||
+							value.doc.common.read === false ||
+							disposables.some((disposable) => {
+								if (disposable instanceof SimplePropertyChangedHandler) {
+									return (
+										`${((adapter as unknown) as ioBroker.Adapter).namespace}.${
+											disposable.StateId
+										}` === value.id
+									);
+								} else if (allowedUnmappedStates.includes(value.id)) {
+									return true;
+								} else {
+									return false;
+								}
+							})
+						) {
+							// State found -> state is mapped
+							return undefined;
+						} else {
+							// State not mapped -> add to unmapped writable states list
+							return value.id;
+						}
+					})
+					.filter((value) => value !== undefined);
+
+				expect(
+					unmappedWritableStates,
+					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
 				).to.be.an("Array").empty;
 			} finally {
 				for (const disposable of disposables) {

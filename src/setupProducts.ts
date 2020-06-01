@@ -549,7 +549,7 @@ export class SetupProducts {
 			),
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
-				`products.${product.NodeID}.timeStamp`,
+				`products.${product.NodeID}.timestamp`,
 				"TimeStamp",
 				product,
 			),
