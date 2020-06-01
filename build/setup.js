@@ -121,6 +121,19 @@ class Setup {
             write: false,
             desc: "Gateway sub state",
         }, {}, GatewayState.SubState);
+        // Start a 10 seconds interval timer to refresh the gateway status.
+        // This interval timer has to be cleaned up on exit.
+        const stateTimer = {
+            Timer: setInterval(async (adapter, gateway) => {
+                const GatewayState = await gateway.getStateAsync();
+                await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
+                await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
+            }, 10000, adapter, gateway),
+            dispose: () => {
+                clearInterval(stateTimer.Timer);
+            },
+        };
+        disposableEvents.push(stateTimer);
         return disposableEvents;
     }
 }
