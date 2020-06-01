@@ -621,7 +621,7 @@ describe("setupGroups", function () {
 										}` === value.id
 									);
 								} else if (disposable instanceof ComplexPropertyChangedHandler) {
-									return complexStatesMapping[disposable.Property as string].includes(value.id);
+									return complexStatesMapping[disposable.Property as string]?.includes(value.id);
 								} else if (allowedUnmappedStates.includes(value.id)) {
 									return true;
 								} else {

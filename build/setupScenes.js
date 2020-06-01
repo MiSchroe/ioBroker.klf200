@@ -73,6 +73,20 @@ class SetupScenes {
             return await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.productsCount`, utils_1.ArrayCount(newValue), true);
         }));
         // Setup state listeners
+        const runListener = new propertyLink_1.ComplexStateChangeHandler(adapter, `scenes.${scene.SceneID}.run`, async (state) => {
+            if (state !== undefined) {
+                if ((state === null || state === void 0 ? void 0 : state.val) === true) {
+                    // Acknowledge running state
+                    await adapter.setStateAsync(`scenes.${scene.SceneID}.run`, state, true);
+                    // Only start the scene if it's not running, already.
+                    if (!scene.IsRunning) {
+                        await scene.runAsync();
+                    }
+                }
+            }
+        });
+        await runListener.Initialize();
+        disposableEvents.push(runListener);
         const stopListener = new propertyLink_1.ComplexStateChangeHandler(adapter, `scenes.${scene.SceneID}.stop`, async (state) => {
             if (state !== undefined) {
                 if ((state === null || state === void 0 ? void 0 : state.val) === true) {

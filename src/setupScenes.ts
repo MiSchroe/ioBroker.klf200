@@ -117,6 +117,21 @@ export class SetupScenes {
 		);
 
 		// Setup state listeners
+		const runListener = new ComplexStateChangeHandler(adapter, `scenes.${scene.SceneID}.run`, async (state) => {
+			if (state !== undefined) {
+				if (state?.val === true) {
+					// Acknowledge running state
+					await adapter.setStateAsync(`scenes.${scene.SceneID}.run`, state, true);
+					// Only start the scene if it's not running, already.
+					if (!scene.IsRunning) {
+						await scene.runAsync();
+					}
+				}
+			}
+		});
+		await runListener.Initialize();
+		disposableEvents.push(runListener);
+
 		const stopListener = new ComplexStateChangeHandler(adapter, `scenes.${scene.SceneID}.stop`, async (state) => {
 			if (state !== undefined) {
 				if (state?.val === true) {
