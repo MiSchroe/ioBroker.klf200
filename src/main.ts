@@ -145,7 +145,7 @@ class Klf200 extends utils.Adapter {
 		} catch (e) {
 			this.log.error(`Error during initialization of the adapter.`);
 			this.log.error(e);
-			this.terminate(e);
+			this.terminate ? this.terminate(e) : process.exit(1);
 		}
 	}
 
