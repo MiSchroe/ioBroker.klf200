@@ -50,6 +50,12 @@ class SetupGroups {
             read: true,
             write: false,
             desc: `Type of the registered group (${klf_200_api_1.GroupType.House} = house, ${klf_200_api_1.GroupType.Room} = room or ${klf_200_api_1.GroupType.UserGroup} = user defined group)`,
+            states: {
+                "0": "UserGroup",
+                "1": "Room",
+                "2": "House",
+                "3": "All",
+            },
         }, {}, group.GroupType);
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `groups.${group.GroupID}.productsCount`, {
             name: "productsCount",
@@ -68,6 +74,13 @@ class SetupGroups {
             min: 0,
             max: 0xff,
             desc: `Variation of the group.`,
+            states: {
+                "0": "NotSet",
+                "1": "TopHung",
+                "2": "Kip",
+                "3": "FlatRoof",
+                "4": "SkyLight",
+            },
         }, {}, group.NodeVariation);
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `groups.${group.GroupID}.order`, {
             name: "order",
@@ -98,6 +111,12 @@ class SetupGroups {
             min: 0,
             max: 0xff,
             desc: "Velocity of the group",
+            states: {
+                "0": "Default",
+                "1": "Silent",
+                "2": "Fast",
+                "255": "NotAvailable",
+            },
         }, {}, group.Velocity);
         /*
             Groups contain products of the same

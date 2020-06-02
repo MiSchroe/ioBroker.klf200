@@ -122,7 +122,7 @@ export class Setup {
 			JSON.stringify(Version),
 		);
 
-		const GatewayState = await gateway.getStateAsync();
+		const gatewayState = await gateway.getStateAsync();
 
 		await StateHelper.createAndSetStateAsync(
 			adapter,
@@ -137,9 +137,16 @@ export class Setup {
 				read: true,
 				write: false,
 				desc: "Gateway state",
+				states: {
+					"0": "TestMode",
+					"1": "GatewayMode_NoActuatorNodes",
+					"2": "GatewayMode_WithActuatorNodes",
+					"3": "BeaconMode_NotConfigured",
+					"4": "BeaconMode_Configured",
+				},
 			},
 			{},
-			GatewayState.GatewayState,
+			gatewayState.GatewayState,
 		);
 
 		await StateHelper.createAndSetStateAsync(
@@ -155,9 +162,19 @@ export class Setup {
 				read: true,
 				write: false,
 				desc: "Gateway sub state",
+				states: {
+					"0": "Idle",
+					"1": "RunningConfigurationService",
+					"2": "RunningSceneConfiguration",
+					"3": "RunningInformationServiceConfiguration",
+					"4": "RunningContactInputConfiguration",
+					"128": "RunningCommand",
+					"129": "RunningActivateGroup",
+					"130": "RunningActivateScene",
+				},
 			},
 			{},
-			GatewayState.SubState,
+			gatewayState.SubState,
 		);
 
 		// Start a 10 seconds interval timer to refresh the gateway status.

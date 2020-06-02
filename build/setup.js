@@ -98,7 +98,7 @@ class Setup {
             write: false,
             desc: "Firmware version number",
         }, {}, JSON.stringify(Version));
-        const GatewayState = await gateway.getStateAsync();
+        const gatewayState = await gateway.getStateAsync();
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.GatewayState", {
             name: "GatewayState",
             role: "value",
@@ -109,7 +109,14 @@ class Setup {
             read: true,
             write: false,
             desc: "Gateway state",
-        }, {}, GatewayState.GatewayState);
+            states: {
+                "0": "TestMode",
+                "1": "GatewayMode_NoActuatorNodes",
+                "2": "GatewayMode_WithActuatorNodes",
+                "3": "BeaconMode_NotConfigured",
+                "4": "BeaconMode_Configured",
+            },
+        }, {}, gatewayState.GatewayState);
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.GatewaySubState", {
             name: "GatewaySubState",
             role: "value",
@@ -120,7 +127,17 @@ class Setup {
             read: true,
             write: false,
             desc: "Gateway sub state",
-        }, {}, GatewayState.SubState);
+            states: {
+                "0": "Idle",
+                "1": "RunningConfigurationService",
+                "2": "RunningSceneConfiguration",
+                "3": "RunningInformationServiceConfiguration",
+                "4": "RunningContactInputConfiguration",
+                "128": "RunningCommand",
+                "129": "RunningActivateGroup",
+                "130": "RunningActivateScene",
+            },
+        }, {}, gatewayState.SubState);
         // Start a 10 seconds interval timer to refresh the gateway status.
         // This interval timer has to be cleaned up on exit.
         const stateTimer = {
