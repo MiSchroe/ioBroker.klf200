@@ -1,17 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SetupGroups = void 0;
 const klf_200_api_1 = require("klf-200-api");
 const converter_1 = require("./util/converter");
 const propertyLink_1 = require("./util/propertyLink");
 const stateHelper_1 = require("./util/stateHelper");
 const utils_1 = require("./util/utils");
-const mapPropertyToState = {
-    NodeVariation: "nodeVariation",
-    Order: "order",
-    Placement: "placement",
-    GroupType: "groupType",
-    Velocity: "velocity",
-};
 class SetupGroups {
     static async createGroupsAsync(adapter, groups, products) {
         const disposableEvents = [];

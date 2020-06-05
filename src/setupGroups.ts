@@ -13,14 +13,6 @@ import {
 import { StateHelper } from "./util/stateHelper";
 import { ArrayCount } from "./util/utils";
 
-const mapPropertyToState = {
-	NodeVariation: "nodeVariation",
-	Order: "order",
-	Placement: "placement",
-	GroupType: "groupType",
-	Velocity: "velocity",
-};
-
 export class SetupGroups {
 	public static async createGroupsAsync(
 		adapter: ioBroker.Adapter,
