@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.levelConverter = exports.roleGroupTypeConverter = exports.roleConverter = exports.EnumConverter = void 0;
 const klf_200_api_1 = require("klf-200-api");
 class EnumConverter {
     constructor(Mapping) {

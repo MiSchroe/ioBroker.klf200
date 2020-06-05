@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.StateHelper = void 0;
 class StateHelper {
     static async createAndSetStateAsync(adapter, stateID, common, native, value) {
         await adapter.setObjectNotExistsAsync(stateID, {

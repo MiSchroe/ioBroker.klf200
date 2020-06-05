@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.translateText = exports.isArray = exports.isObject = void 0;
 const axios_1 = require("axios");
 /**
  * Tests whether the given variable is a real object and not an Array

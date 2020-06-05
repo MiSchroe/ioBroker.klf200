@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ComplexStateChangeHandler = exports.PercentageStateChangeHandler = exports.SimpleStateChangeHandler = exports.SetterStateChangeHandler = exports.BaseStateChangeHandler = exports.PercentagePropertyChangedHandler = exports.SimplePropertyChangedHandler = exports.ComplexPropertyChangedHandler = exports.BasePropertyChangedHandler = exports.MapAnyPropertyToState = void 0;
 function MapAnyPropertyToState(propertyValue) {
     switch (typeof propertyValue) {
         case "boolean":

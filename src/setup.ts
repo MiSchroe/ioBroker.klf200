@@ -4,9 +4,48 @@ import { Gateway } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { StateHelper } from "./util/stateHelper";
 
-export class Setup {
-	public static async setupGlobalAsync(adapter: ioBroker.Adapter, gateway: Gateway): Promise<Disposable[]> {
-		const disposableEvents: Disposable[] = [];
+export class Setup implements Disposable {
+	constructor(readonly adapter: ioBroker.Adapter, readonly gateway: Gateway) {}
+
+	private disposableEvents: Disposable[] = [];
+
+	dispose(): void {
+		this.stopStateTimer();
+		this.disposableEvents.forEach((disposable) => {
+			disposable.dispose();
+		});
+	}
+
+	private _stateTimer?: ReturnType<typeof setInterval>;
+
+	public startStateTimer(): void {
+		if (this._stateTimer === undefined) {
+			this._stateTimer = setInterval(
+				async (adapter, gateway) => {
+					await this.stateTimerHandler(adapter, gateway);
+				},
+				10000,
+				this.adapter,
+				this.gateway,
+			);
+		}
+	}
+
+	public stopStateTimer(): void {
+		if (this._stateTimer !== undefined) {
+			clearInterval(this._stateTimer);
+			this._stateTimer = undefined;
+		}
+	}
+
+	private async stateTimerHandler(adapter: ioBroker.Adapter, gateway: Gateway): Promise<void> {
+		const GatewayState = await gateway.getStateAsync();
+		await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
+		await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
+	}
+
+	public static async setupGlobalAsync(adapter: ioBroker.Adapter, gateway: Gateway): Promise<Setup> {
+		const newSetup = new Setup(adapter, gateway);
 
 		// Setup products device
 		await adapter.setObjectNotExistsAsync("products", {
@@ -177,26 +216,6 @@ export class Setup {
 			gatewayState.SubState,
 		);
 
-		// Start a 10 seconds interval timer to refresh the gateway status.
-		// This interval timer has to be cleaned up on exit.
-		const stateTimer = {
-			Timer: setInterval(
-				async (adapter: ioBroker.Adapter, gateway: Gateway) => {
-					const GatewayState = await gateway.getStateAsync();
-					await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
-					await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
-				},
-				10000,
-				adapter,
-				gateway,
-			),
-			dispose: () => {
-				clearInterval(stateTimer.Timer);
-			},
-		};
-
-		disposableEvents.push(stateTimer);
-
-		return disposableEvents;
+		return newSetup;
 	}
 }

@@ -31,8 +31,12 @@ declare global {
 	}
 }
 
+type ConnectionWatchDogHandler = (hadError: boolean) => Promise<void>;
+
 class Klf200 extends utils.Adapter {
 	private disposables: Disposable[] = [];
+	private connectionWatchDogHandler: ConnectionWatchDogHandler;
+	private InShutdown: boolean;
 
 	private _Connection?: IConnection;
 	public get Connection(): IConnection | undefined {
@@ -59,6 +63,11 @@ class Klf200 extends utils.Adapter {
 		return this._Products;
 	}
 
+	private _Setup?: Setup;
+	public get Setup(): Setup | undefined {
+		return this._Setup;
+	}
+
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
 			...options,
@@ -69,6 +78,10 @@ class Klf200 extends utils.Adapter {
 		this.on("stateChange", this.onStateChange.bind(this));
 		// this.on("message", this.onMessage.bind(this));
 		this.on("unload", this.onUnload.bind(this));
+
+		// Setup connection watchdog handler
+		this.InShutdown = false;
+		this.connectionWatchDogHandler = this.ConnectionWatchDog.bind(this);
 	}
 
 	/**
@@ -95,57 +108,84 @@ class Klf200 extends utils.Adapter {
 			await this.setStateAsync("info.connection", true, true);
 			this.log.info("Connected to interface.");
 
-			this.Connection?.KLF200SocketProtocol?.socket.on("close", async (hadError: boolean) => {
-				// Reset the connection indicator
-				await this.setStateAsync("info.connection", false, true);
-				if (hadError === true) {
-					this.log.error("The underlying connection has been closed due to some error.");
-				}
-			});
-
-			// Read device info, scenes, groups and products and setup device
-			this.log.info(`Reading device information...`);
-			this._Gateway = new Gateway(this.Connection!);
-
-			this.log.info(`Enabling the house status monitor...`);
-			await this.Gateway?.enableHouseStatusMonitorAsync();
-
-			this.log.info(`Setting UTC clock to the current time.`);
-			await this.Gateway?.setUTCDateTimeAsync();
-
-			this.log.info(`Setting time zone to :GMT+1:GMT+2:0060:(1994)040102-0:110102-0`);
-			await this.Gateway?.setTimeZoneAsync(":GMT+1:GMT+2:0060:(1994)040102-0:110102-0");
-
-			this.log.info(`Reading scenes...`);
-			this._Scenes = await Scenes.createScenesAsync(this.Connection!);
-			this.log.info(`${ArrayCount(this.Scenes!.Scenes)} scenes found.`);
-
-			this.log.info(`Reading groups...`);
-			this._Groups = await Groups.createGroupsAsync(this.Connection!);
-			this.log.info(`${ArrayCount(this.Groups!.Groups)} groups found.`);
-
-			this.log.info(`Reading products...`);
-			this._Products = await Products.createProductsAsync(this.Connection!);
-			this.log.info(`${ArrayCount(this.Products!.Products)} products found.`);
-
-			// Setup states
-			await Setup.setupGlobalAsync(this, this.Gateway!);
-			this.disposables.push(...(await SetupScenes.createScenesAsync(this, this.Scenes?.Scenes ?? [])));
-			this.disposables.push(
-				...(await SetupGroups.createGroupsAsync(
-					this,
-					this.Groups?.Groups ?? [],
-					this.Products?.Products ?? [],
-				)),
-			);
-			this.disposables.push(...(await SetupProducts.createProductsAsync(this, this.Products?.Products ?? [])));
-
-			// Write a finish setup log entry
-			this.log.info(`Adapter is ready for use.`);
+			// Read data from the gateway and setup states and handlers
+			await this.initializeOnConnection();
 		} catch (e) {
 			this.log.error(`Error during initialization of the adapter.`);
 			this.log.error(e);
 			this.terminate ? this.terminate(e) : process.exit(1);
+		}
+	}
+
+	private async initializeOnConnection(): Promise<void> {
+		// Read device info, scenes, groups and products and setup device
+		this.log.info(`Reading device information...`);
+		this._Gateway = new Gateway(this.Connection!);
+
+		this.log.info(`Enabling the house status monitor...`);
+		await this.Gateway?.enableHouseStatusMonitorAsync();
+
+		this.log.info(`Setting UTC clock to the current time.`);
+		await this.Gateway?.setUTCDateTimeAsync();
+
+		this.log.info(`Setting time zone to :GMT+1:GMT+2:0060:(1994)040102-0:110102-0`);
+		await this.Gateway?.setTimeZoneAsync(":GMT+1:GMT+2:0060:(1994)040102-0:110102-0");
+
+		this.log.info(`Reading scenes...`);
+		this._Scenes = await Scenes.createScenesAsync(this.Connection!);
+		this.log.info(`${ArrayCount(this.Scenes!.Scenes)} scenes found.`);
+
+		this.log.info(`Reading groups...`);
+		this._Groups = await Groups.createGroupsAsync(this.Connection!);
+		this.log.info(`${ArrayCount(this.Groups!.Groups)} groups found.`);
+
+		this.log.info(`Reading products...`);
+		this._Products = await Products.createProductsAsync(this.Connection!);
+		this.log.info(`${ArrayCount(this.Products!.Products)} products found.`);
+
+		// Setup states
+		this._Setup = await Setup.setupGlobalAsync(this, this.Gateway!);
+		this.disposables.push(this._Setup);
+		this.disposables.push(...(await SetupScenes.createScenesAsync(this, this.Scenes?.Scenes ?? [])));
+		this.disposables.push(
+			...(await SetupGroups.createGroupsAsync(this, this.Groups?.Groups ?? [], this.Products?.Products ?? [])),
+		);
+		this.disposables.push(...(await SetupProducts.createProductsAsync(this, this.Products?.Products ?? [])));
+
+		// Write a finish setup log entry
+		this.log.info(`Adapter is ready for use.`);
+
+		this.Connection?.KLF200SocketProtocol?.socket.on("close", this.connectionWatchDogHandler);
+	}
+
+	private async ConnectionWatchDog(hadError: boolean): Promise<void> {
+		// Stop the state timer first
+		this._Setup?.stopStateTimer();
+
+		// Reset the connection indicator
+		await this.setStateAsync("info.connection", false, true);
+		this.log.warn("Lost connection to KLF-200");
+		if (hadError === true) {
+			this.log.error("The underlying connection has been closed due to some error.");
+		}
+
+		// Try to reconnect
+		this.log.info("Trying to reconnect...");
+		let isConnected = false;
+		while (!isConnected && !this.InShutdown) {
+			try {
+				await this.Connection?.loginAsync(this.config.password);
+				isConnected = true;
+				this.log.info("Reconnected.");
+				await this.setStateAsync("info.connection", true, true);
+
+				await this.initializeOnConnection();
+			} catch (e) {
+				this.log.error(`Login to KLF-200 device at ${this.config.host} failed.`);
+				this.log.error(e);
+				// Wait a second before retry
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+			}
 		}
 	}
 
@@ -154,6 +194,13 @@ class Klf200 extends utils.Adapter {
 	 */
 	private async onUnload(callback: () => void): Promise<void> {
 		try {
+			// Set shutdown flag
+			this.InShutdown = true;
+
+			// Remove watchdog handler from socket
+			this.log.info(`Remove socket listener...`);
+			this.Connection?.KLF200SocketProtocol?.socket.off("close", this.connectionWatchDogHandler);
+
 			// Disconnect all event handlers
 			this.log.info(`Shutting down event handlers...`);
 			this.disposables.forEach((disposable) => {
