@@ -104,6 +104,19 @@ class Klf200 extends utils.Adapter {
         this.log.info(`Adapter is ready for use.`);
         (_o = (_m = this.Connection) === null || _m === void 0 ? void 0 : _m.KLF200SocketProtocol) === null || _o === void 0 ? void 0 : _o.socket.on("close", this.connectionWatchDogHandler);
     }
+    async disposeOnConnectionClosed() {
+        var _a, _b;
+        // Set shutdown flag
+        this.InShutdown = true;
+        // Remove watchdog handler from socket
+        this.log.info(`Remove socket listener...`);
+        (_b = (_a = this.Connection) === null || _a === void 0 ? void 0 : _a.KLF200SocketProtocol) === null || _b === void 0 ? void 0 : _b.socket.off("close", this.connectionWatchDogHandler);
+        // Disconnect all event handlers
+        this.log.info(`Shutting down event handlers...`);
+        this.disposables.forEach((disposable) => {
+            disposable.dispose();
+        });
+    }
     async ConnectionWatchDog(hadError) {
         var _a, _b;
         // Stop the state timer first
@@ -114,6 +127,8 @@ class Klf200 extends utils.Adapter {
         if (hadError === true) {
             this.log.error("The underlying connection has been closed due to some error.");
         }
+        // Clean up
+        await this.disposeOnConnectionClosed();
         // Try to reconnect
         this.log.info("Trying to reconnect...");
         let isConnected = false;
@@ -137,21 +152,12 @@ class Klf200 extends utils.Adapter {
      * Is called when adapter shuts down - callback has to be called under any circumstances!
      */
     async onUnload(callback) {
-        var _a, _b, _c;
+        var _a;
         try {
-            // Set shutdown flag
-            this.InShutdown = true;
-            // Remove watchdog handler from socket
-            this.log.info(`Remove socket listener...`);
-            (_b = (_a = this.Connection) === null || _a === void 0 ? void 0 : _a.KLF200SocketProtocol) === null || _b === void 0 ? void 0 : _b.socket.off("close", this.connectionWatchDogHandler);
-            // Disconnect all event handlers
-            this.log.info(`Shutting down event handlers...`);
-            this.disposables.forEach((disposable) => {
-                disposable.dispose();
-            });
+            await this.disposeOnConnectionClosed();
             // Disconnect from the device
             this.log.info(`Disconnecting from the KLF-200...`);
-            await ((_c = this.Connection) === null || _c === void 0 ? void 0 : _c.logoutAsync());
+            await ((_a = this.Connection) === null || _a === void 0 ? void 0 : _a.logoutAsync());
             this.log.info("Cleaned everything up...");
             callback();
         }
