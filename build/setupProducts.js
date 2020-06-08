@@ -9,10 +9,10 @@ class SetupProducts {
     static async createProductsAsync(adapter, products) {
         const disposableEvents = [];
         // Remove old products
-        const currentProductList = await adapter.getChannelsOfAsync(`products`);
-        adapter.log.debug(`Current Product List: ${JSON.stringify(currentProductList)}`);
+        const currentProductsList = await adapter.getChannelsOfAsync(`products`);
+        adapter.log.debug(`Current Product List: ${JSON.stringify(currentProductsList)}`);
         // Filter current channels to contain only those, that are not present in the provided products list
-        const channelsToRemove = currentProductList.filter((channel) => !products.some((product) => {
+        const channelsToRemove = currentProductsList.filter((channel) => !products.some((product) => {
             return product.NodeID === Number.parseInt(channel._id.split(".").reverse()[0]);
         }));
         // Delete channels
