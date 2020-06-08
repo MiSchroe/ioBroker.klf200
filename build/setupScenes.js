@@ -7,6 +7,20 @@ const utils_1 = require("./util/utils");
 class SetupScenes {
     static async createScenesAsync(adapter, scenes) {
         const disposableEvents = [];
+        // Remove old scenes
+        const currentScenesList = await adapter.getChannelsOfAsync(`scenes`);
+        adapter.log.debug(`Current Scenes List: ${JSON.stringify(currentScenesList)}`);
+        // Filter current channels to contain only those, that are not present in the provided scenes list
+        const channelsToRemove = currentScenesList.filter((channel) => !scenes.some((scene) => {
+            return scene.SceneID === Number.parseInt(channel._id.split(".").reverse()[0]);
+        }));
+        // Delete channels
+        for (const channel of channelsToRemove) {
+            await adapter.deleteChannelAsync(`scenes`, channel._id);
+        }
+        if (channelsToRemove.length !== 0) {
+            adapter.log.info(`${channelsToRemove.length} unknown scenes removed.`);
+        }
         for (const scene of scenes) {
             if (scene) {
                 disposableEvents.push(...(await this.createSceneAsync(adapter, scene)));
