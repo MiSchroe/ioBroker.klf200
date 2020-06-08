@@ -17,6 +17,17 @@ export class SetupProducts {
 	public static async createProductsAsync(adapter: ioBroker.Adapter, products: Product[]): Promise<Disposable[]> {
 		const disposableEvents: Disposable[] = [];
 
+		// Remove old products
+		const currentProductList = await adapter.getChannelsOfAsync(`products`);
+		// Filter current channels to contain only those, that are not present in the provided products list
+		const channelsToRemove = currentProductList.filter(
+			(channel) => !products.some((product) => product.NodeID === Number.parseInt(channel._id)),
+		);
+		// Delete channels
+		for (const channel of channelsToRemove) {
+			await adapter.deleteChannelAsync(`products`, channel._id);
+		}
+
 		for (const product of products) {
 			if (product) {
 				disposableEvents.push(...(await this.createProductAsync(adapter, product)));

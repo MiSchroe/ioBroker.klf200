@@ -181,8 +181,39 @@ describe("setupProducts", function () {
 		assertObjectCommon,
 	} = utils.unit.createAsserts(database, adapter);
 
+	// Fake getChannelsOf
+	adapter.getChannelsOf.callsFake((parentDevice, callback) =>
+		callback(null, [
+			{
+				_id: `${adapter.namespace}.products.42`,
+				type: "channel",
+				common: {
+					name: "Test window",
+				},
+				native: {},
+			},
+		] as ioBroker.ChannelObject[]),
+	);
+	// Fake deleteChannel
+	adapter.deleteChannel.callsFake((parentDevice, channelId, callback) => {
+		// Delete sub-objects first
+		adapter.getObjectList(
+			{
+				startKey: `${adapter.namespace}.${parentDevice}.${channelId}`,
+				endkey: `${adapter.namespace}.${parentDevice}.${channelId}.\u9999`,
+			},
+			(err: any, res: { rows: { id: string; obj: any; doc: any }[] }) => {
+				for (const row of res.rows) {
+					adapter.delObject(row.id);
+				}
+
+				adapter.delObject(`${parentDevice}.${channelId}`, callback);
+			},
+		);
+	});
+
 	// Promisify additional methods
-	for (const method of ["unsubscribeStates"]) {
+	for (const method of ["unsubscribeStates", "getChannelsOf", "deleteChannel"]) {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
@@ -633,6 +664,45 @@ describe("setupProducts", function () {
 			);
 			try {
 				assertStateHasValue("products.productsFound", expectedValue);
+			} finally {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+			}
+		});
+
+		it(`should delete a product that doesn't exist anymore`, async function () {
+			// Prepare objects and states
+			database.publishDeviceObjects({
+				_id: `${adapter.namespace}.products`,
+			});
+			database.publishChannelObjects({
+				_id: `${adapter.namespace}.products.42`,
+				common: {
+					name: "Test window",
+				},
+			});
+			const states: string[] = ["currentPosition", "targetPosition"];
+			database.publishStateObjects(
+				...states.map((state) => {
+					return { _id: `${adapter.namespace}.products.42.${state}` } as ioBroker.PartialObject;
+				}),
+			);
+
+			// Check, that old states exist
+			states.forEach((state) => assertObjectExists(`${adapter.namespace}.products.42.${state}`));
+
+			const disposables = await SetupProducts.createProductsAsync(
+				(adapter as unknown) as ioBroker.Adapter,
+				mockProducts,
+			);
+			try {
+				states.forEach((state) =>
+					expect(
+						() => assertObjectExists(`${adapter.namespace}.products.42.${state}`),
+						`Object ${adapter.namespace}.products.42.${state} shouldn't exist anymore.`,
+					).to.throw(),
+				);
 			} finally {
 				for (const disposable of disposables) {
 					disposable.dispose();
