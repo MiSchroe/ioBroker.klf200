@@ -697,5 +697,45 @@ describe("setupGroups", function () {
 				}
 			}
 		});
+
+		it(`should delete a group that doesn't exist anymore`, async function () {
+			// Prepare objects and states
+			database.publishDeviceObjects({
+				_id: `${adapter.namespace}.groups`,
+			});
+			database.publishChannelObjects({
+				_id: `${adapter.namespace}.groups.42`,
+				common: {
+					name: "Test group",
+				},
+			});
+			const states: string[] = ["groupType", "targetPosition"];
+			database.publishStateObjects(
+				...states.map((state) => {
+					return { _id: `${adapter.namespace}.groups.42.${state}` } as ioBroker.PartialObject;
+				}),
+			);
+
+			// Check, that old states exist
+			states.forEach((state) => assertObjectExists(`${adapter.namespace}.groups.42.${state}`));
+
+			const disposables = await SetupGroups.createGroupsAsync(
+				(adapter as unknown) as ioBroker.Adapter,
+				mockGroups,
+				mockProducts,
+			);
+			try {
+				states.forEach((state) =>
+					expect(
+						() => assertObjectExists(`${adapter.namespace}.groups.42.${state}`),
+						`Object ${adapter.namespace}.groups.42.${state} shouldn't exist anymore.`,
+					).to.throw(),
+				);
+			} finally {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+			}
+		});
 	});
 });

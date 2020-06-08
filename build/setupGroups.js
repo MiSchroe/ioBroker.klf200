@@ -9,6 +9,20 @@ const utils_1 = require("./util/utils");
 class SetupGroups {
     static async createGroupsAsync(adapter, groups, products) {
         const disposableEvents = [];
+        // Remove old groups
+        const currentGroupsList = await adapter.getChannelsOfAsync(`groups`);
+        adapter.log.debug(`Current Groups List: ${JSON.stringify(currentGroupsList)}`);
+        // Filter current channels to contain only those, that are not present in the provided groups list
+        const channelsToRemove = currentGroupsList.filter((channel) => !groups.some((group) => {
+            return group.GroupID === Number.parseInt(channel._id.split(".").reverse()[0]);
+        }));
+        // Delete channels
+        for (const channel of channelsToRemove) {
+            await adapter.deleteChannelAsync(`groups`, channel._id);
+        }
+        if (channelsToRemove.length !== 0) {
+            adapter.log.info(`${channelsToRemove.length} unknown groups removed.`);
+        }
         for (const group of groups) {
             if (group) {
                 disposableEvents.push(...(await this.createGroupAsync(adapter, group, products)));
