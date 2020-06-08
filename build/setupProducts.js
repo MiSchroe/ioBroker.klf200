@@ -10,11 +10,17 @@ class SetupProducts {
         const disposableEvents = [];
         // Remove old products
         const currentProductList = await adapter.getChannelsOfAsync(`products`);
+        adapter.log.debug(`Current Product List: ${JSON.stringify(currentProductList)}`);
         // Filter current channels to contain only those, that are not present in the provided products list
-        const channelsToRemove = currentProductList.filter((channel) => !products.some((product) => product.NodeID === Number.parseInt(channel._id)));
+        const channelsToRemove = currentProductList.filter((channel) => !products.some((product) => {
+            return product.NodeID === Number.parseInt(channel._id.split(".").reverse()[0]);
+        }));
         // Delete channels
         for (const channel of channelsToRemove) {
             await adapter.deleteChannelAsync(`products`, channel._id);
+        }
+        if (channelsToRemove.length !== 0) {
+            adapter.log.info(`${channelsToRemove.length} unknown products removed.`);
         }
         for (const product of products) {
             if (product) {
