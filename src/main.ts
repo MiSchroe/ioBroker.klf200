@@ -159,9 +159,6 @@ class Klf200 extends utils.Adapter {
 	}
 
 	private async disposeOnConnectionClosed(): Promise<void> {
-		// Set shutdown flag
-		this.InShutdown = true;
-
 		// Remove watchdog handler from socket
 		this.log.info(`Remove socket listener...`);
 		this.Connection?.KLF200SocketProtocol?.socket.off("close", this.connectionWatchDogHandler);
@@ -212,6 +209,9 @@ class Klf200 extends utils.Adapter {
 	 */
 	private async onUnload(callback: () => void): Promise<void> {
 		try {
+			// Set shutdown flag
+			this.InShutdown = true;
+
 			await this.disposeOnConnectionClosed();
 
 			// Disconnect from the device
