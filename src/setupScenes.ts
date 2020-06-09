@@ -84,6 +84,23 @@ export class SetupScenes {
 
 		await StateHelper.createAndSetStateAsync(
 			adapter,
+			`scenes.${scene.SceneID}.products`,
+			{
+				name: "products",
+				role: "value",
+				type: "array",
+				read: true,
+				write: false,
+				desc: "Array of products in the scene",
+			},
+			{},
+			{
+				val: scene.Products,
+			},
+		);
+
+		await StateHelper.createAndSetStateAsync(
+			adapter,
 			`scenes.${scene.SceneID}.run`,
 			{
 				name: "run",
@@ -126,6 +143,13 @@ export class SetupScenes {
 				return result;
 			}),
 			new ComplexPropertyChangedHandler<Scene>(adapter, "Products", scene, async (newValue) => {
+				await adapter.setStateChangedAsync(
+					`scenes.${scene.SceneID}.products`,
+					{
+						val: newValue as SceneInformationEntry[],
+					},
+					true,
+				);
 				return await adapter.setStateChangedAsync(
 					`scenes.${scene.SceneID}.productsCount`,
 					ArrayCount(newValue as SceneInformationEntry[]),
