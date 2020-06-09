@@ -337,7 +337,7 @@ describe("setupScenes", function () {
 			try {
 				const allowedUnmappedStates: string[] = [];
 				const complexStatesMapping: { [prop: string]: string[] } = {
-					Products: ["test.0.scenes.0.productsCount"],
+					Products: ["test.0.scenes.0.productsCount", "test.0.scenes.0.products"],
 					IsRunning: ["test.0.scenes.0.run"],
 				};
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> = await adapter.getObjectListAsync(

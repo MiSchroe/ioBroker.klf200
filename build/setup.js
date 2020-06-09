@@ -16,21 +16,27 @@ class Setup {
     }
     startStateTimer() {
         if (this._stateTimer === undefined) {
-            this._stateTimer = setInterval(async (adapter, gateway) => {
+            this._stateTimer = setTimeout(async (adapter, gateway) => {
                 await this.stateTimerHandler(adapter, gateway);
             }, 10000, this.adapter, this.gateway);
         }
     }
     stopStateTimer() {
         if (this._stateTimer !== undefined) {
-            clearInterval(this._stateTimer);
+            clearTimeout(this._stateTimer);
             this._stateTimer = undefined;
         }
     }
-    async stateTimerHandler(adapter, gateway) {
+    async stateTimerHandler(adapter, gateway, fromTimeout = false) {
+        if (!fromTimeout) {
+            // Method was called from user code, not from timeout -> clear the timer first
+            this.stopStateTimer();
+        }
         const GatewayState = await gateway.getStateAsync();
         await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
         await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
+        // Start the next timer
+        this.startStateTimer();
     }
     static async setupGlobalAsync(adapter, gateway) {
         const newSetup = new Setup(adapter, gateway);
