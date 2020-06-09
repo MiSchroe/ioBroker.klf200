@@ -75,7 +75,7 @@ class Klf200 extends utils.Adapter {
         }
     }
     async initializeOnConnection() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
         // Read device info, scenes, groups and products and setup device
         this.log.info(`Reading device information...`);
         this._Gateway = new klf_200_api_1.Gateway(this.Connection);
@@ -102,15 +102,17 @@ class Klf200 extends utils.Adapter {
         this.disposables.push(...(await setupProducts_1.SetupProducts.createProductsAsync(this, (_l = (_k = this.Products) === null || _k === void 0 ? void 0 : _k.Products) !== null && _l !== void 0 ? _l : [])));
         this.log.info(`Setting up notification handlers for removal...`);
         // Setup remove notification
-        this.disposables.push((_m = this._Scenes) === null || _m === void 0 ? void 0 : _m.onRemovedScene(this.onRemovedScene.bind(this)), (_o = this._Products) === null || _o === void 0 ? void 0 : _o.onRemovedProduct(this.onRemovedProduct.bind(this)), (_p = this._Groups) === null || _p === void 0 ? void 0 : _p.onRemovedGroup(this.onRemovedGroup.bind(this)));
+        this.disposables.push(this.Scenes.onRemovedScene(this.onRemovedScene.bind(this)), this.Products.onRemovedProduct(this.onRemovedProduct.bind(this)), this.Groups.onRemovedGroup(this.onRemovedGroup.bind(this)));
         this.log.info(`Setting up notification handlers for discovering new objects...`);
-        this.disposables.push((_q = this._Products) === null || _q === void 0 ? void 0 : _q.onNewProduct(this.onNewProduct.bind(this)), (_r = this._Groups) === null || _r === void 0 ? void 0 : _r.onChangedGroup(this.onNewGroup.bind(this)));
+        this.disposables.push(this.Products.onNewProduct(this.onNewProduct.bind(this)), this.Groups.onChangedGroup(this.onNewGroup.bind(this)));
+        this.log.info(`Setting up notification handler for gateway state...`);
+        this.disposables.push(this._Connection.on(this.onFrameReceived.bind(this)));
         // Write a finish setup log entry
         this.log.info(`Adapter is ready for use.`);
         // Start state timer
         this.log.info(`Starting background state refresher...`);
-        (_s = this._Setup) === null || _s === void 0 ? void 0 : _s.startStateTimer();
-        (_u = (_t = this.Connection) === null || _t === void 0 ? void 0 : _t.KLF200SocketProtocol) === null || _u === void 0 ? void 0 : _u.socket.on("close", this.connectionWatchDogHandler);
+        (_m = this._Setup) === null || _m === void 0 ? void 0 : _m.startStateTimer();
+        (_p = (_o = this.Connection) === null || _o === void 0 ? void 0 : _o.KLF200SocketProtocol) === null || _p === void 0 ? void 0 : _p.socket.on("close", this.connectionWatchDogHandler);
     }
     async disposeOnConnectionClosed() {
         var _a, _b;
@@ -181,6 +183,13 @@ class Klf200 extends utils.Adapter {
         }
         else {
             return [];
+        }
+    }
+    async onFrameReceived(frame) {
+        var _a;
+        if (!(frame instanceof klf_200_api_1.GW_GET_STATE_CFM)) {
+            // Confirmation messages of the GW_GET_STATE_REQ must be ignored to avoid an infinity loop
+            await ((_a = this.Setup) === null || _a === void 0 ? void 0 : _a.stateTimerHandler(this, this.Gateway));
         }
     }
     /**

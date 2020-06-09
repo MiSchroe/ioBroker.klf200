@@ -16,11 +16,11 @@ export class Setup implements Disposable {
 		});
 	}
 
-	private _stateTimer?: ReturnType<typeof setInterval>;
+	private _stateTimer?: ReturnType<typeof setTimeout>;
 
 	public startStateTimer(): void {
 		if (this._stateTimer === undefined) {
-			this._stateTimer = setInterval(
+			this._stateTimer = setTimeout(
 				async (adapter, gateway) => {
 					await this.stateTimerHandler(adapter, gateway);
 				},
@@ -33,15 +33,22 @@ export class Setup implements Disposable {
 
 	public stopStateTimer(): void {
 		if (this._stateTimer !== undefined) {
-			clearInterval(this._stateTimer);
+			clearTimeout(this._stateTimer);
 			this._stateTimer = undefined;
 		}
 	}
 
-	private async stateTimerHandler(adapter: ioBroker.Adapter, gateway: Gateway): Promise<void> {
+	public async stateTimerHandler(adapter: ioBroker.Adapter, gateway: Gateway, fromTimeout = false): Promise<void> {
+		if (!fromTimeout) {
+			// Method was called from user code, not from timeout -> clear the timer first
+			this.stopStateTimer();
+		}
 		const GatewayState = await gateway.getStateAsync();
 		await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
 		await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
+
+		// Start the next timer
+		this.startStateTimer();
 	}
 
 	public static async setupGlobalAsync(adapter: ioBroker.Adapter, gateway: Gateway): Promise<Setup> {

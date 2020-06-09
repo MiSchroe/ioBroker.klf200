@@ -5,7 +5,16 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from "@iobroker/adapter-core";
-import { Connection, Gateway, Groups, IConnection, Products, Scenes } from "klf-200-api";
+import {
+	Connection,
+	Gateway,
+	Groups,
+	GW_GET_STATE_CFM,
+	IConnection,
+	IGW_FRAME_RCV,
+	Products,
+	Scenes,
+} from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { Setup } from "./setup";
 import { SetupGroups } from "./setupGroups";
@@ -155,16 +164,19 @@ class Klf200 extends utils.Adapter {
 		this.log.info(`Setting up notification handlers for removal...`);
 		// Setup remove notification
 		this.disposables.push(
-			this._Scenes?.onRemovedScene(this.onRemovedScene.bind(this)),
-			this._Products?.onRemovedProduct(this.onRemovedProduct.bind(this)),
-			this._Groups?.onRemovedGroup(this.onRemovedGroup.bind(this)),
+			this.Scenes!.onRemovedScene(this.onRemovedScene.bind(this)),
+			this.Products!.onRemovedProduct(this.onRemovedProduct.bind(this)),
+			this.Groups!.onRemovedGroup(this.onRemovedGroup.bind(this)),
 		);
 
 		this.log.info(`Setting up notification handlers for discovering new objects...`);
 		this.disposables.push(
-			this._Products?.onNewProduct(this.onNewProduct.bind(this)),
-			this._Groups?.onChangedGroup(this.onNewGroup.bind(this)),
+			this.Products!.onNewProduct(this.onNewProduct.bind(this)),
+			this.Groups!.onChangedGroup(this.onNewGroup.bind(this)),
 		);
+
+		this.log.info(`Setting up notification handler for gateway state...`);
+		this.disposables.push(this._Connection!.on(this.onFrameReceived.bind(this)));
 
 		// Write a finish setup log entry
 		this.log.info(`Adapter is ready for use.`);
@@ -249,6 +261,13 @@ class Klf200 extends utils.Adapter {
 			return await SetupGroups.createGroupAsync(this, newGroup, this._Products?.Products!);
 		} else {
 			return [];
+		}
+	}
+
+	private async onFrameReceived(frame: IGW_FRAME_RCV): Promise<void> {
+		if (!(frame instanceof GW_GET_STATE_CFM)) {
+			// Confirmation messages of the GW_GET_STATE_REQ must be ignored to avoid an infinity loop
+			await this.Setup?.stateTimerHandler(this, this.Gateway!);
 		}
 	}
 
