@@ -75,7 +75,7 @@ class Klf200 extends utils.Adapter {
         }
     }
     async initializeOnConnection() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
         // Read device info, scenes, groups and products and setup device
         this.log.info(`Reading device information...`);
         this._Gateway = new klf_200_api_1.Gateway(this.Connection);
@@ -98,21 +98,19 @@ class Klf200 extends utils.Adapter {
         this._Setup = await setup_1.Setup.setupGlobalAsync(this, this.Gateway);
         this.disposables.push(this._Setup);
         this.disposables.push(...(await setupScenes_1.SetupScenes.createScenesAsync(this, (_e = (_d = this.Scenes) === null || _d === void 0 ? void 0 : _d.Scenes) !== null && _e !== void 0 ? _e : [])));
-        this.log.info(`Setting up scene notification handers...`);
+        this.disposables.push(...(await setupGroups_1.SetupGroups.createGroupsAsync(this, (_g = (_f = this.Groups) === null || _f === void 0 ? void 0 : _f.Groups) !== null && _g !== void 0 ? _g : [], (_j = (_h = this.Products) === null || _h === void 0 ? void 0 : _h.Products) !== null && _j !== void 0 ? _j : [])));
+        this.disposables.push(...(await setupProducts_1.SetupProducts.createProductsAsync(this, (_l = (_k = this.Products) === null || _k === void 0 ? void 0 : _k.Products) !== null && _l !== void 0 ? _l : [])));
+        this.log.info(`Setting up notification handlers for removal...`);
         // Setup remove notification
-        this.disposables.push((_f = 
-        // Remove notification
-        this._Scenes) === null || _f === void 0 ? void 0 : _f.onRemovedScene(async (sceneId) => {
-            await this.deleteChannelAsync(`scenes`, `${sceneId}`);
-        }));
-        this.disposables.push(...(await setupGroups_1.SetupGroups.createGroupsAsync(this, (_h = (_g = this.Groups) === null || _g === void 0 ? void 0 : _g.Groups) !== null && _h !== void 0 ? _h : [], (_k = (_j = this.Products) === null || _j === void 0 ? void 0 : _j.Products) !== null && _k !== void 0 ? _k : [])));
-        this.disposables.push(...(await setupProducts_1.SetupProducts.createProductsAsync(this, (_m = (_l = this.Products) === null || _l === void 0 ? void 0 : _l.Products) !== null && _m !== void 0 ? _m : [])));
+        this.disposables.push((_m = this._Scenes) === null || _m === void 0 ? void 0 : _m.onRemovedScene(this.onRemovedScene.bind(this)), (_o = this._Products) === null || _o === void 0 ? void 0 : _o.onRemovedProduct(this.onRemovedProduct.bind(this)), (_p = this._Groups) === null || _p === void 0 ? void 0 : _p.onRemovedGroup(this.onRemovedGroup.bind(this)));
+        this.log.info(`Setting up notification handlers for discovering new objects...`);
+        this.disposables.push((_q = this._Products) === null || _q === void 0 ? void 0 : _q.onNewProduct(this.onNewProduct.bind(this)), (_r = this._Groups) === null || _r === void 0 ? void 0 : _r.onChangedGroup(this.onNewGroup.bind(this)));
         // Write a finish setup log entry
         this.log.info(`Adapter is ready for use.`);
         // Start state timer
         this.log.info(`Starting background state refresher...`);
-        (_o = this._Setup) === null || _o === void 0 ? void 0 : _o.startStateTimer();
-        (_q = (_p = this.Connection) === null || _p === void 0 ? void 0 : _p.KLF200SocketProtocol) === null || _q === void 0 ? void 0 : _q.socket.on("close", this.connectionWatchDogHandler);
+        (_s = this._Setup) === null || _s === void 0 ? void 0 : _s.startStateTimer();
+        (_u = (_t = this.Connection) === null || _t === void 0 ? void 0 : _t.KLF200SocketProtocol) === null || _u === void 0 ? void 0 : _u.socket.on("close", this.connectionWatchDogHandler);
     }
     async disposeOnConnectionClosed() {
         var _a, _b;
@@ -154,6 +152,35 @@ class Klf200 extends utils.Adapter {
                 // Wait a second before retry
                 await new Promise((resolve) => setTimeout(resolve, 1000));
             }
+        }
+    }
+    async onRemovedScene(sceneId) {
+        await this.deleteChannelAsync(`scenes`, `${sceneId}`);
+    }
+    async onRemovedProduct(productId) {
+        await this.deleteChannelAsync(`products`, `${productId}`);
+    }
+    async onRemovedGroup(groupId) {
+        await this.deleteChannelAsync(`groups`, `${groupId}`);
+    }
+    async onNewProduct(productId) {
+        var _a;
+        const newProduct = (_a = this._Products) === null || _a === void 0 ? void 0 : _a.Products[productId];
+        if (newProduct) {
+            return await setupProducts_1.SetupProducts.createProductAsync(this, newProduct);
+        }
+        else {
+            return [];
+        }
+    }
+    async onNewGroup(groupId) {
+        var _a, _b;
+        const newGroup = (_a = this._Groups) === null || _a === void 0 ? void 0 : _a.Groups[groupId];
+        if (newGroup) {
+            return await setupGroups_1.SetupGroups.createGroupAsync(this, newGroup, (_b = this._Products) === null || _b === void 0 ? void 0 : _b.Products);
+        }
+        else {
+            return [];
         }
     }
     /**

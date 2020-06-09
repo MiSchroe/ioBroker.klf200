@@ -147,20 +147,24 @@ class Klf200 extends utils.Adapter {
 		this._Setup = await Setup.setupGlobalAsync(this, this.Gateway!);
 		this.disposables.push(this._Setup);
 		this.disposables.push(...(await SetupScenes.createScenesAsync(this, this.Scenes?.Scenes ?? [])));
-
-		this.log.info(`Setting up scene notification handers...`);
-		// Setup remove notification
-		this.disposables.push(
-			// Remove notification
-			this._Scenes?.onRemovedScene(async (sceneId: number) => {
-				await this.deleteChannelAsync(`scenes`, `${sceneId}`);
-			}),
-		);
-
 		this.disposables.push(
 			...(await SetupGroups.createGroupsAsync(this, this.Groups?.Groups ?? [], this.Products?.Products ?? [])),
 		);
 		this.disposables.push(...(await SetupProducts.createProductsAsync(this, this.Products?.Products ?? [])));
+
+		this.log.info(`Setting up notification handlers for removal...`);
+		// Setup remove notification
+		this.disposables.push(
+			this._Scenes?.onRemovedScene(this.onRemovedScene.bind(this)),
+			this._Products?.onRemovedProduct(this.onRemovedProduct.bind(this)),
+			this._Groups?.onRemovedGroup(this.onRemovedGroup.bind(this)),
+		);
+
+		this.log.info(`Setting up notification handlers for discovering new objects...`);
+		this.disposables.push(
+			this._Products?.onNewProduct(this.onNewProduct.bind(this)),
+			this._Groups?.onChangedGroup(this.onNewGroup.bind(this)),
+		);
 
 		// Write a finish setup log entry
 		this.log.info(`Adapter is ready for use.`);
@@ -215,6 +219,36 @@ class Klf200 extends utils.Adapter {
 				// Wait a second before retry
 				await new Promise((resolve) => setTimeout(resolve, 1000));
 			}
+		}
+	}
+
+	private async onRemovedScene(sceneId: number): Promise<void> {
+		await this.deleteChannelAsync(`scenes`, `${sceneId}`);
+	}
+
+	private async onRemovedProduct(productId: number): Promise<void> {
+		await this.deleteChannelAsync(`products`, `${productId}`);
+	}
+
+	private async onRemovedGroup(groupId: number): Promise<void> {
+		await this.deleteChannelAsync(`groups`, `${groupId}`);
+	}
+
+	private async onNewProduct(productId: number): Promise<Disposable[]> {
+		const newProduct = this._Products?.Products[productId];
+		if (newProduct) {
+			return await SetupProducts.createProductAsync(this, newProduct);
+		} else {
+			return [];
+		}
+	}
+
+	private async onNewGroup(groupId: number): Promise<Disposable[]> {
+		const newGroup = this._Groups?.Groups[groupId];
+		if (newGroup) {
+			return await SetupGroups.createGroupAsync(this, newGroup, this._Products?.Products!);
+		} else {
+			return [];
 		}
 	}
 
