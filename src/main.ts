@@ -152,16 +152,31 @@ class Klf200 extends utils.Adapter {
 		);
 		this.disposables.push(...(await SetupProducts.createProductsAsync(this, this.Products?.Products ?? [])));
 
+		this.log.info(`Setting up notification handlers for removal...`);
+		// Setup remove notification
+		this.disposables.push(
+			this._Scenes?.onRemovedScene(this.onRemovedScene.bind(this)),
+			this._Products?.onRemovedProduct(this.onRemovedProduct.bind(this)),
+			this._Groups?.onRemovedGroup(this.onRemovedGroup.bind(this)),
+		);
+
+		this.log.info(`Setting up notification handlers for discovering new objects...`);
+		this.disposables.push(
+			this._Products?.onNewProduct(this.onNewProduct.bind(this)),
+			this._Groups?.onChangedGroup(this.onNewGroup.bind(this)),
+		);
+
 		// Write a finish setup log entry
 		this.log.info(`Adapter is ready for use.`);
+
+		// Start state timer
+		this.log.info(`Starting background state refresher...`);
+		this._Setup?.startStateTimer();
 
 		this.Connection?.KLF200SocketProtocol?.socket.on("close", this.connectionWatchDogHandler);
 	}
 
 	private async disposeOnConnectionClosed(): Promise<void> {
-		// Set shutdown flag
-		this.InShutdown = true;
-
 		// Remove watchdog handler from socket
 		this.log.info(`Remove socket listener...`);
 		this.Connection?.KLF200SocketProtocol?.socket.off("close", this.connectionWatchDogHandler);
@@ -207,11 +222,44 @@ class Klf200 extends utils.Adapter {
 		}
 	}
 
+	private async onRemovedScene(sceneId: number): Promise<void> {
+		await this.deleteChannelAsync(`scenes`, `${sceneId}`);
+	}
+
+	private async onRemovedProduct(productId: number): Promise<void> {
+		await this.deleteChannelAsync(`products`, `${productId}`);
+	}
+
+	private async onRemovedGroup(groupId: number): Promise<void> {
+		await this.deleteChannelAsync(`groups`, `${groupId}`);
+	}
+
+	private async onNewProduct(productId: number): Promise<Disposable[]> {
+		const newProduct = this._Products?.Products[productId];
+		if (newProduct) {
+			return await SetupProducts.createProductAsync(this, newProduct);
+		} else {
+			return [];
+		}
+	}
+
+	private async onNewGroup(groupId: number): Promise<Disposable[]> {
+		const newGroup = this._Groups?.Groups[groupId];
+		if (newGroup) {
+			return await SetupGroups.createGroupAsync(this, newGroup, this._Products?.Products!);
+		} else {
+			return [];
+		}
+	}
+
 	/**
 	 * Is called when adapter shuts down - callback has to be called under any circumstances!
 	 */
 	private async onUnload(callback: () => void): Promise<void> {
 		try {
+			// Set shutdown flag
+			this.InShutdown = true;
+
 			await this.disposeOnConnectionClosed();
 
 			// Disconnect from the device

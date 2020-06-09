@@ -7,6 +7,20 @@ const utils_1 = require("./util/utils");
 class SetupScenes {
     static async createScenesAsync(adapter, scenes) {
         const disposableEvents = [];
+        // Remove old scenes
+        const currentScenesList = await adapter.getChannelsOfAsync(`scenes`);
+        adapter.log.debug(`Current Scenes List: ${JSON.stringify(currentScenesList)}`);
+        // Filter current channels to contain only those, that are not present in the provided scenes list
+        const channelsToRemove = currentScenesList.filter((channel) => !scenes.some((scene) => {
+            return scene.SceneID === Number.parseInt(channel._id.split(".").reverse()[0]);
+        }));
+        // Delete channels
+        for (const channel of channelsToRemove) {
+            await adapter.deleteChannelAsync(`scenes`, channel._id);
+        }
+        if (channelsToRemove.length !== 0) {
+            adapter.log.info(`${channelsToRemove.length} unknown scenes removed.`);
+        }
         for (const scene of scenes) {
             if (scene) {
                 disposableEvents.push(...(await this.createSceneAsync(adapter, scene)));
@@ -43,6 +57,16 @@ class SetupScenes {
             write: false,
             desc: "Number of products in the scene",
         }, {}, utils_1.ArrayCount(scene.Products));
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `scenes.${scene.SceneID}.products`, {
+            name: "products",
+            role: "value",
+            type: "array",
+            read: true,
+            write: false,
+            desc: "Array of products in the scene",
+        }, {}, {
+            val: scene.Products,
+        });
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `scenes.${scene.SceneID}.run`, {
             name: "run",
             role: "button.play",
@@ -71,6 +95,9 @@ class SetupScenes {
             }
             return result;
         }), new propertyLink_1.ComplexPropertyChangedHandler(adapter, "Products", scene, async (newValue) => {
+            await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.products`, {
+                val: newValue,
+            }, true);
             return await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.productsCount`, utils_1.ArrayCount(newValue), true);
         }));
         // Setup state listeners

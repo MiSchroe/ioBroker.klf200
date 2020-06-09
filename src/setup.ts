@@ -147,18 +147,66 @@ export class Setup implements Disposable {
 
 		await StateHelper.createAndSetStateAsync(
 			adapter,
-			"gateway.Version",
+			"gateway.SoftwareVersion",
 			{
-				name: "Version",
+				name: "SoftwareVersion",
 				role: "value",
 				type: "string",
 				def: "",
 				read: true,
 				write: false,
-				desc: "Firmware version number",
+				desc: "Software version number",
 			},
 			{},
-			JSON.stringify(Version),
+			`${Version.SoftwareVersion.CommandVersion}.${Version.SoftwareVersion.MainVersion}.${Version.SoftwareVersion.SubVersion}.${Version.SoftwareVersion.BranchID}.${Version.SoftwareVersion.Build}.${Version.SoftwareVersion.MicroBuild}`,
+		);
+
+		await StateHelper.createAndSetStateAsync(
+			adapter,
+			"gateway.HardwareVersion",
+			{
+				name: "HardwareVersion",
+				role: "value",
+				type: "number",
+				def: "",
+				read: true,
+				write: false,
+				desc: "Hardware version number",
+			},
+			{},
+			Version.HardwareVersion,
+		);
+
+		await StateHelper.createAndSetStateAsync(
+			adapter,
+			"gateway.ProductGroup",
+			{
+				name: "ProductGroup",
+				role: "value",
+				type: "number",
+				def: "",
+				read: true,
+				write: false,
+				desc: "Product group",
+			},
+			{},
+			Version.ProductGroup,
+		);
+
+		await StateHelper.createAndSetStateAsync(
+			adapter,
+			"gateway.ProductType",
+			{
+				name: "ProductType",
+				role: "value",
+				type: "number",
+				def: "",
+				read: true,
+				write: false,
+				desc: "Product type",
+			},
+			{},
+			Version.ProductType,
 		);
 
 		const gatewayState = await gateway.getStateAsync();

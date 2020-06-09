@@ -126,10 +126,37 @@ describe("Setup", function () {
 			}
 		});
 
-		it(`should generate gateway Version state`, async function () {
+		it(`should generate gateway SoftwareVersion state`, async function () {
 			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
 			try {
-				assertObjectExists(`gateway.Version`);
+				assertObjectExists(`gateway.SoftwareVersion`);
+			} finally {
+				setup.dispose();
+			}
+		});
+
+		it(`should generate gateway HardwareVersion state`, async function () {
+			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			try {
+				assertObjectExists(`gateway.HardwareVersion`);
+			} finally {
+				setup.dispose();
+			}
+		});
+
+		it(`should generate gateway ProductGroup state`, async function () {
+			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			try {
+				assertObjectExists(`gateway.ProductGroup`);
+			} finally {
+				setup.dispose();
+			}
+		});
+
+		it(`should generate gateway ProductType state`, async function () {
+			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			try {
+				assertObjectExists(`gateway.ProductType`);
 			} finally {
 				setup.dispose();
 			}
