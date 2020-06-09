@@ -155,6 +155,10 @@ class Klf200 extends utils.Adapter {
 		// Write a finish setup log entry
 		this.log.info(`Adapter is ready for use.`);
 
+		// Start state timer
+		this.log.info(`Starting background state refresher...`);
+		this._Setup?.startStateTimer();
+
 		this.Connection?.KLF200SocketProtocol?.socket.on("close", this.connectionWatchDogHandler);
 	}
 

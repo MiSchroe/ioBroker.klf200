@@ -75,7 +75,7 @@ class Klf200 extends utils.Adapter {
         }
     }
     async initializeOnConnection() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
         // Read device info, scenes, groups and products and setup device
         this.log.info(`Reading device information...`);
         this._Gateway = new klf_200_api_1.Gateway(this.Connection);
@@ -102,7 +102,10 @@ class Klf200 extends utils.Adapter {
         this.disposables.push(...(await setupProducts_1.SetupProducts.createProductsAsync(this, (_l = (_k = this.Products) === null || _k === void 0 ? void 0 : _k.Products) !== null && _l !== void 0 ? _l : [])));
         // Write a finish setup log entry
         this.log.info(`Adapter is ready for use.`);
-        (_o = (_m = this.Connection) === null || _m === void 0 ? void 0 : _m.KLF200SocketProtocol) === null || _o === void 0 ? void 0 : _o.socket.on("close", this.connectionWatchDogHandler);
+        // Start state timer
+        this.log.info(`Starting background state refresher...`);
+        (_m = this._Setup) === null || _m === void 0 ? void 0 : _m.startStateTimer();
+        (_p = (_o = this.Connection) === null || _o === void 0 ? void 0 : _o.KLF200SocketProtocol) === null || _p === void 0 ? void 0 : _p.socket.on("close", this.connectionWatchDogHandler);
     }
     async disposeOnConnectionClosed() {
         var _a, _b;
