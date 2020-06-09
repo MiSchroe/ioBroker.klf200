@@ -119,15 +119,42 @@ class Setup {
             desc: "Version of the protocol with which the software of the gateway is compatible",
         }, {}, `${ProtocolVersion.MajorVersion}.${ProtocolVersion.MinorVersion}`);
         const Version = await gateway.getVersionAsync();
-        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.Version", {
-            name: "Version",
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.SoftwareVersion", {
+            name: "SoftwareVersion",
             role: "value",
             type: "string",
             def: "",
             read: true,
             write: false,
-            desc: "Firmware version number",
-        }, {}, JSON.stringify(Version));
+            desc: "Software version number",
+        }, {}, `${Version.SoftwareVersion.CommandVersion}.${Version.SoftwareVersion.MainVersion}.${Version.SoftwareVersion.SubVersion}.${Version.SoftwareVersion.BranchID}.${Version.SoftwareVersion.Build}.${Version.SoftwareVersion.MicroBuild}`);
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.HardwareVersion", {
+            name: "HardwareVersion",
+            role: "value",
+            type: "number",
+            def: "",
+            read: true,
+            write: false,
+            desc: "Hardware version number",
+        }, {}, Version.HardwareVersion);
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.ProductGroup", {
+            name: "ProductGroup",
+            role: "value",
+            type: "number",
+            def: "",
+            read: true,
+            write: false,
+            desc: "Product group",
+        }, {}, Version.ProductGroup);
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.ProductType", {
+            name: "ProductType",
+            role: "value",
+            type: "number",
+            def: "",
+            read: true,
+            write: false,
+            desc: "Product type",
+        }, {}, Version.ProductType);
         const gatewayState = await gateway.getStateAsync();
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.GatewayState", {
             name: "GatewayState",

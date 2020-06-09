@@ -57,6 +57,16 @@ class SetupScenes {
             write: false,
             desc: "Number of products in the scene",
         }, {}, utils_1.ArrayCount(scene.Products));
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `scenes.${scene.SceneID}.products`, {
+            name: "products",
+            role: "value",
+            type: "array",
+            read: true,
+            write: false,
+            desc: "Array of products in the scene",
+        }, {}, {
+            val: scene.Products,
+        });
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `scenes.${scene.SceneID}.run`, {
             name: "run",
             role: "button.play",
@@ -85,6 +95,9 @@ class SetupScenes {
             }
             return result;
         }), new propertyLink_1.ComplexPropertyChangedHandler(adapter, "Products", scene, async (newValue) => {
+            await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.products`, {
+                val: newValue,
+            }, true);
             return await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.productsCount`, utils_1.ArrayCount(newValue), true);
         }));
         // Setup state listeners

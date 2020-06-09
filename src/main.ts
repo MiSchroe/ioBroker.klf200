@@ -147,6 +147,16 @@ class Klf200 extends utils.Adapter {
 		this._Setup = await Setup.setupGlobalAsync(this, this.Gateway!);
 		this.disposables.push(this._Setup);
 		this.disposables.push(...(await SetupScenes.createScenesAsync(this, this.Scenes?.Scenes ?? [])));
+
+		this.log.info(`Setting up scene notification handers...`);
+		// Setup remove notification
+		this.disposables.push(
+			// Remove notification
+			this._Scenes?.onRemovedScene(async (sceneId: number) => {
+				await this.deleteChannelAsync(`scenes`, `${sceneId}`);
+			}),
+		);
+
 		this.disposables.push(
 			...(await SetupGroups.createGroupsAsync(this, this.Groups?.Groups ?? [], this.Products?.Products ?? [])),
 		);
