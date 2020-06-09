@@ -29,8 +29,8 @@ class Setup {
     }
     async stateTimerHandler(adapter, gateway) {
         const GatewayState = await gateway.getStateAsync();
-        await adapter.setStateAsync("gateway.GatewayState", GatewayState.GatewayState, true);
-        await adapter.setStateAsync("gateway.GatewaySubState", GatewayState.SubState, true);
+        await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
+        await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
     }
     static async setupGlobalAsync(adapter, gateway) {
         const newSetup = new Setup(adapter, gateway);

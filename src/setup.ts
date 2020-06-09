@@ -40,8 +40,8 @@ export class Setup implements Disposable {
 
 	private async stateTimerHandler(adapter: ioBroker.Adapter, gateway: Gateway): Promise<void> {
 		const GatewayState = await gateway.getStateAsync();
-		await adapter.setStateAsync("gateway.GatewayState", GatewayState.GatewayState, true);
-		await adapter.setStateAsync("gateway.GatewaySubState", GatewayState.SubState, true);
+		await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
+		await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
 	}
 
 	public static async setupGlobalAsync(adapter: ioBroker.Adapter, gateway: Gateway): Promise<Setup> {
