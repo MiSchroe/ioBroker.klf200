@@ -1,5 +1,6 @@
 "use strict";
 
+import { EventEmitter } from "events";
 import { Component, PropertyChangedEvent } from "klf-200-api/dist/utils/PropertyChangedEvent";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 
@@ -106,7 +107,17 @@ export class PercentagePropertyChangedHandler<T extends Component> extends Simpl
 }
 
 export abstract class BaseStateChangeHandler implements StateChangedEventHandler, Disposable {
-	constructor(readonly Adapter: ioBroker.Adapter, readonly StateId: string) {}
+	constructor(readonly Adapter: ioBroker.Adapter, readonly StateId: string) {
+		/// The default number of listeners may not be high enough -> raise it to suppress warnings
+		const adapterEmitter = (this.Adapter as unknown) as EventEmitter;
+		const newMaxSize = adapterEmitter.getMaxListeners() + 1;
+		this.logEventEmitterMaxSize(newMaxSize);
+		adapterEmitter.setMaxListeners(newMaxSize);
+	}
+
+	private logEventEmitterMaxSize(newMaxSize: number): void {
+		this.Adapter.log.debug(`Set maximum number of event listeners of adapter to ${newMaxSize}.`);
+	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
@@ -120,7 +131,14 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 	}
 
 	async dispose(): Promise<void> {
-		await this.Adapter.unsubscribeStatesAsync(this.StateId);
+		try {
+			await this.Adapter.unsubscribeStatesAsync(this.StateId);
+		} finally {
+			const adapterEmitter = (this.Adapter as unknown) as EventEmitter;
+			const newMaxSize = Math.max(adapterEmitter.getMaxListeners() - 1, 0);
+			this.logEventEmitterMaxSize(newMaxSize);
+			adapterEmitter.setMaxListeners(newMaxSize);
+		}
 	}
 
 	async Initialize(): Promise<void> {

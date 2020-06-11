@@ -76,6 +76,14 @@ class BaseStateChangeHandler {
     constructor(Adapter, StateId) {
         this.Adapter = Adapter;
         this.StateId = StateId;
+        /// The default number of listeners may not be high enough -> raise it to suppress warnings
+        const adapterEmitter = this.Adapter;
+        const newMaxSize = adapterEmitter.getMaxListeners() + 1;
+        this.logEventEmitterMaxSize(newMaxSize);
+        adapterEmitter.setMaxListeners(newMaxSize);
+    }
+    logEventEmitterMaxSize(newMaxSize) {
+        this.Adapter.log.debug(`Set maximum number of event listeners of adapter to ${newMaxSize}.`);
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async onStateChange(state) {
@@ -87,7 +95,15 @@ class BaseStateChangeHandler {
         }
     }
     async dispose() {
-        await this.Adapter.unsubscribeStatesAsync(this.StateId);
+        try {
+            await this.Adapter.unsubscribeStatesAsync(this.StateId);
+        }
+        finally {
+            const adapterEmitter = this.Adapter;
+            const newMaxSize = Math.max(adapterEmitter.getMaxListeners() - 1, 0);
+            this.logEventEmitterMaxSize(newMaxSize);
+            adapterEmitter.setMaxListeners(newMaxSize);
+        }
     }
     async Initialize() {
         // Bind the stateChanged function to the stateChange event
