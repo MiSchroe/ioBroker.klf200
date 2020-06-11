@@ -112,13 +112,13 @@ class Klf200 extends utils.Adapter {
 				this.terminate(`Login to KLF-200 device at ${this.config.host} failed.`);
 				return;
 			}
-
-			// Set the connection indicator to true and register a callback for connection lost
-			await this.setStateAsync("info.connection", true, true);
 			this.log.info("Connected to interface.");
 
 			// Read data from the gateway and setup states and handlers
 			await this.initializeOnConnection();
+
+			// Set the connection indicator to true
+			await this.setStateAsync("info.connection", true, true);
 		} catch (e) {
 			this.log.error(`Error during initialization of the adapter.`);
 			this.log.error(e);
