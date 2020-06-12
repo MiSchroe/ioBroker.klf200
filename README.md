@@ -1,6 +1,8 @@
 ![Logo](admin/klf200.png)
+
 # ioBroker.klf200
-![Number of Installations](http://iobroker.live/badges/klf200-installed.svg) ![Number of Installations](http://iobroker.live/badges/klf200-stable.svg) 
+
+![Number of Installations](http://iobroker.live/badges/klf200-installed.svg) ![Stable version](http://iobroker.live/badges/klf200-stable.svg)
 [![Travis CI](https://travis-ci.org/MiSchroe/ioBroker.klf200.svg?branch=master)](https://travis-ci.org/MiSchroe/ioBroker.klf200)
 [![Build status](https://ci.appveyor.com/api/projects/status/t28nlps5c99jy5v7/branch/master?svg=true)](https://ci.appveyor.com/project/MiSchroe/iobroker-klf200/branch/master)
 [![GitHub issues](https://img.shields.io/github/issues/MiSchroe/ioBroker.klf200.svg)](https://github.com/MiSchroe/ioBroker.klf200/issues)
@@ -13,9 +15,17 @@
 
 This adapter is for controlling a VELUX® KLF-200 interface. This adapter is neither an official VELUX product nor is it supported by the company that owns the VELUX products.
 
-The main intention of this adapter is to control electric roof windows and/or electric blinds or roller shutters. Though the KLF-200 interface is able to connect to further devices like lights, switches, canvas blinds etc. I haven't developed the adapter for use with these kind of devices. Thus, it could be possible, that these devices could be controlled by this adapter, too.
+The main intention of this adapter is to control electric roof windows and/or electric blinds or roller shutters. Though the KLF-200 interface is able to connect to further devices like lights, switches, canvas blinds etc. I haven't tested the adapter for use with these kind of devices. Thus, it should be possible, that these devices could be controlled by this adapter, too.
 
-The adapter works with the internal REST API of the KLF-200 interface and you don't need to wire the inputs and outputs of the box.
+The adapter works with the official TCP/IP interface of the KLF-200 that was documented with the release of firmware version 2.0.0.71. You don't need to wire the inputs and outputs of the box, but you have to
+connect the KLF-200 to a LAN using an ethernet cable.
+
+> ## **ATTENTION:**
+>
+> **In case you have an older version of the KLF-200 you have to install the new firmware
+> (at least version 2.0.0.71) to have this adapter work with your
+> KLF-200 interface. Updating your KLF-200 is strictly at your own risk. In case of a power outage
+> during the update you may loose the functionality of the KLF-200.**
 
 ## User documentation
 
@@ -41,10 +51,12 @@ You can find the user documentation in several languages:
 
 ## Known restrictions
 
-* The interface is restricted by storing a maximum of 32 scenes in total. 
-* The REST API doesn't provide any feedback of a scene to be finished, therefore each scene is supposed to run at least 30 seconds.
-* Currently, only single product scenes are supported to control from the product side. Thus, it is always possible to create scenes with several products and control them from the scenes part.
-* The REST API doesn't let me read the current status of a product. Therefore the current level of a product is always what was set last and defaults to 0% on initialization of the adapter. This also means, that further logic implemented in other adapters won't work if you e.g. open or close your window with the original remote control.
+### Technical limitations of the KLF-200 itself:
+
+-   The interface is restricted by storing a maximum of 32 scenes in total
+    with a maximum total number of 192 node positions, whichever is reached first.
+-   There is a maximum number of 200 nodes and up to three beacons that can
+    be stored in the interface.
 
 ## Documentation of the data points
 
@@ -54,39 +66,42 @@ There are two devices: "products" and "scenes". The products device lists all re
 
 #### Products
 
-* productsFound - number of products registered in the interface
-* 0...n - channel for each registered product
-    * category - name of the category, e.g. Window Opener, Roller Shutter
-    * scenesCount - number of scenes the product is used in
-    * level - This data point is only available when the product can be controlled from a scene.
-              You can set a value to run a scene that will drive the product to that specific value.
+-   productsFound - number of products registered in the interface
+-   0...n - channel for each registered product
+    -   category - name of the category, e.g. Window Opener, Roller Shutter
+    -   scenesCount - number of scenes the product is used in
+    -   level - This data point is only available when the product can be controlled from a scene.
+        You can set a value to run a scene that will drive the product to that specific value.
 
 #### Scenes
 
-* scenesFound - number of scenes found in the interface
-* 0..n - channel for each scene
-    * productsCount - number of products that are controlled through this scene
-    * silent - true/false if the scene will run in silent mode (only, if the product supports it).
-               Currently, you can only read this information.
-    * run - true/false set to true to run the scene. Will change to false again after the scene has finished
-    
-    
+-   scenesFound - number of scenes found in the interface
+-   0..n - channel for each scene
+    -   productsCount - number of products that are controlled through this scene
+    -   silent - true/false if the scene will run in silent mode (only, if the product supports it).
+        Currently, you can only read this information.
+    -   run - true/false set to true to run the scene. Will change to false again after the scene has finished
 
 ## Changelog
 
 #### 0.9.5
-* (Michael Schroeder) Bug fixes
+
+-   (Michael Schroeder) Bug fixes
 
 #### 0.9.4
-* (Michael Schroeder) Compatible to Admin 3, add documentation
+
+-   (Michael Schroeder) Compatible to Admin 3, add documentation
 
 #### 0.9.0
-* (Michael Schroeder) Initial public beta release
+
+-   (Michael Schroeder) Initial public beta release
 
 #### 0.0.1
-* (Michael Schroeder) Initial developer release
+
+-   (Michael Schroeder) Initial developer release
 
 ## License
+
 The MIT License (MIT)
 
 Copyright (c) 2018 Michael Schroeder <klf200@gmx.de>
@@ -109,6 +124,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-------------------------------------------------------------------------------
+---
 
 VELUX and the VELUX logo are registered trademarks of VKR Holding A/S.
