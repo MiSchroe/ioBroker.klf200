@@ -189,6 +189,7 @@ class SetupProducts {
             write: false,
             min: 0,
             max: 0xffff,
+            unit: "s",
             desc: "Remaining time of current operation in seconds",
         }, {}, product.RemainingTime);
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `products.${product.NodeID}.runStatus`, {

@@ -301,6 +301,7 @@ export class SetupProducts {
 				write: false,
 				min: 0,
 				max: 0xffff,
+				unit: "s",
 				desc: "Remaining time of current operation in seconds",
 			},
 			{},
