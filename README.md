@@ -101,7 +101,7 @@ The following devices are defined:
 -   ProductGroup - Product Group of the KLF-200 itself. It's a remote control
     device and therefore its product group value is always 14.
 -   ProductType - Product type of the KLF-200 itself. It's always 3.
--   ProtocolVersion - Version number
+-   ProtocolVersion - Version number of the protocol with which the adapter communicates with the device.
 -   SoftwareVersion - Version number of the firmware.
 
 #### Groups
