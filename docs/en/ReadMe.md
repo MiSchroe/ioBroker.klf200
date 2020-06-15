@@ -32,6 +32,10 @@ If all of your products are registered you should see a list like the following:
 
 ### Setup scenes
 
+> **Breaking changes:**
+>
+> **With the new firmware you no longer need to define a scene for each desired product state.**
+
 This step is optional. You can record scenes to change different products with one step,
 e.g. you can define a scene to close all windows.
 
@@ -141,41 +145,37 @@ After the adapter has read the meta data from the KLF-200 interface you will fin
 
 To run a scene you can either set the `run` state of the scene to `true` or you can set the `level` state of the product to a value that corresponds to a scene that sets the product to that level.
 
-### Example
+### Examples
 
-Assuming your bathroom window is channel `0`. You have a scene on Channel `10` that opens the bathroom window at 40%.
+Assuming your bathroom window is channel `0`.
+You have a scene on Channel `10` that closes all windows.
 
 ```javascript
-// Variant 1: Open the bathroom window at 40% using the scenes run state:
-setState("klf200.0.scenes.10.run", true);
+// Example 1: Open the bathroom window at 40%:
+await setStateAsync("klf200.0.products.0.targetPosition", 40);
 /* 
     The following will happen:
-    1. Your window will start to move to 40% opening level.
-    2. After your window has stopped, klf200.0.scenes.10.run will be set to 'false' again.
-    3. klf200.0.products.0.level will be set to 40%.
+    1. Several states will be changed to reflect the current operation, e.g. the remainingTime.
+    2. Your window will start to move to 40% opening level. (If it's not blocked, e.g. by the rain sensor.)
+    3. After your window has stopped (for whatever reason), several states will be changed again, including the currentPosition.
 */
 
-// Variant 2: Open the bathroom window at 40% using the products level state:
-setState("klf200.0.products.0.level", 40);
+// Example 2: Close all windows by running scene 10:
+await setStateAsync("klf200.0.scenes.10.run", true);
 /*
     The following will happen:
-    1. Your window will start to move to 40% opening level.
-    2. klf200.0.scenes.10.run will be set to true.
-    3. After your window has stopped, klf200.0.scenes.10.run will be set to 'false' again.
-*/
-
-// What happens, if we don't have a scene for that level?
-setState("klf200.0.products.0.level", 41);
-/*
-    The following will happen:
-    1. Your window won't move at all!
-    2. klf200.0.products.0.level will be reset to the previous value, e.g. 40
+    1. All related products will receive updates to their states to reflect the current operation.
+    2. All windows will start to move to 0% openening level.
+    3. After the scene has finished, the run state is set to false, again.
 */
 ```
 
 ---
 
 ## Known limitations
+
+-   If you define new scenes in the device you have to restart the adapter to read the new scenes.
+-   The timezone is fixed to Central European Time (GMT+1/GMT+2 for daylight saving time).
 
 ---
 
