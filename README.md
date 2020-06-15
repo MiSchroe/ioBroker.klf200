@@ -11,6 +11,16 @@
 [![NPM version](https://img.shields.io/npm/v/iobroker.klf200.svg)](https://www.npmjs.com/package/iobroker.klf200)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.klf200.svg)](https://www.npmjs.com/package/iobroker.klf200)
 
+[![gitlocalized ](https://gitlocalize.com/repo/1127/whole_project/badge.svg)](https://gitlocalize.com/repo/1127/whole_project?utm_source=badge)
+[![gitlocalized ](https://gitlocalize.com/repo/1127/de/badge.svg)](https://gitlocalize.com/repo/1127/de?utm_source=badge)
+[![gitlocalized ](https://gitlocalize.com/repo/1127/fr/badge.svg)](https://gitlocalize.com/repo/1127/fr?utm_source=badge)
+[![gitlocalized ](https://gitlocalize.com/repo/1127/nl/badge.svg)](https://gitlocalize.com/repo/1127/nl?utm_source=badge)
+[![gitlocalized ](https://gitlocalize.com/repo/1127/it/badge.svg)](https://gitlocalize.com/repo/1127/it?utm_source=badge)
+[![gitlocalized ](https://gitlocalize.com/repo/1127/pl/badge.svg)](https://gitlocalize.com/repo/1127/pl?utm_source=badge)
+[![gitlocalized ](https://gitlocalize.com/repo/1127/pt/badge.svg)](https://gitlocalize.com/repo/1127/pt?utm_source=badge)
+[![gitlocalized ](https://gitlocalize.com/repo/1127/ru/badge.svg)](https://gitlocalize.com/repo/1127/ru?utm_source=badge)
+[![gitlocalized ](https://gitlocalize.com/repo/1127/es/badge.svg)](https://gitlocalize.com/repo/1127/es?utm_source=badge)
+
 [![NPM](https://nodei.co/npm/iobroker.klf200.png?downloads=true)](https://nodei.co/npm/iobroker.klf200/)
 
 This adapter is for controlling a VELUX® KLF-200 interface. This adapter is neither an official VELUX product nor is it supported by the company that owns the VELUX products.
