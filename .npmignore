@@ -1,14 +1,38 @@
-gulpfile.js
-admin/i18n
-tasks
-node_modules
-.idea
 .git
-/node_modules
-test
+.idea
+node_modules/
+nbproject/
+.vs*/
+Thumbs.db
+gulpfile.js
+
+test/
+travis/
 .travis.yml
 appveyor.yml
-/.nyc_output
-/.vscode
-/.instrument
-mockserver-netty-3.10.8-jar-with-dependencies.jar
+.travis.yaml
+appveyor.yaml
+
+src/
+tsconfig.json
+tsconfig.*.json
+
+.eslintrc.json
+.eslintrc.js
+
+# Sourcemaps
+maps/
+
+# npm package files
+iobroker.*.tgz
+package-lock.json
+
+# NYC coverage files
+coverage
+.nyc*
+
+# i18n intermediate files
+admin/i18n
+
+# maintenance scripts
+maintenance/**

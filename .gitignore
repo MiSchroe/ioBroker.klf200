@@ -2,10 +2,19 @@
 .idea
 node_modules
 nbproject
+
+# Sourcemaps
+maps/
+
+# npm package files
+iobroker.*.tgz
+
+Thumbs.db
+
+# NYC coverage files
+coverage
+.nyc*
+
+# i18n intermediate files
 admin/i18n/flat.txt
 admin/i18n/*/flat.txt
-/tmp
-# mockserver-netty-3.10.8-jar-with-dependencies.jar  # Automatic download doesn't work anymore, therefore we include the file in the repository
-/.nyc_output
-/.instrument
-/coverage
