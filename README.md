@@ -188,7 +188,7 @@ The following devices are defined:
 -   scenesFound - Number of scenes found in the interface
 -   0..n - Channel for each scene
     -   productsCount - Number of products that are controlled through this scene
-    -   run - Set this state to true to run the scene. This state is writable, only.
+    -   run - Set this state to true to run the scene. If a scene is running this state is set to true.
     -   stop - Set this state to stop a running scene. This state is writable, only.
 
 ## Changelog
