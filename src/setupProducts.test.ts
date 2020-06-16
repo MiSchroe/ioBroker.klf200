@@ -222,6 +222,10 @@ describe("setupProducts", function () {
 		});
 	}
 
+	// Mock some EventEmitter functions
+	(adapter as any).getMaxListeners = sinon.stub<[], number>().returns(100);
+	(adapter as any).setMaxListeners = sinon.stub<[number], void>();
+
 	afterEach(() => {
 		// The mocks keep track of all method invocations - reset them after each single test
 		adapter.resetMockHistory();
