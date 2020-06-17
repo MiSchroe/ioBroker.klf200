@@ -20,7 +20,7 @@ class MockConnect implements IConnection {
 	logoutAsync = sinon.stub();
 	sendFrameAsync = sinon.stub();
 	on = sinon.stub();
-	KLF200SocketProtocol: undefined;
+	KLF200SocketProtocol = undefined;
 }
 
 const mockConnection = new MockConnect();
