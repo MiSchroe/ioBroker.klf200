@@ -82,6 +82,11 @@ class Klf200 extends utils.Adapter {
 			...options,
 			name: "klf200",
 		});
+
+		// Trace unhandled errors
+		process.on("unhandledRejection", this.onUnhandledRejection.bind(this));
+		process.on("uncaughtException", this.onUnhandledError.bind(this));
+
 		this.on("ready", this.onReady.bind(this));
 		// this.on("objectChange", this.onObjectChange.bind(this));
 		this.on("stateChange", this.onStateChange.bind(this));
@@ -333,6 +338,29 @@ class Klf200 extends utils.Adapter {
 	// 		}
 	// 	}
 	// }
+
+	getMessage(err: Error | string): string {
+		// Irgendwo gibt es wohl einen Fehler ohne Message
+		if (err == null) return "undefined";
+		if (typeof err === "string") return err;
+		if (err.message != null) return err.message;
+		if (err.name != null) return err.name;
+		return err.toString();
+	}
+
+	onUnhandledRejection(err: unknown): void {
+		let message = "unhandled promise rejection:" + this.getMessage(err as any);
+		if (err instanceof Error && err.stack != null) message += "\n> stack: " + err.stack;
+		((this && this.log) || console).error(message);
+		this.terminate("unhandled promise rejection", 1);
+	}
+
+	onUnhandledError(err: Error): void {
+		let message = "unhandled exception:" + this.getMessage(err);
+		if (err.stack != null) message += "\n> stack: " + err.stack;
+		((this && this.log) || console).error(message);
+		this.terminate("unhandled exception", 1);
+	}
 }
 
 if (module.parent) {
