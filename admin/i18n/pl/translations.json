@@ -1,0 +1,6 @@
+{
+    "host": "gospodarz",
+    "klf200 adapter settings": "ustawienia adaptera klf200",
+    "on save adapter restarts with new config immediately": "po zapisaniu adapter natychmiast uruchamia się ponownie z nową konfiguracją",
+    "password": "hasło"
+}
