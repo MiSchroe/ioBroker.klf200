@@ -22,7 +22,7 @@ export class Setup implements Disposable {
 		if (this._stateTimer === undefined) {
 			this._stateTimer = setTimeout(
 				async (adapter, gateway) => {
-					await this.stateTimerHandler(adapter, gateway);
+					await this.stateTimerHandler(adapter, gateway, true);
 				},
 				10000,
 				this.adapter,
@@ -38,14 +38,28 @@ export class Setup implements Disposable {
 		}
 	}
 
+	stateTimerHandlerActive = false;
+
 	public async stateTimerHandler(adapter: ioBroker.Adapter, gateway: Gateway, fromTimeout = false): Promise<void> {
 		if (!fromTimeout) {
 			// Method was called from user code, not from timeout -> clear the timer first
 			this.stopStateTimer();
 		}
-		const GatewayState = await gateway.getStateAsync();
-		await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
-		await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
+
+		if (!this.stateTimerHandlerActive) {
+			// Read state from the gateway only, if this is a new request, otherwise there could be a race condition that leads to a timeout
+
+			this.stateTimerHandlerActive = true;
+
+			try {
+				const GatewayState = await gateway.getStateAsync();
+				await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
+				await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
+			} finally {
+				// Reset the flag, so that the next call to this method will query the gateway again.
+				this.stateTimerHandlerActive = false;
+			}
+		}
 
 		// Start the next timer
 		this.startStateTimer();
