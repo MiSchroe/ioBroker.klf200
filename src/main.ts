@@ -270,6 +270,7 @@ class Klf200 extends utils.Adapter {
 	}
 
 	private async onFrameReceived(frame: IGW_FRAME_RCV): Promise<void> {
+		this.log.debug(`Frame received: ${JSON.stringify(frame)}`);
 		if (!(frame instanceof GW_GET_STATE_CFM)) {
 			// Confirmation messages of the GW_GET_STATE_REQ must be ignored to avoid an infinity loop
 			await this.Setup?.stateTimerHandler(this, this.Gateway!);

@@ -68,8 +68,8 @@
     "coverage": "nyc npm run test:ts",
     "lint": "eslint --ext .ts src",
     "prepare": "npm run build",
-    "deploy:container": "npm pack && cross-conf-env docker cp ./$npm_package_name-$npm_package_version.tgz iobroker:/opt/iobroker/tarballs/ && cross-conf-env docker exec iobroker npm install /opt/iobroker/tarballs/$npm_package_name-$npm_package_version.tgz && cross-conf-env docker exec iobroker iobroker restart klf200.0",
-    "deploy:containerV12": "npm pack && cross-conf-env docker cp ./$npm_package_name-$npm_package_version.tgz iobroker_v12:/opt/iobroker/tarballs/ && cross-conf-env docker exec iobroker_v12 npm install /opt/iobroker/tarballs/$npm_package_name-$npm_package_version.tgz && cross-conf-env docker exec iobroker_v12 iobroker restart klf200.0"
+    "deploy:container": "npm pack && cross-conf-env docker cp ./$npm_package_name-$npm_package_version.tgz iobroker:/opt/iobroker/tarballs/ && cross-conf-env docker exec iobroker npm install /opt/iobroker/tarballs/$npm_package_name-$npm_package_version.tgz --workdir /opt/iobroker && cross-conf-env docker exec iobroker iobroker restart klf200.0",
+    "deploy:containerV12": "npm pack && cross-conf-env docker cp ./$npm_package_name-$npm_package_version.tgz iobroker_v12:/opt/iobroker/tarballs/ && cross-conf-env docker exec iobroker_v12 npm install /opt/iobroker/tarballs/$npm_package_name-$npm_package_version.tgz --workdir /opt/iobroker && cross-conf-env docker exec iobroker_v12 iobroker restart klf200.0"
   },
   "nyc": {
     "include": [
