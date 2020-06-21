@@ -149,7 +149,9 @@
 	},
 	"native": {
 		"host": "velux-klf-",
-		"password": ""
+		"password": "",
+		"enableAutomaticReboot": true,
+		"automaticRebootCronTime": "0 3 * * *"
 	},
 	"protectedNative": ["password"],
 	"objects": [],

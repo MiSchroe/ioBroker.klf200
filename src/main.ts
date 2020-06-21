@@ -16,6 +16,7 @@ import {
 	Scenes,
 } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { Job, scheduleJob } from "node-schedule";
 import { Setup } from "./setup";
 import { SetupGroups } from "./setupGroups";
 import { SetupProducts } from "./setupProducts";
@@ -34,6 +35,8 @@ declare global {
 			// Define the shape of your options here (recommended)
 			host: string;
 			password: string;
+			enableAutomaticReboot: boolean;
+			automaticRebootCronTime: string;
 			// Or use a catch-all approach
 			// [key: string]: any;
 		}
@@ -76,6 +79,8 @@ class Klf200 extends utils.Adapter {
 	public get Setup(): Setup | undefined {
 		return this._Setup;
 	}
+
+	private _RebootJob?: Job;
 
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
@@ -121,6 +126,14 @@ class Klf200 extends utils.Adapter {
 
 			// Read data from the gateway and setup states and handlers
 			await this.initializeOnConnection();
+
+			// Set up reboot schedule, if enabled
+			if (this.config.enableAutomaticReboot === true) {
+				this.log.info("Automatic reboot enabled in configuration. Planning reboot job.");
+				this._RebootJob = scheduleJob(this.config.automaticRebootCronTime, this.onReboot.bind(this));
+			} else {
+				this.log.info("Automatic reboot disabled in configuration.");
+			}
 
 			// Set the connection indicator to true
 			await this.setStateAsync("info.connection", true, true);
@@ -275,6 +288,11 @@ class Klf200 extends utils.Adapter {
 			// Confirmation messages of the GW_GET_STATE_REQ must be ignored to avoid an infinity loop
 			await this.Setup?.stateTimerHandler(this, this.Gateway!);
 		}
+	}
+
+	private async onReboot(): Promise<void> {
+		this.log.info("Automatic reboot due to schedule in configuration");
+		await this.setStateAsync(`gateway.RebootGateway`, true, false);
 	}
 
 	/**

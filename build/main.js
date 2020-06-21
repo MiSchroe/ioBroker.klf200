@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
 const klf_200_api_1 = require("klf-200-api");
+const node_schedule_1 = require("node-schedule");
 const setup_1 = require("./setup");
 const setupGroups_1 = require("./setupGroups");
 const setupProducts_1 = require("./setupProducts");
@@ -68,6 +69,14 @@ class Klf200 extends utils.Adapter {
             this.log.info("Connected to interface.");
             // Read data from the gateway and setup states and handlers
             await this.initializeOnConnection();
+            // Set up reboot schedule, if enabled
+            if (this.config.enableAutomaticReboot === true) {
+                this.log.info("Automatic reboot enabled in configuration. Planning reboot job.");
+                this._RebootJob = node_schedule_1.scheduleJob(this.config.automaticRebootCronTime, this.onReboot.bind(this));
+            }
+            else {
+                this.log.info("Automatic reboot disabled in configuration.");
+            }
             // Set the connection indicator to true
             await this.setStateAsync("info.connection", true, true);
         }
@@ -195,6 +204,10 @@ class Klf200 extends utils.Adapter {
             // Confirmation messages of the GW_GET_STATE_REQ must be ignored to avoid an infinity loop
             await ((_a = this.Setup) === null || _a === void 0 ? void 0 : _a.stateTimerHandler(this, this.Gateway));
         }
+    }
+    async onReboot() {
+        this.log.info("Automatic reboot due to schedule in configuration");
+        await this.setStateAsync(`gateway.RebootGateway`, true, false);
     }
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
