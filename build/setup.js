@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Setup = void 0;
+const promise_timeout_1 = require("promise-timeout");
+const propertyLink_1 = require("./util/propertyLink");
 const stateHelper_1 = require("./util/stateHelper");
 class Setup {
     constructor(adapter, gateway) {
@@ -20,7 +22,7 @@ class Setup {
             this._stateTimer = setTimeout(async (adapter, gateway) => {
                 this._stateTimer = undefined; // Timer has fired -> delete timer id
                 await this.stateTimerHandler(adapter, gateway);
-            }, 10000, this.adapter, this.gateway);
+            }, 5 * 60 * 1000, this.adapter, this.gateway);
         }
     }
     stopStateTimer() {
@@ -44,6 +46,15 @@ class Setup {
                     await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
                     await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
                 }
+                catch (e) {
+                    if (e instanceof promise_timeout_1.TimeoutError) {
+                        adapter.log.error(`Timemout occured during getting the current gateway status.`);
+                    }
+                    else {
+                        adapter.log.error(`Error occured during getting the current gateway status.`);
+                        adapter.log.error(`Error details: ${e}`);
+                    }
+                }
                 finally {
                     // Reset the flag, so that the next call to this method will query the gateway again.
                     this.stateTimerHandlerActive = false;
@@ -51,8 +62,10 @@ class Setup {
             }
         }
         finally {
-            // Start the next timer
-            this.startStateTimer();
+            // Start the next timer, but only if we are connected
+            if (gateway.connection.KLF200SocketProtocol !== undefined) {
+                this.startStateTimer();
+            }
         }
     }
     static async setupGlobalAsync(adapter, gateway) {
@@ -218,6 +231,28 @@ class Setup {
                 "130": "RunningActivateScene",
             },
         }, {}, gatewayState.SubState);
+        await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, "gateway.RebootGateway", {
+            name: "RebootGateway",
+            role: "button.stop",
+            type: "boolean",
+            read: false,
+            write: true,
+            desc: "Reboot the gateway (this one only works, if there is still a connection to the gateway possible)",
+        }, {}, false);
+        // Setup gateway listeners
+        const rebootListener = new propertyLink_1.ComplexStateChangeHandler(adapter, `gateway.RebootGateway`, async (state) => {
+            if (state !== undefined) {
+                if ((state === null || state === void 0 ? void 0 : state.val) === true) {
+                    // Reboot, login should be done automatically by the existing logic for loss of connection
+                    newSetup.adapter.log.info("Rebooting the adapter, connection will be lost.");
+                    await gateway.rebootAsync();
+                    newSetup.adapter.log.info("Waiting 2 seconds after reboot for reconnect.");
+                    await new Promise((resolve) => setTimeout(resolve, 2000));
+                }
+            }
+        });
+        await rebootListener.Initialize();
+        newSetup.disposableEvents.push(rebootListener);
         return newSetup;
     }
 }

@@ -2,6 +2,8 @@
 
 import { Gateway } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { TimeoutError } from "promise-timeout";
+import { ComplexStateChangeHandler } from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
 
 export class Setup implements Disposable {
@@ -25,7 +27,7 @@ export class Setup implements Disposable {
 					this._stateTimer = undefined; // Timer has fired -> delete timer id
 					await this.stateTimerHandler(adapter, gateway);
 				},
-				10000,
+				5 * 60 * 1000,
 				this.adapter,
 				this.gateway,
 			);
@@ -57,14 +59,23 @@ export class Setup implements Disposable {
 					const GatewayState = await gateway.getStateAsync();
 					await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
 					await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
+				} catch (e) {
+					if (e instanceof TimeoutError) {
+						adapter.log.error(`Timemout occured during getting the current gateway status.`);
+					} else {
+						adapter.log.error(`Error occured during getting the current gateway status.`);
+						adapter.log.error(`Error details: ${e}`);
+					}
 				} finally {
 					// Reset the flag, so that the next call to this method will query the gateway again.
 					this.stateTimerHandlerActive = false;
 				}
 			}
 		} finally {
-			// Start the next timer
-			this.startStateTimer();
+			// Start the next timer, but only if we are connected
+			if (gateway.connection.KLF200SocketProtocol !== undefined) {
+				this.startStateTimer();
+			}
 		}
 	}
 
@@ -287,6 +298,37 @@ export class Setup implements Disposable {
 			{},
 			gatewayState.SubState,
 		);
+
+		await StateHelper.createAndSetStateAsync(
+			adapter,
+			"gateway.RebootGateway",
+			{
+				name: "RebootGateway",
+				role: "button.stop",
+				type: "boolean",
+				read: false,
+				write: true,
+				desc:
+					"Reboot the gateway (this one only works, if there is still a connection to the gateway possible)",
+			},
+			{},
+			false,
+		);
+
+		// Setup gateway listeners
+		const rebootListener = new ComplexStateChangeHandler(adapter, `gateway.RebootGateway`, async (state) => {
+			if (state !== undefined) {
+				if (state?.val === true) {
+					// Reboot, login should be done automatically by the existing logic for loss of connection
+					newSetup.adapter.log.info("Rebooting the adapter, connection will be lost.");
+					await gateway.rebootAsync();
+					newSetup.adapter.log.info("Waiting 2 seconds after reboot for reconnect.");
+					await new Promise((resolve) => setTimeout(resolve, 2000));
+				}
+			}
+		});
+		await rebootListener.Initialize();
+		newSetup.disposableEvents.push(rebootListener);
 
 		return newSetup;
 	}
