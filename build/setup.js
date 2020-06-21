@@ -18,36 +18,42 @@ class Setup {
     startStateTimer() {
         if (this._stateTimer === undefined) {
             this._stateTimer = setTimeout(async (adapter, gateway) => {
-                await this.stateTimerHandler(adapter, gateway, true);
+                this._stateTimer = undefined; // Timer has fired -> delete timer id
+                await this.stateTimerHandler(adapter, gateway);
             }, 10000, this.adapter, this.gateway);
         }
     }
     stopStateTimer() {
         if (this._stateTimer !== undefined) {
-            clearTimeout(this._stateTimer);
-            this._stateTimer = undefined;
-        }
-    }
-    async stateTimerHandler(adapter, gateway, fromTimeout = false) {
-        if (!fromTimeout) {
-            // Method was called from user code, not from timeout -> clear the timer first
-            this.stopStateTimer();
-        }
-        if (!this.stateTimerHandlerActive) {
-            // Read state from the gateway only, if this is a new request, otherwise there could be a race condition that leads to a timeout
-            this.stateTimerHandlerActive = true;
             try {
-                const GatewayState = await gateway.getStateAsync();
-                await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
-                await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
+                clearTimeout(this._stateTimer);
             }
             finally {
-                // Reset the flag, so that the next call to this method will query the gateway again.
-                this.stateTimerHandlerActive = false;
+                this._stateTimer = undefined;
             }
         }
-        // Start the next timer
-        this.startStateTimer();
+    }
+    async stateTimerHandler(adapter, gateway) {
+        this.stopStateTimer();
+        try {
+            if (!this.stateTimerHandlerActive) {
+                // Read state from the gateway only, if this is a new request, otherwise there could be a race condition that leads to a timeout
+                this.stateTimerHandlerActive = true;
+                try {
+                    const GatewayState = await gateway.getStateAsync();
+                    await adapter.setStateChangedAsync("gateway.GatewayState", GatewayState.GatewayState, true);
+                    await adapter.setStateChangedAsync("gateway.GatewaySubState", GatewayState.SubState, true);
+                }
+                finally {
+                    // Reset the flag, so that the next call to this method will query the gateway again.
+                    this.stateTimerHandlerActive = false;
+                }
+            }
+        }
+        finally {
+            // Start the next timer
+            this.startStateTimer();
+        }
     }
     static async setupGlobalAsync(adapter, gateway) {
         const newSetup = new Setup(adapter, gateway);
