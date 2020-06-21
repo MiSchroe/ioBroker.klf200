@@ -77,7 +77,7 @@ class SetupScenes {
         }, {}, scene.IsRunning);
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `scenes.${scene.SceneID}.stop`, {
             name: "stop",
-            role: "button.play",
+            role: "button.stop",
             type: "boolean",
             read: false,
             write: true,

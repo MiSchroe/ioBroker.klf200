@@ -119,7 +119,7 @@ export class SetupScenes {
 			`scenes.${scene.SceneID}.stop`,
 			{
 				name: "stop",
-				role: "button.play",
+				role: "button.stop",
 				type: "boolean",
 				read: false,
 				write: true,
