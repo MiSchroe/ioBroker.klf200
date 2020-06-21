@@ -161,7 +161,7 @@ export class SetterStateChangeHandler<T extends Component> extends BaseStateChan
 
 		this.Adapter.log.debug(
 			`Create a setter state change handler to listen to state ${this.StateId} linked to property ${
-				((this.SetterMethodName as unknown) as Function).name
+				this.SetterMethodName
 				// eslint-disable-next-line @typescript-eslint/ban-types
 			} on type ${(this.LinkedObject as Object).constructor.name}.`,
 		);

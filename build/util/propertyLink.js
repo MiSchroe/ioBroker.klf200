@@ -118,7 +118,7 @@ class SetterStateChangeHandler extends BaseStateChangeHandler {
         super(Adapter, StateId);
         this.LinkedObject = LinkedObject;
         this.SetterMethodName = SetterMethodName;
-        this.Adapter.log.debug(`Create a setter state change handler to listen to state ${this.StateId} linked to property ${this.SetterMethodName.name
+        this.Adapter.log.debug(`Create a setter state change handler to listen to state ${this.StateId} linked to property ${this.SetterMethodName
         // eslint-disable-next-line @typescript-eslint/ban-types
         } on type ${this.LinkedObject.constructor.name}.`);
         // Double check, that the setter method exists
