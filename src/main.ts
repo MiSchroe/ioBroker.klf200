@@ -340,7 +340,7 @@ class Klf200 extends utils.Adapter {
 	// 	}
 	// }
 
-	getMessage(err: Error | string): string {
+	getErrorMessage(err: Error | string): string {
 		// Irgendwo gibt es wohl einen Fehler ohne Message
 		if (err == null) return "undefined";
 		if (typeof err === "string") return err;
@@ -350,14 +350,14 @@ class Klf200 extends utils.Adapter {
 	}
 
 	onUnhandledRejection(err: unknown): void {
-		let message = "unhandled promise rejection:" + this.getMessage(err as any);
+		let message = "unhandled promise rejection:" + this.getErrorMessage(err as any);
 		if (err instanceof Error && err.stack != null) message += "\n> stack: " + err.stack;
 		((this && this.log) || console).error(message);
 		this.terminate("unhandled promise rejection", 1);
 	}
 
 	onUnhandledError(err: Error): void {
-		let message = "unhandled exception:" + this.getMessage(err);
+		let message = "unhandled exception:" + this.getErrorMessage(err);
 		if (err.stack != null) message += "\n> stack: " + err.stack;
 		((this && this.log) || console).error(message);
 		this.terminate("unhandled exception", 1);
