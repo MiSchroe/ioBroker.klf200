@@ -10,6 +10,7 @@ import {
 	Gateway,
 	Groups,
 	GW_GET_STATE_CFM,
+	GW_REBOOT_CFM,
 	IConnection,
 	IGW_FRAME_RCV,
 	Products,
@@ -284,7 +285,7 @@ class Klf200 extends utils.Adapter {
 
 	private async onFrameReceived(frame: IGW_FRAME_RCV): Promise<void> {
 		this.log.debug(`Frame received: ${JSON.stringify(frame)}`);
-		if (!(frame instanceof GW_GET_STATE_CFM)) {
+		if (!(frame instanceof GW_GET_STATE_CFM) && !(frame instanceof GW_REBOOT_CFM)) {
 			// Confirmation messages of the GW_GET_STATE_REQ must be ignored to avoid an infinity loop
 			await this.Setup?.stateTimerHandler(this, this.Gateway!);
 		}
@@ -292,6 +293,7 @@ class Klf200 extends utils.Adapter {
 
 	private async onReboot(): Promise<void> {
 		this.log.info("Automatic reboot due to schedule in configuration");
+		this.Setup?.stopStateTimer();
 		await this.setStateAsync(`gateway.RebootGateway`, true, false);
 	}
 
@@ -367,17 +369,17 @@ class Klf200 extends utils.Adapter {
 		return err.toString();
 	}
 
-	onUnhandledRejection(err: unknown): void {
-		let message = "unhandled promise rejection:" + this.getErrorMessage(err as any);
-		if (err instanceof Error && err.stack != null) message += "\n> stack: " + err.stack;
-		((this && this.log) || console).error(message);
+	onUnhandledRejection(reason: {} | null | undefined, promise: Promise<any>): void {
+		((this && this.log) || console).error(
+			`Unhandled promise rejection detected. reason: ${JSON.stringify(reason)}, promise: ${JSON.stringify(
+				promise,
+			)}`,
+		);
 		this.terminate("unhandled promise rejection", 1);
 	}
 
-	onUnhandledError(err: Error): void {
-		let message = "unhandled exception:" + this.getErrorMessage(err);
-		if (err.stack != null) message += "\n> stack: " + err.stack;
-		((this && this.log) || console).error(message);
+	onUnhandledError(error: Error): void {
+		((this && this.log) || console).error(`Unhandled exception occured: ${error}`);
 		this.terminate("unhandled exception", 1);
 	}
 }
