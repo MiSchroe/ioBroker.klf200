@@ -20,6 +20,17 @@
 			function load(settings, onChange) {
 				// example: select elements with id=key and class=value and insert value
 				if (!settings) return;
+
+				// Setup enable/disable due to checkbox state of automatic reboot
+				$("#enableAutomaticReboot").on("change", () => {
+					$("#automaticRebootCronTimeDiv").toggleClass("hide");
+				});
+
+				// Setup initial hidden state of automatic reboot
+				if (!settings.enableAutomaticReboot) {
+					$("#automaticRebootCronTimeDiv").addClass("hide");
+				}
+
 				$(".value").each(function () {
 					var $key = $(this);
 					var id = $key.attr("id");
@@ -34,6 +45,7 @@
 					}
 				});
 				onChange(false);
+
 				// reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
 				if (M) M.updateTextFields();
 			}
@@ -73,6 +85,16 @@
 				<div class="input-field col s12 m6">
 					<input class="value" id="password" type="password" />
 					<label for="password" class="translate">password</label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="input-field col s12 m6">
+					<input class="value" type="checkbox" id="enableAutomaticReboot" />
+					<label for="enableAutomaticReboot" class="translate">Enable automatic reboot</label>
+				</div>
+				<div class="input-field col s12 m6" id="automaticRebootCronTimeDiv">
+					<input class="value" id="automaticRebootCronTime" type="text" />
+					<label for="automaticRebootCronTime" class="translate">Cron pattern for automatic reboot</label>
 				</div>
 			</div>
 			<div class="row">
