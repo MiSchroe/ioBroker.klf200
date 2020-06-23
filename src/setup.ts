@@ -322,8 +322,10 @@ export class Setup implements Disposable {
 					// Reboot, login should be done automatically by the existing logic for loss of connection
 					newSetup.adapter.log.info("Rebooting the adapter, connection will be lost.");
 					await gateway.rebootAsync();
-					newSetup.adapter.log.info("Waiting 2 seconds after reboot for reconnect.");
+					newSetup.adapter.log.info("Waiting 2 seconds after reboot for restart.");
 					await new Promise((resolve) => setTimeout(resolve, 2000));
+					newSetup.adapter.log.info("Adapter will be restartet.");
+					newSetup.adapter.restart();
 				}
 			}
 		});
