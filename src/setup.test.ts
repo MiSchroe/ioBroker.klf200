@@ -1,7 +1,8 @@
-import { utils, MockAdapter } from "@iobroker/testing";
+import { MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
 import { Gateway, GatewayState, GatewaySubState, IConnection, SoftwareVersion } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { promisify } from "util";
 import { Setup } from "./setup";
 import {
 	BaseStateChangeHandler,
@@ -11,7 +12,6 @@ import {
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
 import chaiAsPromised = require("chai-as-promised");
-import { promisify } from "util";
 
 use(sinonChai);
 use(chaiAsPromised);
@@ -274,7 +274,7 @@ describe("Setup", function () {
 		});
 
 		it.skip(`Each readable state should be bound to a property change handler`, async function () {
-			let disposables: Disposable[] = [];
+			const disposables: Disposable[] = [];
 			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
 
 			try {

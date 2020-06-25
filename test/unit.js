@@ -116,5 +116,9 @@ tests.unit(path.join(__dirname, ".."), {
 				writable: true,
 			});
 		}
+
+		// Mock some EventEmitter functions
+		adapter.getMaxListeners = sinon.stub().returns(100);
+		adapter.setMaxListeners = sinon.stub();
 	},
 });
