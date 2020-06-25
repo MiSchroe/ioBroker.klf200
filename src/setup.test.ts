@@ -1,4 +1,4 @@
-import { utils } from "@iobroker/testing";
+import { utils, MockAdapter } from "@iobroker/testing";
 import { expect, use } from "chai";
 import { Gateway, GatewayState, GatewaySubState, IConnection, SoftwareVersion } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
@@ -11,6 +11,7 @@ import {
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
 import chaiAsPromised = require("chai-as-promised");
+import { promisify } from "util";
 
 use(sinonChai);
 use(chaiAsPromised);
@@ -29,6 +30,47 @@ describe("Setup", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
 	const { assertObjectExists } = utils.unit.createAsserts(database, adapter);
+
+	// Fake getChannelsOf
+	adapter.getChannelsOf.callsFake((parentDevice, callback) =>
+		callback(null, [
+			{
+				_id: `${adapter.namespace}.products.42`,
+				type: "channel",
+				common: {
+					name: "Test window",
+				},
+				native: {},
+			},
+		] as ioBroker.ChannelObject[]),
+	);
+	// Fake deleteChannel
+	adapter.deleteChannel.callsFake((parentDevice, channelId, callback) => {
+		// Delete sub-objects first
+		adapter.getObjectList(
+			{
+				startKey: `${adapter.namespace}.${parentDevice}.${channelId}`,
+				endkey: `${adapter.namespace}.${parentDevice}.${channelId}.\u9999`,
+			},
+			(err: any, res: { rows: { id: string; obj: any; doc: any }[] }) => {
+				for (const row of res.rows) {
+					adapter.delObject(row.id);
+				}
+
+				adapter.delObject(`${parentDevice}.${channelId}`, callback);
+			},
+		);
+	});
+
+	// Promisify additional methods
+	for (const method of ["unsubscribeStates", "getChannelsOf", "deleteChannel"]) {
+		Object.defineProperty(adapter, `${method}Async`, {
+			configurable: true,
+			enumerable: true,
+			value: promisify(adapter[method as keyof MockAdapter]),
+			writable: true,
+		});
+	}
 
 	// Mock the gateway
 	const mockGateway = new Gateway(mockConnection);
