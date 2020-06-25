@@ -16,8 +16,36 @@
 		<script type="text/javascript" src="words.js"></script>
 
 		<script type="text/javascript">
-			// This will be called by the admin adapter when the settings page loads
-			function load(settings, onChange) {
+			var secret;
+
+			if (!encrypt || typeof encrypt !== "function") {
+				function encrypt(key, value) {
+					if (value === undefined) {
+						value = key;
+						key = secret;
+					}
+					var result = "";
+					for (var i = 0; i < value.length; ++i) {
+						result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+					}
+					return result;
+				}
+			}
+			if (!decrypt || typeof decrypt !== "function") {
+				function decrypt(key, value) {
+					if (value === undefined) {
+						value = key;
+						key = secret;
+					}
+					var result = "";
+					for (var i = 0; i < value.length; ++i) {
+						result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+					}
+					return result;
+				}
+			}
+
+			function loadHelper(settings, onChange) {
 				// example: select elements with id=key and class=value and insert value
 				if (!settings) return;
 
@@ -34,6 +62,13 @@
 				$(".value").each(function () {
 					var $key = $(this);
 					var id = $key.attr("id");
+					if (
+						id === "password" &&
+						(typeof supportsFeature !== "function" || !supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE"))
+					) {
+						settings[id] = decrypt(secret, settings[id]);
+					}
+
 					if ($key.attr("type") === "checkbox") {
 						// do not call onChange direct, because onChange could expect some arguments
 						$key.prop("checked", settings[id]).on("change", () => onChange());
@@ -50,16 +85,35 @@
 				if (M) M.updateTextFields();
 			}
 
+			// This will be called by the admin adapter when the settings page loads
+			function load(settings, onChange) {
+				socket.emit("getObject", "system.config", function (err, obj) {
+					secret = (obj.native ? obj.native.secret : "") || "Zgfr56gFe87jJOM";
+					loadHelper(settings, onChange);
+				});
+
+				onChange(false);
+			}
+
 			// This will be called by the admin adapter when the user presses the save button
 			function save(callback) {
 				// example: select elements with class=value and build settings object
 				var obj = {};
 				$(".value").each(function () {
 					var $this = $(this);
+					var id = $this.attr("id");
+
 					if ($this.attr("type") === "checkbox") {
-						obj[$this.attr("id")] = $this.prop("checked");
+						obj[id] = $this.prop("checked");
 					} else {
-						obj[$this.attr("id")] = $this.val();
+						var value = $this.val();
+						if (
+							id === "password" &&
+							(typeof supportsFeature !== "function" || !supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE"))
+						) {
+							value = encrypt(secret, value);
+						}
+						obj[id] = value;
 					}
 				});
 				callback(obj);

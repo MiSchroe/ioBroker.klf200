@@ -104,6 +104,14 @@ class Klf200 extends utils.Adapter {
 		this.connectionWatchDogHandler = this.ConnectionWatchDog.bind(this);
 	}
 
+	private decrypt(key: string, value: string): string {
+		let result = "";
+		for (let i = 0; i < value.length; ++i) {
+			result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+		}
+		return result;
+	}
+
 	/**
 	 * Is called when databases are connected and adapter received configuration.
 	 */
@@ -113,6 +121,15 @@ class Klf200 extends utils.Adapter {
 
 			// Reset the connection indicator during startup
 			await this.setStateAsync("info.connection", false, true);
+
+			// Decrypt password
+			const systemConfig = await this.getForeignObjectAsync("system.config");
+			if (!this.supportsFeature || !this.supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE")) {
+				this.config.password = this.decrypt(
+					systemConfig?.native?.secret ?? "Zgfr56gFe87jJOM",
+					this.config.password,
+				);
+			}
 
 			// Setup connection and initialize objects and states
 			this._Connection = new Connection(this.config.host); // TODO: Add configs for CA and fingerprint

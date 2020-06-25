@@ -47,20 +47,32 @@ class Klf200 extends utils.Adapter {
     get Setup() {
         return this._Setup;
     }
+    decrypt(key, value) {
+        let result = "";
+        for (let i = 0; i < value.length; ++i) {
+            result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+        }
+        return result;
+    }
     /**
      * Is called when databases are connected and adapter received configuration.
      */
     async onReady() {
-        var _a;
+        var _a, _b, _c;
         try {
             // Initialize your adapter here
             // Reset the connection indicator during startup
             await this.setStateAsync("info.connection", false, true);
+            // Decrypt password
+            const systemConfig = await this.getForeignObjectAsync("system.config");
+            if (!this.supportsFeature || !this.supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE")) {
+                this.config.password = this.decrypt((_b = (_a = systemConfig === null || systemConfig === void 0 ? void 0 : systemConfig.native) === null || _a === void 0 ? void 0 : _a.secret) !== null && _b !== void 0 ? _b : "Zgfr56gFe87jJOM", this.config.password);
+            }
             // Setup connection and initialize objects and states
             this._Connection = new klf_200_api_1.Connection(this.config.host); // TODO: Add configs for CA and fingerprint
             this.log.info(`Host: ${this.config.host}`);
             try {
-                await ((_a = this.Connection) === null || _a === void 0 ? void 0 : _a.loginAsync(this.config.password));
+                await ((_c = this.Connection) === null || _c === void 0 ? void 0 : _c.loginAsync(this.config.password));
             }
             catch (error) {
                 this.terminate(`Login to KLF-200 device at ${this.config.host} failed.`);
