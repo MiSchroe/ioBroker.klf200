@@ -23,6 +23,8 @@
 
 [![NPM](https://nodei.co/npm/iobroker.klf200.png?downloads=true)](https://nodei.co/npm/iobroker.klf200/)
 
+[![Donation Button](https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WTZ5WAZ9EYMUC&source=url)
+
 This adapter is for controlling a VELUX® KLF-200 interface. This adapter is neither an official VELUX product nor is it supported by the company that owns the VELUX products.
 
 The main intention of this adapter is to control electric roof windows and/or electric blinds or roller shutters. Though the KLF-200 interface is able to connect to further devices like lights, switches, canvas blinds etc. I haven't tested the adapter for use with these kind of devices. Nonetheless it should be possible, that these devices could be controlled by this adapter, too.
