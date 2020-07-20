@@ -210,7 +210,7 @@ The following devices are defined:
 	### __WORK IN PROGRESS__
 -->
 <!-- prettier-ignore -->
-### __WORK IN PROGRESS__
+### 1.0.1 (2020-07-20)
 
 -   (Michael Schroeder) Fix [#49](https://github.com/MiSchroe/ioBroker.klf200/issues/49) Set multiple states at once, e.g. in Blockly
 
