@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ComplexStateChangeHandler = exports.PercentageStateChangeHandler = exports.SimpleStateChangeHandler = exports.SetterStateChangeHandler = exports.BaseStateChangeHandler = exports.PercentagePropertyChangedHandler = exports.SimplePropertyChangedHandler = exports.ComplexPropertyChangedHandler = exports.BasePropertyChangedHandler = exports.MapAnyPropertyToState = void 0;
+exports.ComplexStateChangeHandler = exports.PercentageStateChangeHandler = exports.SimpleStateChangeHandler = exports.SetterStateChangeHandler = exports.BaseStateChangeHandler = exports.klfPromiseQueue = exports.PercentagePropertyChangedHandler = exports.SimplePropertyChangedHandler = exports.ComplexPropertyChangedHandler = exports.BasePropertyChangedHandler = exports.MapAnyPropertyToState = void 0;
+const promiseQueue_1 = require("./promiseQueue");
 function MapAnyPropertyToState(propertyValue) {
     switch (typeof propertyValue) {
         case "boolean":
@@ -72,6 +73,7 @@ class PercentagePropertyChangedHandler extends SimplePropertyChangedHandler {
     }
 }
 exports.PercentagePropertyChangedHandler = PercentagePropertyChangedHandler;
+exports.klfPromiseQueue = new promiseQueue_1.PromiseQueue();
 class BaseStateChangeHandler {
     constructor(Adapter, StateId) {
         this.Adapter = Adapter;
@@ -135,7 +137,9 @@ class SetterStateChangeHandler extends BaseStateChangeHandler {
     async onStateChange(state) {
         this.Adapter.log.debug(`SetterStateChangeHandler.onStateChange: ${state}`);
         if ((state === null || state === void 0 ? void 0 : state.ack) === false) {
-            await this.setterFunction.call(this.LinkedObject, state.val);
+            exports.klfPromiseQueue.push((async () => {
+                await this.setterFunction.call(this.LinkedObject, state.val);
+            }).bind(this));
         }
     }
 }
@@ -153,7 +157,9 @@ exports.SimpleStateChangeHandler = SimpleStateChangeHandler;
 class PercentageStateChangeHandler extends SetterStateChangeHandler {
     async onStateChange(state) {
         if ((state === null || state === void 0 ? void 0 : state.ack) === false) {
-            await this.SetterFunction.call(this.LinkedObject, state.val / 100);
+            exports.klfPromiseQueue.push((async () => {
+                await this.SetterFunction.call(this.LinkedObject, state.val / 100);
+            }).bind(this));
         }
     }
 }
@@ -165,7 +171,9 @@ class ComplexStateChangeHandler extends BaseStateChangeHandler {
     }
     async onStateChange(state) {
         if ((state === null || state === void 0 ? void 0 : state.ack) === false) {
-            await this.Handler(state);
+            exports.klfPromiseQueue.push((async () => {
+                await this.Handler(state);
+            }).bind(this));
         }
     }
 }

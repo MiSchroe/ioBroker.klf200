@@ -205,23 +205,32 @@ The following devices are defined:
 
 ## Changelog
 
-#### 1.0.0
+<!--
+	Placeholder for the next version (at the beginning of the line):
+	### __WORK IN PROGRESS__
+-->
+<!-- prettier-ignore -->
+### 1.0.1 (2020-07-20)
+
+-   (Michael Schroeder) Fix [#49](https://github.com/MiSchroe/ioBroker.klf200/issues/49) Set multiple states at once, e.g. in Blockly
+
+### 1.0.0
 
 -   (Michael Schroeder) Support of firmware 2.0.0.71
 
-#### 0.9.5
+### 0.9.5
 
 -   (Michael Schroeder) Bug fixes
 
-#### 0.9.4
+### 0.9.4
 
 -   (Michael Schroeder) Compatible to Admin 3, add documentation
 
-#### 0.9.0
+### 0.9.0
 
 -   (Michael Schroeder) Initial public beta release
 
-#### 0.0.1
+### 0.0.1
 
 -   (Michael Schroeder) Initial developer release
 
