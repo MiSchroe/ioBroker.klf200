@@ -3,6 +3,7 @@
 import { EventEmitter } from "events";
 import { Component, PropertyChangedEvent } from "klf-200-api/dist/utils/PropertyChangedEvent";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { PromiseQueue } from "./promiseQueue";
 
 export function MapAnyPropertyToState<T extends Component>(
 	propertyValue: T[keyof T],
@@ -106,6 +107,8 @@ export class PercentagePropertyChangedHandler<T extends Component> extends Simpl
 	}
 }
 
+export const klfPromiseQueue = new PromiseQueue();
+
 export abstract class BaseStateChangeHandler implements StateChangedEventHandler, Disposable {
 	constructor(readonly Adapter: ioBroker.Adapter, readonly StateId: string) {
 		/// The default number of listeners may not be high enough -> raise it to suppress warnings
@@ -182,7 +185,11 @@ export class SetterStateChangeHandler<T extends Component> extends BaseStateChan
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
 		this.Adapter.log.debug(`SetterStateChangeHandler.onStateChange: ${state}`);
 		if (state?.ack === false) {
-			await this.setterFunction.call(this.LinkedObject, state.val);
+			klfPromiseQueue.push(
+				(async () => {
+					await this.setterFunction.call(this.LinkedObject, state.val);
+				}).bind(this),
+			);
 		}
 	}
 }
@@ -209,7 +216,11 @@ export class SimpleStateChangeHandler<T extends Component> extends SetterStateCh
 export class PercentageStateChangeHandler<T extends Component> extends SetterStateChangeHandler<T> {
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
 		if (state?.ack === false) {
-			await this.SetterFunction.call(this.LinkedObject, (state.val as number) / 100);
+			klfPromiseQueue.push(
+				(async () => {
+					await this.SetterFunction.call(this.LinkedObject, (state.val as number) / 100);
+				}).bind(this),
+			);
 		}
 	}
 }
@@ -223,7 +234,11 @@ export class ComplexStateChangeHandler<T extends Component> extends BaseStateCha
 
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
 		if (state?.ack === false) {
-			await this.Handler(state);
+			klfPromiseQueue.push(
+				(async () => {
+					await this.Handler(state);
+				}).bind(this),
+			);
 		}
 	}
 }
