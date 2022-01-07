@@ -14,7 +14,7 @@ import {
 	IConnection,
 	IGW_FRAME_RCV,
 	Products,
-	Scenes,
+	Scenes
 } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { Job, scheduleJob } from "node-schedule";
@@ -22,7 +22,7 @@ import { Setup } from "./setup";
 import { SetupGroups } from "./setupGroups";
 import { SetupProducts } from "./setupProducts";
 import { SetupScenes } from "./setupScenes";
-import { ArrayCount } from "./util/utils";
+import { ArrayCount, convertErrorToString } from "./util/utils";
 
 // Load your modules here, e.g.:
 // import * as fs from "fs";
@@ -104,14 +104,6 @@ class Klf200 extends utils.Adapter {
 		this.connectionWatchDogHandler = this.ConnectionWatchDog.bind(this);
 	}
 
-	private decrypt(key: string, value: string): string {
-		let result = "";
-		for (let i = 0; i < value.length; ++i) {
-			result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
-		}
-		return result;
-	}
-
 	/**
 	 * Is called when databases are connected and adapter received configuration.
 	 */
@@ -126,8 +118,7 @@ class Klf200 extends utils.Adapter {
 			const systemConfig = await this.getForeignObjectAsync("system.config");
 			if (!this.supportsFeature || !this.supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE")) {
 				this.config.password = this.decrypt(
-					systemConfig?.native?.secret ?? "Zgfr56gFe87jJOM",
-					this.config.password,
+					this.config.password
 				);
 			}
 
@@ -157,8 +148,9 @@ class Klf200 extends utils.Adapter {
 			await this.setStateAsync("info.connection", true, true);
 		} catch (e) {
 			this.log.error(`Error during initialization of the adapter.`);
-			this.log.error(e);
-			this.terminate ? this.terminate(e) : process.exit(1);
+			let result = convertErrorToString(e);
+			this.log.error(result);
+			this.terminate ? this.terminate(result) : process.exit(1);
 		}
 	}
 
@@ -263,7 +255,8 @@ class Klf200 extends utils.Adapter {
 				await this.initializeOnConnection();
 			} catch (e) {
 				this.log.error(`Login to KLF-200 device at ${this.config.host} failed.`);
-				this.log.error(e);
+				let result = convertErrorToString(e);
+				this.log.error(result);
 				// Wait a second before retry
 				await new Promise((resolve) => setTimeout(resolve, 1000));
 			}

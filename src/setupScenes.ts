@@ -95,7 +95,7 @@ export class SetupScenes {
 			},
 			{},
 			{
-				val: scene.Products,
+				val: JSON.stringify(scene.Products),
 			},
 		);
 
@@ -146,7 +146,7 @@ export class SetupScenes {
 				await adapter.setStateChangedAsync(
 					`scenes.${scene.SceneID}.products`,
 					{
-						val: newValue as SceneInformationEntry[],
+						val: JSON.stringify(newValue as SceneInformationEntry[]),
 					},
 					true,
 				);

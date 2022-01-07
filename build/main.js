@@ -47,18 +47,11 @@ class Klf200 extends utils.Adapter {
     get Setup() {
         return this._Setup;
     }
-    decrypt(key, value) {
-        let result = "";
-        for (let i = 0; i < value.length; ++i) {
-            result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
-        }
-        return result;
-    }
     /**
      * Is called when databases are connected and adapter received configuration.
      */
     async onReady() {
-        var _a, _b, _c;
+        var _a;
         try {
             // Initialize your adapter here
             // Reset the connection indicator during startup
@@ -66,13 +59,13 @@ class Klf200 extends utils.Adapter {
             // Decrypt password
             const systemConfig = await this.getForeignObjectAsync("system.config");
             if (!this.supportsFeature || !this.supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE")) {
-                this.config.password = this.decrypt((_b = (_a = systemConfig === null || systemConfig === void 0 ? void 0 : systemConfig.native) === null || _a === void 0 ? void 0 : _a.secret) !== null && _b !== void 0 ? _b : "Zgfr56gFe87jJOM", this.config.password);
+                this.config.password = this.decrypt(this.config.password);
             }
             // Setup connection and initialize objects and states
             this._Connection = new klf_200_api_1.Connection(this.config.host); // TODO: Add configs for CA and fingerprint
             this.log.info(`Host: ${this.config.host}`);
             try {
-                await ((_c = this.Connection) === null || _c === void 0 ? void 0 : _c.loginAsync(this.config.password));
+                await ((_a = this.Connection) === null || _a === void 0 ? void 0 : _a.loginAsync(this.config.password));
             }
             catch (error) {
                 this.terminate(`Login to KLF-200 device at ${this.config.host} failed.`);
@@ -84,7 +77,7 @@ class Klf200 extends utils.Adapter {
             // Set up reboot schedule, if enabled
             if (this.config.enableAutomaticReboot === true) {
                 this.log.info("Automatic reboot enabled in configuration. Planning reboot job.");
-                this._RebootJob = node_schedule_1.scheduleJob(this.config.automaticRebootCronTime, this.onReboot.bind(this));
+                this._RebootJob = (0, node_schedule_1.scheduleJob)(this.config.automaticRebootCronTime, this.onReboot.bind(this));
             }
             else {
                 this.log.info("Automatic reboot disabled in configuration.");
@@ -94,8 +87,9 @@ class Klf200 extends utils.Adapter {
         }
         catch (e) {
             this.log.error(`Error during initialization of the adapter.`);
-            this.log.error(e);
-            this.terminate ? this.terminate(e) : process.exit(1);
+            let result = (0, utils_1.convertErrorToString)(e);
+            this.log.error(result);
+            this.terminate ? this.terminate(result) : process.exit(1);
         }
     }
     async initializeOnConnection() {
@@ -111,13 +105,13 @@ class Klf200 extends utils.Adapter {
         await ((_c = this.Gateway) === null || _c === void 0 ? void 0 : _c.setTimeZoneAsync(":GMT+1:GMT+2:0060:(1994)040102-0:110102-0"));
         this.log.info(`Reading scenes...`);
         this._Scenes = await klf_200_api_1.Scenes.createScenesAsync(this.Connection);
-        this.log.info(`${utils_1.ArrayCount(this.Scenes.Scenes)} scenes found.`);
+        this.log.info(`${(0, utils_1.ArrayCount)(this.Scenes.Scenes)} scenes found.`);
         this.log.info(`Reading groups...`);
         this._Groups = await klf_200_api_1.Groups.createGroupsAsync(this.Connection);
-        this.log.info(`${utils_1.ArrayCount(this.Groups.Groups)} groups found.`);
+        this.log.info(`${(0, utils_1.ArrayCount)(this.Groups.Groups)} groups found.`);
         this.log.info(`Reading products...`);
         this._Products = await klf_200_api_1.Products.createProductsAsync(this.Connection);
-        this.log.info(`${utils_1.ArrayCount(this.Products.Products)} products found.`);
+        this.log.info(`${(0, utils_1.ArrayCount)(this.Products.Products)} products found.`);
         // Setup states
         this._Setup = await setup_1.Setup.setupGlobalAsync(this, this.Gateway);
         this.disposables.push(this._Setup);
@@ -174,7 +168,8 @@ class Klf200 extends utils.Adapter {
             }
             catch (e) {
                 this.log.error(`Login to KLF-200 device at ${this.config.host} failed.`);
-                this.log.error(e);
+                let result = (0, utils_1.convertErrorToString)(e);
+                this.log.error(result);
                 // Wait a second before retry
                 await new Promise((resolve) => setTimeout(resolve, 1000));
             }

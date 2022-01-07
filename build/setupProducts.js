@@ -37,7 +37,7 @@ class SetupProducts {
             min: 0,
             def: 0,
             desc: "Number of products connected to the interface",
-        }, {}, utils_1.ArrayCount(products));
+        }, {}, (0, utils_1.ArrayCount)(products));
         return disposableEvents;
     }
     static async createProductAsync(adapter, product) {

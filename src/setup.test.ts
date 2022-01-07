@@ -7,7 +7,7 @@ import { Setup } from "./setup";
 import {
 	BaseStateChangeHandler,
 	ComplexPropertyChangedHandler,
-	SimplePropertyChangedHandler,
+	SimplePropertyChangedHandler
 } from "./util/propertyLink";
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
@@ -17,6 +17,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 class MockConnect implements IConnection {
+	onFrameSent = sinon.stub();
 	loginAsync = sinon.stub();
 	logoutAsync = sinon.stub();
 	sendFrameAsync = sinon.stub();

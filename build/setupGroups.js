@@ -38,7 +38,7 @@ class SetupGroups {
             min: 0,
             def: 0,
             desc: "Number of groups defined in the interface",
-        }, {}, utils_1.ArrayCount(groups));
+        }, {}, (0, utils_1.ArrayCount)(groups));
         return disposableEvents;
     }
     static async createGroupAsync(adapter, group, products) {
@@ -72,7 +72,7 @@ class SetupGroups {
             read: true,
             write: false,
             desc: `Number of products that are contained in the group.`,
-        }, {}, utils_1.ArrayCount(group.Nodes));
+        }, {}, (0, utils_1.ArrayCount)(group.Nodes));
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `groups.${group.GroupID}.nodeVariation`, {
             name: "nodeVariation",
             role: "value",
@@ -163,7 +163,7 @@ class SetupGroups {
         });
         // Setup group listener
         disposableEvents.push(new propertyLink_1.SimplePropertyChangedHandler(adapter, `groups.${group.GroupID}.nodeVariation`, "NodeVariation", group), new propertyLink_1.SimplePropertyChangedHandler(adapter, `groups.${group.GroupID}.order`, "Order", group), new propertyLink_1.SimplePropertyChangedHandler(adapter, `groups.${group.GroupID}.placement`, "Placement", group), new propertyLink_1.SimplePropertyChangedHandler(adapter, `groups.${group.GroupID}.velocity`, "Velocity", group), new propertyLink_1.SimplePropertyChangedHandler(adapter, `groups.${group.GroupID}.groupType`, "GroupType", group), new propertyLink_1.ComplexPropertyChangedHandler(adapter, "Nodes", group, async (newValue) => {
-            return await adapter.setStateChangedAsync(`groups.${group.GroupID}.productsCount`, utils_1.ArrayCount(newValue), true);
+            return await adapter.setStateChangedAsync(`groups.${group.GroupID}.productsCount`, (0, utils_1.ArrayCount)(newValue), true);
         }));
         const nodeVariationHandler = new propertyLink_1.SimpleStateChangeHandler(adapter, `groups.${group.GroupID}.nodeVariation`, "NodeVariation", group);
         await nodeVariationHandler.Initialize();

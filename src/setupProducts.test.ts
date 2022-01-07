@@ -10,7 +10,7 @@ import {
 	Product,
 	RunStatus,
 	StatusReply,
-	Velocity,
+	Velocity
 } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { promisify } from "util";
@@ -24,6 +24,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 class MockConnect implements IConnection {
+	onFrameSent = sinon.stub();
 	loginAsync = sinon.stub();
 	logoutAsync = sinon.stub();
 	sendFrameAsync = sinon.stub();
@@ -326,7 +327,7 @@ describe("setupProducts", function () {
 			},
 			{
 				state: "productType",
-				value: 0xd507,
+				value: 0x07,
 			},
 			{
 				state: "remainingTime",
@@ -338,7 +339,7 @@ describe("setupProducts", function () {
 			},
 			{
 				state: "serialNumber",
-				value: "16:00:00:00:00:00:00:00",
+				value: "00:00:00:00:00:00:00:00",
 			},
 			{
 				state: "state",

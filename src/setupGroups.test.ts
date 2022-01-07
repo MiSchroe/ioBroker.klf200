@@ -5,10 +5,9 @@ import {
 	GroupType,
 	GW_GET_ALL_NODES_INFORMATION_NTF,
 	GW_GET_GROUP_INFORMATION_NTF,
-	IConnection,
-	NodeVariation,
+	IConnection, NodeVariation,
 	Product,
-	Velocity,
+	Velocity
 } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { promisify } from "util";
@@ -16,7 +15,7 @@ import { SetupGroups } from "./setupGroups";
 import {
 	BaseStateChangeHandler,
 	ComplexPropertyChangedHandler,
-	SimplePropertyChangedHandler,
+	SimplePropertyChangedHandler
 } from "./util/propertyLink";
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
@@ -26,6 +25,7 @@ use(sinonChai);
 use(chaiAsPromised);
 
 class MockConnect implements IConnection {
+	onFrameSent = sinon.stub();
 	loginAsync = sinon.stub();
 	logoutAsync = sinon.stub();
 	sendFrameAsync = sinon.stub();

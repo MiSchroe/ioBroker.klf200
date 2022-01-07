@@ -7,7 +7,7 @@ import {
 	ComplexStateChangeHandler,
 	MapAnyPropertyToState,
 	SimplePropertyChangedHandler,
-	SimpleStateChangeHandler,
+	SimpleStateChangeHandler
 } from "./propertyLink";
 import sinon = require("sinon");
 

@@ -36,7 +36,7 @@ class SetupScenes {
             min: 0,
             def: 0,
             desc: "Number of scenes defined in the interface",
-        }, {}, utils_1.ArrayCount(scenes));
+        }, {}, (0, utils_1.ArrayCount)(scenes));
         return disposableEvents;
     }
     static async createSceneAsync(adapter, scene) {
@@ -56,7 +56,7 @@ class SetupScenes {
             read: true,
             write: false,
             desc: "Number of products in the scene",
-        }, {}, utils_1.ArrayCount(scene.Products));
+        }, {}, (0, utils_1.ArrayCount)(scene.Products));
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `scenes.${scene.SceneID}.products`, {
             name: "products",
             role: "value",
@@ -65,7 +65,7 @@ class SetupScenes {
             write: false,
             desc: "Array of products in the scene",
         }, {}, {
-            val: scene.Products,
+            val: JSON.stringify(scene.Products),
         });
         await stateHelper_1.StateHelper.createAndSetStateAsync(adapter, `scenes.${scene.SceneID}.run`, {
             name: "run",
@@ -96,9 +96,9 @@ class SetupScenes {
             return result;
         }), new propertyLink_1.ComplexPropertyChangedHandler(adapter, "Products", scene, async (newValue) => {
             await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.products`, {
-                val: newValue,
+                val: JSON.stringify(newValue),
             }, true);
-            return await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.productsCount`, utils_1.ArrayCount(newValue), true);
+            return await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.productsCount`, (0, utils_1.ArrayCount)(newValue), true);
         }));
         // Setup state listeners
         const runListener = new propertyLink_1.ComplexStateChangeHandler(adapter, `scenes.${scene.SceneID}.run`, async (state) => {

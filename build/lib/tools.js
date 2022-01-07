@@ -34,7 +34,7 @@ async function translateText(text, targetLang) {
         return text;
     try {
         const url = `http://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}&ie=UTF-8&oe=UTF-8`;
-        const response = await axios_1.default({ url, timeout: 5000 });
+        const response = await (0, axios_1.default)({ url, timeout: 5000 });
         if (isArray(response.data)) {
             // we got a valid response
             return response.data[0][0][0];

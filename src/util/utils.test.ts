@@ -1,5 +1,6 @@
+// Don't delete this line otherwise on save some weird changes will be introduced!
 import { expect, use } from "chai";
-import { ArrayCount } from "./utils";
+import { ArrayCount, convertErrorToString } from "./utils";
 import chaiAsPromised = require("chai-as-promised");
 
 use(chaiAsPromised);
@@ -25,6 +26,20 @@ describe("utils", function () {
 			testData.length = 10;
 
 			expect(ArrayCount(testData)).to.be.equal(0);
+		});
+	});
+
+	describe("convertErrorToString", function () {
+		it("should return the provided string on string input", function () {
+			const testData: string = "42";
+			const expectedResult: string = "42";
+			expect(convertErrorToString(testData)).to.be.equal(expectedResult);
+		});
+
+		it("should return the provided message on Error input", function () {
+			const testData: Error = new Error("42");
+			const expectedResult: string = "Error: 42";
+			expect(convertErrorToString(testData)).to.be.equal(expectedResult);
 		});
 	});
 });
