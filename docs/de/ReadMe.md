@@ -14,8 +14,9 @@ Um diesen Adapter verwenden zu können, müssen Sie Ihre KLF-200 im **Schnittste
 
 Der Adapter funktioniert nur über den LAN-Port Ihres KLF-200.
 
-> Für eine detaillierte Erklärung der folgenden Aufgaben lesen Sie bitte die mit der Box mitgelieferten Handbücher.
-> Es wird davon ausgegangen, dass Sie sich in einem Webbrowser erfolgreich bei Ihrer Box angemeldet haben.
+> Für eine detaillierte Erklärung, wie Sie die folgenden Aufgaben ausführen, lesen Sie bitte die Handbücher, die mit Ihrer Box geliefert wurden.
+>
+> Es wird davon ausgegangen, dass Sie sich erfolgreich in einem Webbrowser an Ihrer Box angemeldet haben.
 
 ### Produkte einrichten
 
@@ -26,11 +27,12 @@ Jedes Produkt, das Sie mit diesem Adapter steuern möchten, muss auf der Seite "
 
 Wenn alle Ihre Produkte registriert sind, sollten Sie eine Liste wie die folgende sehen:
 
-![Screenshot of ](img/ProductList.PNG)
+![Screenshot of ](img/AdapterConfiguration.PNG)
 
 ### Szenen einrichten
 
 > **Wichtige Änderungen:**
+>
 > **Mit der neuen Firmware müssen Sie nicht mehr für jede gewünschte Produktposition eine Szene definieren.**
 
 Dieser Schritt ist optional. Sie können Szenen aufzeichnen, um verschiedene Produkte in einem Schritt zu ändern. Sie können beispielsweise eine Szene definieren, um alle Fenster zu schließen.
@@ -41,14 +43,15 @@ Um eine Szene aufzunehmen, klicken Sie auf die Schaltfläche
 
 Dies öffnet das Fenster *Programmerstellung in Bearbeitung*. Verwenden Sie jetzt die mit Ihrem Produkt gelieferte Fernbedienung, um etwas zu ändern, z.B. öffne das Fenster zu 40%. Geben Sie dann einen Namen für das Programm ein und klicken Sie auf *Programm speichern*.
 
-![Screenshot of the program list](img/RecordingInProgress.PNG)
+![Screenshot of the program list](img/RecordProgramButton.PNG)
 
 > TIPP:
+>
 > - Geben Sie Ihrem Programm einen aussagekräftigen Namen, obwohl der Adapter keine Namenskonventionen verwendet.
 
 Wenn Sie mit der Aufnahme von Programmen fertig sind, erhalten Sie eine Liste wie folgt:
 
-![Screenshot of the program list](img/ProgramList.PNG)
+![Screenshot of the program list](img/RecordingInProgress.PNG)
 
 ### Verbindungen einrichten
 
@@ -60,7 +63,7 @@ Sie müssen es nur in der Box einrichten, Sie müssen nichts verkabeln! Wählen 
 
 ## Konfigurieren Sie den Adapter
 
-![Screenshot of the adapter configuration](img/AdapterConfiguration.PNG)
+![Screenshot of the adapter configuration](img/ProgramList.PNG)
 
 ### Host
 
@@ -68,7 +71,7 @@ Hostname Ihrer KLF-200-Schnittstelle. Dies ist die gleiche Adresse, die Sie in d
 
 ### Passwort
 
-Das Passwort, das Sie für die Verbindung mit Ihrer KLF-200-Schnittstelle benötigen. Es ist das gleiche, das Sie bei der Verbindung in Ihrem Webbrowser verwenden.
+Das Passwort, das Sie benötigen, um sich mit Ihrer KLF-200-Schnittstelle zu verbinden. Bei neuen Versionen des KLF-200 ist es das WLAN-Passwort, das auf der Rückseite des KLF-200 steht. Falls Sie das KLF-200 mit einer Firmware-Version vor 2.0.0.71 verwendet und danach aktualisiert haben, ist dies das Passwort, mit dem Sie sich bei der Weboberfläche angemeldet haben, falls Sie es vor dem Upgrade geändert haben.
 
 > Das Standardkennwort des KLF-200 befindet sich auf der Rückseite des Geräts, aber Sie sollten es ändern!
 
@@ -128,14 +131,15 @@ products | 0..n | timestamp | value | Zeitstempel der letzten bekannten Position
 products | 0..n | typeID | value | Produkttyp, z.B. window, light, roller shutter.
 products | 0..n | velocity | value | Geschwindigkeit, mit der das Produkt arbeitet. Die Geschwindigkeit hängt von den physikalischen Fähigkeiten des Produkts ab, z. B. kann sich ein Fenster im Flüster-Modus oder im Fast-Modus bewegen. Die Lichter können mit unterschiedlichen Geschwindigkeiten gedimmt werden. Es kann jedoch auch andere Produkte geben, die ihre Position nur mit einer festen Geschwindigkeit ändern.
 products | 0..n | wink | button.play | Setzen Sie diesen Status auf true, damit das Produkt sich bemerkbar macht. Dies wird verwendet, um ein Gerät zu identifizieren, z. B. bewegt ein Fenster seinen Griff, ein Rollladen bewegt sich ein wenig auf und ab. Dieser Zustand ist nur beschreibbar.
-scenes |  |  |  | Hat für jedes Produkt in der Produktliste des KLF-200 einen Untereintrag.
+scenes |  |  |  | Hat für jede Szene in der Szenenliste des KLF-200 einen Untereintrag.
 scenes |  | scenesFound | value | Die Anzahl der Szenen in der Liste. Schreibgeschützt.
 scenes | 0..n | productsCount | value | Anzahl der Produkte in dieser Szene. Schreibgeschützt.
 scenes | 0..n | run | button.play | Setzen Sie diesen Status auf true, um die Szene auszuführen. Wenn eine Szene ausgeführt wird, wird dieser Status auf true gesetzt.
 scenes | 0..n | stop | button.play | Setzen Sie diesen Status, um eine laufende Szene zu stoppen. Dieser Wert ist nur beschreibbar.
 
 > **WICHTIG:**
-> Die IDs, die in den Kanälen verwendet werden, sind die IDs, die von der KLF-200-Schnittstelle kommen. Wenn Sie Änderungen an der Produktliste oder an der Programmliste in Ihrem KLF-200 vornehmen, können sich die IDs ändern.
+>
+> Die IDs, die in den Kanälen verwendet werden, sind die IDs, die von der KLF-200-Schnittstelle kommen. Wenn Sie Änderungen an der Produktliste oder der Szenenliste in Ihrem KLF-200 vornehmen, können sich die IDs ändern.
 
 Um eine Szene auszuführen, können Sie den Status `run` der Szene auf `true` setzen oder den Status `level` des Produkts auf einen Wert setzen, der einer Szene entspricht, die das Produkt auf dieses Level setzt.
 
