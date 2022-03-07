@@ -214,7 +214,7 @@ The following devices are defined:
 <!-- prettier-ignore -->
 ### __WORK IN PROGRESS__
 
--   (Michael Schroeder) Upgrade dependencies, switch to Typescript 4.5
+-   (Michael Schroeder) Upgrade dependencies, switch to Typescript 4.6, compatibility check with js-controller 4.x
 -   (Michael Schroeder) [#12](https://github.com/MiSchroe/ioBroker.klf200/issues/12) Support silent mode in scenes
 
 ### 1.0.1 (2020-07-20)
