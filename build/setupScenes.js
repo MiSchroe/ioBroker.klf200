@@ -83,6 +83,27 @@ class SetupScenes {
             write: true,
             desc: "Set to true to stop a running scene.",
         }, {}, false);
+        await adapter.setObjectNotExistsAsync(`scenes.${scene.SceneID}.velocity`, {
+            type: "state",
+            common: {
+                name: "velocity",
+                role: "value",
+                type: "number",
+                read: false,
+                write: true,
+                min: 0,
+                max: 0xff,
+                desc: "Velocity of the scene.",
+                states: {
+                    "0": "Default",
+                    "1": "Silent",
+                    "2": "Fast",
+                    "255": "NotAvailable",
+                },
+                def: 0,
+            },
+            native: {},
+        });
         // Setup scene listeners
         disposableEvents.push(new propertyLink_1.ComplexPropertyChangedHandler(adapter, "IsRunning", scene, async (newValue) => {
             const result = await adapter.setStateAsync(`scenes.${scene.SceneID}.run`, newValue, true);
@@ -102,13 +123,17 @@ class SetupScenes {
         }));
         // Setup state listeners
         const runListener = new propertyLink_1.ComplexStateChangeHandler(adapter, `scenes.${scene.SceneID}.run`, async (state) => {
+            var _a;
             if (state !== undefined) {
                 if ((state === null || state === void 0 ? void 0 : state.val) === true) {
                     // Acknowledge running state
                     await adapter.setStateAsync(`scenes.${scene.SceneID}.run`, state, true);
                     // Only start the scene if it's not running, already.
                     if (!scene.IsRunning) {
-                        await scene.runAsync();
+                        // Get the velocity
+                        const velocity = (_a = (await adapter.getStateAsync(`scenes.${scene.SceneID}.velocity`))) === null || _a === void 0 ? void 0 : _a.val;
+                        // Run the scene
+                        await scene.runAsync(velocity);
                     }
                 }
             }
@@ -133,6 +158,9 @@ class SetupScenes {
         });
         await stopListener.Initialize();
         disposableEvents.push(stopListener);
+        const velocityListener = new propertyLink_1.EchoStateChangeHandler(adapter, `scenes.${scene.SceneID}.velocity`);
+        await velocityListener.Initialize();
+        disposableEvents.push(velocityListener);
         return disposableEvents;
     }
 }

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ComplexStateChangeHandler = exports.PercentageStateChangeHandler = exports.SimpleStateChangeHandler = exports.SetterStateChangeHandler = exports.BaseStateChangeHandler = exports.klfPromiseQueue = exports.PercentagePropertyChangedHandler = exports.SimplePropertyChangedHandler = exports.ComplexPropertyChangedHandler = exports.BasePropertyChangedHandler = exports.MapAnyPropertyToState = void 0;
+exports.ComplexStateChangeHandler = exports.PercentageStateChangeHandler = exports.SimpleStateChangeHandler = exports.SetterStateChangeHandler = exports.EchoStateChangeHandler = exports.BaseStateChangeHandler = exports.klfPromiseQueue = exports.PercentagePropertyChangedHandler = exports.SimplePropertyChangedHandler = exports.ComplexPropertyChangedHandler = exports.BasePropertyChangedHandler = exports.MapAnyPropertyToState = void 0;
 const promiseQueue_1 = require("./promiseQueue");
 function MapAnyPropertyToState(propertyValue) {
     switch (typeof propertyValue) {
@@ -115,6 +115,14 @@ class BaseStateChangeHandler {
     }
 }
 exports.BaseStateChangeHandler = BaseStateChangeHandler;
+class EchoStateChangeHandler extends BaseStateChangeHandler {
+    async onStateChange(state) {
+        if ((state === null || state === void 0 ? void 0 : state.ack) === false) {
+            await this.Adapter.setStateAsync(this.StateId, state.val, true);
+        }
+    }
+}
+exports.EchoStateChangeHandler = EchoStateChangeHandler;
 class SetterStateChangeHandler extends BaseStateChangeHandler {
     constructor(Adapter, StateId, LinkedObject, SetterMethodName) {
         super(Adapter, StateId);

@@ -41,7 +41,8 @@ export interface StateChangedEventHandler {
 }
 
 export abstract class BasePropertyChangedHandler<T extends Component>
-	implements PropertyChangedEventHandler<T>, Disposable {
+	implements PropertyChangedEventHandler<T>, Disposable
+{
 	protected disposable?: Disposable;
 
 	constructor(readonly Adapter: ioBroker.Adapter, readonly Property: keyof T, readonly LinkedObject: T) {
@@ -112,7 +113,7 @@ export const klfPromiseQueue = new PromiseQueue();
 export abstract class BaseStateChangeHandler implements StateChangedEventHandler, Disposable {
 	constructor(readonly Adapter: ioBroker.Adapter, readonly StateId: string) {
 		/// The default number of listeners may not be high enough -> raise it to suppress warnings
-		const adapterEmitter = (this.Adapter as unknown) as EventEmitter;
+		const adapterEmitter = this.Adapter as unknown as EventEmitter;
 		const newMaxSize = adapterEmitter.getMaxListeners() + 1;
 		this.logEventEmitterMaxSize(newMaxSize);
 		adapterEmitter.setMaxListeners(newMaxSize);
@@ -137,7 +138,7 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 		try {
 			await this.Adapter.unsubscribeStatesAsync(this.StateId);
 		} finally {
-			const adapterEmitter = (this.Adapter as unknown) as EventEmitter;
+			const adapterEmitter = this.Adapter as unknown as EventEmitter;
 			const newMaxSize = Math.max(adapterEmitter.getMaxListeners() - 1, 0);
 			this.logEventEmitterMaxSize(newMaxSize);
 			adapterEmitter.setMaxListeners(newMaxSize);
@@ -150,6 +151,14 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 
 		// Listen to the corresponding stateChange event
 		await this.Adapter.subscribeStatesAsync(this.StateId);
+	}
+}
+
+export class EchoStateChangeHandler<T extends Component> extends BaseStateChangeHandler {
+	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
+		if (state?.ack === false) {
+			await this.Adapter.setStateAsync(this.StateId, state.val, true);
+		}
 	}
 }
 
@@ -171,7 +180,7 @@ export class SetterStateChangeHandler<T extends Component> extends BaseStateChan
 
 		// Double check, that the setter method exists
 		if (typeof LinkedObject[this.SetterMethodName!] === "function") {
-			this.setterFunction = (LinkedObject[this.SetterMethodName!] as unknown) as Function;
+			this.setterFunction = LinkedObject[this.SetterMethodName!] as unknown as Function;
 		} else {
 			throw new Error(`${this.SetterMethodName!} is not a function.`);
 		}
