@@ -73,7 +73,9 @@ Host name of your KLF-200 interface. This is the same you type into the address 
 
 ### Password
 
-The password you need to connect to your KLF-200 interface. It's the same you use when connecting to your box in your web browser.
+The password you need to connect to your KLF-200 interface. For new versions of the KLF-200 it's the WIFI password thats
+written on the back of the KLF-200. In case that you have used the KLF-200 with a firmware version earlier than 2.0.0.71
+and upgraded afterwards it's the password that you have used to login into the web interface if you had changed it before upgrading.
 
 > The default password of the KLF-200 is written on the backside of the device, but you should have changed it, anyway!
 
