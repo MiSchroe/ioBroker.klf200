@@ -10,7 +10,7 @@ import {
 	Product,
 	RunStatus,
 	StatusReply,
-	Velocity
+	Velocity,
 } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { promisify } from "util";
@@ -38,132 +38,13 @@ const mockProduct = new Product(
 	mockConnection,
 	new GW_GET_ALL_NODES_INFORMATION_NTF(
 		Buffer.from([
-			0x7f,
-			0x02,
-			0x04,
-			0x00,
-			0x00,
-			0x00,
-			0x01,
-			0x46,
-			0x65,
-			0x6e,
-			0x73,
-			0x74,
-			0x65,
-			0x72,
-			0x20,
-			0x42,
-			0x61,
-			0x64,
-			0x65,
-			0x7a,
-			0x69,
-			0x6d,
-			0x6d,
-			0x65,
-			0x72,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x01,
-			0x01,
-			0x01,
-			0xd5,
-			0x07,
-			0x00,
-			0x01,
-			0x16,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x05,
-			0xc8,
-			0x00,
-			0xc8,
-			0x00,
-			0xf7,
-			0xff,
-			0xf7,
-			0xff,
-			0xf7,
-			0xff,
-			0xf7,
-			0xff,
-			0x00,
-			0x00,
-			0x4f,
-			0x00,
-			0x3f,
-			0xf3,
-			0x01,
-			0xd8,
-			0x03,
-			0xb2,
-			0x1c,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
-			0x00,
+			0x7f, 0x02, 0x04, 0x00, 0x00, 0x00, 0x01, 0x46, 0x65, 0x6e, 0x73, 0x74, 0x65, 0x72, 0x20, 0x42, 0x61, 0x64,
+			0x65, 0x7a, 0x69, 0x6d, 0x6d, 0x65, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+			0x01, 0x01, 0xd5, 0x07, 0x00, 0x01, 0x16, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0xc8, 0x00,
+			0xc8, 0x00, 0xf7, 0xff, 0xf7, 0xff, 0xf7, 0xff, 0xf7, 0xff, 0x00, 0x00, 0x4f, 0x00, 0x3f, 0xf3, 0x01, 0xd8,
+			0x03, 0xb2, 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			0x00,
 		]),
 	),
@@ -174,15 +55,11 @@ const mockProducts = [mockProduct];
 describe("setupProducts", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
-	const {
-		assertObjectExists,
-		assertStateExists,
-		assertStateHasValue,
-		assertStateIsAcked,
-		assertObjectCommon,
-	} = utils.unit.createAsserts(database, adapter);
+	const { assertObjectExists, assertStateExists, assertStateHasValue, assertStateIsAcked, assertObjectCommon } =
+		utils.unit.createAsserts(database, adapter);
 
 	// Fake getChannelsOf
+	adapter.getChannelsOf = sinon.stub();
 	adapter.getChannelsOf.callsFake((parentDevice, callback) =>
 		callback(null, [
 			{
@@ -196,6 +73,7 @@ describe("setupProducts", function () {
 		] as ioBroker.ChannelObject[]),
 	);
 	// Fake deleteChannel
+	adapter.deleteChannel = sinon.stub();
 	adapter.deleteChannel.callsFake((parentDevice, channelId, callback) => {
 		// Delete sub-objects first
 		adapter.getObjectList(
@@ -237,7 +115,7 @@ describe("setupProducts", function () {
 	describe("createProductAsync", function () {
 		it("should create the channel for product ID 0", async function () {
 			const disposables = await SetupProducts.createProductAsync(
-				(adapter as unknown) as ioBroker.Adapter,
+				adapter as unknown as ioBroker.Adapter,
 				mockProduct,
 			);
 			try {
@@ -252,7 +130,7 @@ describe("setupProducts", function () {
 		it("should have the name 'Fenster Badezimmer' for its channel name", async function () {
 			const expectedName = "Fenster Badezimmer";
 			const disposables = await SetupProducts.createProductAsync(
-				(adapter as unknown) as ioBroker.Adapter,
+				adapter as unknown as ioBroker.Adapter,
 				mockProduct,
 			);
 			try {
@@ -268,7 +146,7 @@ describe("setupProducts", function () {
 			const expectedName = "Fenster Badezimmer";
 			const expectedRole = "window";
 			const disposables = await SetupProducts.createProductAsync(
-				(adapter as unknown) as ioBroker.Adapter,
+				adapter as unknown as ioBroker.Adapter,
 				mockProduct,
 			);
 			try {
@@ -382,7 +260,7 @@ describe("setupProducts", function () {
 			it(`should create the ${test.state} state object`, async function () {
 				const expectedState = test.state;
 				const disposables = await SetupProducts.createProductAsync(
-					(adapter as unknown) as ioBroker.Adapter,
+					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
 				);
 				try {
@@ -397,7 +275,7 @@ describe("setupProducts", function () {
 			it(`should write the ${test.state} state`, async function () {
 				const expectedState = test.state;
 				const disposables = await SetupProducts.createProductAsync(
-					(adapter as unknown) as ioBroker.Adapter,
+					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
 				);
 				try {
@@ -412,7 +290,7 @@ describe("setupProducts", function () {
 			it(`should write the ${test.state} state with '${test.value}'`, async function () {
 				const expectedState = test.state;
 				const disposables = await SetupProducts.createProductAsync(
-					(adapter as unknown) as ioBroker.Adapter,
+					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
 				);
 				try {
@@ -427,7 +305,7 @@ describe("setupProducts", function () {
 			it(`should write the ${test.state} state ack`, async function () {
 				const expectedState = test.state;
 				const disposables = await SetupProducts.createProductAsync(
-					(adapter as unknown) as ioBroker.Adapter,
+					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
 				);
 				try {
@@ -518,7 +396,7 @@ describe("setupProducts", function () {
 			let disposables: Disposable[] = [];
 			this.beforeEach(async function () {
 				disposables = await SetupProducts.createProductAsync(
-					(adapter as unknown) as ioBroker.Adapter,
+					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
 				);
 			});
@@ -554,14 +432,13 @@ describe("setupProducts", function () {
 
 		it(`Each writable state should be bound to a state change handler`, async function () {
 			let disposables: Disposable[] = [];
-			disposables = await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+			disposables = await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct);
 			try {
-				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> = await adapter.getObjectListAsync(
-					{
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> =
+					await adapter.getObjectListAsync({
 						startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
 						endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
-					},
-				);
+					});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -571,7 +448,7 @@ describe("setupProducts", function () {
 							disposables.some((disposable) => {
 								if (disposable instanceof BaseStateChangeHandler) {
 									return (
-										`${((adapter as unknown) as ioBroker.Adapter).namespace}.${
+										`${(adapter as unknown as ioBroker.Adapter).namespace}.${
 											disposable.StateId
 										}` === value.id
 									);
@@ -602,7 +479,7 @@ describe("setupProducts", function () {
 
 		it(`Each readable state should be bound to a property change handler`, async function () {
 			let disposables: Disposable[] = [];
-			disposables = await SetupProducts.createProductAsync((adapter as unknown) as ioBroker.Adapter, mockProduct);
+			disposables = await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct);
 			try {
 				const allowedUnmappedStates = [
 					"test.0.products.0.category",
@@ -613,12 +490,11 @@ describe("setupProducts", function () {
 					"test.0.products.0.typeID",
 					"test.0.products.0.velocity",
 				];
-				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> = await adapter.getObjectListAsync(
-					{
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> =
+					await adapter.getObjectListAsync({
 						startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
 						endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
-					},
-				);
+					});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -628,7 +504,7 @@ describe("setupProducts", function () {
 							disposables.some((disposable) => {
 								if (disposable instanceof SimplePropertyChangedHandler) {
 									return (
-										`${((adapter as unknown) as ioBroker.Adapter).namespace}.${
+										`${(adapter as unknown as ioBroker.Adapter).namespace}.${
 											disposable.StateId
 										}` === value.id
 									);
@@ -664,7 +540,7 @@ describe("setupProducts", function () {
 		it("should have 1 in the value of products.productsFound state", async function () {
 			const expectedValue = 1;
 			const disposables = await SetupProducts.createProductsAsync(
-				(adapter as unknown) as ioBroker.Adapter,
+				adapter as unknown as ioBroker.Adapter,
 				mockProducts,
 			);
 			try {
@@ -698,7 +574,7 @@ describe("setupProducts", function () {
 			states.forEach((state) => assertObjectExists(`${adapter.namespace}.products.42.${state}`));
 
 			const disposables = await SetupProducts.createProductsAsync(
-				(adapter as unknown) as ioBroker.Adapter,
+				adapter as unknown as ioBroker.Adapter,
 				mockProducts,
 			);
 			try {

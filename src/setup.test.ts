@@ -7,7 +7,7 @@ import { Setup } from "./setup";
 import {
 	BaseStateChangeHandler,
 	ComplexPropertyChangedHandler,
-	SimplePropertyChangedHandler
+	SimplePropertyChangedHandler,
 } from "./util/propertyLink";
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
@@ -33,6 +33,7 @@ describe("Setup", function () {
 	const { assertObjectExists } = utils.unit.createAsserts(database, adapter);
 
 	// Fake getChannelsOf
+	adapter.getChannelsOf = sinon.stub();
 	adapter.getChannelsOf.callsFake((parentDevice, callback) =>
 		callback(null, [
 			{
@@ -46,6 +47,7 @@ describe("Setup", function () {
 		] as ioBroker.ChannelObject[]),
 	);
 	// Fake deleteChannel
+	adapter.deleteChannel = sinon.stub();
 	adapter.deleteChannel.callsFake((parentDevice, channelId, callback) => {
 		// Delete sub-objects first
 		adapter.getObjectList(
@@ -105,7 +107,7 @@ describe("Setup", function () {
 	describe(`setupGlobalAsync`, function () {
 		for (const deviceName of ["products", "scenes", "groups"]) {
 			it(`should generate ${deviceName} device`, async function () {
-				const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+				const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 				try {
 					assertObjectExists(`${deviceName}`);
 				} finally {
@@ -121,7 +123,7 @@ describe("Setup", function () {
 					},
 					native: {},
 				});
-				const setup = Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+				const setup = Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 				try {
 					return setup.should.be.fulfilled;
 				} finally {
@@ -130,7 +132,7 @@ describe("Setup", function () {
 			});
 
 			it(`should generate ${deviceName}Found state`, async function () {
-				const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+				const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 				try {
 					assertObjectExists(`${deviceName}.${deviceName}Found`);
 				} finally {
@@ -140,7 +142,7 @@ describe("Setup", function () {
 		}
 
 		it(`should generate gateway device`, async function () {
-			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
 				assertObjectExists(`gateway`);
 			} finally {
@@ -156,7 +158,7 @@ describe("Setup", function () {
 				},
 				native: {},
 			});
-			const setup = Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			const setup = Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
 				return setup.should.be.fulfilled;
 			} finally {
@@ -165,7 +167,7 @@ describe("Setup", function () {
 		});
 
 		it(`should generate gateway ProtocolVersion state`, async function () {
-			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
 				assertObjectExists(`gateway.ProtocolVersion`);
 			} finally {
@@ -174,7 +176,7 @@ describe("Setup", function () {
 		});
 
 		it(`should generate gateway SoftwareVersion state`, async function () {
-			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
 				assertObjectExists(`gateway.SoftwareVersion`);
 			} finally {
@@ -183,7 +185,7 @@ describe("Setup", function () {
 		});
 
 		it(`should generate gateway HardwareVersion state`, async function () {
-			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
 				assertObjectExists(`gateway.HardwareVersion`);
 			} finally {
@@ -192,7 +194,7 @@ describe("Setup", function () {
 		});
 
 		it(`should generate gateway ProductGroup state`, async function () {
-			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
 				assertObjectExists(`gateway.ProductGroup`);
 			} finally {
@@ -201,7 +203,7 @@ describe("Setup", function () {
 		});
 
 		it(`should generate gateway ProductType state`, async function () {
-			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
 				assertObjectExists(`gateway.ProductType`);
 			} finally {
@@ -210,7 +212,7 @@ describe("Setup", function () {
 		});
 
 		it(`should generate gateway GatewayState`, async function () {
-			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
 				assertObjectExists(`gateway.GatewayState`);
 			} finally {
@@ -219,7 +221,7 @@ describe("Setup", function () {
 		});
 
 		it(`should generate gateway GatewaySubState`, async function () {
-			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
 				assertObjectExists(`gateway.GatewaySubState`);
 			} finally {
@@ -230,14 +232,13 @@ describe("Setup", function () {
 		it.skip(`Each writable state should be bound to a state change handler`, async function () {
 			// eslint-disable-next-line prefer-const
 			let disposables: Disposable[] = [];
-			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
-				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> = await adapter.getObjectListAsync(
-					{
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> =
+					await adapter.getObjectListAsync({
 						startKey: `${adapter.namespace}.gateway.`,
 						endkey: `${adapter.namespace}.gateway.\u9999`,
-					},
-				);
+					});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -247,7 +248,7 @@ describe("Setup", function () {
 							disposables.some((disposable) => {
 								if (disposable instanceof BaseStateChangeHandler) {
 									return (
-										`${((adapter as unknown) as ioBroker.Adapter).namespace}.${
+										`${(adapter as unknown as ioBroker.Adapter).namespace}.${
 											disposable.StateId
 										}` === value.id
 									);
@@ -276,7 +277,7 @@ describe("Setup", function () {
 
 		it.skip(`Each readable state should be bound to a property change handler`, async function () {
 			const disposables: Disposable[] = [];
-			const setup = await Setup.setupGlobalAsync((adapter as unknown) as ioBroker.Adapter, mockGateway);
+			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 
 			try {
 				const allowedUnmappedStates: string[] = [
@@ -286,12 +287,11 @@ describe("Setup", function () {
 					"test.0.gateway.GatewaySubState",
 				];
 				const complexStatesMapping: { [prop: string]: string } = {};
-				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> = await adapter.getObjectListAsync(
-					{
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> =
+					await adapter.getObjectListAsync({
 						startKey: `${adapter.namespace}.gateway.`,
 						endkey: `${adapter.namespace}.gateway.\u9999`,
-					},
-				);
+					});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -301,7 +301,7 @@ describe("Setup", function () {
 							disposables.some((disposable) => {
 								if (disposable instanceof SimplePropertyChangedHandler) {
 									return (
-										`${((adapter as unknown) as ioBroker.Adapter).namespace}.${
+										`${(adapter as unknown as ioBroker.Adapter).namespace}.${
 											disposable.StateId
 										}` === value.id
 									);

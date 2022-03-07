@@ -1,8 +1,8 @@
 "use strict";
 
-import { Scene, SceneInformationEntry } from "klf-200-api";
+import { Scene, SceneInformationEntry, Velocity } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
-import { ComplexPropertyChangedHandler, ComplexStateChangeHandler } from "./util/propertyLink";
+import { ComplexPropertyChangedHandler, ComplexStateChangeHandler, EchoStateChangeHandler } from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
 import { ArrayCount } from "./util/utils";
 
@@ -129,6 +129,28 @@ export class SetupScenes {
 			false,
 		);
 
+		await adapter.setObjectNotExistsAsync(`scenes.${scene.SceneID}.velocity`, {
+			type: "state",
+			common: {
+				name: "velocity",
+				role: "value",
+				type: "number",
+				read: false,
+				write: true,
+				min: 0,
+				max: 0xff,
+				desc: "Velocity of the scene.",
+				states: {
+					"0": "Default",
+					"1": "Silent",
+					"2": "Fast",
+					"255": "NotAvailable",
+				},
+				def: 0,
+			},
+			native: {},
+		});
+
 		// Setup scene listeners
 		disposableEvents.push(
 			new ComplexPropertyChangedHandler<Scene>(adapter, "IsRunning", scene, async (newValue) => {
@@ -166,7 +188,12 @@ export class SetupScenes {
 					await adapter.setStateAsync(`scenes.${scene.SceneID}.run`, state, true);
 					// Only start the scene if it's not running, already.
 					if (!scene.IsRunning) {
-						await scene.runAsync();
+						// Get the velocity
+						const velocity = (await adapter.getStateAsync(`scenes.${scene.SceneID}.velocity`))?.val as
+							| Velocity
+							| Velocity.Default;
+						// Run the scene
+						await scene.runAsync(velocity);
 					}
 				}
 			}
@@ -191,6 +218,10 @@ export class SetupScenes {
 		});
 		await stopListener.Initialize();
 		disposableEvents.push(stopListener);
+
+		const velocityListener = new EchoStateChangeHandler(adapter, `scenes.${scene.SceneID}.velocity`);
+		await velocityListener.Initialize();
+		disposableEvents.push(velocityListener);
 
 		return disposableEvents;
 	}
