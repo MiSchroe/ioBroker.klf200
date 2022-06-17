@@ -27,7 +27,7 @@ Jedes Produkt, das Sie mit diesem Adapter steuern möchten, muss auf der Seite "
 
 Wenn alle Ihre Produkte registriert sind, sollten Sie eine Liste wie die folgende sehen:
 
-![Screenshot of ](img/AdapterConfiguration.PNG)
+![Screenshot of ](img/ProductList.PNG)
 
 ### Szenen einrichten
 
@@ -39,11 +39,11 @@ Dieser Schritt ist optional. Sie können Szenen aufzeichnen, um verschiedene Pro
 
 Um eine Szene aufzunehmen, klicken Sie auf die Schaltfläche
 
-![Screenshot of Recording in progress](img/RecordProgramButton.PNG)
+![Screenshot of Record Button](img/RecordProgramButton.PNG)
 
 Dies öffnet das Fenster *Programmerstellung in Bearbeitung*. Verwenden Sie jetzt die mit Ihrem Produkt gelieferte Fernbedienung, um etwas zu ändern, z.B. öffne das Fenster zu 40%. Geben Sie dann einen Namen für das Programm ein und klicken Sie auf *Programm speichern*.
 
-![Screenshot of the program list](img/RecordProgramButton.PNG)
+![Screenshot of Recording in progress](img/RecordingInProgress.PNG)
 
 > TIPP:
 >
@@ -51,7 +51,7 @@ Dies öffnet das Fenster *Programmerstellung in Bearbeitung*. Verwenden Sie jetz
 
 Wenn Sie mit der Aufnahme von Programmen fertig sind, erhalten Sie eine Liste wie folgt:
 
-![Screenshot of the program list](img/RecordingInProgress.PNG)
+![Screenshot of the program list](img/ProgramList.PNG)
 
 ### Verbindungen einrichten
 
@@ -63,7 +63,7 @@ Sie müssen es nur in der Box einrichten, Sie müssen nichts verkabeln! Wählen 
 
 ## Konfigurieren Sie den Adapter
 
-![Screenshot of the adapter configuration](img/ProgramList.PNG)
+![Screenshot of the adapter configuration](img/AdapterConfiguration.PNG)
 
 ### Host
 
