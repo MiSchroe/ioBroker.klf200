@@ -216,6 +216,7 @@ The following devices are defined:
 
 -   (Michael Schroeder) Upgrade dependencies, switch to Typescript 4.6, compatibility check with js-controller 4.x
 -   (Michael Schroeder) [#12](https://github.com/MiSchroe/ioBroker.klf200/issues/12) Support silent mode in scenes
+-   (Michael Schroeder) [#44](https://github.com/MiSchroe/ioBroker.klf200/issues/44) Add advanced SSL configuration settings
 
 ### 1.0.1 (2020-07-20)
 

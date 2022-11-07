@@ -14,7 +14,7 @@ import {
 	IConnection,
 	IGW_FRAME_RCV,
 	Products,
-	Scenes
+	Scenes,
 } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { Job, scheduleJob } from "node-schedule";
@@ -38,6 +38,9 @@ declare global {
 			password: string;
 			enableAutomaticReboot: boolean;
 			automaticRebootCronTime: string;
+			advancedSSLConfiguration: boolean;
+			SSLPublicKey: string;
+			SSLFingerprint: string;
 			// Or use a catch-all approach
 			// [key: string]: any;
 		}
@@ -117,13 +120,19 @@ class Klf200 extends utils.Adapter {
 			// Decrypt password
 			const systemConfig = await this.getForeignObjectAsync("system.config");
 			if (!this.supportsFeature || !this.supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE")) {
-				this.config.password = this.decrypt(
-					this.config.password
-				);
+				this.config.password = this.decrypt(this.config.password);
 			}
 
 			// Setup connection and initialize objects and states
-			this._Connection = new Connection(this.config.host); // TODO: Add configs for CA and fingerprint
+			if (!this.config.advancedSSLConfiguration) {
+				this._Connection = new Connection(this.config.host);
+			} else {
+				this._Connection = new Connection(
+					this.config.host,
+					Buffer.from(this.config.SSLPublicKey),
+					this.config.SSLFingerprint,
+				);
+			}
 			this.log.info(`Host: ${this.config.host}`);
 			try {
 				await this.Connection?.loginAsync(this.config.password);

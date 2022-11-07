@@ -1,6 +1,13 @@
 {
+    "Advanced SSL configuration": "Configurazione SSL avanzata",
+    "Cron pattern for automatic reboot": "Pattern Cron per il riavvio automatico",
+    "Enable automatic reboot": "Abilita il riavvio automatico",
+    "SSL Fingerprint": "Impronta digitale SSL",
+    "SSL Public Key": "Chiave pubblica SSL",
+    "SSL-tab": "Opzioni SSL",
     "host": "ospite",
     "klf200 adapter settings": "impostazioni dell'adattatore klf200",
     "on save adapter restarts with new config immediately": "on save adapter si riavvia immediatamente con la nuova configurazione",
+    "options-tab": "Opzioni",
     "password": "parola d'ordine"
 }
