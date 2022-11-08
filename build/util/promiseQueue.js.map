@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/util/promiseQueue.ts"],
-  "sourcesContent": ["\"use strict\";\r\n\r\nexport type AsyncFunction<T extends any> = () => Promise<T | void>;\r\n\r\nexport class PromiseQueue<T extends any> {\r\n\tprivate _nextPromise: Promise<T | void> = Promise.resolve();\r\n\r\n\tpublic push(asyncFunction: AsyncFunction<T>): this {\r\n\t\tthis._nextPromise = this._nextPromise.then(asyncFunction, asyncFunction);\r\n\r\n\t\treturn this;\r\n\t}\r\n\r\n\tpublic async waitAsync(): Promise<T | void> {\r\n\t\tawait this._nextPromise;\r\n\t}\r\n}\r\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIO,MAAM,aAA4B;AAAA,EAAlC;AACN,SAAQ,eAAkC,QAAQ,QAAQ;AAAA;AAAA,EAEnD,KAAK,eAAuC;AAClD,SAAK,eAAe,KAAK,aAAa,KAAK,eAAe,aAAa;AAEvE,WAAO;AAAA,EACR;AAAA,EAEA,MAAa,YAA+B;AAC3C,UAAM,KAAK;AAAA,EACZ;AACD;",
-  "names": []
-}
