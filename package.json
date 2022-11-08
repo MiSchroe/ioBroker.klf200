@@ -24,6 +24,7 @@
   "devDependencies": {
     "@alcalzone/release-script": "^3.5.6",
     "@alcalzone/release-script-plugin-iobroker": "^3.5.6",
+    "@iobroker/adapter-dev": "^1.2.0",
     "@iobroker/testing": "^2.5.6",
     "@types/chai": "^4.3.0",
     "@types/chai-as-promised": "^7.1.5",
@@ -60,7 +61,7 @@
   "scripts": {
     "prebuild": "rimraf ./build",
     "build:ts": "tsc -p tsconfig.build.json",
-    "build": "npm run build:ts",
+    "build": "build-adapter typescript",
     "watch:ts": "tsc -p tsconfig.build.json --watch",
     "watch": "npm run watch:ts",
     "test:ts": "mocha --config test/mocharc.custom.json src/**/*.test.ts",
@@ -74,6 +75,7 @@
     "lint": "eslint --ext .ts src",
     "prepare": "npm run build",
     "release": "release-script",
+    "translate": "translate-adapter",
     "deploy:container": "npm pack && cross-conf-env docker cp ./$npm_package_name-$npm_package_version.tgz iobroker:/opt/iobroker/tarballs/ && cross-conf-env docker exec iobroker npm install /opt/iobroker/tarballs/$npm_package_name-$npm_package_version.tgz --workdir /opt/iobroker && cross-conf-env docker exec iobroker iobroker restart klf200.0",
     "deploy:containerV12": "npm pack && cross-conf-env docker cp ./$npm_package_name-$npm_package_version.tgz iobroker_v12:/opt/iobroker/tarballs/ && cross-conf-env docker exec iobroker_v12 npm install /opt/iobroker/tarballs/$npm_package_name-$npm_package_version.tgz --workdir /opt/iobroker && cross-conf-env docker exec iobroker_v12 iobroker restart klf200.0"
   },

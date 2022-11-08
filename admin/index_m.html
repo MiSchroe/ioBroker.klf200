@@ -59,6 +59,18 @@
 					$("#automaticRebootCronTimeDiv").addClass("hide");
 				}
 
+				// Setup enable/disable due to checkbox state of advanced SSL configuration
+				$("#advancedSSLConfiguration").on("change", () => {
+					$("#SSLFingerprintDiv").toggleClass("hide");
+					$("#SSLPublicKeyDiv").toggleClass("hide");
+				});
+
+				// Setup initial hidden state of advanced SSL configuration
+				if (!settings.advancedSSLConfiguration) {
+					$("#SSLFingerprintDiv").addClass("hide");
+					$("#SSLPublicKeyDiv").addClass("hide");
+				}
+
 				$(".value").each(function () {
 					var $key = $(this);
 					var id = $key.attr("id");
@@ -77,6 +89,10 @@
 						$key.val(settings[id])
 							.on("change", () => onChange())
 							.on("keyup", () => onChange());
+					}
+
+					if ($key.is("textarea")) {
+						M.textareaAutoResize($key);
 					}
 				});
 				onChange(false);
@@ -131,29 +147,69 @@
 
 			<!-- Put your content here -->
 
-			<div class="row">
-				<div class="input-field col s12 m6">
-					<input class="value" id="host" type="text" />
-					<label for="host" class="translate">host</label>
+			<!-- Tabs navigation -->
+			<div class=""col s9">
+				<ul class="tabs">
+					<li class="tab col s2">
+						<a href="#tab-options" class="translate">options-tab</a>
+					</li>
+					<li class="tab col s2">
+						<a href="#tab-ssl" class="translate">SSL-tab</a>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Options Tab -->
+			<div id="tab-options" class="col s12">
+				<div class="row">
+					<div class="input-field col s12 m6">
+						<input class="value" id="host" type="text" />
+						<label for="host" class="translate">host</label>
+					</div>
+					<div class="input-field col s12 m6">
+						<input class="value" id="password" type="password" />
+						<label for="password" class="translate">password</label>
+					</div>
 				</div>
-				<div class="input-field col s12 m6">
-					<input class="value" id="password" type="password" />
-					<label for="password" class="translate">password</label>
+				<div class="row">
+					<div class="input-field col s12 m6">
+						<input class="value" type="checkbox" id="enableAutomaticReboot" />
+						<label for="enableAutomaticReboot" class="translate">Enable automatic reboot</label>
+					</div>
+					<div class="input-field col s12 m6" id="automaticRebootCronTimeDiv">
+						<input class="value" id="automaticRebootCronTime" type="text" />
+						<label for="automaticRebootCronTime" class="translate">Cron pattern for automatic reboot</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s12">
+						<p class="translate">on save adapter restarts with new config immediately</p>
+					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="input-field col s12 m6">
-					<input class="value" type="checkbox" id="enableAutomaticReboot" />
-					<label for="enableAutomaticReboot" class="translate">Enable automatic reboot</label>
+
+			<!-- SSL Tab -->
+			<div id="tab-ssl" class="col s12">
+				<div class="row">
+					<div class="input-field col s12 m6">
+						<input class="value" type="checkbox" id="advancedSSLConfiguration" />
+						<label for="advancedSSLConfiguration" class="translate">Advanced SSL configuration</label>
+					</div>
+					<div class="input-field col s12 m6" id="SSLFingerprintDiv">
+						<input class="value" type="text" id="SSLFingerprint" />
+						<label for="SSLFingerprint" class="translate">SSL Fingerprint</label>
+					</div>
 				</div>
-				<div class="input-field col s12 m6" id="automaticRebootCronTimeDiv">
-					<input class="value" id="automaticRebootCronTime" type="text" />
-					<label for="automaticRebootCronTime" class="translate">Cron pattern for automatic reboot</label>
+				<div class="row">
+					<div class="input-field col s12 m12 l12" id="SSLPublicKeyDiv">
+						<textarea class="value materialize-textarea" id="SSLPublicKey"></textarea>
+						<label for="SSLPublicKey" class="translate">SSL Public Key</label>
+					</div>
 				</div>
-			</div>
-			<div class="row">
-				<div class="col s12">
-					<p class="translate">on save adapter restarts with new config immediately</p>
+				<div class="row">
+					<div class="col s12">
+						<p class="translate">on save adapter restarts with new config immediately</p>
+					</div>
 				</div>
 			</div>
 		</div>

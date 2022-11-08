@@ -1,6 +1,13 @@
 {
+    "Advanced SSL configuration": "Erweiterte SSL-Konfiguration",
+    "Cron pattern for automatic reboot": "Cron-Muster für automatischen Neustart",
+    "Enable automatic reboot": "Aktivieren Sie den automatischen Neustart",
+    "SSL Fingerprint": "SSL-Fingerabdruck",
+    "SSL Public Key": "Öffentlicher SSL-Schlüssel",
+    "SSL-tab": "SSL-Optionen",
     "host": "Host",
     "klf200 adapter settings": "klf200 Adaptereinstellungen",
     "on save adapter restarts with new config immediately": "Beim Speichern wird der Adapter sofort mit der neuen Konfiguration neu gestartet",
+    "options-tab": "Optionen",
     "password": "Passwort"
 }

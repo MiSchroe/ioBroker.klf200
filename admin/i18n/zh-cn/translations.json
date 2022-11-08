@@ -1,6 +1,13 @@
 {
+    "Advanced SSL configuration": "高级 SSL 配置",
+    "Cron pattern for automatic reboot": "用于自动重启的 Cron 模式",
+    "Enable automatic reboot": "启用自动重启",
+    "SSL Fingerprint": "SSL 指纹",
+    "SSL Public Key": "SSL 公钥",
+    "SSL-tab": "SSL 选项",
     "host": "主办",
     "klf200 adapter settings": "klf200适配器设置",
     "on save adapter restarts with new config immediately": "保存适配器上的适配器立即以新配置重新启动",
+    "options-tab": "选项",
     "password": "密码"
 }
