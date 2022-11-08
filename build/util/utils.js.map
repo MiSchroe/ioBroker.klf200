@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/util/utils.ts"],
-  "sourcesContent": ["\"use strict\";\r\n\r\nexport function ArrayCount<T>(arr: T[]): number {\r\n\treturn arr\r\n\t\t.map((element) => (element !== null && element !== undefined ? 1 : 0) as number)\r\n\t\t.reduce((previousValue, currentValue) => previousValue + currentValue, 0);\r\n}\r\n\r\nexport function convertErrorToString(e: unknown) {\r\n\tlet result = \"\";\r\n\tif (typeof e === \"string\") {\r\n\t\tresult = e;\r\n\t} else if (e instanceof Error) {\r\n\t\tresult = e.toString();\r\n\t}\r\n\treturn result;\r\n}\r\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAEO,SAAS,WAAc,KAAkB;AAC/C,SAAO,IACL,IAAI,CAAC,YAAa,YAAY,QAAQ,YAAY,SAAY,IAAI,CAAY,EAC9E,OAAO,CAAC,eAAe,iBAAiB,gBAAgB,cAAc,CAAC;AAC1E;AAEO,SAAS,qBAAqB,GAAY;AAChD,MAAI,SAAS;AACb,MAAI,OAAO,MAAM,UAAU;AAC1B,aAAS;AAAA,EACV,WAAW,aAAa,OAAO;AAC9B,aAAS,EAAE,SAAS;AAAA,EACrB;AACA,SAAO;AACR;",
-  "names": []
-}

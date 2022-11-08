@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/util/stateHelper.ts"],
-  "sourcesContent": ["\"use strict\";\r\n\r\nexport class StateHelper {\r\n\tstatic async createAndSetStateAsync(\r\n\t\tadapter: ioBroker.Adapter,\r\n\t\tstateID: string,\r\n\t\tcommon: ioBroker.StateCommon,\r\n\t\tnative: Record<string, any>,\r\n\t\tvalue: string | number | boolean | ioBroker.State | ioBroker.SettableState | null,\r\n\t): Promise<void> {\r\n\t\tawait adapter.setObjectNotExistsAsync(stateID, {\r\n\t\t\ttype: \"state\",\r\n\t\t\tcommon: common,\r\n\t\t\tnative: native,\r\n\t\t});\r\n\t\tawait adapter.setStateAsync(stateID, value, true);\r\n\t}\r\n}\r\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAEO,MAAM,YAAY;AAAA,EACxB,aAAa,uBACZ,SACA,SACA,QACA,QACA,OACgB;AAChB,UAAM,QAAQ,wBAAwB,SAAS;AAAA,MAC9C,MAAM;AAAA,MACN;AAAA,MACA;AAAA,IACD,CAAC;AACD,UAAM,QAAQ,cAAc,SAAS,OAAO,IAAI;AAAA,EACjD;AACD;",
-  "names": []
-}
