@@ -243,6 +243,14 @@ The following devices are defined:
 
 -   (Michael Schroeder) Initial developer release
 
+## Contribute
+
+To release a new version run the following script:
+
+```
+npm run release major|minor|patch|... [-- --dry]
+```
+
 ## License
 
 The MIT License (MIT)
