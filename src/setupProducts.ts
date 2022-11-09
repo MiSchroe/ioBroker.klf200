@@ -1,12 +1,12 @@
 "use strict";
 
-import { Product } from "klf-200-api";
+import { FunctionalParameter, Product } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { levelConverter, roleConverter } from "./util/converter";
 import {
 	ComplexStateChangeHandler,
+	EchoStateChangeHandler,
 	PercentagePropertyChangedHandler,
-	PercentageStateChangeHandler,
 	SimplePropertyChangedHandler,
 	SimpleStateChangeHandler,
 } from "./util/propertyLink";
@@ -463,8 +463,7 @@ export class SetupProducts {
 				min: 0,
 				max: 100,
 				unit: "%",
-				desc:
-					"Target opening level in percent. Set this value to move the product to that value, e.g. open a window, move a roller shutter.",
+				desc: "Target opening level in percent. Set this value to move the product to that value, e.g. open a window, move a roller shutter.",
 			},
 			{},
 			Math.round(product.TargetPosition * 100),
@@ -598,6 +597,45 @@ export class SetupProducts {
 			false,
 		);
 
+		let states: Record<string, string> = {};
+		// Fill absolute percentage values:
+		for (let pct = 0; pct <= 100; pct++) {
+			states[`${(0xc800 / 100) * pct}`] = `${pct}%`;
+		}
+		// Fill relative percentage values:
+		for (let pct = -100; pct <= 100; pct++) {
+			states[`${(0x7d0 / 200) * (pct + 100) + 0xc900}`] = `${pct < 0 ? "" : "+"}${pct}%`;
+		}
+		// Add remaining state values:
+		states[`${0xd100}`] = "Target";
+		states[`${0xd200}`] = "Current";
+		states[`${0xd300}`] = "Default";
+		states[`${0xd400}`] = "Ignore";
+
+		for (const parameterCounter of [1, 2, 3, 4]) {
+			const stateName = `targetFP${parameterCounter}Raw`;
+			let common: ioBroker.StateCommon = {
+				name: stateName,
+				role: "value",
+				type: "number",
+				read: false,
+				write: true,
+				min: 0,
+				max: 0xffff,
+				desc: "Target position raw value",
+				def: 0xd400, // Ignore value
+				states: states,
+			};
+
+			await StateHelper.createAndSetStateAsync(
+				adapter,
+				`products.${product.NodeID}.${stateName}`,
+				common,
+				{},
+				0xd400,
+			);
+		}
+
 		// Setup product listener
 		adapter.log.debug(`Setup change event listeners for product ${product.Name}.`);
 		disposableEvents.push(
@@ -717,11 +755,38 @@ export class SetupProducts {
 		await placementHandler.Initialize();
 		disposableEvents.push(placementHandler);
 
-		const targetPositionHandler = new PercentageStateChangeHandler<Product>(
+		const targetPositionHandler = new ComplexStateChangeHandler(
 			adapter,
 			`products.${product.NodeID}.targetPosition`,
-			product,
-			"setTargetPositionAsync",
+			async (state) => {
+				if (state !== undefined && state?.val !== undefined) {
+					/*
+						Read the states of targetFP1Raw - targetFP4Raw.
+						For each state which is not set to Ignore (0xD400)
+						add the value to the functional parameter.
+					*/
+					let functionalParameters: FunctionalParameter[] | undefined = undefined;
+					for (const parameterCounter of [1, 2, 3, 4]) {
+						const stateFP = await adapter.getStateAsync(
+							`products.${product.NodeID}.targetFP${parameterCounter}Raw`,
+						);
+						if (stateFP?.val !== undefined && stateFP.val !== 0xd400) {
+							functionalParameters = functionalParameters || [];
+							functionalParameters.push({
+								ID: parameterCounter,
+								Value: stateFP.val as number,
+							});
+						}
+					}
+					await product.setTargetPositionAsync(
+						(state.val as number) / 100,
+						undefined,
+						undefined,
+						undefined,
+						functionalParameters,
+					);
+				}
+			},
 		);
 		await targetPositionHandler.Initialize();
 		disposableEvents.push(targetPositionHandler);
@@ -757,6 +822,15 @@ export class SetupProducts {
 		);
 		await winkListener.Initialize();
 		disposableEvents.push(winkListener);
+
+		for (const parameterCounter of [1, 2, 3, 4]) {
+			const targetFPRawHandler = new EchoStateChangeHandler<Product>(
+				adapter,
+				`products.${product.NodeID}.targetFP${parameterCounter}Raw`,
+			);
+			await targetFPRawHandler.Initialize();
+			disposableEvents.push(targetFPRawHandler);
+		}
 
 		return disposableEvents;
 	}

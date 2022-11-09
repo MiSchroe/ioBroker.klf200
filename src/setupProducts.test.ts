@@ -255,6 +255,22 @@ describe("setupProducts", function () {
 				state: "wink",
 				value: false,
 			},
+			{
+				state: "targetFP1Raw",
+				value: 0xd400,
+			},
+			{
+				state: "targetFP2Raw",
+				value: 0xd400,
+			},
+			{
+				state: "targetFP3Raw",
+				value: 0xd400,
+			},
+			{
+				state: "targetFP4Raw",
+				value: 0xd400,
+			},
 		];
 		for (const test of testCases) {
 			it(`should create the ${test.state} state object`, async function () {
@@ -528,6 +544,90 @@ describe("setupProducts", function () {
 					unmappedWritableStates,
 					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
 				).to.be.an("Array").empty;
+			} finally {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+			}
+		});
+
+		it("should call setTargetPositionAsync without functional parameters", async function () {
+			const mock = sinon.mock(mockProduct);
+			mock.expects("setTargetPositionAsync")
+				.once()
+				.withExactArgs(0.5, undefined, undefined, undefined, undefined);
+
+			const disposables = await SetupProducts.createProductAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProduct,
+			);
+
+			// Find the handler:
+			const stateId = `products.${mockProduct.NodeID}.targetPosition`;
+			const handler = disposables.find(
+				(disposable) => disposable instanceof BaseStateChangeHandler && disposable.StateId === stateId,
+			) as BaseStateChangeHandler;
+
+			try {
+				await handler?.onStateChange({
+					val: 50,
+					ack: false,
+					from: stateId,
+					lc: Date.now(),
+					ts: Date.now(),
+				});
+
+				// Just let the asynchronous stuff run before our checks
+				await new Promise((resolve) => {
+					setTimeout(resolve, 0);
+				});
+
+				mock.verify();
+			} finally {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+			}
+		});
+
+		it("should call setTargetPositionAsync with functional parameters", async function () {
+			const mock = sinon.mock(mockProduct);
+			mock.expects("setTargetPositionAsync")
+				.once()
+				.withExactArgs(0.5, undefined, undefined, undefined, [
+					{
+						ID: 2,
+						Value: 42,
+					},
+				]);
+
+			const disposables = await SetupProducts.createProductAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProduct,
+			);
+
+			// Find the handler:
+			const stateId = `products.${mockProduct.NodeID}.targetPosition`;
+			const handler = disposables.find(
+				(disposable) => disposable instanceof BaseStateChangeHandler && disposable.StateId === stateId,
+			) as BaseStateChangeHandler;
+
+			try {
+				await adapter.setStateAsync(`products.${mockProduct.NodeID}.targetFP2Raw`, 42);
+				await handler?.onStateChange({
+					val: 50,
+					ack: false,
+					from: stateId,
+					lc: Date.now(),
+					ts: Date.now(),
+				});
+
+				// Just let the asynchronous stuff run before our checks
+				await new Promise((resolve) => {
+					setTimeout(resolve, 0);
+				});
+
+				mock.verify();
 			} finally {
 				for (const disposable of disposables) {
 					disposable.dispose();
