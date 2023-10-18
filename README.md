@@ -242,6 +242,7 @@ The values of the state provide multiple manipulation modes:
 -   (Michael Schroeder) [#98](https://github.com/MiSchroe/ioBroker.klf200/issues/98) Fix default values
 -   (Michael Schroeder) [#77](https://github.com/MiSchroe/ioBroker.klf200/issues/77) Add silent mode to products using functional parameters
 -   (Michael Schroeder) Upgrade dependencies
+-   (Michael Schroeder) [#55](https://github.com/MiSchroe/ioBroker.klf200/issues/55) Support functional parameters FP1-4
 
 ### 1.0.1 (2020-07-20)
 
