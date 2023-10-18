@@ -330,11 +330,12 @@ describe("setupScenes", function () {
 			let disposables: Disposable[] = [];
 			disposables = await SetupScenes.createSceneAsync(adapter as unknown as ioBroker.Adapter, mockScene);
 			try {
-				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> =
-					await adapter.getObjectListAsync({
-						startKey: `${adapter.namespace}.scenes.${mockScene.SceneID}.`,
-						endkey: `${adapter.namespace}.scenes.${mockScene.SceneID}.\u9999`,
-					});
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
+					ioBroker.GetObjectListCallback<ioBroker.Object>
+				> = await adapter.getObjectListAsync({
+					startKey: `${adapter.namespace}.scenes.${mockScene.SceneID}.`,
+					endkey: `${adapter.namespace}.scenes.${mockScene.SceneID}.\u9999`,
+				});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -382,11 +383,12 @@ describe("setupScenes", function () {
 					Products: ["test.0.scenes.0.productsCount", "test.0.scenes.0.products"],
 					IsRunning: ["test.0.scenes.0.run"],
 				};
-				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> =
-					await adapter.getObjectListAsync({
-						startKey: `${adapter.namespace}.scenes.${mockScene.SceneID}.`,
-						endkey: `${adapter.namespace}.scenes.${mockScene.SceneID}.\u9999`,
-					});
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
+					ioBroker.GetObjectListCallback<ioBroker.Object>
+				> = await adapter.getObjectListAsync({
+					startKey: `${adapter.namespace}.scenes.${mockScene.SceneID}.`,
+					endkey: `${adapter.namespace}.scenes.${mockScene.SceneID}.\u9999`,
+				});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)

@@ -234,11 +234,12 @@ describe("Setup", function () {
 			let disposables: Disposable[] = [];
 			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
-				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> =
-					await adapter.getObjectListAsync({
-						startKey: `${adapter.namespace}.gateway.`,
-						endkey: `${adapter.namespace}.gateway.\u9999`,
-					});
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
+					ioBroker.GetObjectListCallback<ioBroker.Object>
+				> = await adapter.getObjectListAsync({
+					startKey: `${adapter.namespace}.gateway.`,
+					endkey: `${adapter.namespace}.gateway.\u9999`,
+				});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -287,11 +288,12 @@ describe("Setup", function () {
 					"test.0.gateway.GatewaySubState",
 				];
 				const complexStatesMapping: { [prop: string]: string } = {};
-				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> =
-					await adapter.getObjectListAsync({
-						startKey: `${adapter.namespace}.gateway.`,
-						endkey: `${adapter.namespace}.gateway.\u9999`,
-					});
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
+					ioBroker.GetObjectListCallback<ioBroker.Object>
+				> = await adapter.getObjectListAsync({
+					startKey: `${adapter.namespace}.gateway.`,
+					endkey: `${adapter.namespace}.gateway.\u9999`,
+				});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)

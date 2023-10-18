@@ -45,7 +45,11 @@ export abstract class BasePropertyChangedHandler<T extends Component>
 {
 	protected disposable?: Disposable;
 
-	constructor(readonly Adapter: ioBroker.Adapter, readonly Property: keyof T, readonly LinkedObject: T) {
+	constructor(
+		readonly Adapter: ioBroker.Adapter,
+		readonly Property: keyof T,
+		readonly LinkedObject: T,
+	) {
 		this.disposable = LinkedObject.propertyChangedEvent.on(async (event: PropertyChangedEvent) => {
 			if (event.propertyName === this.Property) {
 				return await this.onPropertyChangedTypedEvent(event.propertyValue as T[keyof T]);
@@ -85,7 +89,12 @@ export class ComplexPropertyChangedHandler<T extends Component> extends BaseProp
 }
 
 export class SimplePropertyChangedHandler<T extends Component> extends BasePropertyChangedHandler<T> {
-	constructor(Adapter: ioBroker.Adapter, readonly StateId: string, Property: keyof T, LinkedObject: T) {
+	constructor(
+		Adapter: ioBroker.Adapter,
+		readonly StateId: string,
+		Property: keyof T,
+		LinkedObject: T,
+	) {
 		super(Adapter, Property, LinkedObject);
 	}
 
@@ -111,7 +120,10 @@ export class PercentagePropertyChangedHandler<T extends Component> extends Simpl
 export const klfPromiseQueue = new PromiseQueue();
 
 export abstract class BaseStateChangeHandler implements StateChangedEventHandler, Disposable {
-	constructor(readonly Adapter: ioBroker.Adapter, readonly StateId: string) {
+	constructor(
+		readonly Adapter: ioBroker.Adapter,
+		readonly StateId: string,
+	) {
 		/// The default number of listeners may not be high enough -> raise it to suppress warnings
 		const adapterEmitter = this.Adapter as unknown as EventEmitter;
 		const newMaxSize = adapterEmitter.getMaxListeners() + 1;
@@ -173,7 +185,7 @@ export class SetterStateChangeHandler<T extends Component> extends BaseStateChan
 
 		this.Adapter.log.debug(
 			`Create a setter state change handler to listen to state ${this.StateId} linked to property ${
-				this.SetterMethodName
+				String(this.SetterMethodName)
 				// eslint-disable-next-line @typescript-eslint/ban-types
 			} on type ${(this.LinkedObject as Object).constructor.name}.`,
 		);
@@ -182,7 +194,7 @@ export class SetterStateChangeHandler<T extends Component> extends BaseStateChan
 		if (typeof LinkedObject[this.SetterMethodName!] === "function") {
 			this.setterFunction = LinkedObject[this.SetterMethodName!] as unknown as Function;
 		} else {
-			throw new Error(`${this.SetterMethodName!} is not a function.`);
+			throw new Error(`${String(this.SetterMethodName)!} is not a function.`);
 		}
 	}
 
@@ -211,11 +223,11 @@ export class SimpleStateChangeHandler<T extends Component> extends SetterStateCh
 		LinkedObject: T,
 		SetterMethodName?: keyof T,
 	) {
-		super(Adapter, StateId, LinkedObject, SetterMethodName ?? (`set${Property}Async` as keyof T));
+		super(Adapter, StateId, LinkedObject, SetterMethodName ?? (`set${String(Property)}Async` as keyof T));
 
 		this.Adapter.log.debug(
 			`Create a simple state change handler to listen to state ${this.StateId} linked to property ${
-				this.Property
+				String(this.Property)
 				// eslint-disable-next-line @typescript-eslint/ban-types
 			} on type ${(this.LinkedObject as Object).constructor.name}.`,
 		);
@@ -237,7 +249,11 @@ export class PercentageStateChangeHandler<T extends Component> extends SetterSta
 export type OnStateChangedHandlerFunctionType = (state: ioBroker.State | null | undefined) => Promise<void>;
 
 export class ComplexStateChangeHandler<T extends Component> extends BaseStateChangeHandler {
-	constructor(Adapter: ioBroker.Adapter, StateId: string, readonly Handler: OnStateChangedHandlerFunctionType) {
+	constructor(
+		Adapter: ioBroker.Adapter,
+		StateId: string,
+		readonly Handler: OnStateChangedHandlerFunctionType,
+	) {
 		super(Adapter, StateId);
 	}
 
