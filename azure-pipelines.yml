@@ -55,13 +55,29 @@ steps:
       displayName: "npm build"
 
     - script: |
-          npm run test:package
+          npm run test:packagejunit
       displayName: "npm test:package"
 
     - script: |
-          npm run test:integration
+          npm run test:integrationjunit
       displayName: "npm test:integration"
 
     - script: |
-          npm run test:ts
+          npm run test:tsjunit
       displayName: "npm test:ts"
+
+    - task: PublishTestResults@2
+      condition: succeededOrFailed()
+      inputs:
+          testRunner: JUnit
+          testResultsFiles: "**/test-results.xml"
+
+    - script: |
+          npm run coveragejunit
+      displayName: "Run code coverage"
+
+    - task: PublishCodeCoverageResults@1
+      inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: "$(System.DefaultWorkingDirectory)/**/*coverage.xml"
+          reportDirectory: "$(System.DefaultWorkingDirectory)/**/coverage"

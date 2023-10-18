@@ -26,6 +26,7 @@
     "@alcalzone/release-script-plugin-iobroker": "^3.6.0",
     "@iobroker/adapter-dev": "^1.2.0",
     "@iobroker/testing": "^4.1.0",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/chai": "^4.3.9",
     "@types/chai-as-promised": "^7.1.7",
     "@types/mocha": "^10.0.3",
@@ -43,6 +44,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
     "mocha": "^10.2.0",
+    "mocha-junit-reporter": "^2.2.1",
     "node-schedule": "^2.1.1",
     "nyc": "^15.1.0",
     "prettier": "^3.0.3",
@@ -63,11 +65,15 @@
     "watch": "npm run watch:ts",
     "test:ts": "mocha --config test/mocharc.custom.json src/**/*.test.ts",
     "test:tstap": "mocha --config test/mocharc.custom.json src/**/*.test.ts --reporter tap",
+    "test:tsjunit": "mocha --config test/mocharc.custom.json src/**/*.test.ts --reporter mocha-junit-reporter",
     "test:package": "mocha test/package --exit",
     "test:packagetap": "mocha test/package --exit --reporter tap",
+    "test:packagejunit": "mocha test/package --exit --reporter mocha-junit-reporter",
     "test:integration": "mocha test/integration --exit",
+    "test:integrationjunit": "mocha test/integration --exit --reporter mocha-junit-reporter",
     "test": "npm run test:tstap && npm run test:packagetap",
-    "coverage": "nyc npm run test:ts",
+    "coverage": "nyc mocha --config test/mocharc.custom.json src/**/*.test.ts",
+    "coveragejunit": "nyc --reporter=cobertura --reporter=html mocha --config test/mocharc.custom.json src/**/*.test.ts --reporter mocha-junit-reporter",
     "lint": "eslint --ext .ts src",
     "prepare": "npm run build",
     "release": "release-script",
@@ -86,6 +92,7 @@
       ".ts"
     ],
     "require": [
+      "./test/mocha.setup.js",
       "ts-node/register"
     ],
     "reporter": [
