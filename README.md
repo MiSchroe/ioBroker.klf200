@@ -218,6 +218,7 @@ The following devices are defined:
 -   (Michael Schroeder) [#12](https://github.com/MiSchroe/ioBroker.klf200/issues/12) Support silent mode in scenes
 -   (Michael Schroeder) [#44](https://github.com/MiSchroe/ioBroker.klf200/issues/44) Add advanced SSL configuration settings
 -   (Michael Schroeder) [#98](https://github.com/MiSchroe/ioBroker.klf200/issues/98) Fix default values
+-   (Michael Schroeder) Upgrade dependencies
 
 ### 1.0.1 (2020-07-20)
 
