@@ -3,8 +3,8 @@
 # ioBroker.klf200
 
 ![Number of Installations](http://iobroker.live/badges/klf200-installed.svg) ![Stable version](http://iobroker.live/badges/klf200-stable.svg)
-[![Travis CI](https://travis-ci.org/MiSchroe/ioBroker.klf200.svg?branch=master)](https://travis-ci.org/MiSchroe/ioBroker.klf200)
-[![Build status](https://ci.appveyor.com/api/projects/status/t28nlps5c99jy5v7/branch/master?svg=true)](https://ci.appveyor.com/project/MiSchroe/iobroker-klf200/branch/master)
+[![Known Vulnerabilities](https://snyk.io//test/github/MiSchroe/iobroker.klf200/badge.svg?targetFile=package.json)](https://snyk.io//test/github/MiSchroe/iobroker.klf200?targetFile=package.json)
+[![Build Status](https://dev.azure.com/michaelschroeder-github/GitHub%20projects/_apis/build/status/MiSchroe.iobroker.klf200?branchName=master)](https://dev.azure.com/michaelschroeder-github/GitHub%20projects/_build/latest?definitionId=1&branchName=master)
 [![GitHub issues](https://img.shields.io/github/issues/MiSchroe/ioBroker.klf200.svg)](https://github.com/MiSchroe/ioBroker.klf200/issues)
 [![GitHub license](https://img.shields.io/github/license/MiSchroe/ioBroker.klf200.svg)](https://github.com/MiSchroe/ioBroker.klf200/blob/master/LICENSE)
 
