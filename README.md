@@ -2,10 +2,9 @@
 
 # ioBroker.klf200
 
-![Number of Installations](http://iobroker.live/badges/klf200-installed.svg) ![Stable version](http://iobroker.live/badges/klf200-stable.svg)
+![Number of Installations](https://iobroker.live/badges/klf200-installed.svg) ![Stable version](https://iobroker.live/badges/klf200-stable.svg)
 [![Known Vulnerabilities](https://snyk.io//test/github/MiSchroe/iobroker.klf200/badge.svg?targetFile=package.json)](https://snyk.io//test/github/MiSchroe/iobroker.klf200?targetFile=package.json)
-[![Build Status](https://dev.azure.com/michaelschroeder-github/GitHub%20projects/_apis/build/status/MiSchroe.iobroker.klf200?branchName=master)](https://dev.azure.com/michaelschroeder-github/GitHub%20projects/_build/latest?definitionId=1&branchName=master)
-[![GitHub issues](https://img.shields.io/github/issues/MiSchroe/ioBroker.klf200.svg)](https://github.com/MiSchroe/ioBroker.klf200/issues)
+[![Build Status](https://dev.azure.com/michaelschroeder-github/GitHub%20projects/_apis/build/status%2FMiSchroe.ioBroker.klf200?branchName=master)](https://dev.azure.com/michaelschroeder-github/GitHub%20projects/_build/latest?definitionId=3&branchName=master)[![GitHub issues](https://img.shields.io/github/issues/MiSchroe/ioBroker.klf200.svg)](https://github.com/MiSchroe/ioBroker.klf200/issues)
 [![GitHub license](https://img.shields.io/github/license/MiSchroe/ioBroker.klf200.svg)](https://github.com/MiSchroe/ioBroker.klf200/blob/master/LICENSE)
 
 [![NPM version](https://img.shields.io/npm/v/iobroker.klf200.svg)](https://www.npmjs.com/package/iobroker.klf200)

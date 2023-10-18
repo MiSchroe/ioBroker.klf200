@@ -59,19 +59,7 @@ steps:
       displayName: "npm test:package"
 
     - script: |
-          npm run test:unit
-          export DEBUG=testing:*
           npm run test:integration
-          npm run test:ts
-      displayName: "npm test:unit"
-
-    - script: |
-          export DEBUG=testing:*
-      displayName: "export DEBUG=testing:*"
-
-    - script: |
-          npm run test:integration
-          npm run test:ts
       displayName: "npm test:integration"
 
     - script: |

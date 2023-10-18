@@ -65,7 +65,6 @@
     "test:tstap": "mocha --config test/mocharc.custom.json src/**/*.test.ts --reporter tap",
     "test:package": "mocha test/package --exit",
     "test:packagetap": "mocha test/package --exit --reporter tap",
-    "test:unit": "mocha test/unit --require test/mocha.setup.js --exit",
     "test:integration": "mocha test/integration --exit",
     "test": "npm run test:tstap && npm run test:packagetap",
     "coverage": "nyc npm run test:ts",
