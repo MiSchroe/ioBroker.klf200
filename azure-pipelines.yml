@@ -48,10 +48,32 @@ steps:
 
     - script: |
           npm install
+      displayName: "npm install"
+
+    - script: |
           npm run build
+      displayName: "npm build"
+
+    - script: |
           npm run test:package
+      displayName: "npm test:package"
+
+    - script: |
           npm run test:unit
           export DEBUG=testing:*
           npm run test:integration
           npm run test:ts
-      displayName: "npm install, build and test"
+      displayName: "npm test:unit"
+
+    - script: |
+          export DEBUG=testing:*
+      displayName: "export DEBUG=testing:*"
+
+    - script: |
+          npm run test:integration
+          npm run test:ts
+      displayName: "npm test:integration"
+
+    - script: |
+          npm run test:ts
+      displayName: "npm test:ts"
