@@ -1,10 +1,10 @@
 import { MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
 import {
-	Group,
-	GroupType,
 	GW_GET_ALL_NODES_INFORMATION_NTF,
 	GW_GET_GROUP_INFORMATION_NTF,
+	Group,
+	GroupType,
 	IConnection,
 	NodeVariation,
 	Product,
@@ -363,11 +363,12 @@ describe("setupGroups", function () {
 				mockProducts,
 			);
 			try {
-				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> =
-					await adapter.getObjectListAsync({
-						startKey: `${adapter.namespace}.groups.${mockGroup.GroupID}.`,
-						endkey: `${adapter.namespace}.groups.${mockGroup.GroupID}.\u9999`,
-					});
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
+					ioBroker.GetObjectListCallback<ioBroker.Object>
+				> = await adapter.getObjectListAsync({
+					startKey: `${adapter.namespace}.groups.${mockGroup.GroupID}.`,
+					endkey: `${adapter.namespace}.groups.${mockGroup.GroupID}.\u9999`,
+				});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -418,11 +419,12 @@ describe("setupGroups", function () {
 				const complexStatesMapping: { [prop: string]: string[] } = {
 					Nodes: ["test.0.groups.50.productsCount"],
 				};
-				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> =
-					await adapter.getObjectListAsync({
-						startKey: `${adapter.namespace}.groups.${mockGroup.GroupID}.`,
-						endkey: `${adapter.namespace}.groups.${mockGroup.GroupID}.\u9999`,
-					});
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
+					ioBroker.GetObjectListCallback<ioBroker.Object>
+				> = await adapter.getObjectListAsync({
+					startKey: `${adapter.namespace}.groups.${mockGroup.GroupID}.`,
+					endkey: `${adapter.namespace}.groups.${mockGroup.GroupID}.\u9999`,
+				});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)

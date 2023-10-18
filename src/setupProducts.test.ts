@@ -450,11 +450,12 @@ describe("setupProducts", function () {
 			let disposables: Disposable[] = [];
 			disposables = await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct);
 			try {
-				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> =
-					await adapter.getObjectListAsync({
-						startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
-						endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
-					});
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
+					ioBroker.GetObjectListCallback<ioBroker.Object>
+				> = await adapter.getObjectListAsync({
+					startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
+					endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
+				});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -506,11 +507,12 @@ describe("setupProducts", function () {
 					"test.0.products.0.typeID",
 					"test.0.products.0.velocity",
 				];
-				const objectList: ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback> =
-					await adapter.getObjectListAsync({
-						startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
-						endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
-					});
+				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
+					ioBroker.GetObjectListCallback<ioBroker.Object>
+				> = await adapter.getObjectListAsync({
+					startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
+					endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
+				});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)

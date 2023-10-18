@@ -20,6 +20,9 @@ tsconfig.*.json
 .eslintrc.json
 .eslintrc.js
 
+# Docker test containers
+compose.yaml
+
 # Sourcemaps
 maps/
 
