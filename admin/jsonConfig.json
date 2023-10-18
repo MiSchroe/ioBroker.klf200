@@ -1,0 +1,71 @@
+{
+	"$schema": "https://github.com/ioBroker/adapter-react-v5/raw/main/schemas/jsonConfig.json",
+	"i18n": true,
+	"type": "tabs",
+	"items": {
+		"optionstab": {
+			"type": "panel",
+			"label": "optionstab",
+			"sm": 2,
+			"items": {
+				"host": {
+					"type": "text",
+					"label": "host",
+					"sm": 12,
+					"md": 6
+				},
+				"password": {
+					"type": "password",
+					"label": "password",
+					"maxLength": 32,
+					"sm": 12,
+					"md": 6
+				},
+				"enableAutomaticReboot": {
+					"newLine": true,
+					"type": "checkbox",
+					"label": "Enable automatic reboot",
+					"sm": 12,
+					"md": 6
+				},
+				"automaticRebootCronTime": {
+					"type": "cron",
+					"label": "Cron pattern for automatic reboot",
+					"hidden": "!data.enableAutomaticReboot",
+					"sm": 12,
+					"md": 6
+				}
+			}
+		},
+		"SSL-tab": {
+			"type": "panel",
+			"label": "SSL-tab",
+			"sm": 2,
+			"items": {
+				"advancedSSLConfiguration": {
+					"type": "checkbox",
+					"label": "Advanced SSL configuration",
+					"sm": 12,
+					"md": 6
+				},
+				"SSLFingerprint": {
+					"type": "text",
+					"label": "SSL Fingerprint",
+					"hidden": "!data.advancedSSLConfiguration",
+					"sm": 12,
+					"md": 6
+				},
+				"SSLPublicKey": {
+					"newLine": true,
+					"type": "text",
+					"label": "SSL Public Key",
+					"hidden": "!data.advancedSSLConfiguration",
+					"minRows": 10,
+					"sm": 12,
+					"md": 12,
+					"lg": 12
+				}
+			}
+		}
+	}
+}

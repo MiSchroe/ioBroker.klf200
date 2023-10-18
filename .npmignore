@@ -1,3 +1,4 @@
+.*
 .git
 .idea
 node_modules/
@@ -34,8 +35,8 @@ package-lock.json
 coverage
 .nyc*
 
-# i18n intermediate files
-admin/i18n
-
 # maintenance scripts
 maintenance/**
+
+# Azure DevOps pipeline
+azure-pipelines.yml

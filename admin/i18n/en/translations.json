@@ -1,13 +1,13 @@
 {
-    "Advanced SSL configuration": "Advanced SSL configuration",
-    "Cron pattern for automatic reboot": "Cron pattern for automatic reboot",
-    "Enable automatic reboot": "Enable automatic reboot",
-    "SSL Fingerprint": "SSL Fingerprint",
-    "SSL Public Key": "SSL Public Key",
-    "SSL-tab": "SSL options",
-    "host": "host",
-    "klf200 adapter settings": "klf200 adapter settings",
-    "on save adapter restarts with new config immediately": "on save adapter restarts with new config immediately",
-    "options-tab": "Options",
-    "password": "password"
+	"Advanced SSL configuration": "Advanced SSL configuration",
+	"Cron pattern for automatic reboot": "Cron pattern for automatic reboot",
+	"Enable automatic reboot": "Enable automatic reboot",
+	"SSL Fingerprint": "SSL Fingerprint",
+	"SSL Public Key": "SSL Public Key",
+	"SSL-tab": "SSL options",
+	"host": "host",
+	"klf200 adapter settings": "klf200 adapter settings",
+	"on save adapter restarts with new config immediately": "on save adapter restarts with new config immediately",
+	"optionstab": "Options",
+	"password": "password"
 }

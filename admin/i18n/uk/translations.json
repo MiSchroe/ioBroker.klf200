@@ -8,6 +8,6 @@
     "host": "хост",
     "klf200 adapter settings": "налаштування адаптера klf200",
     "on save adapter restarts with new config immediately": "під час збереження адаптер негайно перезавантажується з новою конфігурацією",
-    "options-tab": "Опції",
+    "optionstab": "Опції",
     "password": "пароль"
 }
