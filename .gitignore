@@ -2,7 +2,9 @@
 .idea
 node_modules
 nbproject
-build/
+build/*
+# Include to help with ioBroker adapter checker
+!build/main.js
 
 # Sourcemaps
 maps/
@@ -15,6 +17,7 @@ Thumbs.db
 # NYC coverage files
 coverage
 .nyc*
+!.nycrc
 
 # i18n intermediate files
 admin/i18n/flat.txt
