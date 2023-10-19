@@ -16,6 +16,9 @@
     "type": "git",
     "url": "https://github.com/MiSchroe/ioBroker.klf200"
   },
+  "engines": {
+    "node": ">= 16"
+  },
   "dependencies": {
     "@iobroker/adapter-core": "^3.0.4",
     "klf-200-api": "^3.1.3",
