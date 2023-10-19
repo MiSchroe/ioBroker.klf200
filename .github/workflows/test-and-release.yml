@@ -5,7 +5,7 @@ name: Test and Release
 on:
     push:
         branches:
-            - "main"
+            - "master"
         tags:
             # normal versions
             - "v[0-9]+.[0-9]+.[0-9]+"
@@ -19,20 +19,20 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    # # Performs quick checks before the expensive test runs
-    # check-and-lint:
-    #     if: contains(github.event.head_commit.message, '[skip ci]') == false
+    # Performs quick checks before the expensive test runs
+    check-and-lint:
+         if: contains(github.event.head_commit.message, '[skip ci]') == false
 
-    #     runs-on: ubuntu-latest
+         runs-on: ubuntu-latest
 
-    #     steps:
-    #         - uses: ioBroker/testing-action-check@v1
-    #           with:
-    #               node-version: 20.x
-    #               # Uncomment the following line if your adapter cannot be installed using 'npm ci'
-    #               # install-command: 'npm install'
-    #               type-checking: true
-    #               lint: true
+         steps:
+             - uses: ioBroker/testing-action-check@v1
+               with:
+                   node-version: 20.x
+                   # Uncomment the following line if your adapter cannot be installed using 'npm ci'
+                   # install-command: 'npm install'
+                   type-checking: true
+                   lint: true
 
     # Runs adapter tests on all supported node versions and OSes
     adapter-tests:
