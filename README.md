@@ -233,6 +233,10 @@ The values of the state provide multiple manipulation modes:
 	### __WORK IN PROGRESS__
 -->
 <!-- prettier-ignore -->
+### __WORK IN PROGRESS__
+
+-   (Michael Schroeder) Bumped version number
+
 ### 1.1.1 (2023-10-18)
 
 -   (Michael Schroeder) Upgrade dependencies, switch to Typescript 4.6, compatibility check with js-controller 4.x
