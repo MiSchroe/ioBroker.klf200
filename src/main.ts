@@ -266,7 +266,7 @@ class Klf200 extends utils.Adapter {
 				const result = convertErrorToString(e);
 				this.log.error(result);
 				// Wait a second before retry
-				await new Promise((resolve) => setTimeout(resolve, 1000));
+				await this.delay(1000);
 			}
 		}
 	}

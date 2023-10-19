@@ -172,7 +172,7 @@ class Klf200 extends utils.Adapter {
         this.log.error(`Login to KLF-200 device at ${this.config.host} failed.`);
         const result = (0, import_utils.convertErrorToString)(e);
         this.log.error(result);
-        await new Promise((resolve) => setTimeout(resolve, 1e3));
+        await this.delay(1e3);
       }
     }
   }
