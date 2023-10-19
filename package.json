@@ -73,6 +73,7 @@
     "test:integration": "mocha test/integration --exit",
     "test:integrationjunit": "mocha test/integration --exit --reporter mocha-junit-reporter",
     "test": "npm run test:tstap && npm run test:packagetap",
+    "check": "tsc -p tsconfig.build.json --noEmit",
     "coverage": "nyc mocha --config test/mocharc.custom.json src/**/*.test.ts",
     "coveragejunit": "nyc --reporter=cobertura --reporter=html mocha --config test/mocharc.custom.json src/**/*.test.ts --reporter mocha-junit-reporter",
     "lint": "eslint --ext .ts src",
