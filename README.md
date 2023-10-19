@@ -233,6 +233,10 @@ The values of the state provide multiple manipulation modes:
 	### __WORK IN PROGRESS__
 -->
 <!-- prettier-ignore -->
+### __WORK IN PROGRESS__
+
+-   (Michael Schroeder) [#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Fix Adapter-Checker warning.
+
 ### 1.1.2 (2023-10-19)
 
 -   (Michael Schroeder) Bumped version number
