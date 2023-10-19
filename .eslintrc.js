@@ -41,12 +41,5 @@ module.exports = {
 		"no-var": "error",
 		"prefer-const": "error",
 	},
-	overrides: [
-		{
-			files: ["*.test.ts"],
-			rules: {
-				"@typescript-eslint/explicit-function-return-type": "off",
-			},
-		},
-	],
+	overrides: [],
 };
