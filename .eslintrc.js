@@ -40,6 +40,12 @@ module.exports = {
 		"@typescript-eslint/no-non-null-assertion": "off", // This is necessary for Map.has()/get()!
 		"no-var": "error",
 		"prefer-const": "error",
+		"prettier/prettier": [
+			"error",
+			{
+				endOfLine: "auto",
+			},
+		],
 	},
 	overrides: [],
 };
