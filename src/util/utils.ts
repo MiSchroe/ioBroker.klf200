@@ -6,7 +6,7 @@ export function ArrayCount<T>(arr: T[]): number {
 		.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
 }
 
-export function convertErrorToString(e: unknown) {
+export function convertErrorToString(e: unknown): string {
 	let result = "";
 	if (typeof e === "string") {
 		result = e;

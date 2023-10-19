@@ -62,7 +62,6 @@ class Klf200 extends utils.Adapter {
     var _a;
     try {
       await this.setStateAsync("info.connection", false, true);
-      const systemConfig = await this.getForeignObjectAsync("system.config");
       if (!this.supportsFeature || !this.supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE")) {
         this.config.password = this.decrypt(this.config.password);
       }
@@ -93,7 +92,7 @@ class Klf200 extends utils.Adapter {
       await this.setStateAsync("info.connection", true, true);
     } catch (e) {
       this.log.error(`Error during initialization of the adapter.`);
-      let result = (0, import_utils.convertErrorToString)(e);
+      const result = (0, import_utils.convertErrorToString)(e);
       this.log.error(result);
       this.terminate ? this.terminate(result) : process.exit(1);
     }
@@ -171,7 +170,7 @@ class Klf200 extends utils.Adapter {
         await this.initializeOnConnection();
       } catch (e) {
         this.log.error(`Login to KLF-200 device at ${this.config.host} failed.`);
-        let result = (0, import_utils.convertErrorToString)(e);
+        const result = (0, import_utils.convertErrorToString)(e);
         this.log.error(result);
         await new Promise((resolve) => setTimeout(resolve, 1e3));
       }
@@ -196,10 +195,10 @@ class Klf200 extends utils.Adapter {
     }
   }
   async onNewGroup(groupId) {
-    var _a, _b;
+    var _a;
     const newGroup = (_a = this._Groups) == null ? void 0 : _a.Groups[groupId];
-    if (newGroup) {
-      return await import_setupGroups.SetupGroups.createGroupAsync(this, newGroup, (_b = this._Products) == null ? void 0 : _b.Products);
+    if (newGroup && this._Products) {
+      return await import_setupGroups.SetupGroups.createGroupAsync(this, newGroup, this._Products.Products);
     } else {
       return [];
     }

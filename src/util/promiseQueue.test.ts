@@ -7,15 +7,15 @@ describe("PromiseQueue", function () {
 		it("should be able to push different types of return values including void.", async function () {
 			const callSpy = sinon.spy();
 
-			const testFunc1 = async () => {
+			const testFunc1 = async (): Promise<number> => {
 				callSpy();
 				return Promise.resolve(42);
 			};
-			const testFunc2 = async () => {
+			const testFunc2 = async (): Promise<string> => {
 				callSpy();
 				return Promise.resolve("42");
 			};
-			const testFunc3 = async () => {
+			const testFunc3 = async (): Promise<void> => {
 				callSpy();
 				return Promise.resolve();
 			};
