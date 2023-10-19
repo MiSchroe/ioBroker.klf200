@@ -1,7 +1,6 @@
 import { utils } from "@iobroker/testing";
 import { use } from "chai";
 import { StateHelper } from "./stateHelper";
-import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
 import chaiAsPromised = require("chai-as-promised");
 
@@ -26,7 +25,7 @@ describe("StateHelper", function () {
 
 		it(`should generate state ${testStateId}`, async function () {
 			await StateHelper.createAndSetStateAsync(
-				(adapter as unknown) as ioBroker.Adapter,
+				adapter as unknown as ioBroker.Adapter,
 				testStateId,
 				{
 					name: "level",
@@ -47,7 +46,7 @@ describe("StateHelper", function () {
 
 		it(`state ${testStateId} should have value ${testStateValue}`, async function () {
 			await StateHelper.createAndSetStateAsync(
-				(adapter as unknown) as ioBroker.Adapter,
+				adapter as unknown as ioBroker.Adapter,
 				testStateId,
 				{
 					name: "level",
@@ -68,7 +67,7 @@ describe("StateHelper", function () {
 
 		it(`state ${testStateId} should be acknowledged`, async function () {
 			await StateHelper.createAndSetStateAsync(
-				(adapter as unknown) as ioBroker.Adapter,
+				adapter as unknown as ioBroker.Adapter,
 				testStateId,
 				{
 					name: "level",

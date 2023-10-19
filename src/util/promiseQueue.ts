@@ -1,8 +1,8 @@
 "use strict";
 
-export type AsyncFunction<T extends any> = () => Promise<T | void>;
+export type AsyncFunction<T> = () => Promise<T | void>;
 
-export class PromiseQueue<T extends any> {
+export class PromiseQueue<T> {
 	private _nextPromise: Promise<T | void> = Promise.resolve();
 
 	public push(asyncFunction: AsyncFunction<T>): this {

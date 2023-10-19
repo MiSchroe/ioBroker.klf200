@@ -166,12 +166,16 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 	}
 }
 
-export class EchoStateChangeHandler<T extends Component> extends BaseStateChangeHandler {
+export class EchoStateChangeHandler extends BaseStateChangeHandler {
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
 		if (state?.ack === false) {
 			await this.Adapter.setStateAsync(this.StateId, state.val, true);
 		}
 	}
+}
+
+interface SetterFunction {
+	ArbitrarySetterFunction(Param1: ioBroker.StateValue, ...args: any[]): Promise<any>;
 }
 
 export class SetterStateChangeHandler<T extends Component> extends BaseStateChangeHandler {
@@ -192,14 +196,14 @@ export class SetterStateChangeHandler<T extends Component> extends BaseStateChan
 
 		// Double check, that the setter method exists
 		if (typeof LinkedObject[this.SetterMethodName!] === "function") {
-			this.setterFunction = LinkedObject[this.SetterMethodName!] as unknown as Function;
+			this.setterFunction = LinkedObject[this.SetterMethodName!] as SetterFunction["ArbitrarySetterFunction"];
 		} else {
 			throw new Error(`${String(this.SetterMethodName)!} is not a function.`);
 		}
 	}
 
-	private setterFunction: Function;
-	get SetterFunction(): Function {
+	private setterFunction: SetterFunction["ArbitrarySetterFunction"];
+	get SetterFunction(): SetterFunction["ArbitrarySetterFunction"] {
 		return this.setterFunction;
 	}
 
@@ -248,7 +252,7 @@ export class PercentageStateChangeHandler<T extends Component> extends SetterSta
 
 export type OnStateChangedHandlerFunctionType = (state: ioBroker.State | null | undefined) => Promise<void>;
 
-export class ComplexStateChangeHandler<T extends Component> extends BaseStateChangeHandler {
+export class ComplexStateChangeHandler extends BaseStateChangeHandler {
 	constructor(
 		Adapter: ioBroker.Adapter,
 		StateId: string,

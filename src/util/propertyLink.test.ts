@@ -7,7 +7,7 @@ import {
 	ComplexStateChangeHandler,
 	MapAnyPropertyToState,
 	SimplePropertyChangedHandler,
-	SimpleStateChangeHandler
+	SimpleStateChangeHandler,
 } from "./propertyLink";
 import sinon = require("sinon");
 
@@ -131,7 +131,7 @@ describe("PropertyLink", function () {
 			await adapter.setStateAsync(stateID, testComponent.NumberValue, true);
 
 			const SUT = new SimplePropertyChangedHandler<TestComponent>(
-				(adapter as unknown) as ioBroker.Adapter,
+				adapter as unknown as ioBroker.Adapter,
 				stateID,
 				"NumberValue",
 				testComponent,
@@ -171,7 +171,7 @@ describe("PropertyLink", function () {
 			await adapter.setStateAsync(stateID, testComponent.NumberValue, true);
 
 			const SUT = new ComplexPropertyChangedHandler<TestComponent>(
-				(adapter as unknown) as ioBroker.Adapter,
+				adapter as unknown as ioBroker.Adapter,
 				"NumberValue",
 				testComponent,
 				handler,
@@ -213,7 +213,7 @@ describe("PropertyLink", function () {
 			const expectedResult = 43;
 
 			const SUT = new SimpleStateChangeHandler<TestComponent>(
-				(adapter as unknown) as ioBroker.Adapter,
+				adapter as unknown as ioBroker.Adapter,
 				stateID,
 				"NumberValue",
 				testComponent,
@@ -240,7 +240,7 @@ describe("PropertyLink", function () {
 			const expectedResult = 43;
 
 			const SUT = new SimpleStateChangeHandler<TestComponent>(
-				(adapter as unknown) as ioBroker.Adapter,
+				adapter as unknown as ioBroker.Adapter,
 				stateID,
 				"NumberValue",
 				testComponent,
@@ -291,11 +291,7 @@ describe("PropertyLink", function () {
 			const expectedResult = 43;
 
 			const handler = sinon.stub<[ioBroker.State | null | undefined], Promise<void>>();
-			const SUT = new ComplexStateChangeHandler<TestComponent>(
-				(adapter as unknown) as ioBroker.Adapter,
-				stateID,
-				handler,
-			);
+			const SUT = new ComplexStateChangeHandler(adapter as unknown as ioBroker.Adapter, stateID, handler);
 			try {
 				await SUT.Initialize();
 

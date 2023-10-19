@@ -7,7 +7,10 @@ import { ComplexStateChangeHandler } from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
 
 export class Setup implements Disposable {
-	constructor(readonly adapter: ioBroker.Adapter, readonly gateway: Gateway) {}
+	constructor(
+		readonly adapter: ioBroker.Adapter,
+		readonly gateway: Gateway,
+	) {}
 
 	private disposableEvents: Disposable[] = [];
 

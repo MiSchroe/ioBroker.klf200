@@ -597,7 +597,7 @@ export class SetupProducts {
 			false,
 		);
 
-		let states: Record<string, string> = {};
+		const states: Record<string, string> = {};
 		// Fill absolute percentage values:
 		for (let pct = 0; pct <= 100; pct++) {
 			states[`${(0xc800 / 100) * pct}`] = `${pct}%`;
@@ -614,7 +614,7 @@ export class SetupProducts {
 
 		for (const parameterCounter of [1, 2, 3, 4]) {
 			const stateName = `targetFP${parameterCounter}Raw`;
-			let common: ioBroker.StateCommon = {
+			const common: ioBroker.StateCommon = {
 				name: stateName,
 				role: "value",
 				type: "number",
@@ -824,7 +824,7 @@ export class SetupProducts {
 		disposableEvents.push(winkListener);
 
 		for (const parameterCounter of [1, 2, 3, 4]) {
-			const targetFPRawHandler = new EchoStateChangeHandler<Product>(
+			const targetFPRawHandler = new EchoStateChangeHandler(
 				adapter,
 				`products.${product.NodeID}.targetFP${parameterCounter}Raw`,
 			);

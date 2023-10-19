@@ -118,7 +118,6 @@ class Klf200 extends utils.Adapter {
 			await this.setStateAsync("info.connection", false, true);
 
 			// Decrypt password
-			const systemConfig = await this.getForeignObjectAsync("system.config");
 			if (!this.supportsFeature || !this.supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE")) {
 				this.config.password = this.decrypt(this.config.password);
 			}
@@ -157,7 +156,7 @@ class Klf200 extends utils.Adapter {
 			await this.setStateAsync("info.connection", true, true);
 		} catch (e) {
 			this.log.error(`Error during initialization of the adapter.`);
-			let result = convertErrorToString(e);
+			const result = convertErrorToString(e);
 			this.log.error(result);
 			this.terminate ? this.terminate(result) : process.exit(1);
 		}
@@ -264,7 +263,7 @@ class Klf200 extends utils.Adapter {
 				await this.initializeOnConnection();
 			} catch (e) {
 				this.log.error(`Login to KLF-200 device at ${this.config.host} failed.`);
-				let result = convertErrorToString(e);
+				const result = convertErrorToString(e);
 				this.log.error(result);
 				// Wait a second before retry
 				await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -295,8 +294,8 @@ class Klf200 extends utils.Adapter {
 
 	private async onNewGroup(groupId: number): Promise<Disposable[]> {
 		const newGroup = this._Groups?.Groups[groupId];
-		if (newGroup) {
-			return await SetupGroups.createGroupAsync(this, newGroup, this._Products?.Products!);
+		if (newGroup && this._Products) {
+			return await SetupGroups.createGroupAsync(this, newGroup, this._Products.Products);
 		} else {
 			return [];
 		}
@@ -388,7 +387,7 @@ class Klf200 extends utils.Adapter {
 		return err.toString();
 	}
 
-	onUnhandledRejection(reason: {} | null | undefined, promise: Promise<any>): void {
+	onUnhandledRejection(reason: object | null | undefined, promise: Promise<any>): void {
 		((this && this.log) || console).error(
 			`Unhandled promise rejection detected. reason: ${JSON.stringify(reason)}, promise: ${JSON.stringify(
 				promise,
