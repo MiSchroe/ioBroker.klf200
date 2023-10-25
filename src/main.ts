@@ -402,9 +402,9 @@ class Klf200 extends utils.Adapter {
 	}
 }
 
-if (module.parent) {
+if (require.main !== module) {
 	// Export the constructor in compact mode
-	module.exports = (options?: Partial<utils.AdapterOptions>) => new Klf200(options);
+	module.exports = (options: Partial<utils.AdapterOptions> | undefined) => new Klf200(options);
 } else {
 	// otherwise start the instance directly
 	(() => new Klf200())();

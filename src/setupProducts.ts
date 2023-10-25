@@ -37,7 +37,7 @@ export class SetupProducts {
 
 		for (const product of products) {
 			if (product) {
-				disposableEvents.push(...(await this.createProductAsync(adapter, product)));
+				disposableEvents.push(...(await SetupProducts.createProductAsync(adapter, product)));
 			}
 		}
 

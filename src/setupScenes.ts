@@ -30,7 +30,7 @@ export class SetupScenes {
 
 		for (const scene of scenes) {
 			if (scene) {
-				disposableEvents.push(...(await this.createSceneAsync(adapter, scene)));
+				disposableEvents.push(...(await SetupScenes.createSceneAsync(adapter, scene)));
 			}
 		}
 
