@@ -46,6 +46,7 @@
     "cross-conf-env": "^1.3.0",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-deprecation": "^2.0.0",
     "eslint-plugin-prettier": "^5.0.1",
     "mocha": "^10.2.0",
     "mocha-junit-reporter": "^2.2.1",
@@ -84,8 +85,7 @@
     "prepare": "npm run build",
     "release": "release-script",
     "translate": "translate-adapter",
-    "deploy:container": "npm pack && cross-conf-env docker cp ./$npm_package_name-$npm_package_version.tgz iobroker:/opt/iobroker/tarballs/ && cross-conf-env docker exec iobroker npm install /opt/iobroker/tarballs/$npm_package_name-$npm_package_version.tgz --workdir /opt/iobroker && cross-conf-env docker exec iobroker iobroker restart klf200.0",
-    "deploy:containerV12": "npm pack && cross-conf-env docker cp ./$npm_package_name-$npm_package_version.tgz iobroker_v12:/opt/iobroker/tarballs/ && cross-conf-env docker exec iobroker_v12 npm install /opt/iobroker/tarballs/$npm_package_name-$npm_package_version.tgz --workdir /opt/iobroker && cross-conf-env docker exec iobroker_v12 iobroker restart klf200.0"
+    "deploy:container": "npm pack && cross-conf-env docker cp ./$npm_package_name-$npm_package_version.tgz iobroker:/opt/iobroker/tarballs/ && cross-conf-env docker exec iobroker npm install /opt/iobroker/tarballs/$npm_package_name-$npm_package_version.tgz --workdir /opt/iobroker && cross-conf-env docker exec iobroker iobroker restart klf200.0"
   },
   "nyc": {
     "include": [

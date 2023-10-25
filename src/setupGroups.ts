@@ -41,7 +41,7 @@ export class SetupGroups {
 
 		for (const group of groups) {
 			if (group) {
-				disposableEvents.push(...(await this.createGroupAsync(adapter, group, products)));
+				disposableEvents.push(...(await SetupGroups.createGroupAsync(adapter, group, products)));
 			}
 		}
 

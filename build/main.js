@@ -260,7 +260,7 @@ class Klf200 extends utils.Adapter {
     this.terminate("unhandled exception", 1);
   }
 }
-if (module.parent) {
+if (require.main !== module) {
   module.exports = (options) => new Klf200(options);
 } else {
   (() => new Klf200())();
