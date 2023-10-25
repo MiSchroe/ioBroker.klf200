@@ -9,5 +9,8 @@
     "klf200 adapter settings": "klf200 Adaptereinstellungen",
     "on save adapter restarts with new config immediately": "Beim Speichern wird der Adapter sofort mit der neuen Konfiguration neu gestartet",
     "optionstab": "Optionen",
-    "password": "Passwort"
+    "password": "Passwort",
+    "password-help": "Das Passwort ist normalerweise das WLAN-Passwort, das auf der Rückseite des KLF-200 steht. Versuchen Sie das zuerst! Wenn Sie die Firmware des KLF-200 selbst aktualisiert haben und das Passwort für den Web-Login geändert haben, handelt es sich möglicherweise um das Passwort für den Web-Login. Wenn beides nicht funktioniert, führen Sie einen Werksreset durch und verbinden Sie Ihre Produkte erneut mit Ihrem KLF-200. Versuchen Sie es anschließend erneut mit dem WLAN-Passwort.",
+    "host-help": "Hostname oder IP-Adresse ohne http(s)://",
+    "SSL Description": "Die Kommunikation zwischen diesem Adapter und dem KLF-200 wird durch ein selbstsigniertes SSL-Zertifikat gesichert. Alle Geräte scheinen das gleiche Zertifikat zu haben. Falls sich dies mit einem zukünftigen Firmware-Update ändert, können Sie den SSL-Fingerabdruck und den öffentlichen Schlüssel angeben.\nNormalerweise müssen Sie in diesen Feldern keine Angaben machen."
 }

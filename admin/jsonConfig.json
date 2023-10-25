@@ -11,12 +11,14 @@
 				"host": {
 					"type": "text",
 					"label": "host",
+					"help": "host-help",
 					"sm": 12,
 					"md": 6
 				},
 				"password": {
 					"type": "password",
 					"label": "password",
+					"help": "password-help",
 					"maxLength": 32,
 					"sm": 12,
 					"md": 6
@@ -42,7 +44,13 @@
 			"label": "SSL-tab",
 			"sm": 2,
 			"items": {
+				"SSLDescription": {
+					"type": "staticText",
+					"text": "SSL Description",
+					"sm": 12
+				},
 				"advancedSSLConfiguration": {
+					"newLine": true,
 					"type": "checkbox",
 					"label": "Advanced SSL configuration",
 					"sm": 12,

@@ -9,5 +9,8 @@
     "klf200 adapter settings": "ajustes del adaptador klf200",
     "on save adapter restarts with new config immediately": "al guardar el adaptador se reinicia con la nueva configuración inmediatamente",
     "optionstab": "Opciones",
-    "password": "contraseña"
+    "password": "contraseña",
+    "password-help": "La contraseña suele ser la contraseña de WiFi que está escrita en la parte posterior del KLF-200. ¡Prueba ese primero! Si usted mismo actualizó el firmware del KLF-200 y cambió la contraseña para el inicio de sesión web, es posible que sea la contraseña para el inicio de sesión web. Si ambos no funcionan, realice un restablecimiento de fábrica y vuelva a conectar sus productos a su KLF-200. Luego, vuelve a intentarlo con la contraseña de WiFi.",
+    "host-help": "Nombre de host o dirección IP sin http(s)://",
+    "SSL Description": "La comunicación entre este adaptador y el KLF-200 está protegida mediante un certificado SSL autofirmado. Todos los dispositivos parecen tener el mismo certificado. En caso de que esto cambie con una futura actualización de firmware, puede proporcionar la huella digital SSL y la clave pública.\nPor lo general, no es necesario proporcionar ninguna información en estos campos."
 }
