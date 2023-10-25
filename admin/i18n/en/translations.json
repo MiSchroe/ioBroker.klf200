@@ -6,8 +6,11 @@
 	"SSL Public Key": "SSL Public Key",
 	"SSL-tab": "SSL options",
 	"host": "host",
+	"host-help": "Host name or IP address without http(s)://",
 	"klf200 adapter settings": "klf200 adapter settings",
 	"on save adapter restarts with new config immediately": "on save adapter restarts with new config immediately",
 	"optionstab": "Options",
-	"password": "password"
+	"password": "password",
+	"password-help": "The password is usually the WiFi password that is written on the backside of the KLF-200. Try that one first! If you have upgraded the firmware of the KLF-200 by yourself and you have changed the password for the web login, it may be the password for the web login. If both are not working do a factory reset and reconnect your products to your KLF-200. Afterwards, try again with the WiFi password.",
+	"SSL Description": "The communication between this adapter and the KLF-200 is secured using a self-signed SSL certificate. All devices seem to have the same certificate. In case that this will be changed with a future firmware update you can provide the SSL fingerprint and the public key.\nUsually, you don't have to provide any information in these fields."
 }

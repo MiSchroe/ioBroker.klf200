@@ -112,5 +112,8 @@
   "bugs": {
     "url": "https://github.com/MiSchroe/ioBroker.klf200/issues"
   },
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "files": [
+    "admin/"
+  ]
 }

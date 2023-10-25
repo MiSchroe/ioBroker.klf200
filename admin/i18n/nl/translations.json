@@ -9,5 +9,8 @@
     "klf200 adapter settings": "klf200 adapterinstellingen",
     "on save adapter restarts with new config immediately": "bij het opslaan van adapter wordt onmiddellijk opnieuw opgestart met nieuwe configuratie",
     "optionstab": "Opties",
-    "password": "wachtwoord"
+    "password": "wachtwoord",
+    "password-help": "Het wachtwoord is meestal het WiFi-wachtwoord dat op de achterkant van de KLF-200 staat geschreven. Probeer die eerst! Als u zelf de firmware van de KLF-200 heeft geüpgraded en u het wachtwoord voor de web-login hebt gewijzigd, kan dit het wachtwoord voor de web-login zijn. Als beide niet werken, voer dan een fabrieksreset uit en sluit uw producten opnieuw aan op uw KLF-200. Probeer het daarna opnieuw met het WiFi-wachtwoord.",
+    "host-help": "Hostnaam of IP-adres zonder http(s)://",
+    "SSL Description": "De communicatie tussen deze adapter en de KLF-200 is beveiligd met een zelfondertekend SSL-certificaat. Alle apparaten lijken hetzelfde certificaat te hebben. In het geval dat dit bij een toekomstige firmware-update wordt gewijzigd, kunt u de SSL-vingerafdruk en de openbare sleutel opgeven.\nNormaal gesproken hoeft u in deze velden geen informatie in te vullen."
 }
