@@ -135,14 +135,30 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 		this.Adapter.log.debug(`Set maximum number of event listeners of adapter to ${newMaxSize}.`);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
+	async onStateChange(_state: ioBroker.State | null | undefined): Promise<void> {
 		throw new Error("Method not implemented.");
 	}
 
 	private async stateChanged(id: string, obj: ioBroker.State | null | undefined): Promise<void> {
 		if (id === `${this.Adapter.namespace}.${this.StateId}`) {
-			await this.onStateChange(obj);
+			try {
+				await this.onStateChange(obj);
+			} catch (error) {
+				this.Adapter.log.error(
+					`Couldn't set state ${id} to value ${obj?.val?.toLocaleString()}: ${(error as Error).message}`,
+				);
+				if (error instanceof Error && error.stack) {
+					this.Adapter.log.debug(error.stack);
+				}
+				if (obj) {
+					const errorState: ioBroker.SettableState = {
+						val: obj.val,
+						q: /* ioBroker.STATE_QUALITY.DEVICE_ERROR_REPORT */ 68,
+						ack: true,
+					};
+					await this.Adapter.setStateAsync(id, errorState);
+				}
+			}
 		}
 	}
 
@@ -210,11 +226,13 @@ export class SetterStateChangeHandler<T extends Component> extends BaseStateChan
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
 		this.Adapter.log.debug(`SetterStateChangeHandler.onStateChange: ${state}`);
 		if (state?.ack === false) {
-			klfPromiseQueue.push(
-				(async () => {
-					await this.setterFunction.call(this.LinkedObject, state.val);
-				}).bind(this),
-			);
+			await klfPromiseQueue
+				.push(
+					(async () => {
+						await this.setterFunction.call(this.LinkedObject, state.val);
+					}).bind(this),
+				)
+				.waitAsync();
 		}
 	}
 }
@@ -241,11 +259,13 @@ export class SimpleStateChangeHandler<T extends Component> extends SetterStateCh
 export class PercentageStateChangeHandler<T extends Component> extends SetterStateChangeHandler<T> {
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
 		if (state?.ack === false) {
-			klfPromiseQueue.push(
-				(async () => {
-					await this.SetterFunction.call(this.LinkedObject, (state.val as number) / 100);
-				}).bind(this),
-			);
+			await klfPromiseQueue
+				.push(
+					(async () => {
+						await this.SetterFunction.call(this.LinkedObject, (state.val as number) / 100);
+					}).bind(this),
+				)
+				.waitAsync();
 		}
 	}
 }
@@ -263,11 +283,13 @@ export class ComplexStateChangeHandler extends BaseStateChangeHandler {
 
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
 		if (state?.ack === false) {
-			klfPromiseQueue.push(
-				(async () => {
-					await this.Handler(state);
-				}).bind(this),
-			);
+			await klfPromiseQueue
+				.push(
+					(async () => {
+						await this.Handler(state);
+					}).bind(this),
+				)
+				.waitAsync();
 		}
 	}
 }
