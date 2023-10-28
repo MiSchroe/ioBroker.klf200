@@ -78,6 +78,8 @@ class Klf200 extends utils.Adapter {
       try {
         await ((_a = this.Connection) == null ? void 0 : _a.loginAsync(this.config.password));
       } catch (error) {
+        this.log.error(`${error}`);
+        this.log.debug(`${error.stack}`);
         this.terminate(`Login to KLF-200 device at ${this.config.host} failed.`);
         return;
       }

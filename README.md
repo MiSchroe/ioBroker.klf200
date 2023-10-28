@@ -237,6 +237,7 @@ The values of the state provide multiple manipulation modes:
 
 -   (Michael Schroeder) [#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Fixed Adapter-Checker warning.
 -   (Michael Schroeder) [#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Added help message for password in configuration dialog.
+-   (Michael Schroeder) [#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Fixed an unhandled rejection exception.
 
 ### 1.1.2 (2023-10-19)
 
