@@ -1,14 +1,8 @@
 import { MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
 import { Gateway, GatewayState, GatewaySubState, IConnection, SoftwareVersion } from "klf-200-api";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { promisify } from "util";
 import { Setup } from "./setup";
-import {
-	BaseStateChangeHandler,
-	ComplexPropertyChangedHandler,
-	SimplePropertyChangedHandler,
-} from "./util/propertyLink";
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
 import chaiAsPromised = require("chai-as-promised");
@@ -229,9 +223,7 @@ describe("Setup", function () {
 			}
 		});
 
-		it.skip(`Each writable state should be bound to a state change handler`, async function () {
-			// eslint-disable-next-line prefer-const
-			let disposables: Disposable[] = [];
+		it(`Each writable state should be bound to a state change handler`, async function () {
 			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
@@ -246,17 +238,7 @@ describe("Setup", function () {
 						if (
 							value.doc.type !== "state" ||
 							value.doc.common.write === false ||
-							disposables.some((disposable) => {
-								if (disposable instanceof BaseStateChangeHandler) {
-									return (
-										`${(adapter as unknown as ioBroker.Adapter).namespace}.${
-											disposable.StateId
-										}` === value.id
-									);
-								} else {
-									return false;
-								}
-							})
+							adapter.subscribeStatesAsync.calledWith(value.id.replace("test.0.", ""))
 						) {
 							// State found -> state is mapped
 							return undefined;
@@ -277,7 +259,6 @@ describe("Setup", function () {
 		});
 
 		it.skip(`Each readable state should be bound to a property change handler`, async function () {
-			const disposables: Disposable[] = [];
 			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 
 			try {
@@ -287,7 +268,6 @@ describe("Setup", function () {
 					"test.0.gateway.GatewayState",
 					"test.0.gateway.GatewaySubState",
 				];
-				const complexStatesMapping: { [prop: string]: string } = {};
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
 				> = await adapter.getObjectListAsync({
@@ -300,21 +280,23 @@ describe("Setup", function () {
 						if (
 							value.doc.type !== "state" ||
 							value.doc.common.read === false ||
-							disposables.some((disposable) => {
-								if (disposable instanceof SimplePropertyChangedHandler) {
-									return (
-										`${(adapter as unknown as ioBroker.Adapter).namespace}.${
-											disposable.StateId
-										}` === value.id
-									);
-								} else if (disposable instanceof ComplexPropertyChangedHandler) {
-									return complexStatesMapping[disposable.Property as string]?.includes(value.id);
-								} else if (allowedUnmappedStates.includes(value.id)) {
-									return true;
-								} else {
-									return false;
-								}
-							})
+							allowedUnmappedStates.includes(value.id) ||
+							false
+							// disposables.some((disposable) => {
+							// 	if (disposable instanceof SimplePropertyChangedHandler) {
+							// 		return (
+							// 			`${(adapter as unknown as ioBroker.Adapter).namespace}.${
+							// 				disposable.StateId
+							// 			}` === value.id
+							// 		);
+							// 	} else if (disposable instanceof ComplexPropertyChangedHandler) {
+							// 		return complexStatesMapping[disposable.Property as string]?.includes(value.id);
+							// 	} else if (allowedUnmappedStates.includes(value.id)) {
+							// 		return true;
+							// 	} else {
+							// 		return false;
+							// 	}
+							// })
 						) {
 							// State found -> state is mapped
 							return undefined;

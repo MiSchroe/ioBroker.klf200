@@ -69,9 +69,9 @@
     "build": "build-adapter typescript",
     "watch:ts": "tsc -p tsconfig.build.json --watch",
     "watch": "npm run watch:ts",
-    "test:ts": "mocha --config test/mocharc.custom.json src/**/*.test.ts",
-    "test:tstap": "mocha --config test/mocharc.custom.json src/**/*.test.ts --reporter tap",
-    "test:tsjunit": "mocha --config test/mocharc.custom.json src/**/*.test.ts --reporter mocha-junit-reporter",
+    "test:ts": "mocha --config test/mocharc.custom.json src/{**/*,*}.test.ts",
+    "test:tstap": "mocha --config test/mocharc.custom.json src/{**/*,*}.test.ts --reporter tap",
+    "test:tsjunit": "mocha --config test/mocharc.custom.json src/{**/*,*}.test.ts --reporter mocha-junit-reporter",
     "test:package": "mocha test/package --exit",
     "test:packagetap": "mocha test/package --exit --reporter tap",
     "test:packagejunit": "mocha test/package --exit --reporter mocha-junit-reporter",
@@ -80,8 +80,8 @@
     "test": "npm run test:tstap && npm run test:packagetap",
     "test:unit": "npm run test:ts",
     "check": "tsc -p tsconfig.build.json --noEmit",
-    "coverage": "nyc mocha --config test/mocharc.custom.json src/**/*.test.ts",
-    "coveragejunit": "nyc --reporter=cobertura --reporter=html mocha --config test/mocharc.custom.json src/**/*.test.ts --reporter mocha-junit-reporter",
+    "coverage": "nyc mocha --config test/mocharc.custom.json src/{**/*,*}.test.ts",
+    "coveragejunit": "nyc --reporter=cobertura --reporter=html mocha --config test/mocharc.custom.json src/{**/*,*}.test.ts --reporter mocha-junit-reporter",
     "lint": "eslint --ext .ts src",
     "prepare": "npm run build",
     "release": "release-script",
@@ -93,7 +93,7 @@
       "src/**/*.ts"
     ],
     "exclude": [
-      "src/**/*.test.ts"
+      "src/{**/*,*}.test.ts"
     ],
     "extension": [
       ".ts"
