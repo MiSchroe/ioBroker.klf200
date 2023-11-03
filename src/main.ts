@@ -193,7 +193,7 @@ class Klf200 extends utils.Adapter {
 		// Setup states
 		this._Setup = await Setup.setupGlobalAsync(this, this.Gateway!);
 		this.disposables.push(this._Setup);
-		this.disposables.push(...(await SetupScenes.createScenesAsync(this, this.Scenes?.Scenes ?? [])));
+		this.disposables.push(...(await SetupScenes.createScenesAsync(this, this.Scenes!)));
 		this.disposables.push(
 			...(await SetupGroups.createGroupsAsync(this, this.Groups?.Groups ?? [], this.Products?.Products ?? [])),
 		);

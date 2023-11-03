@@ -100,7 +100,7 @@ class Klf200 extends utils.Adapter {
     }
   }
   async initializeOnConnection() {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
     this.log.info(`Reading device information...`);
     this._Gateway = new import_klf_200_api.Gateway(this.Connection);
     this.log.info(`Enabling the house status monitor...`);
@@ -120,11 +120,11 @@ class Klf200 extends utils.Adapter {
     this.log.info(`${(0, import_utils.ArrayCount)(this.Products.Products)} products found.`);
     this._Setup = await import_setup.Setup.setupGlobalAsync(this, this.Gateway);
     this.disposables.push(this._Setup);
-    this.disposables.push(...await import_setupScenes.SetupScenes.createScenesAsync(this, (_e = (_d = this.Scenes) == null ? void 0 : _d.Scenes) != null ? _e : []));
+    this.disposables.push(...await import_setupScenes.SetupScenes.createScenesAsync(this, this.Scenes));
     this.disposables.push(
-      ...await import_setupGroups.SetupGroups.createGroupsAsync(this, (_g = (_f = this.Groups) == null ? void 0 : _f.Groups) != null ? _g : [], (_i = (_h = this.Products) == null ? void 0 : _h.Products) != null ? _i : [])
+      ...await import_setupGroups.SetupGroups.createGroupsAsync(this, (_e = (_d = this.Groups) == null ? void 0 : _d.Groups) != null ? _e : [], (_g = (_f = this.Products) == null ? void 0 : _f.Products) != null ? _g : [])
     );
-    this.disposables.push(...await import_setupProducts.SetupProducts.createProductsAsync(this, (_k = (_j = this.Products) == null ? void 0 : _j.Products) != null ? _k : []));
+    this.disposables.push(...await import_setupProducts.SetupProducts.createProductsAsync(this, (_i = (_h = this.Products) == null ? void 0 : _h.Products) != null ? _i : []));
     this.log.info(`Setting up notification handlers for removal...`);
     this.disposables.push(
       this.Scenes.onRemovedScene(this.onRemovedScene.bind(this)),
@@ -140,8 +140,8 @@ class Klf200 extends utils.Adapter {
     this.disposables.push(this._Connection.on(this.onFrameReceived.bind(this)));
     this.log.info(`Adapter is ready for use.`);
     this.log.info(`Starting background state refresher...`);
-    (_l = this._Setup) == null ? void 0 : _l.startStateTimer();
-    (_n = (_m = this.Connection) == null ? void 0 : _m.KLF200SocketProtocol) == null ? void 0 : _n.socket.on("close", this.connectionWatchDogHandler);
+    (_j = this._Setup) == null ? void 0 : _j.startStateTimer();
+    (_l = (_k = this.Connection) == null ? void 0 : _k.KLF200SocketProtocol) == null ? void 0 : _l.socket.on("close", this.connectionWatchDogHandler);
   }
   async disposeOnConnectionClosed() {
     var _a, _b;

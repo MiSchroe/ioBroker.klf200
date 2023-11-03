@@ -1,13 +1,18 @@
 "use strict";
 
-import { Scene, SceneInformationEntry, Velocity } from "klf-200-api";
+import { Scene, SceneInformationEntry, Scenes, Velocity } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
-import { ComplexPropertyChangedHandler, ComplexStateChangeHandler, EchoStateChangeHandler } from "./util/propertyLink";
+import {
+	ComplexPropertyChangedHandler,
+	ComplexStateChangeHandler,
+	EchoStateChangeHandler,
+	MethodCallStateChangeHandler,
+} from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
 import { ArrayCount } from "./util/utils";
 
 export class SetupScenes {
-	public static async createScenesAsync(adapter: ioBroker.Adapter, scenes: Scene[]): Promise<Disposable[]> {
+	public static async createScenesAsync(adapter: ioBroker.Adapter, scenes: Scenes): Promise<Disposable[]> {
 		const disposableEvents: Disposable[] = [];
 
 		// Remove old scenes
@@ -16,7 +21,7 @@ export class SetupScenes {
 		// Filter current channels to contain only those, that are not present in the provided scenes list
 		const channelsToRemove = currentScenesList.filter(
 			(channel) =>
-				!scenes.some((scene) => {
+				!scenes.Scenes.some((scene) => {
 					return scene.SceneID === Number.parseInt(channel._id.split(".").reverse()[0]);
 				}),
 		);
@@ -28,7 +33,7 @@ export class SetupScenes {
 			adapter.log.info(`${channelsToRemove.length} unknown scenes removed.`);
 		}
 
-		for (const scene of scenes) {
+		for (const scene of scenes.Scenes) {
 			if (scene) {
 				disposableEvents.push(...(await SetupScenes.createSceneAsync(adapter, scene)));
 			}
@@ -49,8 +54,30 @@ export class SetupScenes {
 				desc: "Number of scenes defined in the interface",
 			},
 			{},
-			ArrayCount(scenes),
+			ArrayCount(scenes.Scenes),
 		);
+		await StateHelper.createAndSetStateAsync(
+			adapter,
+			`scenes.refreshScenes`,
+			{
+				name: "Refresh the scenes list",
+				role: "button.resume",
+				type: "boolean",
+				read: false,
+				write: true,
+				desc: "Refreshes the scenes list when set to true.",
+			},
+			{},
+			false,
+		);
+		const refreshScenesChangeHandler = new MethodCallStateChangeHandler(
+			adapter,
+			"scenes.refreshScenes",
+			scenes,
+			"refreshScenesAsync",
+		);
+		await refreshScenesChangeHandler.Initialize();
+		disposableEvents.push(refreshScenesChangeHandler);
 
 		return disposableEvents;
 	}

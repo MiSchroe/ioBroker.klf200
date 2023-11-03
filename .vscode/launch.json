@@ -9,7 +9,7 @@
 			"request": "launch",
 			"name": "Mocha Tests:ts",
 			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-			"args": ["--opts", "test/mocha.custom.opts"],
+			"args": ["--config", "test/mocharc.custom.json", "src/{**/*,*}.test.ts"],
 			"internalConsoleOptions": "openOnSessionStart",
 			"skipFiles": ["<node_internals>/**"]
 		},

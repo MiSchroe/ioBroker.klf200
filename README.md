@@ -219,6 +219,7 @@ The values of the state provide multiple manipulation modes:
 #### Scenes
 
 -   scenesFound - Number of scenes found in the interface
+-   refreshScenes - Set to true to read the list of scenes without restarting the adapter.
 -   0..n - Channel for each scene
     -   productsCount - Number of products that are controlled through this scene
     -   run - Set this state to true to run the scene. If a scene is running this state is set to true.
@@ -240,6 +241,7 @@ The values of the state provide multiple manipulation modes:
 -   (Michael Schroeder) [#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Fixed an unhandled rejection exception.
 -   (Michael Schroeder) [#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Fixed warning for Admin settings.
 -   (Michael Schroeder) [#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Fixed Github Workflows.
+-   (Michael Schroeder) [#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) The scene list can be refreshed.
 
 ### 1.1.2 (2023-10-19)
 
