@@ -209,6 +209,7 @@ class Klf200 extends utils.Adapter {
 
 		this.log.info(`Setting up notification handlers for discovering new objects...`);
 		this.disposables.push(
+			this.Scenes!.onAddedScene(this.onNewScene.bind(this)),
 			this.Products!.onNewProduct(this.onNewProduct.bind(this)),
 			this.Groups!.onChangedGroup(this.onNewGroup.bind(this)),
 		);
@@ -283,6 +284,15 @@ class Klf200 extends utils.Adapter {
 
 	private async onRemovedGroup(groupId: number): Promise<void> {
 		await this.deleteChannelAsync(`groups`, `${groupId}`);
+	}
+
+	private async onNewScene(sceneId: number): Promise<Disposable[]> {
+		const newScene = this._Scenes?.Scenes[sceneId];
+		if (newScene) {
+			return await SetupScenes.createSceneAsync(this, newScene);
+		} else {
+			return [];
+		}
 	}
 
 	private async onNewProduct(productId: number): Promise<Disposable[]> {

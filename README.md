@@ -4,7 +4,8 @@
 
 ![Number of Installations](https://iobroker.live/badges/klf200-installed.svg) ![Stable version](https://iobroker.live/badges/klf200-stable.svg)
 [![Known Vulnerabilities](https://snyk.io//test/github/MiSchroe/iobroker.klf200/badge.svg?targetFile=package.json)](https://snyk.io//test/github/MiSchroe/iobroker.klf200?targetFile=package.json)
-[![Build Status](https://dev.azure.com/michaelschroeder-github/GitHub%20projects/_apis/build/status%2FMiSchroe.ioBroker.klf200?branchName=master)](https://dev.azure.com/michaelschroeder-github/GitHub%20projects/_build/latest?definitionId=3&branchName=master)[![GitHub issues](https://img.shields.io/github/issues/MiSchroe/ioBroker.klf200.svg)](https://github.com/MiSchroe/ioBroker.klf200/issues)
+[![Test and Release](https://github.com/MiSchroe/ioBroker.klf200/actions/workflows/test-and-release.yml/badge.svg)](https://github.com/MiSchroe/ioBroker.klf200/actions/workflows/test-and-release.yml)
+[![GitHub issues](https://img.shields.io/github/issues/MiSchroe/ioBroker.klf200.svg)](https://github.com/MiSchroe/ioBroker.klf200/issues)
 [![GitHub license](https://img.shields.io/github/license/MiSchroe/ioBroker.klf200.svg)](https://github.com/MiSchroe/ioBroker.klf200/blob/master/LICENSE)
 
 [![NPM version](https://img.shields.io/npm/v/iobroker.klf200.svg)](https://www.npmjs.com/package/iobroker.klf200)
@@ -219,7 +220,7 @@ The values of the state provide multiple manipulation modes:
 #### Scenes
 
 -   scenesFound - Number of scenes found in the interface
--   refreshScenes - Set to true to read the list of scenes without restarting the adapter.
+-   refreshScenes - Set to true to read the list of scenes without restarting the adapter. After refreshing the state will be set back to false.
 -   0..n - Channel for each scene
     -   productsCount - Number of products that are controlled through this scene
     -   run - Set this state to true to run the scene. If a scene is running this state is set to true.
