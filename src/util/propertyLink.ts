@@ -4,6 +4,7 @@ import { EventEmitter } from "events";
 import { Component, PropertyChangedEvent } from "klf-200-api/dist/utils/PropertyChangedEvent";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { PromiseQueue } from "./promiseQueue";
+import { AsyncMethodName, AsyncMethodParameters, AsyncMethodType } from "./utils";
 
 export function MapAnyPropertyToState<T extends Component>(
 	propertyValue: T[keyof T],
@@ -125,7 +126,7 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 		readonly StateId: string,
 	) {
 		/// The default number of listeners may not be high enough -> raise it to suppress warnings
-		const adapterEmitter = this.Adapter as unknown as EventEmitter;
+		const adapterEmitter = this.Adapter;
 		const newMaxSize = adapterEmitter.getMaxListeners() + 1;
 		this.logEventEmitterMaxSize(newMaxSize);
 		adapterEmitter.setMaxListeners(newMaxSize);
@@ -140,6 +141,11 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 	}
 
 	private async stateChanged(id: string, obj: ioBroker.State | null | undefined): Promise<void> {
+		this.Adapter.log.silly(
+			`State changed event received for id ${id}. New state: ${JSON.stringify(obj)}. Handled by ${
+				this.constructor.name
+			}`,
+		);
 		if (id === `${this.Adapter.namespace}.${this.StateId}`) {
 			try {
 				await this.onStateChange(obj);
@@ -291,5 +297,37 @@ export class ComplexStateChangeHandler extends BaseStateChangeHandler {
 				)
 				.waitAsync();
 		}
+	}
+}
+
+export class MethodCallStateChangeHandler<Type, MN extends AsyncMethodName<Type>> extends ComplexStateChangeHandler {
+	private targetMethod: AsyncMethodType<Type, MN>;
+	constructor(
+		Adapter: ioBroker.Adapter,
+		StateId: string,
+		readonly LinkedObject: Type,
+		readonly MethodName: MN,
+		readonly ArgumentProvider?: (
+			state: ioBroker.State | null | undefined,
+		) => Promise<AsyncMethodParameters<Type, MN>>,
+	) {
+		super(Adapter, StateId, async (state: ioBroker.State | null | undefined): Promise<void> => {
+			await this.Adapter.setStateAsync(this.StateId, state !== null && state !== undefined ? state : null, true);
+			if (state?.val) {
+				this.Adapter.log.silly(
+					`Calling method ${String(this.MethodName)} on class ${(LinkedObject as object).constructor.name}`,
+				);
+				if (this.ArgumentProvider) {
+					const args = await this.ArgumentProvider(state);
+					await this.targetMethod(...args);
+				} else {
+					await this.targetMethod();
+				}
+				await this.Adapter.setStateAsync(this.StateId, false, true);
+			}
+		});
+		this.targetMethod = (this.LinkedObject[this.MethodName] as CallableFunction).bind(
+			LinkedObject,
+		) as AsyncMethodType<Type, MN>;
 	}
 }

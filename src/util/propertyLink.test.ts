@@ -2,13 +2,16 @@ import { MockAdapter, utils } from "@iobroker/testing";
 import { expect } from "chai";
 import { Component } from "klf-200-api/dist/utils/PropertyChangedEvent";
 import { promisify } from "util";
+import { setStateAsync } from "../../test/mockHelper";
 import {
 	ComplexPropertyChangedHandler,
 	ComplexStateChangeHandler,
 	MapAnyPropertyToState,
+	MethodCallStateChangeHandler,
 	SimplePropertyChangedHandler,
 	SimpleStateChangeHandler,
 } from "./propertyLink";
+import { AsyncMethodParameters } from "./utils";
 import sinon = require("sinon");
 
 class TestComponent extends Component {
@@ -55,6 +58,10 @@ class TestComponent extends Component {
 			this.propertyChanged("ArrayValue");
 		}
 	}
+
+	public async runAMethod(a: number, b: number, c: string): Promise<number> {
+		return await Promise.resolve(a + b + c.length);
+	}
 }
 
 describe("PropertyLink", function () {
@@ -70,6 +77,14 @@ describe("PropertyLink", function () {
 			value: promisify(adapter[method as keyof MockAdapter]),
 			writable: true,
 		});
+	}
+
+	// Stub additional methods
+	if (!adapter["getMaxListeners"]) {
+		adapter["getMaxListeners"] = sinon.stub().returns(100);
+	}
+	if (!adapter["setMaxListeners"]) {
+		adapter["setMaxListeners"] = sinon.stub();
 	}
 
 	afterEach(() => {
@@ -209,7 +224,7 @@ describe("PropertyLink", function () {
 			await adapter.setStateAsync(stateID, testComponent.NumberValue, true);
 		});
 
-		it.skip("should set the property 'NumberValue' to 43 when the adapter state is set.", async function () {
+		it("should set the property 'NumberValue' to 43 when the adapter state is set.", async function () {
 			const expectedResult = 43;
 
 			const SUT = new SimpleStateChangeHandler<TestComponent>(
@@ -221,14 +236,7 @@ describe("PropertyLink", function () {
 			try {
 				await SUT.Initialize();
 
-				await adapter.setStateAsync(stateID, expectedResult, false);
-				adapter.stateChangeHandler!(stateID, {
-					val: expectedResult,
-					ack: false,
-					ts: 12345,
-					lc: 6789,
-					from: `${adapter.namespace}`,
-				});
+				await setStateAsync(adapter, stateID, expectedResult, [SUT], false);
 
 				expect(testComponent.NumberValue).to.be.equal(expectedResult);
 			} finally {
@@ -236,7 +244,7 @@ describe("PropertyLink", function () {
 			}
 		});
 
-		it.skip("should set the property 'NumberValue' to 43 when the adapter state is set with explicit setterMethodName.", async function () {
+		it("should set the property 'NumberValue' to 43 when the adapter state is set with explicit setterMethodName.", async function () {
 			const expectedResult = 43;
 
 			const SUT = new SimpleStateChangeHandler<TestComponent>(
@@ -249,14 +257,7 @@ describe("PropertyLink", function () {
 			try {
 				await SUT.Initialize();
 
-				await adapter.setStateAsync(stateID, expectedResult, false);
-				adapter.stateChangeHandler!(stateID, {
-					val: expectedResult,
-					ack: false,
-					ts: 12345,
-					lc: 6789,
-					from: `${adapter.namespace}`,
-				});
+				await setStateAsync(adapter, stateID, expectedResult, [SUT], false);
 
 				expect(testComponent.NumberValue).to.be.equal(expectedResult);
 			} finally {
@@ -287,7 +288,7 @@ describe("PropertyLink", function () {
 			await adapter.setStateAsync(stateID, testComponent.NumberValue, true);
 		});
 
-		it.skip("should call the provided handly exaclty once.", async function () {
+		it("should call the provided handly exaclty once.", async function () {
 			const expectedResult = 43;
 
 			const handler = sinon.stub<[ioBroker.State | null | undefined], Promise<void>>();
@@ -295,18 +296,64 @@ describe("PropertyLink", function () {
 			try {
 				await SUT.Initialize();
 
-				await adapter.setStateAsync(stateID, expectedResult, false);
-				adapter.stateChangeHandler!(stateID, {
-					val: expectedResult,
-					ack: false,
-					ts: 12345,
-					lc: 6789,
-					from: `${adapter.namespace}`,
-				});
+				await setStateAsync(adapter, stateID, expectedResult, [SUT], false);
 
 				expect(handler.calledOnce).to.be.true;
 			} finally {
 				await SUT.dispose();
+			}
+		});
+	});
+
+	describe("MethodCallStateChangeHandler", function () {
+		const stateID = "NumberValue";
+		const testComponent = new TestComponent();
+
+		this.beforeEach(async () => {
+			// Setup state
+			await adapter.setObjectNotExistsAsync(stateID, {
+				type: "state",
+				common: {
+					type: "number",
+					min: 0,
+					max: 100,
+					read: true,
+					write: true,
+					role: "value",
+					desc: "NumberValue",
+				},
+				native: {},
+			});
+			await adapter.setStateAsync(stateID, testComponent.NumberValue, true);
+		});
+
+		it("should call the function TestComponent.runAMethod with parameters 1, 2, '3'.", async function () {
+			const methodSpy = sinon.spy(testComponent, "runAMethod");
+			try {
+				const SUT = new MethodCallStateChangeHandler(
+					adapter as unknown as ioBroker.Adapter,
+					stateID,
+					testComponent,
+					"runAMethod",
+					() => {
+						return Promise.resolve([1, 2, "3"] as AsyncMethodParameters<TestComponent, "runAMethod">);
+					},
+				);
+				try {
+					await SUT.Initialize();
+					await SUT.onStateChange({
+						val: 42,
+						ack: false,
+						ts: 0,
+						lc: 0,
+						from: stateID,
+					});
+					expect(methodSpy).to.be.calledOnceWithExactly(1, 2, "3");
+				} finally {
+					await SUT.dispose();
+				}
+			} finally {
+				methodSpy.restore();
 			}
 		});
 	});

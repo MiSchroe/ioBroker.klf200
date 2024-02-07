@@ -1,8 +1,9 @@
 import { MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
-import { IConnection, ParameterActive, Scene, Velocity } from "klf-200-api";
+import { IConnection, ParameterActive, Scene, Scenes, Velocity } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { promisify } from "util";
+import { setStateAsync } from "../test/mockHelper";
 import { SetupScenes } from "./setupScenes";
 import {
 	BaseStateChangeHandler,
@@ -48,7 +49,9 @@ mockScene.Products.push(
 	},
 );
 
-const mockScenes = [mockScene];
+// const mockScenes = [mockScene];
+// const mockScenes = await Scenes.createScenesAsync(mockConnection);
+let mockScenes: Scenes;
 
 describe("setupScenes", function () {
 	// Create mocks and asserts
@@ -478,6 +481,19 @@ describe("setupScenes", function () {
 	});
 
 	describe("createScenesAsync", function () {
+		let sandbox: sinon.SinonSandbox;
+
+		this.beforeEach(async function () {
+			sandbox = sinon.createSandbox();
+			sandbox.stub(Scenes.prototype, "refreshScenesAsync");
+			mockScenes = await Scenes.createScenesAsync(mockConnection);
+			sandbox.stub(mockScenes, "Scenes").value([mockScene]);
+		});
+
+		this.afterEach(function () {
+			sandbox.restore();
+		});
+
 		it("should have 1 in the value of scenes.scenesFound state", async function () {
 			const expectedValue = 1;
 			const disposables = await SetupScenes.createScenesAsync(adapter as unknown as ioBroker.Adapter, mockScenes);
@@ -519,6 +535,46 @@ describe("setupScenes", function () {
 						`Object ${adapter.namespace}.scenes.42.${state} shouldn't exist anymore.`,
 					).to.throw(),
 				);
+			} finally {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+			}
+		});
+
+		it(`should have a state refreshScenes`, async function () {
+			const disposables = await SetupScenes.createScenesAsync(adapter as unknown as ioBroker.Adapter, mockScenes);
+			try {
+				assertObjectExists(`${adapter.namespace}.scenes.refreshScenes`);
+			} finally {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+			}
+		});
+
+		it(`should call refreshScenesAsync when the state is set to true`, async function () {
+			const disposables = await SetupScenes.createScenesAsync(adapter as unknown as ioBroker.Adapter, mockScenes);
+			try {
+				const currentCalls = (mockScenes.refreshScenesAsync as unknown as sinon.SinonStub).callCount;
+				await setStateAsync(adapter, `scenes.refreshScenes`, true, disposables, false);
+				// for (const disposable of disposables) {
+				// 	if (disposable instanceof BaseStateChangeHandler && disposable.StateId === `scenes.refreshScenes`) {
+				// 		await disposable.onStateChange({
+				// 			val: true,
+				// 			ack: false,
+				// 			ts: 12345,
+				// 			lc: 12345,
+				// 			from: "system.adapter.test.0",
+				// 		});
+				// 	}
+				// }
+				// /* Let it run */
+				// await new Promise((resolve) => {
+				// 	setTimeout(resolve, 0);
+				// });
+				const callsAfterSetState = (mockScenes.refreshScenesAsync as unknown as sinon.SinonStub).callCount;
+				expect(callsAfterSetState - currentCalls).to.be.equal(1);
 			} finally {
 				for (const disposable of disposables) {
 					disposable.dispose();

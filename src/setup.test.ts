@@ -258,7 +258,7 @@ describe("Setup", function () {
 			}
 		});
 
-		it.skip(`Each readable state should be bound to a property change handler`, async function () {
+		it(`Each readable state should be bound to a property change handler`, async function () {
 			const setup = await Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 
 			try {
@@ -267,6 +267,10 @@ describe("Setup", function () {
 					"test.0.gateway.Version",
 					"test.0.gateway.GatewayState",
 					"test.0.gateway.GatewaySubState",
+					"test.0.gateway.SoftwareVersion",
+					"test.0.gateway.HardwareVersion",
+					"test.0.gateway.ProductGroup",
+					"test.0.gateway.ProductType",
 				];
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
