@@ -183,13 +183,16 @@ The following devices are defined:
     -   subType - Depending on the category the sub type defines special kinds or
         capabilities, e.g. for a window a '1' means that the window has a rain sensor.
     -   targetFP1Raw - Setting this state to a value different to 54272 (0xD400) lets the product
-        include this functional parameter when setting a new target position. See below for further details.
+        include this functional parameter when setting a new target position. See [below](#functional-parameters) for further details.
     -   targetFP2Raw, targetFP3Raw, targetFP4Raw - Same as targetFP1Raw, but for the different
         functional parameters.
     -   targetPosition - Set this state to a value between 0% and 100% to move a
         window or to dim a light. This state is writable.
     -   targetPositionRaw - This state reflects the target position converted to a
-        raw value.
+        raw value. According to type of the actuator the values can be mapped
+        either from 0% to 100% or vice versa. See the table at [Functional parameters](#functional-parameters) for
+        details about how the values must be mapped.
+        This state is writable.
     -   timestamp - Timestamp of the last known position in local time.
     -   typeID - Type of the product, e.g. window, light, roller shutter.
     -   velocity - Velocity at which the product operates. The velocity depends on
@@ -211,11 +214,13 @@ The values of the state provide multiple manipulation modes:
 | Access method | Description | Range (Decimal) | Range (Hex) | Notes |
 |-|-|-|-|-|
 | Relative | 0% - 100% | 0 - 51200 | 0x0000 - 0xC800 | Each percent step equals 512. The product moves to that relative value, e.g. 50% open. |
-| +/- | -100% - +100% | 51456 - 53456 | ß0xC900 - 0xD0D0 | Each percent step equals 10. The product advances its position by the provided value, e.g. open the window for addition 10%. Not every product supports this method. |
+| +/- | -100% - +100% | 51456 - 53456 | ß0xC900 - 0xD0D0 | Each percent step equals 10. The product advances its position by the provided value, e.g. open the window for additional 10%. Not every product supports this method. |
 | Target | The target value for the parameter. | 53504 | 0xD100 | In case of an already running command the target value could be different to the current value. |
 | Current | The current value of the parameter. | 53760 | 0xD200 | You can use this value to stop a movement if applicable. |
 | Default | The default value for the parameter. | 54016 | 0xD300 | Sets the parameter to its default value. |
 | Ignore | The parameter won't be provided. | 54272 | 0xD400 | The parameter won't be set for the command. |
+
+> **Note:** This tables is valid for the targetPositionRaw, too.
 
 #### Scenes
 
@@ -243,6 +248,7 @@ The values of the state provide multiple manipulation modes:
 -   (Michael Schroeder) [#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Fixed warning for Admin settings.
 -   (Michael Schroeder) [#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Fixed Github Workflows.
 -   (Michael Schroeder) [#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) The scene list can be refreshed.
+-   (Michael Schroeder) [#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) The state targetPositionRaw is writable to support additional scenarios.
 
 ### 1.1.2 (2023-10-19)
 
