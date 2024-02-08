@@ -1,6 +1,6 @@
 "use strict";
 
-import { FunctionalParameter, Product } from "klf-200-api";
+import { ActuatorType, FunctionalParameter, Product } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { levelConverter, roleConverter } from "./util/converter";
 import {
@@ -66,6 +66,44 @@ export class SetupProducts {
 		const disposableEvents: Disposable[] = [];
 
 		adapter.log.info(`Setup objects for product ${product.Name}.`);
+
+		const states: Record<string, string> = {};
+		// Fill absolute percentage values:
+		for (let pct = 0; pct <= 100; pct++) {
+			states[`${(0xc800 / 100) * pct}`] = `${pct}%`;
+		}
+		// Fill relative percentage values:
+		for (let pct = -100; pct <= 100; pct++) {
+			states[`${(0x7d0 / 200) * (pct + 100) + 0xc900}`] = `${pct < 0 ? "" : "+"}${pct}%`;
+		}
+		// Add remaining state values:
+		states[`${0xd100}`] = "Target";
+		states[`${0xd200}`] = "Current";
+		states[`${0xd300}`] = "Default";
+		states[`${0xd400}`] = "Ignore";
+
+		const statesReverse: Record<string, string> = {};
+		// Fill absolute percentage values:
+		for (let pct = 0; pct <= 100; pct++) {
+			statesReverse[`${(0xc800 / 100) * (100 - pct)}`] = `${pct}%`;
+		}
+		// Fill relative percentage values:
+		for (let pct = -100; pct <= 100; pct++) {
+			statesReverse[`${(0x7d0 / 200) * (-pct + 100) + 0xc900}`] = `${pct < 0 ? "" : "+"}${pct}%`;
+		}
+		// Add remaining state values:
+		statesReverse[`${0xd100}`] = "Target";
+		statesReverse[`${0xd200}`] = "Current";
+		statesReverse[`${0xd300}`] = "Default";
+		statesReverse[`${0xd400}`] = "Ignore";
+
+		const InverseProductTypes = [
+			ActuatorType.WindowOpener,
+			ActuatorType.Light,
+			ActuatorType.OnOffSwitch,
+			ActuatorType.VentilationPoint,
+			ActuatorType.ExteriorHeating,
+		];
 
 		await adapter.setObjectNotExistsAsync(`products.${product.NodeID}`, {
 			type: "channel",
@@ -477,10 +515,11 @@ export class SetupProducts {
 				role: "value",
 				type: "number",
 				read: true,
-				write: false,
+				write: true,
 				min: 0,
 				max: 0xffff,
 				desc: "Target position raw value",
+				states: InverseProductTypes.indexOf(product.TypeID) === -1 ? states : statesReverse,
 			},
 			{},
 			product.TargetPositionRaw,
@@ -596,21 +635,6 @@ export class SetupProducts {
 			{},
 			false,
 		);
-
-		const states: Record<string, string> = {};
-		// Fill absolute percentage values:
-		for (let pct = 0; pct <= 100; pct++) {
-			states[`${(0xc800 / 100) * pct}`] = `${pct}%`;
-		}
-		// Fill relative percentage values:
-		for (let pct = -100; pct <= 100; pct++) {
-			states[`${(0x7d0 / 200) * (pct + 100) + 0xc900}`] = `${pct < 0 ? "" : "+"}${pct}%`;
-		}
-		// Add remaining state values:
-		states[`${0xd100}`] = "Target";
-		states[`${0xd200}`] = "Current";
-		states[`${0xd300}`] = "Default";
-		states[`${0xd400}`] = "Ignore";
 
 		for (const parameterCounter of [1, 2, 3, 4]) {
 			const stateName = `targetFP${parameterCounter}Raw`;
@@ -790,6 +814,42 @@ export class SetupProducts {
 		);
 		await targetPositionHandler.Initialize();
 		disposableEvents.push(targetPositionHandler);
+
+		const targetPositionRawHandler = new ComplexStateChangeHandler(
+			adapter,
+			`products.${product.NodeID}.targetPositionRaw`,
+			async (state) => {
+				if (state !== undefined && state?.val !== undefined) {
+					/*
+						Read the states of targetFP1Raw - targetFP4Raw.
+						For each state which is not set to Ignore (0xD400)
+						add the value to the functional parameter.
+					*/
+					let functionalParameters: FunctionalParameter[] | undefined = undefined;
+					for (const parameterCounter of [1, 2, 3, 4]) {
+						const stateFP = await adapter.getStateAsync(
+							`products.${product.NodeID}.targetFP${parameterCounter}Raw`,
+						);
+						if (stateFP?.val !== undefined && stateFP.val !== 0xd400) {
+							functionalParameters = functionalParameters || [];
+							functionalParameters.push({
+								ID: parameterCounter,
+								Value: stateFP.val as number,
+							});
+						}
+					}
+					await product.setTargetPositionRawAsync(
+						state.val as number,
+						undefined,
+						undefined,
+						undefined,
+						functionalParameters,
+					);
+				}
+			},
+		);
+		await targetPositionRawHandler.Initialize();
+		disposableEvents.push(targetPositionRawHandler);
 
 		const stopListener = new ComplexStateChangeHandler(
 			adapter,

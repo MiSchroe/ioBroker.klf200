@@ -8,7 +8,7 @@ export class StateHelper {
 		native: Record<string, any>,
 		value: string | number | boolean | ioBroker.State | ioBroker.SettableState | null,
 	): Promise<void> {
-		await adapter.setObjectNotExistsAsync(stateID, {
+		await adapter.extendObjectAsync(stateID, {
 			type: "state",
 			common: common,
 			native: native,

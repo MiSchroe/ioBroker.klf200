@@ -16,6 +16,7 @@ import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { promisify } from "util";
 import { SetupProducts } from "./setupProducts";
 import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink";
+import { StateHelper } from "./util/stateHelper";
 import sinon = require("sinon");
 import sinonChai = require("sinon-chai");
 import chaiAsPromised = require("chai-as-promised");
@@ -630,6 +631,45 @@ describe("setupProducts", function () {
 				});
 
 				mock.verify();
+			} finally {
+				for (const disposable of disposables) {
+					disposable.dispose();
+				}
+			}
+		});
+
+		it(`should change the setTargetPositionRawAsync state object to writable`, async function () {
+			const expectedState = "targetPositionRaw";
+
+			// Create the old state
+			await StateHelper.createAndSetStateAsync(
+				adapter as unknown as ioBroker.Adapter,
+				`products.0.targetPositionRaw`,
+				{
+					name: "targetPositionRaw",
+					role: "value",
+					type: "number",
+					read: true,
+					write: false,
+					min: 0,
+					max: 0xffff,
+					desc: "Target position raw value",
+				},
+				{},
+				52100,
+			);
+
+			/* Double-check the value before */
+			assertObjectExists(`test.0.products.0.${expectedState}`);
+			assertObjectCommon(`test.0.products.0.${expectedState}`, { write: false } as ioBroker.StateCommon);
+
+			const disposables = await SetupProducts.createProductAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProduct,
+			);
+			try {
+				assertObjectExists(`test.0.products.0.${expectedState}`);
+				assertObjectCommon(`test.0.products.0.${expectedState}`, { write: true } as ioBroker.StateCommon);
 			} finally {
 				for (const disposable of disposables) {
 					disposable.dispose();
