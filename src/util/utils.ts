@@ -1,5 +1,7 @@
 "use strict";
 
+import { Disposable, GW_SESSION_FINISHED_NTF, GatewayCommand, IConnection } from "klf-200-api";
+
 export function ArrayCount<T>(arr: T[]): number {
 	return arr
 		.map((element) => (element !== null && element !== undefined ? 1 : 0) as number)
@@ -37,3 +39,31 @@ export type AsyncMethodParameters<Type, MN extends AsyncMethodName<Type>> = Para
 
 export type MethodReturnType<Type, MN extends MethodName<Type>> = ReturnType<MethodType<Type, MN>>;
 export type AsyncMethodReturnType<Type, MN extends AsyncMethodName<Type>> = ReturnType<AsyncMethodType<Type, MN>>;
+
+// KLF200 helpers
+export function waitForSessionFinishedNtfAsync(
+	adapter: ioBroker.Adapter,
+	connection: IConnection,
+	sessionId: number,
+	timeout: number = 3000,
+): Promise<void> {
+	return new Promise((resolve, reject) => {
+		let sessionHandler: Disposable | undefined = undefined;
+		const timeoutHandle = adapter.setTimeout(() => {
+			sessionHandler?.dispose();
+			sessionHandler = undefined;
+			reject(new Error("Timeout error"));
+		}, timeout);
+		sessionHandler = connection.on(
+			(event) => {
+				if ((event as GW_SESSION_FINISHED_NTF).SessionID === sessionId) {
+					// Stop the timer as soon as possible!
+					adapter.clearTimeout(timeoutHandle);
+					sessionHandler?.dispose();
+					resolve();
+				}
+			},
+			[GatewayCommand.GW_SESSION_FINISHED_NTF],
+		);
+	});
+}

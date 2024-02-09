@@ -1,6 +1,6 @@
 "use strict";
 
-import { ActuatorType, FunctionalParameter, Product } from "klf-200-api";
+import { ActuatorType, FunctionalParameter, IConnection, Product, Products, StatusType } from "klf-200-api";
 import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { levelConverter, roleConverter } from "./util/converter";
 import {
@@ -11,7 +11,7 @@ import {
 	SimpleStateChangeHandler,
 } from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
-import { ArrayCount } from "./util/utils";
+import { ArrayCount, waitForSessionFinishedNtfAsync } from "./util/utils";
 
 export class SetupProducts {
 	public static async createProductsAsync(adapter: ioBroker.Adapter, products: Product[]): Promise<Disposable[]> {
@@ -660,6 +660,21 @@ export class SetupProducts {
 			);
 		}
 
+		await StateHelper.createAndSetStateAsync(
+			adapter,
+			`products.${product.NodeID}.refreshProduct`,
+			{
+				name: "refreshProduct",
+				role: "button.play",
+				type: "boolean",
+				read: false,
+				write: true,
+				desc: "Set to true to re-read the state of the product from the KLF-200",
+			},
+			{},
+			false,
+		);
+
 		// Setup product listener
 		adapter.log.debug(`Setup change event listeners for product ${product.Name}.`);
 		disposableEvents.push(
@@ -860,6 +875,7 @@ export class SetupProducts {
 						// Acknowledge stop state first
 						await adapter.setStateAsync(`products.${product.NodeID}.stop`, state, true);
 						await product.stopAsync();
+						await adapter.setStateAsync(`products.${product.NodeID}.stop`, false, true);
 					}
 				}
 			},
@@ -876,6 +892,7 @@ export class SetupProducts {
 						// Acknowledge wink state first
 						await adapter.setStateAsync(`products.${product.NodeID}.wink`, state, true);
 						await product.winkAsync();
+						await adapter.setStateAsync(`products.${product.NodeID}.wink`, false, true);
 					}
 				}
 			},
@@ -891,6 +908,38 @@ export class SetupProducts {
 			await targetFPRawHandler.Initialize();
 			disposableEvents.push(targetFPRawHandler);
 		}
+
+		const refreshProductListener = new ComplexStateChangeHandler(
+			adapter,
+			`products.${product.NodeID}.refreshProduct`,
+			async (state) => {
+				if (state !== undefined) {
+					if (state?.val === true) {
+						// Acknowledge refreshProduct state first
+						await adapter.setStateAsync(`products.${product.NodeID}.refreshProduct`, state, true);
+						const sessionId = await ((adapter as any).Products as Products).requestStatusAsync(
+							product.NodeID,
+							StatusType.RequestCurrentPosition,
+							[1, 2, 3, 4],
+						);
+						try {
+							await waitForSessionFinishedNtfAsync(
+								adapter,
+								(adapter as any).Connection as IConnection,
+								sessionId,
+							);
+						} catch (e) {
+							if (e != "TimeoutError") {
+								throw e;
+							}
+						}
+						await adapter.setStateAsync(`products.${product.NodeID}.refreshProduct`, false, true);
+					}
+				}
+			},
+		);
+		await refreshProductListener.Initialize();
+		disposableEvents.push(refreshProductListener);
 
 		return disposableEvents;
 	}
