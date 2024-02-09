@@ -209,6 +209,10 @@ describe("setupProducts", function () {
 				value: 0x07,
 			},
 			{
+				state: "refreshProduct",
+				value: false,
+			},
+			{
 				state: "remainingTime",
 				value: 0,
 			},

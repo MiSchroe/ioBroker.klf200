@@ -170,6 +170,10 @@ The following devices are defined:
     -   powerSaveMode - Kind of power save mode of the product.
     -   productType - Type of the product. The numbers are not documented, thus
         the adapter shows the raw numbers.
+    -   refreshProduct - Refreshes the status of a product by reading all values from the KLF-200.
+        In specific cases, e.g. if you control a product with a simple remote control the KLF-200
+        will not send a notification thus the adapter won't be informed about the change.
+        Set the refreshProduct state to true to re-read the current product state from the KLF-200.
     -   remainingTime - Remaining time of the current operation of the product in
         seconds. Currently, this is only updated at the beginning and at the end
         of a products movement.
@@ -249,6 +253,7 @@ The values of the state provide multiple manipulation modes:
 -   (Michael Schroeder) [#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Fixed Github Workflows.
 -   (Michael Schroeder) [#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) The scene list can be refreshed.
 -   (Michael Schroeder) [#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) The state targetPositionRaw is writable to support additional scenarios.
+-   (Michael Schroeder) [#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Added a refreshProduct state to manually refresh the state of a product.
 
 ### 1.1.2 (2023-10-19)
 
