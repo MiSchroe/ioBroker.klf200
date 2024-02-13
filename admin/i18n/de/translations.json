@@ -6,7 +6,7 @@
     "SSL Fingerprint": "SSL-Fingerabdruck",
     "SSL Public Key": "Öffentlicher SSL-Schlüssel",
     "SSL-tab": "SSL-Optionen",
-    "host": "Host",
+    "host": "Server",
     "host-help": "Hostname oder IP-Adresse ohne http(s)://",
     "klf200 adapter settings": "klf200 Adaptereinstellungen",
     "on save adapter restarts with new config immediately": "Beim Speichern wird der Adapter sofort mit der neuen Konfiguration neu gestartet",
