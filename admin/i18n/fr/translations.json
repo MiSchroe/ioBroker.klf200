@@ -2,15 +2,15 @@
     "Advanced SSL configuration": "Paramétrage SSL avancé",
     "Cron pattern for automatic reboot": "Modèle Cron pour le redémarrage automatique",
     "Enable automatic reboot": "Activer le redémarrage automatique",
+    "SSL Description": "La communication entre cet adaptateur et le KLF-200 est sécurisée à l'aide d'un certificat SSL auto-signé. Tous les appareils semblent avoir le même certificat. Dans le cas où cela serait modifié lors d'une future mise à jour du micrologiciel, vous pouvez fournir l'empreinte SSL et la clé publique. Habituellement, vous n'avez pas besoin de fournir d'informations dans ces champs.",
     "SSL Fingerprint": "Empreinte SSL",
     "SSL Public Key": "Clé publique SSL",
     "SSL-tab": "Option SSL",
     "host": "hôte",
+    "host-help": "Nom d'hôte ou adresse IP sans http(s)://",
     "klf200 adapter settings": "paramètres de l'adaptateur klf200",
     "on save adapter restarts with new config immediately": "lors de l'enregistrement, l'adaptateur redémarre avec la nouvelle configuration immédiatement",
     "optionstab": "Choix",
     "password": "mot de passe",
-    "password-help": "Le mot de passe est généralement le mot de passe WiFi inscrit au dos du KLF-200. Essayez celui-là d’abord ! Si vous avez mis à niveau le micrologiciel du KLF-200 par vous-même et que vous avez modifié le mot de passe de connexion Web, il se peut qu'il s'agisse du mot de passe de connexion Web. Si les deux ne fonctionnent pas, effectuez une réinitialisation d'usine et reconnectez vos produits à votre KLF-200. Ensuite, réessayez avec le mot de passe WiFi.",
-    "host-help": "Nom d'hôte ou adresse IP sans http(s)://",
-    "SSL Description": "La communication entre cet adaptateur et le KLF-200 est sécurisée à l'aide d'un certificat SSL auto-signé. Tous les appareils semblent avoir le même certificat. Dans le cas où cela serait modifié lors d'une future mise à jour du micrologiciel, vous pouvez fournir l'empreinte SSL et la clé publique.\nHabituellement, vous n'avez pas besoin de fournir d'informations dans ces champs."
+    "password-help": "Le mot de passe est généralement le mot de passe WiFi inscrit au dos du KLF-200. Essayez celui-là d’abord ! Si vous avez mis à niveau le micrologiciel du KLF-200 par vous-même et que vous avez modifié le mot de passe de connexion Web, il se peut qu'il s'agisse du mot de passe de connexion Web. Si les deux ne fonctionnent pas, effectuez une réinitialisation d'usine et reconnectez vos produits à votre KLF-200. Ensuite, réessayez avec le mot de passe WiFi."
 }

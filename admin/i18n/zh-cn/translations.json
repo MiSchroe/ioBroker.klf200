@@ -2,15 +2,15 @@
     "Advanced SSL configuration": "高级 SSL 配置",
     "Cron pattern for automatic reboot": "用于自动重启的 Cron 模式",
     "Enable automatic reboot": "启用自动重启",
+    "SSL Description": "该适配器和 KLF-200 之间的通信使用自签名 SSL 证书进行保护。所有设备似乎都有相同的证书。如果将来的固件更新会改变这一点，您可以提供 SSL 指纹和公钥。 通常，您不必在这些字段中提供任何信息。",
     "SSL Fingerprint": "SSL 指纹",
     "SSL Public Key": "SSL 公钥",
     "SSL-tab": "SSL 选项",
     "host": "主办",
+    "host-help": "不带 http(s):// 的主机名或 IP 地址",
     "klf200 adapter settings": "klf200适配器设置",
     "on save adapter restarts with new config immediately": "保存适配器上的适配器立即以新配置重新启动",
     "optionstab": "选项",
     "password": "密码",
-    "password-help": "密码通常是写在 KLF-200 背面的 WiFi 密码。先试试那个吧！如果您自行升级了KLF-200的固件并更改了Web登录密码，则可能是Web登录密码。如果两者均不起作用，请恢复出厂设置并将您的产品重新连接到 KLF-200。然后，使用 WiFi 密码重试。",
-    "host-help": "不带 http(s):// 的主机名或 IP 地址",
-    "SSL Description": "该适配器和 KLF-200 之间的通信使用自签名 SSL 证书进行保护。所有设备似乎都有相同的证书。如果将来的固件更新会改变这一点，您可以提供 SSL 指纹和公钥。\n通常，您不必在这些字段中提供任何信息。"
+    "password-help": "密码通常是写在 KLF-200 背面的 WiFi 密码。先试试那个吧！如果您自行升级了KLF-200的固件并更改了Web登录密码，则可能是Web登录密码。如果两者均不起作用，请恢复出厂设置并将您的产品重新连接到 KLF-200。然后，使用 WiFi 密码重试。"
 }

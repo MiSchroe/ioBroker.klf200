@@ -1,193 +1,193 @@
 {
-  "common": {
-    "name": "klf200",
-    "version": "1.2.0",
-    "news": {
-      "1.2.0": {
-        "en": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Fixed Adapter-Checker warning.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Added help message for password in configuration dialog.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Fixed an unhandled rejection exception.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Fixed warning for Admin settings.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Fixed Github Workflows.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) The scene list can be refreshed.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) The state targetPositionRaw is writable to support additional scenarios.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Added a refreshProduct state to manually refresh the state of a product.",
-        "de": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Fixed Adapter-Checker Warnung.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Hilfenachricht für Passwort im Konfigurationsdialog hinzugefügt.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Eine unhandled Ablehnung Ausnahme.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Feste Warnung für Admin-Einstellungen.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Github Workflows wurden behoben.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) Die Szenenliste kann erfrischt werden.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) Das State TargetPositionRaw kann zusätzliche Szenarien unterstützen.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Hinzugefügt ein RefreshProduktzustand, um den Zustand eines Produkts manuell zu aktualisieren.",
-        "ru": "[#126] (https://github.com/MiSchroe/ioBroker.klf200/issues/126) Настоящее предупреждение Адаптер-Кекер.\n[#124] (https://github.com/MiSchroe/ioBroker.klf200/issues/124) Добавлено сообщение справки для пароля в диалоге настройки.\n[#106] (https://github.com/MiSchroe/ioBroker.klf200/issues/106) Исправлено безошибочное исключение.\n[#135] (https://github.com/MiSchroe/ioBroker.klf200/issues/135) Исправленное предупреждение для Настройки Админа.\n[#137] (https://github.com/MiSchroe/ioBroker.klf200/issues/137) Fixed Github Workflows.\n[#40] (https://github.com/MiSchroe/ioBroker.klf200/issues/40) Список сцены можно обновить.\n[#129] (https://github.com/MiSchroe/ioBroker.klf200/issues/129) Государственная целеваяPositionRaw может поддерживать дополнительные сценарии.\n[#133] (https://github.com/MiSchroe/ioBroker.klf200/issues/133) Добавлено состояние освежителя, чтобы вручную освежить состояние продукта.",
-        "pt": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Alerta Fixed Adapter-Checker.\n[#124] (https://github.com/MiSchroe/ioBroker.klf200/issues/124) Adicionado mensagem de ajuda para senha na caixa de diálogo de configuração.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Corrigido uma exceção de rejeição sem manuseamento.\n[#135] (https://github.com/MiSchroe/ioBroker.klf200/issues/135)) Aviso fixo para configurações de administrador.\n[#137] (https://github.com/MiSchroe/ioBroker.klf200/issues/137) Fluxos de trabalho do Github fixos.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) A lista de cena pode ser atualizada.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) O State targetPositionRaw é possível suportar cenários adicionais.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Adicionado um estado refrescarProduto para atualizar manualmente o estado de um produto.",
-        "nl": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Fixed Adapter-Checker waarschuwing.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Hulpbericht toegevoegd voor wachtwoord in configuratiedialoog.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Een ongemanierde afwijzingsuitzondering.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Vaste waarschuwing voor beheerdersinstellingen.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Vaste Github workflows.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) De scènelijst kan worden opgefrist.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) De staat doelPositionRaw is schrijfbaar om extra scenario's te ondersteunen.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Toegevoegd een refreshProduct status om handmatig de staat van een product te vernieuwen.",
-        "fr": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Avertissement fixe de l'adaptateur-vérificateur.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Ajout du message d'aide pour le mot de passe dans la boîte de dialogue de configuration.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Correction d'une exception de rejet non traitée.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Avertissement corrigé pour les paramètres d'Admin.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Flux de travail Github corrigés.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) La liste des scènes peut être mise à jour.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) La cible de l'étatPositionRaw est susceptible de supporter des scénarios supplémentaires.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Ajout d'un état de rafraîchissement pour rafraîchir manuellement l'état d'un produit.",
-        "it": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Avvertenza Adattatore-Checker fisso.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Aggiunto messaggio di aiuto per la password nella finestra di dialogo di configurazione.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Risolto un'eccezione di rifiuto non maneggiata.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Avvertenza fissa per le impostazioni di amministrazione.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Flussi di lavoro fissi Github.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) La lista della scena può essere rinfrescata.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) Il target di statoPositionRaw è scrivibile per supportare scenari aggiuntivi.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Aggiunto uno stato di aggiornamentoProduct per aggiornare manualmente lo stato di un prodotto.",
-        "es": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Advertencia de Adaptador fijo.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Añadido mensaje de ayuda para contraseña en el diálogo de configuración.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Arregló una excepción de rechazo sin manejar.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Advertencia fija para la configuración de Admin.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Flujos de trabajo de Github fijos.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) La lista de escena se puede refrescar.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) El objetivo estatalPositionRaw es obligatorio para apoyar escenarios adicionales.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Se agregó un estado refrescante producto para refrescar manualmente el estado de un producto.",
-        "pl": "[# 126] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 126) Naprawiono Adapter- Kontrola ostrzeżenia.\n[# 124] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 124) Dodano komunikat pomocy dla hasła w oknie konfiguracji.\n[# 106] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 106) Naprawiono nieobsługiwany wyjątek od odrzucenia.\n[# 135] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 135) Naprawiono ostrzeżenie dla ustawień administratora.\n[# 137] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 137) Naprawiono Github Workflows.\n[# 40] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 40) Listę można odświeżyć.\n[# 129] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 129) Państwo Cel Raw jest w stanie poprzeć dodatkowe scenariusze.\n[# 133] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 133) Dodano stan odświeżenia produktu, aby ręcznie odświeżyć stan produktu.",
-        "uk": "[#126](https://github.com/MiSchroe/ioBroker.klf200/products/126) Виправлено попередження адаптера-Чекера.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/products/124) Додайте повідомлення про пароль у діалоговому вікні конфігурації.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/products/106) Виправлено несвоєчасне виключення відхилення.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/products/135) Виправлено попередження про налаштування адміністратора.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/products/137) Виправлені Github Робочі процеси.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/products/40) Список сцени можна оновити.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/products/129) Державна цільоваПозиціяПравила на підтримку додаткових сценаріїв.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/products/133) Додано стан освіжаючого продукту вручну оновити стан продукту.",
-        "zh-cn": "[#126] (https://github.com/Mischroe/ioBroker.klf200/issues/126) (中文(简体) ). 固定适配器-检查器警告.\n[#124] (https://github.com/Mischroe/ioBroker.klf200/issues/124) (中文(简体) ). 在配置对话框中添加密码的帮助消息 .\n[#106] (https://github.com/Mischroe/ioBroker.klf200/issues/106). 解决了一个无端拒绝的例外.\n[# 135] (https://github.com/Mischroe/ioBroker.klf200/issues/135) (中文(简体) ). 管理员设置的固定警告 .\n[#137] (https://github.com/MiSchroe/ioBroker.klf200/issues/137). 固定Github工作流程.\n[40] (https://github.com/Mischroe/ioBroker.klf200/issues/40) (中文(简体) ). 场景列表可以刷新.\n[#129] (https://github.com/Mischroe/ioBroker.klf200/issues/129) (中文(简体) ). 状态目标PositionRaw可以写作支持额外的情景.\n[#133] (https://github.com/Mischroe/ioBroker.klf200/issues/133) (中文(简体) ). 添加了更新的Product状态以手动刷新产品的状态."
-      },
-      "1.1.2": {
-        "en": "Bumped version number",
-        "de": "Gepflegte Versionsnummer",
-        "ru": "Bumped номер версии",
-        "pt": "Número de versão Bumped",
-        "nl": "Vertaling:",
-        "fr": "Numéro de version Bumped",
-        "it": "Numero di versione Bumped",
-        "es": "Número de versión agrupada",
-        "pl": "Wersja Bumped",
-        "uk": "Ім'я користувача",
-        "zh-cn": "倾销版本"
-      },
-      "1.1.1": {
-        "en": "(Michael Schroeder) Support functional parameters to control e.g. speed, horizontal awning etc.",
-        "de": "(Michael Schroeder) Unterstützung funktionaler Parameter zur Steuerung von z.B. Geschwindigkeit, horizontaler Markise usw.",
-        "ru": "(Michael Schroeder) Поддержка функциональных параметров для управления, например. скорость, горизонтальный тент и т. д.",
-        "pt": "(Michael Schroeder) Suporta parâmetros funcionais para controlar, por ex. velocidade, toldo horizontal etc.",
-        "nl": "(Michael Schroeder) Ondersteun functionele parameters om b.v. snelheid, horizontale luifel enz.",
-        "fr": "(Michael Schroeder) Prise en charge des paramètres fonctionnels pour contrôler par ex. vitesse, auvent horizontal, etc.",
-        "it": "(Michael Schroeder) Supporta i parametri funzionali per controllare ad es. velocità, tenda orizzontale ecc.",
-        "es": "(Michael Schroeder) Admite parámetros funcionales para controlar, p. velocidad, toldo horizontal, etc.",
-        "pl": "(Michael Schroeder) Wsparcie parametrów funkcjonalnych do sterowania m.in. prędkość, markiza pozioma itp.",
-        "uk": "(Michael Schroeder) Підтримка функціональних параметрів для керування, напр. швидкість, горизонтальний тент тощо.",
-        "zh-cn": "(Michael Schroeder) 支持功能参数来控制，例如速度、水平遮阳篷等"
-      },
-      "1.0.1": {
-        "en": "(Michael Schroeder) Fix [#49](https://github.com/MiSchroe/ioBroker.klf200/issues/49) Set multiple states at once, e.g. in Blockly",
-        "de": "(Michael Schroeder) Fix [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Mehrere Zustände gleichzeitig festlegen, z. in Blockly",
-        "ru": "(Michael Schroeder) Исправление [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Установка нескольких состояний одновременно, например, в блоке",
-        "pt": "(Michael Schroeder) Correção [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Defina vários estados ao mesmo tempo, por exemplo em Blockly",
-        "nl": "(Michael Schroeder) Fix [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Stel meerdere toestanden tegelijk in, b.v. in Blockly",
-        "fr": "(Michael Schroeder) Correction [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Définissez plusieurs états à la fois, par ex. à Blockly",
-        "it": "(Michael Schroeder) Correzione [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Impostare più stati contemporaneamente, ad es. in Blockly",
-        "es": "(Michael Schroeder) Solución [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Establezca varios estados a la vez, p. en Blockly",
-        "pl": "(Michael Schroeder) Napraw [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Ustaw wiele stanów naraz, np. w Blockly",
-        "zh-cn": "（Michael Schroeder）修复[＃49]（https://github.com/MiSchroe/ioBroker.klf200/issues/49）一次设置多个状态，例如在块状",
-        "uk": "(Michael Schroeder) Виправити [#49](https://github.com/MiSchroe/ioBroker.klf200/issues/49) Встановити кілька станів одночасно, напр. в Блоклі"
-      },
-      "1.0.0": {
-        "en": "Support for KLF firmware 2.0.0.71",
-        "de": "Umstellung auf KLF-Firmware 2.0.0.71",
-        "ru": "Поддержка прошивки KLF 2.0.0.71",
-        "pt": "Suporte para o firmware KLF 2.0.0.71",
-        "nl": "Ondersteuning voor KLF-firmware 2.0.0.71",
-        "fr": "Prise en charge du firmware KLF 2.0.0.71",
-        "it": "Supporto per il firmware KLF 2.0.0.71",
-        "es": "Soporte para firmware KLF 2.0.0.71",
-        "pl": "Obsługa oprogramowania KLF 2.0.0.71",
-        "zh-cn": "支持KLF固件2.0.0.71",
-        "uk": "Підтримка прошивки KLF 2.0.0.71"
-      },
-      "0.9.5": {
-        "en": "Bug fixes",
-        "de": "Fehlerbehebung",
-        "ru": "Исправление ошибок",
-        "pt": "Correções de bugs",
-        "nl": "Bugfixes",
-        "fr": "Corrections de bugs",
-        "it": "Correzioni di bug",
-        "es": "Corrección de errores",
-        "pl": "Poprawki błędów",
-        "zh-cn": "Bug修复",
-        "uk": "Виправлення помилок"
-      },
-      "0.9.4": {
-        "en": "Compatible to Admin 3, add documentation",
-        "de": "Kompatibel mit Admin 3, Dokumentation hinzufügen",
-        "ru": "Совместимость с Admin 3, добавьте документацию",
-        "pt": "Compatível com o Admin 3, adicione documentação",
-        "nl": "Compatibel met Admin 3, voeg documentatie toe",
-        "fr": "Compatible avec Admin 3, ajouter de la documentation",
-        "it": "Compatibile con Admin 3, aggiungere documentazione",
-        "es": "Compatible con Admin 3, agregar documentación",
-        "pl": "Zgodny z Admin 3, dodaj dokumentację",
-        "zh-cn": "与管理员3兼容，添加文档",
-        "uk": "Сумісний з Admin 3, додайте документацію"
-      }
+    "common": {
+        "name": "klf200",
+        "version": "1.2.0",
+        "news": {
+            "1.2.0": {
+                "en": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Fixed Adapter-Checker warning.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Added help message for password in configuration dialog.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Fixed an unhandled rejection exception.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Fixed warning for Admin settings.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Fixed Github Workflows.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) The scene list can be refreshed.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) The state targetPositionRaw is writable to support additional scenarios.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Added a refreshProduct state to manually refresh the state of a product.",
+                "de": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Fixed Adapter-Checker Warnung.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Hilfenachricht für Passwort im Konfigurationsdialog hinzugefügt.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Eine unhandled Ablehnung Ausnahme.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Feste Warnung für Admin-Einstellungen.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Github Workflows wurden behoben.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) Die Szenenliste kann erfrischt werden.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) Das State TargetPositionRaw kann zusätzliche Szenarien unterstützen.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Hinzugefügt ein RefreshProduktzustand, um den Zustand eines Produkts manuell zu aktualisieren.",
+                "ru": "[#126] (https://github.com/MiSchroe/ioBroker.klf200/issues/126) Настоящее предупреждение Адаптер-Кекер.\n[#124] (https://github.com/MiSchroe/ioBroker.klf200/issues/124) Добавлено сообщение справки для пароля в диалоге настройки.\n[#106] (https://github.com/MiSchroe/ioBroker.klf200/issues/106) Исправлено безошибочное исключение.\n[#135] (https://github.com/MiSchroe/ioBroker.klf200/issues/135) Исправленное предупреждение для Настройки Админа.\n[#137] (https://github.com/MiSchroe/ioBroker.klf200/issues/137) Fixed Github Workflows.\n[#40] (https://github.com/MiSchroe/ioBroker.klf200/issues/40) Список сцены можно обновить.\n[#129] (https://github.com/MiSchroe/ioBroker.klf200/issues/129) Государственная целеваяPositionRaw может поддерживать дополнительные сценарии.\n[#133] (https://github.com/MiSchroe/ioBroker.klf200/issues/133) Добавлено состояние освежителя, чтобы вручную освежить состояние продукта.",
+                "pt": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Alerta Fixed Adapter-Checker.\n[#124] (https://github.com/MiSchroe/ioBroker.klf200/issues/124) Adicionado mensagem de ajuda para senha na caixa de diálogo de configuração.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Corrigido uma exceção de rejeição sem manuseamento.\n[#135] (https://github.com/MiSchroe/ioBroker.klf200/issues/135)) Aviso fixo para configurações de administrador.\n[#137] (https://github.com/MiSchroe/ioBroker.klf200/issues/137) Fluxos de trabalho do Github fixos.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) A lista de cena pode ser atualizada.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) O State targetPositionRaw é possível suportar cenários adicionais.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Adicionado um estado refrescarProduto para atualizar manualmente o estado de um produto.",
+                "nl": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Fixed Adapter-Checker waarschuwing.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Hulpbericht toegevoegd voor wachtwoord in configuratiedialoog.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Een ongemanierde afwijzingsuitzondering.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Vaste waarschuwing voor beheerdersinstellingen.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Vaste Github workflows.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) De scènelijst kan worden opgefrist.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) De staat doelPositionRaw is schrijfbaar om extra scenario's te ondersteunen.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Toegevoegd een refreshProduct status om handmatig de staat van een product te vernieuwen.",
+                "fr": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Avertissement fixe de l'adaptateur-vérificateur.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Ajout du message d'aide pour le mot de passe dans la boîte de dialogue de configuration.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Correction d'une exception de rejet non traitée.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Avertissement corrigé pour les paramètres d'Admin.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Flux de travail Github corrigés.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) La liste des scènes peut être mise à jour.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) La cible de l'étatPositionRaw est susceptible de supporter des scénarios supplémentaires.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Ajout d'un état de rafraîchissement pour rafraîchir manuellement l'état d'un produit.",
+                "it": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Avvertenza Adattatore-Checker fisso.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Aggiunto messaggio di aiuto per la password nella finestra di dialogo di configurazione.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Risolto un'eccezione di rifiuto non maneggiata.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Avvertenza fissa per le impostazioni di amministrazione.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Flussi di lavoro fissi Github.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) La lista della scena può essere rinfrescata.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) Il target di statoPositionRaw è scrivibile per supportare scenari aggiuntivi.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Aggiunto uno stato di aggiornamentoProduct per aggiornare manualmente lo stato di un prodotto.",
+                "es": "[#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Advertencia de Adaptador fijo.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/issues/124) Añadido mensaje de ayuda para contraseña en el diálogo de configuración.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/issues/106) Arregló una excepción de rechazo sin manejar.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/issues/135) Advertencia fija para la configuración de Admin.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/issues/137) Flujos de trabajo de Github fijos.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/issues/40) La lista de escena se puede refrescar.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/issues/129) El objetivo estatalPositionRaw es obligatorio para apoyar escenarios adicionales.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/issues/133) Se agregó un estado refrescante producto para refrescar manualmente el estado de un producto.",
+                "pl": "[# 126] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 126) Naprawiono Adapter- Kontrola ostrzeżenia.\n[# 124] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 124) Dodano komunikat pomocy dla hasła w oknie konfiguracji.\n[# 106] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 106) Naprawiono nieobsługiwany wyjątek od odrzucenia.\n[# 135] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 135) Naprawiono ostrzeżenie dla ustawień administratora.\n[# 137] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 137) Naprawiono Github Workflows.\n[# 40] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 40) Listę można odświeżyć.\n[# 129] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 129) Państwo Cel Raw jest w stanie poprzeć dodatkowe scenariusze.\n[# 133] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 133) Dodano stan odświeżenia produktu, aby ręcznie odświeżyć stan produktu.",
+                "uk": "[#126](https://github.com/MiSchroe/ioBroker.klf200/products/126) Виправлено попередження адаптера-Чекера.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/products/124) Додайте повідомлення про пароль у діалоговому вікні конфігурації.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/products/106) Виправлено несвоєчасне виключення відхилення.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/products/135) Виправлено попередження про налаштування адміністратора.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/products/137) Виправлені Github Робочі процеси.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/products/40) Список сцени можна оновити.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/products/129) Державна цільоваПозиціяПравила на підтримку додаткових сценаріїв.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/products/133) Додано стан освіжаючого продукту вручну оновити стан продукту.",
+                "zh-cn": "[#126] (https://github.com/Mischroe/ioBroker.klf200/issues/126) (中文(简体) ). 固定适配器-检查器警告.\n[#124] (https://github.com/Mischroe/ioBroker.klf200/issues/124) (中文(简体) ). 在配置对话框中添加密码的帮助消息 .\n[#106] (https://github.com/Mischroe/ioBroker.klf200/issues/106). 解决了一个无端拒绝的例外.\n[# 135] (https://github.com/Mischroe/ioBroker.klf200/issues/135) (中文(简体) ). 管理员设置的固定警告 .\n[#137] (https://github.com/MiSchroe/ioBroker.klf200/issues/137). 固定Github工作流程.\n[40] (https://github.com/Mischroe/ioBroker.klf200/issues/40) (中文(简体) ). 场景列表可以刷新.\n[#129] (https://github.com/Mischroe/ioBroker.klf200/issues/129) (中文(简体) ). 状态目标PositionRaw可以写作支持额外的情景.\n[#133] (https://github.com/Mischroe/ioBroker.klf200/issues/133) (中文(简体) ). 添加了更新的Product状态以手动刷新产品的状态."
+            },
+            "1.1.2": {
+                "en": "Bumped version number",
+                "de": "Gepflegte Versionsnummer",
+                "ru": "Bumped номер версии",
+                "pt": "Número de versão Bumped",
+                "nl": "Vertaling:",
+                "fr": "Numéro de version Bumped",
+                "it": "Numero di versione Bumped",
+                "es": "Número de versión agrupada",
+                "pl": "Wersja Bumped",
+                "uk": "Ім'я користувача",
+                "zh-cn": "倾销版本"
+            },
+            "1.1.1": {
+                "en": "(Michael Schroeder) Support functional parameters to control e.g. speed, horizontal awning etc.",
+                "de": "(Michael Schroeder) Unterstützung funktionaler Parameter zur Steuerung von z.B. Geschwindigkeit, horizontaler Markise usw.",
+                "ru": "(Michael Schroeder) Поддержка функциональных параметров для управления, например. скорость, горизонтальный тент и т. д.",
+                "pt": "(Michael Schroeder) Suporta parâmetros funcionais para controlar, por ex. velocidade, toldo horizontal etc.",
+                "nl": "(Michael Schroeder) Ondersteun functionele parameters om b.v. snelheid, horizontale luifel enz.",
+                "fr": "(Michael Schroeder) Prise en charge des paramètres fonctionnels pour contrôler par ex. vitesse, auvent horizontal, etc.",
+                "it": "(Michael Schroeder) Supporta i parametri funzionali per controllare ad es. velocità, tenda orizzontale ecc.",
+                "es": "(Michael Schroeder) Admite parámetros funcionales para controlar, p. velocidad, toldo horizontal, etc.",
+                "pl": "(Michael Schroeder) Wsparcie parametrów funkcjonalnych do sterowania m.in. prędkość, markiza pozioma itp.",
+                "uk": "(Michael Schroeder) Підтримка функціональних параметрів для керування, напр. швидкість, горизонтальний тент тощо.",
+                "zh-cn": "(Michael Schroeder) 支持功能参数来控制，例如速度、水平遮阳篷等"
+            },
+            "1.0.1": {
+                "en": "(Michael Schroeder) Fix [#49](https://github.com/MiSchroe/ioBroker.klf200/issues/49) Set multiple states at once, e.g. in Blockly",
+                "de": "(Michael Schroeder) Fix [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Mehrere Zustände gleichzeitig festlegen, z. in Blockly",
+                "ru": "(Michael Schroeder) Исправление [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Установка нескольких состояний одновременно, например, в блоке",
+                "pt": "(Michael Schroeder) Correção [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Defina vários estados ao mesmo tempo, por exemplo em Blockly",
+                "nl": "(Michael Schroeder) Fix [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Stel meerdere toestanden tegelijk in, b.v. in Blockly",
+                "fr": "(Michael Schroeder) Correction [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Définissez plusieurs états à la fois, par ex. à Blockly",
+                "it": "(Michael Schroeder) Correzione [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Impostare più stati contemporaneamente, ad es. in Blockly",
+                "es": "(Michael Schroeder) Solución [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Establezca varios estados a la vez, p. en Blockly",
+                "pl": "(Michael Schroeder) Napraw [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Ustaw wiele stanów naraz, np. w Blockly",
+                "zh-cn": "（Michael Schroeder）修复[＃49]（https://github.com/MiSchroe/ioBroker.klf200/issues/49）一次设置多个状态，例如在块状",
+                "uk": "(Michael Schroeder) Виправити [#49](https://github.com/MiSchroe/ioBroker.klf200/issues/49) Встановити кілька станів одночасно, напр. в Блоклі"
+            },
+            "1.0.0": {
+                "en": "Support for KLF firmware 2.0.0.71",
+                "de": "Umstellung auf KLF-Firmware 2.0.0.71",
+                "ru": "Поддержка прошивки KLF 2.0.0.71",
+                "pt": "Suporte para o firmware KLF 2.0.0.71",
+                "nl": "Ondersteuning voor KLF-firmware 2.0.0.71",
+                "fr": "Prise en charge du firmware KLF 2.0.0.71",
+                "it": "Supporto per il firmware KLF 2.0.0.71",
+                "es": "Soporte para firmware KLF 2.0.0.71",
+                "pl": "Obsługa oprogramowania KLF 2.0.0.71",
+                "zh-cn": "支持KLF固件2.0.0.71",
+                "uk": "Підтримка прошивки KLF 2.0.0.71"
+            },
+            "0.9.5": {
+                "en": "Bug fixes",
+                "de": "Fehlerbehebung",
+                "ru": "Исправление ошибок",
+                "pt": "Correções de bugs",
+                "nl": "Bugfixes",
+                "fr": "Corrections de bugs",
+                "it": "Correzioni di bug",
+                "es": "Corrección de errores",
+                "pl": "Poprawki błędów",
+                "zh-cn": "Bug修复",
+                "uk": "Виправлення помилок"
+            },
+            "0.9.4": {
+                "en": "Compatible to Admin 3, add documentation",
+                "de": "Kompatibel mit Admin 3, Dokumentation hinzufügen",
+                "ru": "Совместимость с Admin 3, добавьте документацию",
+                "pt": "Compatível com o Admin 3, adicione documentação",
+                "nl": "Compatibel met Admin 3, voeg documentatie toe",
+                "fr": "Compatible avec Admin 3, ajouter de la documentation",
+                "it": "Compatibile con Admin 3, aggiungere documentazione",
+                "es": "Compatible con Admin 3, agregar documentación",
+                "pl": "Zgodny z Admin 3, dodaj dokumentację",
+                "zh-cn": "与管理员3兼容，添加文档",
+                "uk": "Сумісний з Admin 3, додайте документацію"
+            }
+        },
+        "titleLang": {
+            "en": "KLF-200",
+            "de": "KLF-200",
+            "ru": "KLF-200",
+            "pt": "KLF-200",
+            "nl": "KLF-200",
+            "fr": "KLF-200",
+            "it": "KLF-200",
+            "es": "KLF-200",
+            "pl": "KLF-200",
+            "zh-cn": "KLF-200",
+            "uk": "КЛФ-200"
+        },
+        "desc": {
+            "en": "Controls products and scenes connected to a KLF-200 interface",
+            "de": "Steuert Produkte und Szenen, die an eine KLF-200-Schnittstelle angeschlossen sind",
+            "ru": "Управляет продуктами и сценами, подключенными к интерфейсу KLF-200",
+            "pt": "Controla produtos e cenas conectadas a uma interface KLF-200",
+            "nl": "Bestuurt producten en scènes die zijn aangesloten op een KLF-200-interface",
+            "fr": "Contrôle des produits et des scènes connectés à une interface KLF-200",
+            "it": "Controlla i prodotti e le scene connesse a un'interfaccia KLF-200",
+            "es": "Controla productos y escenas conectadas a una interfaz KLF-200",
+            "pl": "Kontroluje produkty i sceny podłączone do interfejsu KLF-200",
+            "zh-cn": "控制连接到KLF-200接口的产品和场景",
+            "uk": "Керує продуктами та сценами, підключеними до інтерфейсу KLF-200"
+        },
+        "authors": [
+            "Michael Schroeder <klf200@gmx.de>"
+        ],
+        "keywords": [
+            "KLF-200",
+            "VELUX"
+        ],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "main": "build/main.js",
+        "icon": "klf200.png",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/MiSchroe/ioBroker.klf200/master/admin/klf200.png",
+        "readme": "https://github.com/MiSchroe/ioBroker.klf200/blob/master/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "hardware",
+        "compact": true,
+        "connectionType": "local",
+        "dataSource": "push",
+        "materialize": true,
+        "adminUI": {
+            "config": "json"
+        },
+        "dependencies": [
+            {
+                "js-controller": ">=3.0.0"
+            }
+        ]
     },
-    "titleLang": {
-      "en": "KLF-200",
-      "de": "KLF-200",
-      "ru": "KLF-200",
-      "pt": "KLF-200",
-      "nl": "KLF-200",
-      "fr": "KLF-200",
-      "it": "KLF-200",
-      "es": "KLF-200",
-      "pl": "KLF-200",
-      "zh-cn": "KLF-200",
-      "uk": "КЛФ-200"
+    "native": {
+        "host": "velux-klf-",
+        "password": "",
+        "enableAutomaticReboot": true,
+        "automaticRebootCronTime": "0 3 * * *",
+        "advancedSSLConfiguration": false,
+        "SSLPublicKey": "",
+        "SSLFingerprint": ""
     },
-    "desc": {
-      "en": "Controls products and scenes connected to a KLF-200 interface",
-      "de": "Steuert Produkte und Szenen, die an eine KLF-200-Schnittstelle angeschlossen sind",
-      "ru": "Управляет продуктами и сценами, подключенными к интерфейсу KLF-200",
-      "pt": "Controla produtos e cenas conectadas a uma interface KLF-200",
-      "nl": "Bestuurt producten en scènes die zijn aangesloten op een KLF-200-interface",
-      "fr": "Contrôle des produits et des scènes connectés à une interface KLF-200",
-      "it": "Controlla i prodotti e le scene connesse a un'interfaccia KLF-200",
-      "es": "Controla productos y escenas conectadas a una interfaz KLF-200",
-      "pl": "Kontroluje produkty i sceny podłączone do interfejsu KLF-200",
-      "zh-cn": "控制连接到KLF-200接口的产品和场景",
-      "uk": "Керує продуктами та сценами, підключеними до інтерфейсу KLF-200"
-    },
-    "authors": [
-      "Michael Schroeder <klf200@gmx.de>"
+    "protectedNative": [
+        "password"
     ],
-    "keywords": [
-      "KLF-200",
-      "VELUX"
+    "encryptedNative": [
+        "password"
     ],
-    "license": "MIT",
-    "platform": "Javascript/Node.js",
-    "main": "build/main.js",
-    "icon": "klf200.png",
-    "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/MiSchroe/ioBroker.klf200/master/admin/klf200.png",
-    "readme": "https://github.com/MiSchroe/ioBroker.klf200/blob/master/README.md",
-    "loglevel": "info",
-    "mode": "daemon",
-    "type": "hardware",
-    "compact": true,
-    "connectionType": "local",
-    "dataSource": "push",
-    "materialize": true,
-    "adminUI": {
-      "config": "json"
-    },
-    "dependencies": [
-      {
-        "js-controller": ">=3.0.0"
-      }
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "Device or service connected",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        }
     ]
-  },
-  "native": {
-    "host": "velux-klf-",
-    "password": "",
-    "enableAutomaticReboot": true,
-    "automaticRebootCronTime": "0 3 * * *",
-    "advancedSSLConfiguration": false,
-    "SSLPublicKey": "",
-    "SSLFingerprint": ""
-  },
-  "protectedNative": [
-    "password"
-  ],
-  "encryptedNative": [
-    "password"
-  ],
-  "objects": [],
-  "instanceObjects": [
-    {
-      "_id": "info",
-      "type": "channel",
-      "common": {
-        "name": "Information"
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.connection",
-      "type": "state",
-      "common": {
-        "role": "indicator.connected",
-        "name": "Device or service connected",
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
-    }
-  ]
 }

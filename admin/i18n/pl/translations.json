@@ -2,15 +2,15 @@
     "Advanced SSL configuration": "Zaawansowana konfiguracja SSL",
     "Cron pattern for automatic reboot": "Wzór Cron do automatycznego restartu",
     "Enable automatic reboot": "Włącz automatyczne ponowne uruchamianie",
+    "SSL Description": "Komunikacja pomiędzy tym adapterem i KLF-200 jest zabezpieczona certyfikatem SSL z podpisem własnym. Wygląda na to, że wszystkie urządzenia mają ten sam certyfikat. W przypadku, gdy zostanie to zmienione w przyszłej aktualizacji oprogramowania sprzętowego, możesz podać odcisk palca SSL i klucz publiczny. Zwykle nie musisz podawać żadnych informacji w tych polach.",
     "SSL Fingerprint": "Odcisk palca SSL",
     "SSL Public Key": "Klucz publiczny SSL",
     "SSL-tab": "Opcje SSL",
     "host": "gospodarz",
+    "host-help": "Nazwa hosta lub adres IP bez http(s)://",
     "klf200 adapter settings": "ustawienia adaptera klf200",
     "on save adapter restarts with new config immediately": "po zapisaniu adapter natychmiast uruchamia się ponownie z nową konfiguracją",
     "optionstab": "Opcje",
     "password": "hasło",
-    "password-help": "Hasło to zazwyczaj hasło Wi-Fi zapisane z tyłu urządzenia KLF-200. Wypróbuj najpierw ten! Jeżeli samodzielnie dokonałeś aktualizacji oprogramowania sprzętowego KLF-200 i zmieniłeś hasło do logowania do sieci, może to być hasło do logowania do sieci. Jeśli oba nie działają, przywróć ustawienia fabryczne i ponownie podłącz produkty do KLF-200. Następnie spróbuj ponownie, używając hasła Wi-Fi.",
-    "host-help": "Nazwa hosta lub adres IP bez http(s)://",
-    "SSL Description": "Komunikacja pomiędzy tym adapterem i KLF-200 jest zabezpieczona certyfikatem SSL z podpisem własnym. Wygląda na to, że wszystkie urządzenia mają ten sam certyfikat. W przypadku, gdy zostanie to zmienione w przyszłej aktualizacji oprogramowania sprzętowego, możesz podać odcisk palca SSL i klucz publiczny.\nZwykle nie musisz podawać żadnych informacji w tych polach."
+    "password-help": "Hasło to zazwyczaj hasło Wi-Fi zapisane z tyłu urządzenia KLF-200. Wypróbuj najpierw ten! Jeżeli samodzielnie dokonałeś aktualizacji oprogramowania sprzętowego KLF-200 i zmieniłeś hasło do logowania do sieci, może to być hasło do logowania do sieci. Jeśli oba nie działają, przywróć ustawienia fabryczne i ponownie podłącz produkty do KLF-200. Następnie spróbuj ponownie, używając hasła Wi-Fi."
 }
