@@ -1,22 +1,22 @@
 # KLF-200 Adapter Dokumentation
 
-Dieser Adapter dient zur Steuerung einer VELUX® KLF-200-Schnittstelle. Dieser Adapter ist weder ein offizielles VELUX Produktnoch wird er von der Firma unterstützt, die die VELUX-Produkte besitzt.
+Dieser Adapter dient zur Steuerung einer VELUX® KLF-200-Schnittstelle. Dieser Adapter ist weder ein offizielles VELUX Produkt noch wird er von der Firma unterstützt, die die VELUX-Produkte besitzt.
 
-Die Hauptabsicht dieses Adapters besteht darin, elektrische Dachfenster und/oder elektrische Jalousien oder Rollläden zu steuern. Obwohl die KLF-200-Schnittstelle mit weiteren Geräten wie Lampen, Schaltern, Jalousien usw. verbunden werden kann, habe ich den Adapter nicht für die Verwendung mit solchen Geräten getestet. Es sollte jedoch möglich sein, dass diese Geräte auch von diesem Adapter gesteuert werden können.
+Die Hauptfunktion dieses Adapters besteht darin, elektrische Dachfenster und/oder elektrische Jalousien oder Rollläden zu steuern. Obwohl die KLF-200-Schnittstelle mit weiteren Geräten wie Lampen, Schaltern, Jalousien usw. verbunden werden kann, habe ich den Adapter nicht für die Verwendung mit solchen Geräten getestet. Es sollte jedoch möglich sein, dass diese Geräte auch von diesem Adapter gesteuert werden können.
 
 Der Adapter funktioniert mit der offiziellen TCP/IP-Schnittstelle des KLF-200, die mit der Veröffentlichung der Firmware-Version 2.0.0.71 dokumentiert wurde. Sie müssen die Ein- und Ausgänge des KLF-200 nicht verkabeln, aber Sie müssen den KLF-200 über ein Ethernet-Kabel mit einem LAN verbinden.
 
 ---
 
-## Bereiten Sie Ihre KLF-200-Schnittstelle vor
+## Vorbereitung ihrer KLF-200-Schnittstelle
 
-Um diesen Adapter verwenden zu können, müssen Sie Ihre KLF-200 im **Schnittstellenmodus** einrichten. Es funktioniert nicht, wenn Sie Ihre KLF-200 als Repeater verwenden.
+Um diesen Adapter verwenden zu können, müssen Sie Ihre KLF-200 im **Schnittstellenmodus** einrichten. Es funktioniert nicht, wenn Sie Ihren KLF-200 als Repeater verwenden.
 
 Der Adapter funktioniert nur über den LAN-Port Ihres KLF-200.
 
-> Für eine detaillierte Erklärung, wie Sie die folgenden Aufgaben ausführen, lesen Sie bitte die Handbücher, die mit Ihrer Box geliefert wurden.
+> Für eine detaillierte Erklärung, wie Sie die folgenden Aufgaben ausführen, lesen Sie bitte die Handbücher, die mit Ihrem KLF-200 geliefert wurden.
 >
-> Es wird davon ausgegangen, dass Sie sich erfolgreich in einem Webbrowser an Ihrer Box angemeldet haben.
+> Es wird davon ausgegangen, dass Sie sich erfolgreich in einem Webbrowser an Ihrem KLF-200 angemeldet haben.
 
 ### Produkte einrichten
 
@@ -25,7 +25,7 @@ Jedes Produkt, das Sie mit diesem Adapter steuern möchten, muss auf der Seite "
 - Kopieren von einer anderen Fernbedienung
 - Suche nach Produkten
 
-Wenn alle Ihre Produkte registriert sind, sollten Sie eine Liste wie die folgende sehen:
+Wenn alle Ihre Produkte registriert sind, sollten Sie eine Liste wie die Folgende sehen:
 
 ![Screenshot of ](img/ProductList.PNG)
 
@@ -39,11 +39,11 @@ Dieser Schritt ist optional. Sie können Szenen aufzeichnen, um verschiedene Pro
 
 Um eine Szene aufzunehmen, klicken Sie auf die Schaltfläche
 
-![Screenshot of Record Button](img/RecordProgramButton.PNG)
+![Screenshot of Recording in progress](img/RecordProgramButton.PNG?)
 
 Dies öffnet das Fenster *Programmerstellung in Bearbeitung*. Verwenden Sie jetzt die mit Ihrem Produkt gelieferte Fernbedienung, um etwas zu ändern, z.B. öffne das Fenster zu 40%. Geben Sie dann einen Namen für das Programm ein und klicken Sie auf *Programm speichern*.
 
-![Screenshot of Recording in progress](img/RecordingInProgress.PNG)
+![Screenshot of the program list](img/RecordingInProgress.PNG)
 
 > TIPP:
 >
@@ -51,13 +51,13 @@ Dies öffnet das Fenster *Programmerstellung in Bearbeitung*. Verwenden Sie jetz
 
 Wenn Sie mit der Aufnahme von Programmen fertig sind, erhalten Sie eine Liste wie folgt:
 
-![Screenshot of the program list](img/ProgramList.PNG)
+![Screenshot of the program list](img/RecordingInProgress.PNG)
 
 ### Verbindungen einrichten
 
 Dieser letzte Schritt ist optional. Wenn Sie die Eingangs- und Ausgangsleitungen nicht verwenden, haben Sie vielleicht bemerkt, dass die kleine LED an der Box ständig blinkt. Um das lästige Blinken loszuwerden, müssen Sie mindestens eine Verbindung einrichten.
 
-Sie müssen es nur in der Box einrichten, Sie müssen nichts verkabeln! Wählen Sie einfach irgendetwas aus.
+Sie müssen das nur im KLF-200 einrichten, Sie müssen nichts verkabeln! Wählen Sie einfach irgendetwas aus.
 
 ---
 
@@ -65,9 +65,9 @@ Sie müssen es nur in der Box einrichten, Sie müssen nichts verkabeln! Wählen 
 
 ![Screenshot of the adapter configuration](img/AdapterConfiguration.PNG)
 
-### Host
+### Server
 
-Hostname Ihrer KLF-200-Schnittstelle. Dies ist die gleiche Adresse, die Sie in der Adressleiste Ihres Webbrowsers zum Verbinden mit Ihrer Box eintragen.
+Servername Ihres KLF-200. Dies ist die gleiche Adresse, die Sie in der Adressleiste Ihres Webbrowsers zum Verbinden mit Ihrem KLF-200 eintragen.
 
 ### Passwort
 
@@ -148,7 +148,23 @@ Um eine Szene auszuführen, können Sie den Status `run` der Szene auf `true` se
 Angenommen, Ihr Badezimmerfenster ist Kanal `0`. Sie haben eine Szene auf Kanal `10` definiert, die alle Fenster schließt.
 
 ```javascript
-// Example 1: Open the bathroom window at 40%: await setStateAsync("klf200.0.products.0.targetPosition", 40); /*      The following will happen:     1. Several states will be changed to reflect the current operation, e.g. the remainingTime.     2. Your window will start to move to 40% opening level. (If it's not blocked, e.g. by the rain sensor.)     3. After your window has stopped (for whatever reason), several states will be changed again, including the currentPosition. */  // Example 2: Close all windows by running scene 10: await setStateAsync("klf200.0.scenes.10.run", true); /*     The following will happen:     1. All related products will receive updates to their states to reflect the current operation.     2. All windows will start to move to 0% openening level.     3. After the scene has finished, the run state is set to false, again. */
+// Beispiel 1: Badezimmerfenster zu 40 % öffnen:
+await setStateAsync("klf200.0.products.0.targetPosition", 40);
+/*
+Folgendes wird passieren:
+1. Mehrere Zustände werden geändert, um den aktuellen Vorgang widerzuspiegeln, z. B. die verbleibende Zeit.
+2. Ihr Fenster beginnt sich auf einen Öffnungsgrad von 40 % zu bewegen. (Wenn es nicht blockiert ist, z. B. durch den Regensensor.)
+3. Nachdem Ihr Fenster (aus welchem ​​Grund auch immer) angehalten wurde, werden mehrere Zustände erneut geändert, einschließlich der aktuellen Position.
+*/
+
+// Beispiel 2: Schließen Sie alle Fenster, indem Sie Szene 10 ausführen:
+await setStateAsync("klf200.0.scenes.10.run", true);
+/*
+Folgendes wird passieren:
+1. Alle zugehörigen Produkte erhalten Aktualisierungen ihres Status, um den aktuellen Betrieb widerzuspiegeln.
+2. Alle Fenster beginnen sich auf einen Öffnungsgrad von 0 % zu bewegen.
+3. Nachdem die Szene beendet ist, wird der Ausführungsstatus erneut auf „false“ gesetzt.
+*/
 ```
 
 ---
