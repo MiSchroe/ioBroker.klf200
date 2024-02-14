@@ -11,6 +11,8 @@
 [![NPM version](https://img.shields.io/npm/v/iobroker.klf200.svg)](https://www.npmjs.com/package/iobroker.klf200)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.klf200.svg)](https://www.npmjs.com/package/iobroker.klf200)
 
+[![Translation status](https://weblate.iobroker.net/widgets/adapters/-/klf200/svg-badge.svg)](https://weblate.iobroker.net/engage/adapters/?utm_source=widget)
+
 [![gitlocalized ](https://gitlocalize.com/repo/1127/whole_project/badge.svg)](https://gitlocalize.com/repo/1127/whole_project?utm_source=badge)
 [![gitlocalized ](https://gitlocalize.com/repo/1127/de/badge.svg)](https://gitlocalize.com/repo/1127/de?utm_source=badge)
 [![gitlocalized ](https://gitlocalize.com/repo/1127/fr/badge.svg)](https://gitlocalize.com/repo/1127/fr?utm_source=badge)
