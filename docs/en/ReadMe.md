@@ -79,6 +79,13 @@ and upgraded afterwards it's the password that you have used to login into the w
 
 > The default password of the KLF-200 is written on the backside of the device, but you should have changed it, anyway!
 
+In case you forgot your password you can do a factory reset of your KLF-200:
+
+-   The password will be the reset to the WIFI password
+-   **All your products, scenes, groups and other settings are deleted from the KLF-200
+    and have to be connected again. If you don't have another remote control from which
+    you can copy your products you have to reset your products, too.**
+
 ---
 
 ## Use the adapter
