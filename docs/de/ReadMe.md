@@ -75,6 +75,11 @@ Das Passwort, das Sie benötigen, um sich mit Ihrer KLF-200-Schnittstelle zu ver
 
 > Das Standardkennwort des KLF-200 befindet sich auf der Rückseite des Geräts, aber Sie sollten es ändern!
 
+Falls Sie Ihr Passwort vergessen haben, können Sie Ihren KLF-200 auf die Werkseinstellungen zurücksetzen:
+
+- Das Passwort wird auf das WLAN-Passwort zurückgesetzt.
+- **Alle Ihre Produkte, Szenen, Gruppen und sonstigen Einstellungen werden vom KLF-200 gelöscht und müssen erneut verbunden werden. Wenn Sie keine andere Fernbedienung haben, von der aus Sie Ihre Produkte kopieren können, müssen Sie Ihre Produkte ebenfalls zurücksetzen.**
+
 ---
 
 ## Benutzung des Adapters
