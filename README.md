@@ -207,8 +207,16 @@ The following devices are defined:
     -   wink - Set this state to true to let the product wink. This is used to
         identify a device, e.g. a window will move its handle, a roller shutter
         will move up and down a little bit. This state is writable, only.
+    -   Limitation-related states (each state for main parameter (XX=MP) and functional parameters 1-4 (XX=FP1-FP4)):
+        -   limitationXXMinRaw - Raw value of min limitation of the product. See the table at [Functional parameters](#functional-parameters).
+        -   limitationXXMaxRaw - Raw value of max limitation of the product. See the table at [Functional parameters](#functional-parameters).
+        -   limitationXXMin - Raw value of min limitation of the product mapped to percentage (0-100%).
+        -   limitationXXMax - Raw value of max limitation of the product mapped to percentage (0-100%).
+        -   limitationXXOriginator - Origin of the limitation.
+        -   limitationXXTimeRaw - Raw value of the time of the limitation.
+        -   limitationXXTime - Raw value of the limitation time mapped to percentage (0-100%).
 
-##### Functional parameters
+##### Functional parameters and other raw values
 
 The functional parameters control further aspects of the product while moving.
 Mostly they are used for controlling the speed, but they can be used for different other aspects.
@@ -246,6 +254,10 @@ The values of the state provide multiple manipulation modes:
 	### __WORK IN PROGRESS__
 -->
 <!-- prettier-ignore -->
+### __WORK IN PROGRESS__
+
+-   (Michael Schroeder) [#47](https://github.com/MiSchroe/ioBroker.klf200/issues/47), [#113](https://github.com/MiSchroe/ioBroker.klf200/issues/113) Support limitations (e.g. rain sensor)
+
 ### 1.2.0 (2024-02-09)
 
 -   (Michael Schroeder) [#126](https://github.com/MiSchroe/ioBroker.klf200/issues/126) Fixed Adapter-Checker warning.
