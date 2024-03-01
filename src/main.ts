@@ -190,6 +190,11 @@ class Klf200 extends utils.Adapter {
 		this._Products = await Products.createProductsAsync(this.Connection!);
 		this.log.info(`${ArrayCount(this.Products!.Products)} products found.`);
 
+		// this.log.info(`Reading product limitations...`);
+		// for await (const product of this._Products) {
+
+		// }
+
 		// Setup states
 		this._Setup = await Setup.setupGlobalAsync(this, this.Gateway!);
 		this.disposables.push(this._Setup);

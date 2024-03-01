@@ -276,6 +276,150 @@ describe("setupProducts", function () {
 				state: "targetFP4Raw",
 				value: 0xd400,
 			},
+			{
+				state: "limitationMPMinRaw",
+				value: 0x0000,
+			},
+			{
+				state: "limitationMPMaxRaw",
+				value: 0xc800,
+			},
+			{
+				state: "limitationMPMin",
+				value: 0,
+			},
+			{
+				state: "limitationMPMax",
+				value: 100,
+			},
+			{
+				state: "limitationMPOriginator",
+				value: 1,
+			},
+			{
+				state: "limitationMPTimeRaw",
+				value: 253,
+			},
+			{
+				state: "limitationMPTime",
+				value: Infinity,
+			},
+			{
+				state: "limitationFP1MinRaw",
+				value: 0x0000,
+			},
+			{
+				state: "limitationFP1MaxRaw",
+				value: 0xc800,
+			},
+			{
+				state: "limitationFP1Min",
+				value: 0,
+			},
+			{
+				state: "limitationFP1Max",
+				value: 100,
+			},
+			{
+				state: "limitationFP1Originator",
+				value: 1,
+			},
+			{
+				state: "limitationFP1TimeRaw",
+				value: 253,
+			},
+			{
+				state: "limitationFP1Time",
+				value: Infinity,
+			},
+			{
+				state: "limitationFP2MinRaw",
+				value: 0x0000,
+			},
+			{
+				state: "limitationFP2MaxRaw",
+				value: 0xc800,
+			},
+			{
+				state: "limitationFP2Min",
+				value: 0,
+			},
+			{
+				state: "limitationFP2Max",
+				value: 100,
+			},
+			{
+				state: "limitationFP2Originator",
+				value: 1,
+			},
+			{
+				state: "limitationFP2TimeRaw",
+				value: 253,
+			},
+			{
+				state: "limitationFP2Time",
+				value: Infinity,
+			},
+			{
+				state: "limitationFP3MinRaw",
+				value: 0x0000,
+			},
+			{
+				state: "limitationFP3MaxRaw",
+				value: 0xc800,
+			},
+			{
+				state: "limitationFP3Min",
+				value: 0,
+			},
+			{
+				state: "limitationFP3Max",
+				value: 100,
+			},
+			{
+				state: "limitationFP3Originator",
+				value: 1,
+			},
+			{
+				state: "limitationFP3TimeRaw",
+				value: 253,
+			},
+			{
+				state: "limitationFP3Time",
+				value: Infinity,
+			},
+			{
+				state: "limitationFP4MinRaw",
+				value: 0x0000,
+			},
+			{
+				state: "limitationFP4MaxRaw",
+				value: 0xc800,
+			},
+			{
+				state: "limitationFP4Min",
+				value: 0,
+			},
+			{
+				state: "limitationFP4Max",
+				value: 100,
+			},
+			{
+				state: "limitationFP4Originator",
+				value: 1,
+			},
+			{
+				state: "limitationFP4TimeRaw",
+				value: 253,
+			},
+			{
+				state: "limitationFP4Time",
+				value: Infinity,
+			},
+			{
+				state: "refreshLimitation",
+				value: false,
+			},
 		];
 		for (const test of testCases) {
 			it(`should create the ${test.state} state object`, async function () {
@@ -511,6 +655,41 @@ describe("setupProducts", function () {
 					"test.0.products.0.subType",
 					"test.0.products.0.typeID",
 					"test.0.products.0.velocity",
+					"test.0.products.0.limitationMPMinRaw",
+					"test.0.products.0.limitationMPMaxRaw",
+					"test.0.products.0.limitationMPMin",
+					"test.0.products.0.limitationMPMax",
+					"test.0.products.0.limitationMPOriginator",
+					"test.0.products.0.limitationMPTimeRaw",
+					"test.0.products.0.limitationMPTime",
+					"test.0.products.0.limitationFP1MinRaw",
+					"test.0.products.0.limitationFP1MaxRaw",
+					"test.0.products.0.limitationFP1Min",
+					"test.0.products.0.limitationFP1Max",
+					"test.0.products.0.limitationFP1Originator",
+					"test.0.products.0.limitationFP1TimeRaw",
+					"test.0.products.0.limitationFP1Time",
+					"test.0.products.0.limitationFP2MinRaw",
+					"test.0.products.0.limitationFP2MaxRaw",
+					"test.0.products.0.limitationFP2Min",
+					"test.0.products.0.limitationFP2Max",
+					"test.0.products.0.limitationFP2Originator",
+					"test.0.products.0.limitationFP2TimeRaw",
+					"test.0.products.0.limitationFP2Time",
+					"test.0.products.0.limitationFP3MinRaw",
+					"test.0.products.0.limitationFP3MaxRaw",
+					"test.0.products.0.limitationFP3Min",
+					"test.0.products.0.limitationFP3Max",
+					"test.0.products.0.limitationFP3Originator",
+					"test.0.products.0.limitationFP3TimeRaw",
+					"test.0.products.0.limitationFP3Time",
+					"test.0.products.0.limitationFP4MinRaw",
+					"test.0.products.0.limitationFP4MaxRaw",
+					"test.0.products.0.limitationFP4Min",
+					"test.0.products.0.limitationFP4Max",
+					"test.0.products.0.limitationFP4Originator",
+					"test.0.products.0.limitationFP4TimeRaw",
+					"test.0.products.0.limitationFP4Time",
 				];
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
