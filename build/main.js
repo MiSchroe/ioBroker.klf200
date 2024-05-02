@@ -14,6 +14,10 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
@@ -58,6 +62,9 @@ class Klf200 extends utils.Adapter {
   get Setup() {
     return this._Setup;
   }
+  /**
+   * Is called when databases are connected and adapter received configuration.
+   */
   async onReady() {
     var _a;
     try {
@@ -228,6 +235,9 @@ class Klf200 extends utils.Adapter {
     (_a = this.Setup) == null ? void 0 : _a.stopStateTimer();
     await this.setStateAsync(`gateway.RebootGateway`, true, false);
   }
+  /**
+   * Is called when adapter shuts down - callback has to be called under any circumstances!
+   */
   async onUnload(callback) {
     var _a;
     try {
@@ -241,6 +251,21 @@ class Klf200 extends utils.Adapter {
       callback();
     }
   }
+  // /**
+  //  * Is called if a subscribed object changes
+  //  */
+  // private onObjectChange(id: string, obj: ioBroker.Object | null | undefined): void {
+  // 	if (obj) {
+  // 		// The object was changed
+  // 		this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
+  // 	} else {
+  // 		// The object was deleted
+  // 		this.log.info(`object ${id} deleted`);
+  // 	}
+  // }
+  /**
+   * Is called if a subscribed state changes
+   */
   onStateChange(id, state) {
     if (state) {
       this.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
@@ -248,6 +273,20 @@ class Klf200 extends utils.Adapter {
       this.log.debug(`state ${id} deleted`);
     }
   }
+  // /**
+  //  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
+  //  * Using this method requires "common.message" property to be set to true in io-package.json
+  //  */
+  // private onMessage(obj: ioBroker.Message): void {
+  // 	if (typeof obj === "object" && obj.message) {
+  // 		if (obj.command === "send") {
+  // 			// e.g. send email or pushover or whatever
+  // 			this.log.info("send command");
+  // 			// Send response in callback if required
+  // 			if (obj.callback) this.sendTo(obj.from, obj.command, "Message received", obj.callback);
+  // 		}
+  // 	}
+  // }
   getErrorMessage(err) {
     if (err == null)
       return "undefined";
