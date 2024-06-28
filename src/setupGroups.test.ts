@@ -1,6 +1,7 @@
 import { MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
 import {
+	Disposable,
 	GW_GET_ALL_NODES_INFORMATION_NTF,
 	GW_GET_GROUP_INFORMATION_NTF,
 	Group,
@@ -10,7 +11,7 @@ import {
 	Product,
 	Velocity,
 } from "klf-200-api";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { EventEmitter } from "stream";
 import { promisify } from "util";
 import { SetupGroups } from "./setupGroups";
 import {
@@ -73,22 +74,24 @@ const mockProducts = [mockProduct, mockProduct];
 describe("setupGroups", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
+	// eslint-disable-next-line @typescript-eslint/unbound-method
 	const { assertObjectExists, assertStateExists, assertStateHasValue, assertStateIsAcked, assertObjectCommon } =
 		utils.unit.createAsserts(database, adapter);
 
 	// Fake getChannelsOf
 	adapter.getChannelsOf = sinon.stub();
-	adapter.getChannelsOf.callsFake((parentDevice, callback) =>
-		callback(null, [
-			{
-				_id: `${adapter.namespace}.products.42`,
-				type: "channel",
-				common: {
-					name: "Test window",
+	adapter.getChannelsOf.callsFake(
+		(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
+			callback(null, [
+				{
+					_id: `${adapter.namespace}.products.42`,
+					type: "channel",
+					common: {
+						name: "Test window",
+					},
+					native: {},
 				},
-				native: {},
-			},
-		] as ioBroker.ChannelObject[]),
+			] as ioBroker.ChannelObject[]),
 	);
 	// Fake deleteChannel
 	adapter.deleteChannel = sinon.stub();
@@ -114,14 +117,15 @@ describe("setupGroups", function () {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
 			value: promisify(adapter[method as keyof MockAdapter]),
 			writable: true,
 		});
 	}
 
 	// Mock some EventEmitter functions
-	(adapter as any).getMaxListeners = sinon.stub<[], number>().returns(100);
-	(adapter as any).setMaxListeners = sinon.stub<[number], void>();
+	(adapter as EventEmitter).getMaxListeners = sinon.stub<[], number>().returns(100);
+	(adapter as EventEmitter).setMaxListeners = sinon.stub<[number], EventEmitter>();
 
 	afterEach(() => {
 		// The mocks keep track of all method invocations - reset them after each single test
@@ -140,7 +144,7 @@ describe("setupGroups", function () {
 			try {
 				assertObjectExists("groups.50");
 			} finally {
-				for (const disposable of await disposables) {
+				for (const disposable of disposables) {
 					disposable.dispose();
 				}
 			}
@@ -156,7 +160,7 @@ describe("setupGroups", function () {
 			try {
 				assertObjectCommon("groups.50", { name: expectedName });
 			} finally {
-				for (const disposable of await disposables) {
+				for (const disposable of disposables) {
 					disposable.dispose();
 				}
 			}
@@ -173,7 +177,7 @@ describe("setupGroups", function () {
 			try {
 				assertObjectCommon("groups.50", { name: expectedName, role: expectedRole });
 			} finally {
-				for (const disposable of await disposables) {
+				for (const disposable of disposables) {
 					disposable.dispose();
 				}
 			}
@@ -222,7 +226,7 @@ describe("setupGroups", function () {
 				try {
 					assertObjectExists(`test.0.groups.50.${expectedState}`);
 				} finally {
-					for (const disposable of await disposables) {
+					for (const disposable of disposables) {
 						disposable.dispose();
 					}
 				}
@@ -239,7 +243,7 @@ describe("setupGroups", function () {
 					try {
 						assertStateExists(`test.0.groups.50.${expectedState}`);
 					} finally {
-						for (const disposable of await disposables) {
+						for (const disposable of disposables) {
 							disposable.dispose();
 						}
 					}
@@ -255,7 +259,7 @@ describe("setupGroups", function () {
 					try {
 						assertStateHasValue(`test.0.groups.50.${expectedState}`, test.value);
 					} finally {
-						for (const disposable of await disposables) {
+						for (const disposable of disposables) {
 							disposable.dispose();
 						}
 					}
@@ -271,7 +275,7 @@ describe("setupGroups", function () {
 					try {
 						assertStateIsAcked(`test.0.groups.50.${expectedState}`, true);
 					} finally {
-						for (const disposable of await disposables) {
+						for (const disposable of disposables) {
 							disposable.dispose();
 						}
 					}
@@ -324,13 +328,9 @@ describe("setupGroups", function () {
 
 			it(`should write the ${test.state} state with '${test.value}' after change notificiation`, async function () {
 				const expectedState = test.state;
-				await (adapter as unknown as ioBroker.Adapter).setStateAsync(
-					`groups.50.${test.state}`,
-					test.value,
-					false,
-				);
+				await (adapter as unknown as ioBroker.Adapter).setState(`groups.50.${test.state}`, test.value, false);
 				assertStateIsAcked(`test.0.groups.50.${expectedState}`, false);
-				mockGroup.propertyChangedEvent.emit({
+				await mockGroup.propertyChangedEvent.emit({
 					o: mockGroup,
 					propertyName: test.propertyName,
 					propertyValue: test.value,
@@ -340,13 +340,9 @@ describe("setupGroups", function () {
 
 			it(`should write the ${test.state} state ack after change notificiation`, async function () {
 				const expectedState = test.state;
-				await (adapter as unknown as ioBroker.Adapter).setStateAsync(
-					`groups.50.${test.state}`,
-					test.value,
-					false,
-				);
+				await (adapter as unknown as ioBroker.Adapter).setState(`groups.50.${test.state}`, test.value, false);
 				assertStateIsAcked(`test.0.groups.50.${expectedState}`, false);
-				mockGroup.propertyChangedEvent.emit({
+				await mockGroup.propertyChangedEvent.emit({
 					o: mockGroup,
 					propertyName: test.propertyName,
 					propertyValue: test.value,
@@ -365,10 +361,10 @@ describe("setupGroups", function () {
 			try {
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
-				> = await adapter.getObjectListAsync({
+				> = (await adapter.getObjectListAsync({
 					startKey: `${adapter.namespace}.groups.${mockGroup.GroupID}.`,
 					endkey: `${adapter.namespace}.groups.${mockGroup.GroupID}.\u9999`,
-				});
+				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -421,10 +417,10 @@ describe("setupGroups", function () {
 				};
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
-				> = await adapter.getObjectListAsync({
+				> = (await adapter.getObjectListAsync({
 					startKey: `${adapter.namespace}.groups.${mockGroup.GroupID}.`,
 					endkey: `${adapter.namespace}.groups.${mockGroup.GroupID}.\u9999`,
-				});
+				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -479,7 +475,7 @@ describe("setupGroups", function () {
 			try {
 				assertStateHasValue("groups.groupsFound", expectedValue);
 			} finally {
-				for (const disposable of await disposables) {
+				for (const disposable of disposables) {
 					disposable.dispose();
 				}
 			}

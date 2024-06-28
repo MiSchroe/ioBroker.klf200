@@ -1,25 +1,25 @@
 "use strict";
 
 import { MockAdapter } from "@iobroker/testing";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { Disposable } from "klf-200-api";
 import { BaseStateChangeHandler } from "../src/util/propertyLink";
 
 // Function to simulate the event handling
-export async function setStateAsync(
+export async function setState(
 	adapter: MockAdapter,
 	id: string,
 	state: ioBroker.State | ioBroker.StateValue | ioBroker.SettableState,
 	disposables: Disposable[],
 	ack?: boolean,
 ): ioBroker.SetStatePromise;
-export async function setStateAsync(
+export async function setState(
 	adapter: MockAdapter,
 	id: string,
 	state: ioBroker.State | ioBroker.StateValue | ioBroker.SettableState,
 	disposables: Disposable[],
 	options?: unknown,
 ): ioBroker.SetStatePromise;
-export async function setStateAsync(
+export async function setState(
 	adapter: MockAdapter,
 	id: string,
 	state: ioBroker.State | ioBroker.StateValue | ioBroker.SettableState,
@@ -27,7 +27,7 @@ export async function setStateAsync(
 	ack: boolean,
 	options: unknown,
 ): ioBroker.SetStatePromise;
-export async function setStateAsync(
+export async function setState(
 	adapter: MockAdapter,
 	id: string,
 	state: ioBroker.State | ioBroker.StateValue | ioBroker.SettableState,
@@ -38,8 +38,8 @@ export async function setStateAsync(
 	const ack = typeof ackOrOptions === "boolean" ? ackOrOptions : false;
 	const result =
 		typeof ackOrOptions === "boolean"
-			? await adapter.setStateAsync(id, state, ackOrOptions, options)
-			: await adapter.setStateAsync(id, state, ackOrOptions);
+			? await adapter.setState(id, state, ackOrOptions, options)
+			: await adapter.setState(id, state, ackOrOptions);
 
 	const stateChange: ioBroker.State = {
 		val: null,

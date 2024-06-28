@@ -7,6 +7,7 @@
 import * as utils from "@iobroker/adapter-core";
 import {
 	Connection,
+	Disposable,
 	Gateway,
 	Groups,
 	GW_GET_STATE_CFM,
@@ -16,13 +17,12 @@ import {
 	Products,
 	Scenes,
 } from "klf-200-api";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { Job, scheduleJob } from "node-schedule";
-import { Setup } from "./setup";
-import { SetupGroups } from "./setupGroups";
-import { SetupProducts } from "./setupProducts";
-import { SetupScenes } from "./setupScenes";
-import { ArrayCount, convertErrorToString } from "./util/utils";
+import { Setup } from "./setup.js";
+import { SetupGroups } from "./setupGroups.js";
+import { SetupProducts } from "./setupProducts.js";
+import { SetupScenes } from "./setupScenes.js";
+import { ArrayCount, convertErrorToString } from "./util/utils.js";
 
 // Load your modules here, e.g.:
 // import * as fs from "fs";
@@ -47,9 +47,9 @@ declare global {
 	}
 }
 
-type ConnectionWatchDogHandler = (hadError: boolean) => Promise<void>;
+type ConnectionWatchDogHandler = (hadError: boolean) => void;
 
-class Klf200 extends utils.Adapter {
+export class Klf200 extends utils.Adapter {
 	private disposables: Disposable[] = [];
 	private connectionWatchDogHandler: ConnectionWatchDogHandler;
 	private InShutdown: boolean;
@@ -104,7 +104,13 @@ class Klf200 extends utils.Adapter {
 
 		// Setup connection watchdog handler
 		this.InShutdown = false;
-		this.connectionWatchDogHandler = this.ConnectionWatchDog.bind(this);
+		this.connectionWatchDogHandler = (hadError: boolean) => {
+			(async () => {
+				await this.ConnectionWatchDog(hadError);
+			})().catch((reason: any) => {
+				this.log.error(`Error occured in connection watch dog handler: ${JSON.stringify(reason)}`);
+			});
+		};
 	}
 
 	/**
@@ -115,7 +121,7 @@ class Klf200 extends utils.Adapter {
 			// Initialize your adapter here
 
 			// Reset the connection indicator during startup
-			await this.setStateAsync("info.connection", false, true);
+			await this.setState("info.connection", false, true);
 
 			// Decrypt password
 			if (!this.supportsFeature || !this.supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE")) {
@@ -135,7 +141,7 @@ class Klf200 extends utils.Adapter {
 			this.log.info(`Host: ${this.config.host}`);
 			try {
 				await this.Connection?.loginAsync(this.config.password);
-			} catch (error) {
+			} catch (error: any) {
 				this.log.error(`${error}`);
 				this.log.debug(`${(error as Error).stack}`);
 				this.terminate(`Login to KLF-200 device at ${this.config.host} failed.`);
@@ -155,7 +161,7 @@ class Klf200 extends utils.Adapter {
 			}
 
 			// Set the connection indicator to true
-			await this.setStateAsync("info.connection", true, true);
+			await this.setState("info.connection", true, true);
 		} catch (e) {
 			this.log.error(`Error during initialization of the adapter.`);
 			const result = convertErrorToString(e);
@@ -227,7 +233,7 @@ class Klf200 extends utils.Adapter {
 		this.Connection?.KLF200SocketProtocol?.socket.on("close", this.connectionWatchDogHandler);
 	}
 
-	private async disposeOnConnectionClosed(): Promise<void> {
+	private disposeOnConnectionClosed(): void {
 		// Remove watchdog handler from socket
 		this.log.info(`Remove socket listener...`);
 		this.Connection?.KLF200SocketProtocol?.socket.off("close", this.connectionWatchDogHandler);
@@ -244,14 +250,14 @@ class Klf200 extends utils.Adapter {
 		this._Setup?.stopStateTimer();
 
 		// Reset the connection indicator
-		await this.setStateAsync("info.connection", false, true);
+		await this.setState("info.connection", false, true);
 		this.log.warn("Lost connection to KLF-200");
 		if (hadError === true) {
 			this.log.error("The underlying connection has been closed due to some error.");
 		}
 
 		// Clean up
-		await this.disposeOnConnectionClosed();
+		this.disposeOnConnectionClosed();
 
 		// Try to reconnect
 		this.log.info("Trying to reconnect...");
@@ -261,7 +267,7 @@ class Klf200 extends utils.Adapter {
 				await this.Connection?.loginAsync(this.config.password);
 				isConnected = true;
 				this.log.info("Reconnected.");
-				await this.setStateAsync("info.connection", true, true);
+				await this.setState("info.connection", true, true);
 
 				await this.initializeOnConnection();
 			} catch (e) {
@@ -275,15 +281,15 @@ class Klf200 extends utils.Adapter {
 	}
 
 	private async onRemovedScene(sceneId: number): Promise<void> {
-		await this.deleteChannelAsync(`scenes`, `${sceneId}`);
+		await this.delObjectAsync(`scenes.${sceneId}`);
 	}
 
 	private async onRemovedProduct(productId: number): Promise<void> {
-		await this.deleteChannelAsync(`products`, `${productId}`);
+		await this.delObjectAsync(`products.${productId}`);
 	}
 
 	private async onRemovedGroup(groupId: number): Promise<void> {
-		await this.deleteChannelAsync(`groups`, `${groupId}`);
+		await this.delObjectAsync(`groups.${groupId}`);
 	}
 
 	private async onNewScene(sceneId: number): Promise<Disposable[]> {
@@ -324,7 +330,7 @@ class Klf200 extends utils.Adapter {
 	private async onReboot(): Promise<void> {
 		this.log.info("Automatic reboot due to schedule in configuration");
 		this.Setup?.stopStateTimer();
-		await this.setStateAsync(`gateway.RebootGateway`, true, false);
+		await this.setState(`gateway.RebootGateway`, true, false);
 	}
 
 	/**
@@ -335,7 +341,7 @@ class Klf200 extends utils.Adapter {
 			// Set shutdown flag
 			this.InShutdown = true;
 
-			await this.disposeOnConnectionClosed();
+			this.disposeOnConnectionClosed();
 
 			// Disconnect from the device
 			this.log.info(`Disconnecting from the KLF-200...`);
@@ -409,7 +415,7 @@ class Klf200 extends utils.Adapter {
 	}
 
 	onUnhandledError(error: Error): void {
-		((this && this.log) || console).error(`Unhandled exception occured: ${error}`);
+		((this && this.log) || console).error(`Unhandled exception occured: ${JSON.stringify(error)}`);
 		this.terminate("unhandled exception", 1);
 	}
 }

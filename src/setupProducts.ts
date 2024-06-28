@@ -1,7 +1,7 @@
 "use strict";
 
-import { ActuatorType, FunctionalParameter, IConnection, Product, Products, StatusType } from "klf-200-api";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { ActuatorType, Disposable, FunctionalParameter, IConnection, Product, Products, StatusType } from "klf-200-api";
+import { Klf200 } from "./main";
 import { levelConverter, roleConverter } from "./util/converter";
 import {
 	ComplexStateChangeHandler,
@@ -29,7 +29,7 @@ export class SetupProducts {
 		);
 		// Delete channels
 		for (const channel of channelsToRemove) {
-			await adapter.deleteChannelAsync(`products`, channel._id);
+			await adapter.delObjectAsync(`products.${channel._id}`);
 		}
 		if (channelsToRemove.length !== 0) {
 			adapter.log.info(`${channelsToRemove.length} unknown products removed.`);
@@ -873,9 +873,9 @@ export class SetupProducts {
 				if (state !== undefined) {
 					if (state?.val === true) {
 						// Acknowledge stop state first
-						await adapter.setStateAsync(`products.${product.NodeID}.stop`, state, true);
+						await adapter.setState(`products.${product.NodeID}.stop`, state, true);
 						await product.stopAsync();
-						await adapter.setStateAsync(`products.${product.NodeID}.stop`, false, true);
+						await adapter.setState(`products.${product.NodeID}.stop`, false, true);
 					}
 				}
 			},
@@ -890,9 +890,9 @@ export class SetupProducts {
 				if (state !== undefined) {
 					if (state?.val === true) {
 						// Acknowledge wink state first
-						await adapter.setStateAsync(`products.${product.NodeID}.wink`, state, true);
+						await adapter.setState(`products.${product.NodeID}.wink`, state, true);
 						await product.winkAsync();
-						await adapter.setStateAsync(`products.${product.NodeID}.wink`, false, true);
+						await adapter.setState(`products.${product.NodeID}.wink`, false, true);
 					}
 				}
 			},
@@ -916,8 +916,8 @@ export class SetupProducts {
 				if (state !== undefined) {
 					if (state?.val === true) {
 						// Acknowledge refreshProduct state first
-						await adapter.setStateAsync(`products.${product.NodeID}.refreshProduct`, state, true);
-						const sessionId = await ((adapter as any).Products as Products).requestStatusAsync(
+						await adapter.setState(`products.${product.NodeID}.refreshProduct`, state, true);
+						const sessionId = await ((adapter as Klf200).Products as Products).requestStatusAsync(
 							product.NodeID,
 							StatusType.RequestCurrentPosition,
 							[1, 2, 3, 4],
@@ -925,7 +925,7 @@ export class SetupProducts {
 						try {
 							await waitForSessionFinishedNtfAsync(
 								adapter,
-								(adapter as any).Connection as IConnection,
+								(adapter as Klf200).Connection as IConnection,
 								sessionId,
 							);
 						} catch (e) {
@@ -933,7 +933,7 @@ export class SetupProducts {
 								throw e;
 							}
 						}
-						await adapter.setStateAsync(`products.${product.NodeID}.refreshProduct`, false, true);
+						await adapter.setState(`products.${product.NodeID}.refreshProduct`, false, true);
 					}
 				}
 			},

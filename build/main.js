@@ -5,6 +5,10 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -21,46 +25,67 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var main_exports = {};
+__export(main_exports, {
+  Klf200: () => Klf200
+});
+module.exports = __toCommonJS(main_exports);
 var utils = __toESM(require("@iobroker/adapter-core"));
 var import_klf_200_api = require("klf-200-api");
 var import_node_schedule = require("node-schedule");
-var import_setup = require("./setup");
-var import_setupGroups = require("./setupGroups");
-var import_setupProducts = require("./setupProducts");
-var import_setupScenes = require("./setupScenes");
-var import_utils = require("./util/utils");
+var import_setup = require("./setup.js");
+var import_setupGroups = require("./setupGroups.js");
+var import_setupProducts = require("./setupProducts.js");
+var import_setupScenes = require("./setupScenes.js");
+var import_utils = require("./util/utils.js");
 class Klf200 extends utils.Adapter {
+  disposables = [];
+  connectionWatchDogHandler;
+  InShutdown;
+  _Connection;
+  get Connection() {
+    return this._Connection;
+  }
+  _Gateway;
+  get Gateway() {
+    return this._Gateway;
+  }
+  _Groups;
+  get Groups() {
+    return this._Groups;
+  }
+  _Scenes;
+  get Scenes() {
+    return this._Scenes;
+  }
+  _Products;
+  get Products() {
+    return this._Products;
+  }
+  _Setup;
+  get Setup() {
+    return this._Setup;
+  }
+  _RebootJob;
   constructor(options = {}) {
     super({
       ...options,
       name: "klf200"
     });
-    this.disposables = [];
     process.on("unhandledRejection", this.onUnhandledRejection.bind(this));
     process.on("uncaughtException", this.onUnhandledError.bind(this));
     this.on("ready", this.onReady.bind(this));
     this.on("stateChange", this.onStateChange.bind(this));
     this.on("unload", this.onUnload.bind(this));
     this.InShutdown = false;
-    this.connectionWatchDogHandler = this.ConnectionWatchDog.bind(this);
-  }
-  get Connection() {
-    return this._Connection;
-  }
-  get Gateway() {
-    return this._Gateway;
-  }
-  get Groups() {
-    return this._Groups;
-  }
-  get Scenes() {
-    return this._Scenes;
-  }
-  get Products() {
-    return this._Products;
-  }
-  get Setup() {
-    return this._Setup;
+    this.connectionWatchDogHandler = (hadError) => {
+      (async () => {
+        await this.ConnectionWatchDog(hadError);
+      })().catch((reason) => {
+        this.log.error(`Error occured in connection watch dog handler: ${JSON.stringify(reason)}`);
+      });
+    };
   }
   /**
    * Is called when databases are connected and adapter received configuration.
@@ -68,7 +93,7 @@ class Klf200 extends utils.Adapter {
   async onReady() {
     var _a;
     try {
-      await this.setStateAsync("info.connection", false, true);
+      await this.setState("info.connection", false, true);
       if (!this.supportsFeature || !this.supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE")) {
         this.config.password = this.decrypt(this.config.password);
       }
@@ -98,7 +123,7 @@ class Klf200 extends utils.Adapter {
       } else {
         this.log.info("Automatic reboot disabled in configuration.");
       }
-      await this.setStateAsync("info.connection", true, true);
+      await this.setState("info.connection", true, true);
     } catch (e) {
       this.log.error(`Error during initialization of the adapter.`);
       const result = (0, import_utils.convertErrorToString)(e);
@@ -151,7 +176,7 @@ class Klf200 extends utils.Adapter {
     (_j = this._Setup) == null ? void 0 : _j.startStateTimer();
     (_l = (_k = this.Connection) == null ? void 0 : _k.KLF200SocketProtocol) == null ? void 0 : _l.socket.on("close", this.connectionWatchDogHandler);
   }
-  async disposeOnConnectionClosed() {
+  disposeOnConnectionClosed() {
     var _a, _b;
     this.log.info(`Remove socket listener...`);
     (_b = (_a = this.Connection) == null ? void 0 : _a.KLF200SocketProtocol) == null ? void 0 : _b.socket.off("close", this.connectionWatchDogHandler);
@@ -163,12 +188,12 @@ class Klf200 extends utils.Adapter {
   async ConnectionWatchDog(hadError) {
     var _a, _b;
     (_a = this._Setup) == null ? void 0 : _a.stopStateTimer();
-    await this.setStateAsync("info.connection", false, true);
+    await this.setState("info.connection", false, true);
     this.log.warn("Lost connection to KLF-200");
     if (hadError === true) {
       this.log.error("The underlying connection has been closed due to some error.");
     }
-    await this.disposeOnConnectionClosed();
+    this.disposeOnConnectionClosed();
     this.log.info("Trying to reconnect...");
     let isConnected = false;
     while (!isConnected && !this.InShutdown) {
@@ -176,7 +201,7 @@ class Klf200 extends utils.Adapter {
         await ((_b = this.Connection) == null ? void 0 : _b.loginAsync(this.config.password));
         isConnected = true;
         this.log.info("Reconnected.");
-        await this.setStateAsync("info.connection", true, true);
+        await this.setState("info.connection", true, true);
         await this.initializeOnConnection();
       } catch (e) {
         this.log.error(`Login to KLF-200 device at ${this.config.host} failed.`);
@@ -187,13 +212,13 @@ class Klf200 extends utils.Adapter {
     }
   }
   async onRemovedScene(sceneId) {
-    await this.deleteChannelAsync(`scenes`, `${sceneId}`);
+    await this.delObjectAsync(`scenes.${sceneId}`);
   }
   async onRemovedProduct(productId) {
-    await this.deleteChannelAsync(`products`, `${productId}`);
+    await this.delObjectAsync(`products.${productId}`);
   }
   async onRemovedGroup(groupId) {
-    await this.deleteChannelAsync(`groups`, `${groupId}`);
+    await this.delObjectAsync(`groups.${groupId}`);
   }
   async onNewScene(sceneId) {
     var _a;
@@ -233,7 +258,7 @@ class Klf200 extends utils.Adapter {
     var _a;
     this.log.info("Automatic reboot due to schedule in configuration");
     (_a = this.Setup) == null ? void 0 : _a.stopStateTimer();
-    await this.setStateAsync(`gateway.RebootGateway`, true, false);
+    await this.setState(`gateway.RebootGateway`, true, false);
   }
   /**
    * Is called when adapter shuts down - callback has to be called under any circumstances!
@@ -242,7 +267,7 @@ class Klf200 extends utils.Adapter {
     var _a;
     try {
       this.InShutdown = true;
-      await this.disposeOnConnectionClosed();
+      this.disposeOnConnectionClosed();
       this.log.info(`Disconnecting from the KLF-200...`);
       await ((_a = this.Connection) == null ? void 0 : _a.logoutAsync());
       this.log.info("Cleaned everything up...");
@@ -307,7 +332,7 @@ class Klf200 extends utils.Adapter {
     this.terminate("unhandled promise rejection", 1);
   }
   onUnhandledError(error) {
-    (this && this.log || console).error(`Unhandled exception occured: ${error}`);
+    (this && this.log || console).error(`Unhandled exception occured: ${JSON.stringify(error)}`);
     this.terminate("unhandled exception", 1);
   }
 }
@@ -316,4 +341,8 @@ if (require.main !== module) {
 } else {
   (() => new Klf200())();
 }
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  Klf200
+});
 //# sourceMappingURL=main.js.map

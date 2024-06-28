@@ -1,7 +1,6 @@
 "use strict";
 
-import { Group, GroupType, Product } from "klf-200-api";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { Disposable, Group, GroupType, Product } from "klf-200-api";
 import { levelConverter, roleGroupTypeConverter } from "./util/converter";
 import {
 	ComplexPropertyChangedHandler,
@@ -33,7 +32,7 @@ export class SetupGroups {
 		);
 		// Delete channels
 		for (const channel of channelsToRemove) {
-			await adapter.deleteChannelAsync(`groups`, channel._id);
+			await adapter.delObjectAsync(`groups.${channel._id}`);
 		}
 		if (channelsToRemove.length !== 0) {
 			adapter.log.info(`${channelsToRemove.length} unknown groups removed.`);

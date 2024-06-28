@@ -2,6 +2,7 @@ import { MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
 import {
 	ActuatorType,
+	Disposable,
 	GW_GET_ALL_NODES_INFORMATION_NTF,
 	IConnection,
 	NodeOperatingState,
@@ -12,7 +13,7 @@ import {
 	StatusReply,
 	Velocity,
 } from "klf-200-api";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { EventEmitter } from "stream";
 import { promisify } from "util";
 import { SetupProducts } from "./setupProducts";
 import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink";
@@ -56,22 +57,24 @@ const mockProducts = [mockProduct];
 describe("setupProducts", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
+	// eslint-disable-next-line @typescript-eslint/unbound-method
 	const { assertObjectExists, assertStateExists, assertStateHasValue, assertStateIsAcked, assertObjectCommon } =
 		utils.unit.createAsserts(database, adapter);
 
 	// Fake getChannelsOf
 	adapter.getChannelsOf = sinon.stub();
-	adapter.getChannelsOf.callsFake((parentDevice, callback) =>
-		callback(null, [
-			{
-				_id: `${adapter.namespace}.products.42`,
-				type: "channel",
-				common: {
-					name: "Test window",
+	adapter.getChannelsOf.callsFake(
+		(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
+			callback(null, [
+				{
+					_id: `${adapter.namespace}.products.42`,
+					type: "channel",
+					common: {
+						name: "Test window",
+					},
+					native: {},
 				},
-				native: {},
-			},
-		] as ioBroker.ChannelObject[]),
+			] as ioBroker.ChannelObject[]),
 	);
 	// Fake deleteChannel
 	adapter.deleteChannel = sinon.stub();
@@ -97,14 +100,15 @@ describe("setupProducts", function () {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
 			value: promisify(adapter[method as keyof MockAdapter]),
 			writable: true,
 		});
 	}
 
 	// Mock some EventEmitter functions
-	(adapter as any).getMaxListeners = sinon.stub<[], number>().returns(100);
-	(adapter as any).setMaxListeners = sinon.stub<[number], void>();
+	(adapter as EventEmitter).getMaxListeners = sinon.stub<[], number>().returns(100);
+	(adapter as EventEmitter).setMaxListeners = sinon.stub<[number], EventEmitter>();
 
 	afterEach(() => {
 		// The mocks keep track of all method invocations - reset them after each single test
@@ -430,9 +434,9 @@ describe("setupProducts", function () {
 
 			it(`should write the ${test.state} state with '${
 				test.expectedValue ?? test.value
-			}' after change notificiation`, function () {
+			}' after change notificiation`, async function () {
 				const expectedState = test.state;
-				mockProduct.propertyChangedEvent.emit({
+				await mockProduct.propertyChangedEvent.emit({
 					o: mockProduct,
 					propertyName: test.propertyName,
 					propertyValue: test.value,
@@ -442,7 +446,7 @@ describe("setupProducts", function () {
 
 			it(`should write the ${test.state} state ack after change notificiation`, async function () {
 				const expectedState = test.state;
-				mockProduct.propertyChangedEvent.emit({
+				await mockProduct.propertyChangedEvent.emit({
 					o: mockProduct,
 					propertyName: test.propertyName,
 					propertyValue: test.value,
@@ -457,10 +461,10 @@ describe("setupProducts", function () {
 			try {
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
-				> = await adapter.getObjectListAsync({
+				> = (await adapter.getObjectListAsync({
 					startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
 					endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
-				});
+				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -514,10 +518,10 @@ describe("setupProducts", function () {
 				];
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
-				> = await adapter.getObjectListAsync({
+				> = (await adapter.getObjectListAsync({
 					startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
 					endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
-				});
+				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -620,7 +624,7 @@ describe("setupProducts", function () {
 			) as BaseStateChangeHandler;
 
 			try {
-				await adapter.setStateAsync(`products.${mockProduct.NodeID}.targetFP2Raw`, 42);
+				await adapter.setState(`products.${mockProduct.NodeID}.targetFP2Raw`, 42);
 				await handler?.onStateChange({
 					val: 50,
 					ack: false,

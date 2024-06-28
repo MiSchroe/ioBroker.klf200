@@ -1,7 +1,6 @@
 "use strict";
 
-import { Scene, SceneInformationEntry, Scenes, Velocity } from "klf-200-api";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { Disposable, Scene, SceneInformationEntry, Scenes, Velocity } from "klf-200-api";
 import {
 	ComplexPropertyChangedHandler,
 	ComplexStateChangeHandler,
@@ -27,7 +26,7 @@ export class SetupScenes {
 		);
 		// Delete channels
 		for (const channel of channelsToRemove) {
-			await adapter.deleteChannelAsync(`scenes`, channel._id);
+			await adapter.delObjectAsync(`scenes.${channel._id}`);
 		}
 		if (channelsToRemove.length !== 0) {
 			adapter.log.info(`${channelsToRemove.length} unknown scenes removed.`);
@@ -181,7 +180,7 @@ export class SetupScenes {
 		// Setup scene listeners
 		disposableEvents.push(
 			new ComplexPropertyChangedHandler<Scene>(adapter, "IsRunning", scene, async (newValue) => {
-				const result = await adapter.setStateAsync(`scenes.${scene.SceneID}.run`, newValue as boolean, true);
+				const result = await adapter.setState(`scenes.${scene.SceneID}.run`, newValue as boolean, true);
 				if (newValue === false) {
 					/*
 						If a running scene was stopped by using the stop state,
@@ -212,7 +211,7 @@ export class SetupScenes {
 			if (state !== undefined) {
 				if (state?.val === true) {
 					// Acknowledge running state
-					await adapter.setStateAsync(`scenes.${scene.SceneID}.run`, state, true);
+					await adapter.setState(`scenes.${scene.SceneID}.run`, state, true);
 					// Only start the scene if it's not running, already.
 					if (!scene.IsRunning) {
 						// Get the velocity
@@ -234,11 +233,11 @@ export class SetupScenes {
 					// If the scene is running, acknowledge the stop state and stop the scene.
 					if (scene.IsRunning) {
 						// Acknowledge stop state first
-						await adapter.setStateAsync(`scenes.${scene.SceneID}.stop`, state, true);
+						await adapter.setState(`scenes.${scene.SceneID}.stop`, state, true);
 						await scene.stopAsync();
 					} else {
 						// Set the stop state back to false, directly.
-						await adapter.setStateAsync(`scenes.${scene.SceneID}.stop`, false, true);
+						await adapter.setState(`scenes.${scene.SceneID}.stop`, false, true);
 					}
 				}
 			}
