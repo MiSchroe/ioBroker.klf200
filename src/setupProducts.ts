@@ -1,7 +1,7 @@
 "use strict";
 
 import { ActuatorType, Disposable, FunctionalParameter, IConnection, Product, Products, StatusType } from "klf-200-api";
-import { Klf200 } from "./main";
+import { HasConnectionInterface, HasProductsInterface } from "./interfaces";
 import { levelConverter, roleConverter } from "./util/converter";
 import {
 	ComplexStateChangeHandler,
@@ -29,7 +29,7 @@ export class SetupProducts {
 		);
 		// Delete channels
 		for (const channel of channelsToRemove) {
-			await adapter.delObjectAsync(`products.${channel._id}`);
+			await adapter.delObjectAsync(`products.${channel._id}`, { recursive: true });
 		}
 		if (channelsToRemove.length !== 0) {
 			adapter.log.info(`${channelsToRemove.length} unknown products removed.`);
@@ -917,15 +917,13 @@ export class SetupProducts {
 					if (state?.val === true) {
 						// Acknowledge refreshProduct state first
 						await adapter.setState(`products.${product.NodeID}.refreshProduct`, state, true);
-						const sessionId = await ((adapter as Klf200).Products as Products).requestStatusAsync(
-							product.NodeID,
-							StatusType.RequestCurrentPosition,
-							[1, 2, 3, 4],
-						);
+						const sessionId = await (
+							(adapter as HasProductsInterface).Products as Products
+						).requestStatusAsync(product.NodeID, StatusType.RequestCurrentPosition, [1, 2, 3, 4]);
 						try {
 							await waitForSessionFinishedNtfAsync(
 								adapter,
-								(adapter as Klf200).Connection as IConnection,
+								(adapter as HasConnectionInterface).Connection as IConnection,
 								sessionId,
 							);
 						} catch (e) {

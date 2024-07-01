@@ -26,7 +26,7 @@ export class SetupScenes {
 		);
 		// Delete channels
 		for (const channel of channelsToRemove) {
-			await adapter.delObjectAsync(`scenes.${channel._id}`);
+			await adapter.delObjectAsync(`scenes.${channel._id}`, { recursive: true });
 		}
 		if (channelsToRemove.length !== 0) {
 			adapter.log.info(`${channelsToRemove.length} unknown scenes removed.`);

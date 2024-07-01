@@ -5,10 +5,6 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -25,12 +21,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var main_exports = {};
-__export(main_exports, {
-  Klf200: () => Klf200
-});
-module.exports = __toCommonJS(main_exports);
 var utils = __toESM(require("@iobroker/adapter-core"));
 var import_klf_200_api = require("klf-200-api");
 var import_node_schedule = require("node-schedule");
@@ -133,6 +123,8 @@ class Klf200 extends utils.Adapter {
   }
   async initializeOnConnection() {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
+    this.log.info(`Setting up notification handler for gateway state...`);
+    this.disposables.push(this._Connection.on(this.onFrameReceived.bind(this)));
     this.log.info(`Reading device information...`);
     this._Gateway = new import_klf_200_api.Gateway(this.Connection);
     this.log.info(`Enabling the house status monitor...`);
@@ -169,8 +161,6 @@ class Klf200 extends utils.Adapter {
       this.Products.onNewProduct(this.onNewProduct.bind(this)),
       this.Groups.onChangedGroup(this.onNewGroup.bind(this))
     );
-    this.log.info(`Setting up notification handler for gateway state...`);
-    this.disposables.push(this._Connection.on(this.onFrameReceived.bind(this)));
     this.log.info(`Adapter is ready for use.`);
     this.log.info(`Starting background state refresher...`);
     (_j = this._Setup) == null ? void 0 : _j.startStateTimer();
@@ -212,13 +202,13 @@ class Klf200 extends utils.Adapter {
     }
   }
   async onRemovedScene(sceneId) {
-    await this.delObjectAsync(`scenes.${sceneId}`);
+    await this.delObjectAsync(`scenes.${sceneId}`, { recursive: true });
   }
   async onRemovedProduct(productId) {
-    await this.delObjectAsync(`products.${productId}`);
+    await this.delObjectAsync(`products.${productId}`, { recursive: true });
   }
   async onRemovedGroup(groupId) {
-    await this.delObjectAsync(`groups.${groupId}`);
+    await this.delObjectAsync(`groups.${groupId}`, { recursive: true });
   }
   async onNewScene(sceneId) {
     var _a;
@@ -249,10 +239,19 @@ class Klf200 extends utils.Adapter {
   }
   async onFrameReceived(frame) {
     var _a;
-    this.log.debug(`Frame received: ${JSON.stringify(frame)}`);
+    this.log.debug(`Frame received: ${this.stringifyFrame(frame)}`);
     if (!(frame instanceof import_klf_200_api.GW_GET_STATE_CFM) && !(frame instanceof import_klf_200_api.GW_REBOOT_CFM)) {
       await ((_a = this.Setup) == null ? void 0 : _a.stateTimerHandler(this, this.Gateway));
     }
+  }
+  stringifyFrame(frame) {
+    return JSON.stringify(frame, (key, value) => {
+      if (key.match(/password/i)) {
+        return "**********";
+      } else {
+        return value;
+      }
+    });
   }
   async onReboot() {
     var _a;
@@ -341,8 +340,4 @@ if (require.main !== module) {
 } else {
   (() => new Klf200())();
 }
-// Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {
-  Klf200
-});
 //# sourceMappingURL=main.js.map

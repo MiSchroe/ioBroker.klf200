@@ -95,8 +95,28 @@ describe("setupProducts", function () {
 		);
 	});
 
+	// Fake recursive delObject:
+	const delObjectStub = sinon.stub(adapter, "delObject");
+	delObjectStub.withArgs(sinon.match.any, { recursive: true }).callsFake((id, recursive: any, callback) => {
+		// Delete sub-objects first
+		adapter.getObjectList(
+			{
+				startKey: `${adapter.namespace}.${id}`,
+				endkey: `${adapter.namespace}.${id}.\u9999`,
+			},
+			(err: any, res: { rows: { id: string; obj: any; doc: any }[] }) => {
+				for (const row of res.rows) {
+					adapter.delObject(row.id);
+				}
+
+				adapter.delObject(id, callback);
+			},
+		);
+	});
+	delObjectStub.callThrough();
+
 	// Promisify additional methods
-	for (const method of ["unsubscribeStates", "getChannelsOf", "deleteChannel"]) {
+	for (const method of ["unsubscribeStates", "getChannelsOf", "deleteChannel", "delObject"]) {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,

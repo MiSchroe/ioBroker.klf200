@@ -32,7 +32,7 @@ export class SetupGroups {
 		);
 		// Delete channels
 		for (const channel of channelsToRemove) {
-			await adapter.delObjectAsync(`groups.${channel._id}`);
+			await adapter.delObjectAsync(`groups.${channel._id}`, { recursive: true });
 		}
 		if (channelsToRemove.length !== 0) {
 			adapter.log.info(`${channelsToRemove.length} unknown groups removed.`);

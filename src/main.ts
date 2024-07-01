@@ -13,11 +13,13 @@ import {
 	GW_GET_STATE_CFM,
 	GW_REBOOT_CFM,
 	IConnection,
+	IGW_FRAME,
 	IGW_FRAME_RCV,
 	Products,
 	Scenes,
 } from "klf-200-api";
 import { Job, scheduleJob } from "node-schedule";
+import { HasConnectionInterface, HasProductsInterface } from "./interfaces.js";
 import { Setup } from "./setup.js";
 import { SetupGroups } from "./setupGroups.js";
 import { SetupProducts } from "./setupProducts.js";
@@ -49,7 +51,7 @@ declare global {
 
 type ConnectionWatchDogHandler = (hadError: boolean) => void;
 
-export class Klf200 extends utils.Adapter {
+class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProductsInterface {
 	private disposables: Disposable[] = [];
 	private connectionWatchDogHandler: ConnectionWatchDogHandler;
 	private InShutdown: boolean;
@@ -171,6 +173,9 @@ export class Klf200 extends utils.Adapter {
 	}
 
 	private async initializeOnConnection(): Promise<void> {
+		this.log.info(`Setting up notification handler for gateway state...`);
+		this.disposables.push(this._Connection!.on(this.onFrameReceived.bind(this)));
+
 		// Read device info, scenes, groups and products and setup device
 		this.log.info(`Reading device information...`);
 		this._Gateway = new Gateway(this.Connection!);
@@ -219,9 +224,6 @@ export class Klf200 extends utils.Adapter {
 			this.Products!.onNewProduct(this.onNewProduct.bind(this)),
 			this.Groups!.onChangedGroup(this.onNewGroup.bind(this)),
 		);
-
-		this.log.info(`Setting up notification handler for gateway state...`);
-		this.disposables.push(this._Connection!.on(this.onFrameReceived.bind(this)));
 
 		// Write a finish setup log entry
 		this.log.info(`Adapter is ready for use.`);
@@ -281,15 +283,15 @@ export class Klf200 extends utils.Adapter {
 	}
 
 	private async onRemovedScene(sceneId: number): Promise<void> {
-		await this.delObjectAsync(`scenes.${sceneId}`);
+		await this.delObjectAsync(`scenes.${sceneId}`, { recursive: true });
 	}
 
 	private async onRemovedProduct(productId: number): Promise<void> {
-		await this.delObjectAsync(`products.${productId}`);
+		await this.delObjectAsync(`products.${productId}`, { recursive: true });
 	}
 
 	private async onRemovedGroup(groupId: number): Promise<void> {
-		await this.delObjectAsync(`groups.${groupId}`);
+		await this.delObjectAsync(`groups.${groupId}`, { recursive: true });
 	}
 
 	private async onNewScene(sceneId: number): Promise<Disposable[]> {
@@ -320,11 +322,22 @@ export class Klf200 extends utils.Adapter {
 	}
 
 	private async onFrameReceived(frame: IGW_FRAME_RCV): Promise<void> {
-		this.log.debug(`Frame received: ${JSON.stringify(frame)}`);
+		this.log.debug(`Frame received: ${this.stringifyFrame(frame)}`);
 		if (!(frame instanceof GW_GET_STATE_CFM) && !(frame instanceof GW_REBOOT_CFM)) {
 			// Confirmation messages of the GW_GET_STATE_REQ must be ignored to avoid an infinity loop
 			await this.Setup?.stateTimerHandler(this, this.Gateway!);
 		}
+	}
+
+	private stringifyFrame(frame: IGW_FRAME): string {
+		return JSON.stringify(frame, (key: string, value: any) => {
+			if (key.match(/password/i)) {
+				return "**********";
+			} else {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				return value;
+			}
+		});
 	}
 
 	private async onReboot(): Promise<void> {
