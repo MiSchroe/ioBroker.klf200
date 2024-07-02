@@ -1,7 +1,7 @@
 "use strict";
 
 import { MockAdapter } from "@iobroker/testing";
-import { Disposable } from "klf-200-api";
+import { DisposalMap } from "../src/disposalMap";
 import { BaseStateChangeHandler } from "../src/util/propertyLink";
 
 // Function to simulate the event handling
@@ -9,21 +9,21 @@ export async function setState(
 	adapter: MockAdapter,
 	id: string,
 	state: ioBroker.State | ioBroker.StateValue | ioBroker.SettableState,
-	disposables: Disposable[],
+	disposalMap: DisposalMap,
 	ack?: boolean,
 ): ioBroker.SetStatePromise;
 export async function setState(
 	adapter: MockAdapter,
 	id: string,
 	state: ioBroker.State | ioBroker.StateValue | ioBroker.SettableState,
-	disposables: Disposable[],
+	disposalMap: DisposalMap,
 	options?: unknown,
 ): ioBroker.SetStatePromise;
 export async function setState(
 	adapter: MockAdapter,
 	id: string,
 	state: ioBroker.State | ioBroker.StateValue | ioBroker.SettableState,
-	disposables: Disposable[],
+	disposalMap: DisposalMap,
 	ack: boolean,
 	options: unknown,
 ): ioBroker.SetStatePromise;
@@ -31,7 +31,7 @@ export async function setState(
 	adapter: MockAdapter,
 	id: string,
 	state: ioBroker.State | ioBroker.StateValue | ioBroker.SettableState,
-	disposables: Disposable[],
+	disposalMap: DisposalMap,
 	ackOrOptions: boolean | unknown | undefined,
 	options?: unknown,
 ): ioBroker.SetStatePromise {
@@ -66,10 +66,9 @@ export async function setState(
 	}
 
 	// Mimick the event handling logic:
-	for (const disposable of disposables) {
-		if (disposable instanceof BaseStateChangeHandler && disposable.StateId === id) {
-			await disposable.onStateChange(stateChange);
-		}
+	const disposable = disposalMap.get(id);
+	if (disposable && disposable instanceof BaseStateChangeHandler && disposable.StateId === id) {
+		await disposable.onStateChange(stateChange);
 	}
 	/* Let it run */
 	await new Promise((resolve) => {

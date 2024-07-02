@@ -24,6 +24,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var utils = __toESM(require("@iobroker/adapter-core"));
 var import_klf_200_api = require("klf-200-api");
 var import_node_schedule = require("node-schedule");
+var import_disposalMap = require("./disposalMap.js");
 var import_setup = require("./setup.js");
 var import_setupGroups = require("./setupGroups.js");
 var import_setupProducts = require("./setupProducts.js");
@@ -33,6 +34,7 @@ class Klf200 extends utils.Adapter {
   disposables = [];
   connectionWatchDogHandler;
   InShutdown;
+  disposalMap = new import_disposalMap.DisposalMap();
   _Connection;
   get Connection() {
     return this._Connection;
@@ -144,11 +146,14 @@ class Klf200 extends utils.Adapter {
     this.log.info(`${(0, import_utils.ArrayCount)(this.Products.Products)} products found.`);
     this._Setup = await import_setup.Setup.setupGlobalAsync(this, this.Gateway);
     this.disposables.push(this._Setup);
-    this.disposables.push(...await import_setupScenes.SetupScenes.createScenesAsync(this, this.Scenes));
-    this.disposables.push(
-      ...await import_setupGroups.SetupGroups.createGroupsAsync(this, (_e = (_d = this.Groups) == null ? void 0 : _d.Groups) != null ? _e : [], (_g = (_f = this.Products) == null ? void 0 : _f.Products) != null ? _g : [])
+    await import_setupScenes.SetupScenes.createScenesAsync(this, this.Scenes, this.disposalMap);
+    await import_setupGroups.SetupGroups.createGroupsAsync(
+      this,
+      (_e = (_d = this.Groups) == null ? void 0 : _d.Groups) != null ? _e : [],
+      (_g = (_f = this.Products) == null ? void 0 : _f.Products) != null ? _g : [],
+      this.disposalMap
     );
-    this.disposables.push(...await import_setupProducts.SetupProducts.createProductsAsync(this, (_i = (_h = this.Products) == null ? void 0 : _h.Products) != null ? _i : []));
+    await import_setupProducts.SetupProducts.createProductsAsync(this, (_i = (_h = this.Products) == null ? void 0 : _h.Products) != null ? _i : [], this.disposalMap);
     this.log.info(`Setting up notification handlers for removal...`);
     this.disposables.push(
       this.Scenes.onRemovedScene(this.onRemovedScene.bind(this)),
@@ -166,7 +171,7 @@ class Klf200 extends utils.Adapter {
     (_j = this._Setup) == null ? void 0 : _j.startStateTimer();
     (_l = (_k = this.Connection) == null ? void 0 : _k.KLF200SocketProtocol) == null ? void 0 : _l.socket.on("close", this.connectionWatchDogHandler);
   }
-  disposeOnConnectionClosed() {
+  async disposeOnConnectionClosed() {
     var _a, _b;
     this.log.info(`Remove socket listener...`);
     (_b = (_a = this.Connection) == null ? void 0 : _a.KLF200SocketProtocol) == null ? void 0 : _b.socket.off("close", this.connectionWatchDogHandler);
@@ -174,6 +179,7 @@ class Klf200 extends utils.Adapter {
     this.disposables.forEach((disposable) => {
       disposable.dispose();
     });
+    await this.disposalMap.disposeAll();
   }
   async ConnectionWatchDog(hadError) {
     var _a, _b;
@@ -183,7 +189,7 @@ class Klf200 extends utils.Adapter {
     if (hadError === true) {
       this.log.error("The underlying connection has been closed due to some error.");
     }
-    this.disposeOnConnectionClosed();
+    await this.disposeOnConnectionClosed();
     this.log.info("Trying to reconnect...");
     let isConnected = false;
     while (!isConnected && !this.InShutdown) {
@@ -202,44 +208,44 @@ class Klf200 extends utils.Adapter {
     }
   }
   async onRemovedScene(sceneId) {
-    await this.delObjectAsync(`scenes.${sceneId}`, { recursive: true });
+    const sceneStateId = `scenes.${sceneId}`;
+    await this.disposalMap.disposeId(sceneStateId);
+    await this.delObjectAsync(sceneStateId, { recursive: true });
   }
   async onRemovedProduct(productId) {
-    await this.delObjectAsync(`products.${productId}`, { recursive: true });
+    const productStateId = `products.${productId}`;
+    await this.disposalMap.disposeId(productStateId);
+    await this.delObjectAsync(productStateId, { recursive: true });
   }
   async onRemovedGroup(groupId) {
-    await this.delObjectAsync(`groups.${groupId}`, { recursive: true });
+    const groupStateId = `groups.${groupId}`;
+    await this.disposalMap.disposeId(groupStateId);
+    await this.delObjectAsync(groupStateId, { recursive: true });
   }
   async onNewScene(sceneId) {
     var _a;
     const newScene = (_a = this._Scenes) == null ? void 0 : _a.Scenes[sceneId];
     if (newScene) {
-      return await import_setupScenes.SetupScenes.createSceneAsync(this, newScene);
-    } else {
-      return [];
+      await import_setupScenes.SetupScenes.createSceneAsync(this, newScene, this.disposalMap);
     }
   }
   async onNewProduct(productId) {
     var _a;
     const newProduct = (_a = this._Products) == null ? void 0 : _a.Products[productId];
     if (newProduct) {
-      return await import_setupProducts.SetupProducts.createProductAsync(this, newProduct);
-    } else {
-      return [];
+      await import_setupProducts.SetupProducts.createProductAsync(this, newProduct, this.disposalMap);
     }
   }
   async onNewGroup(groupId) {
     var _a;
     const newGroup = (_a = this._Groups) == null ? void 0 : _a.Groups[groupId];
     if (newGroup && this._Products) {
-      return await import_setupGroups.SetupGroups.createGroupAsync(this, newGroup, this._Products.Products);
-    } else {
-      return [];
+      await import_setupGroups.SetupGroups.createGroupAsync(this, newGroup, this._Products.Products, this.disposalMap);
     }
   }
   async onFrameReceived(frame) {
     var _a;
-    this.log.debug(`Frame received: ${this.stringifyFrame(frame)}`);
+    this.log.debug(`Frame received (${import_klf_200_api.GatewayCommand[frame.Command]}): ${this.stringifyFrame(frame)}`);
     if (!(frame instanceof import_klf_200_api.GW_GET_STATE_CFM) && !(frame instanceof import_klf_200_api.GW_REBOOT_CFM)) {
       await ((_a = this.Setup) == null ? void 0 : _a.stateTimerHandler(this, this.Gateway));
     }
@@ -266,12 +272,13 @@ class Klf200 extends utils.Adapter {
     var _a;
     try {
       this.InShutdown = true;
-      this.disposeOnConnectionClosed();
+      await this.disposeOnConnectionClosed();
       this.log.info(`Disconnecting from the KLF-200...`);
       await ((_a = this.Connection) == null ? void 0 : _a.logoutAsync());
       this.log.info("Cleaned everything up...");
       callback();
     } catch (e) {
+      this.log.error(`Error during unload: ${JSON.stringify(e)}`);
       callback();
     }
   }

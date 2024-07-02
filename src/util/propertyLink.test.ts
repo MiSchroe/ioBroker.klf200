@@ -3,6 +3,7 @@ import { expect } from "chai";
 import { Component } from "klf-200-api";
 import { promisify } from "util";
 import { setState } from "../../test/mockHelper";
+import { DisposalMap } from "../disposalMap";
 import {
 	ComplexPropertyChangedHandler,
 	ComplexStateChangeHandler,
@@ -229,41 +230,45 @@ describe("PropertyLink", function () {
 		it("should set the property 'NumberValue' to 43 when the adapter state is set.", async function () {
 			const expectedResult = 43;
 
-			const SUT = new SimpleStateChangeHandler<TestComponent>(
-				adapter as unknown as ioBroker.Adapter,
-				stateID,
-				"NumberValue",
-				testComponent,
-			);
+			const disposalMap = new DisposalMap();
 			try {
+				const SUT = new SimpleStateChangeHandler<TestComponent>(
+					adapter as unknown as ioBroker.Adapter,
+					stateID,
+					"NumberValue",
+					testComponent,
+				);
 				await SUT.Initialize();
+				disposalMap.set(stateID, SUT);
 
-				await setState(adapter, stateID, expectedResult, [SUT], false);
+				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
 				expect(testComponent.NumberValue).to.be.equal(expectedResult);
 			} finally {
-				await SUT.dispose();
+				await disposalMap.disposeAll();
 			}
 		});
 
 		it("should set the property 'NumberValue' to 43 when the adapter state is set with explicit setterMethodName.", async function () {
 			const expectedResult = 43;
 
-			const SUT = new SimpleStateChangeHandler<TestComponent>(
-				adapter as unknown as ioBroker.Adapter,
-				stateID,
-				"NumberValue",
-				testComponent,
-				"setNumberValueAsync",
-			);
+			const disposalMap = new DisposalMap();
 			try {
+				const SUT = new SimpleStateChangeHandler<TestComponent>(
+					adapter as unknown as ioBroker.Adapter,
+					stateID,
+					"NumberValue",
+					testComponent,
+					"setNumberValueAsync",
+				);
 				await SUT.Initialize();
+				disposalMap.set(stateID, SUT);
 
-				await setState(adapter, stateID, expectedResult, [SUT], false);
+				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
 				expect(testComponent.NumberValue).to.be.equal(expectedResult);
 			} finally {
-				await SUT.dispose();
+				await disposalMap.disposeAll();
 			}
 		});
 	});
@@ -294,15 +299,17 @@ describe("PropertyLink", function () {
 			const expectedResult = 43;
 
 			const handler = sinon.stub<[ioBroker.State | null | undefined], Promise<void>>();
-			const SUT = new ComplexStateChangeHandler(adapter as unknown as ioBroker.Adapter, stateID, handler);
+			const disposalMap = new DisposalMap();
 			try {
+				const SUT = new ComplexStateChangeHandler(adapter as unknown as ioBroker.Adapter, stateID, handler);
 				await SUT.Initialize();
+				disposalMap.set(stateID, SUT);
 
-				await setState(adapter, stateID, expectedResult, [SUT], false);
+				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
 				expect(handler.calledOnce).to.be.true;
 			} finally {
-				await SUT.dispose();
+				await disposalMap.disposeAll();
 			}
 		});
 	});

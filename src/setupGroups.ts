@@ -1,6 +1,7 @@
 "use strict";
 
-import { Disposable, Group, GroupType, Product } from "klf-200-api";
+import { Group, GroupType, Product } from "klf-200-api";
+import { DisposalMap } from "./disposalMap";
 import { levelConverter, roleGroupTypeConverter } from "./util/converter";
 import {
 	ComplexPropertyChangedHandler,
@@ -17,9 +18,8 @@ export class SetupGroups {
 		adapter: ioBroker.Adapter,
 		groups: Group[],
 		products: Product[],
-	): Promise<Disposable[]> {
-		const disposableEvents: Disposable[] = [];
-
+		disposalMap: DisposalMap,
+	): Promise<void> {
 		// Remove old groups
 		const currentGroupsList = await adapter.getChannelsOfAsync(`groups`);
 		adapter.log.debug(`Current Groups List: ${JSON.stringify(currentGroupsList)}`);
@@ -32,7 +32,10 @@ export class SetupGroups {
 		);
 		// Delete channels
 		for (const channel of channelsToRemove) {
-			await adapter.delObjectAsync(`groups.${channel._id}`, { recursive: true });
+			const channelId = channel._id.split(".").reverse()[0];
+			const groupId = `groups.${channelId}`;
+			await disposalMap.disposeId(groupId);
+			await adapter.delObjectAsync(groupId, { recursive: true });
 		}
 		if (channelsToRemove.length !== 0) {
 			adapter.log.info(`${channelsToRemove.length} unknown groups removed.`);
@@ -40,7 +43,7 @@ export class SetupGroups {
 
 		for (const group of groups) {
 			if (group) {
-				disposableEvents.push(...(await SetupGroups.createGroupAsync(adapter, group, products)));
+				await SetupGroups.createGroupAsync(adapter, group, products, disposalMap);
 			}
 		}
 
@@ -61,16 +64,15 @@ export class SetupGroups {
 			{},
 			ArrayCount(groups),
 		);
-
-		return disposableEvents;
 	}
 
 	public static async createGroupAsync(
 		adapter: ioBroker.Adapter,
 		group: Group,
 		products: Product[],
-	): Promise<Disposable[]> {
-		const disposableEvents: Disposable[] = [];
+		disposalMap: DisposalMap,
+	): Promise<void> {
+		adapter.log.info(`Setup objects for group ${group.Name}.`);
 
 		await adapter.setObjectNotExistsAsync(`groups.${group.GroupID}`, {
 			type: "channel",
@@ -236,17 +238,34 @@ export class SetupGroups {
 		});
 
 		// Setup group listener
-		disposableEvents.push(
+		disposalMap.set(
+			`groups.${group.GroupID}.property.nodeVariation`,
 			new SimplePropertyChangedHandler<Group>(
 				adapter,
 				`groups.${group.GroupID}.nodeVariation`,
 				"NodeVariation",
 				group,
 			),
+		);
+
+		disposalMap.set(
+			`groups.${group.GroupID}.property.order`,
 			new SimplePropertyChangedHandler<Group>(adapter, `groups.${group.GroupID}.order`, "Order", group),
+		);
+		disposalMap.set(
+			`groups.${group.GroupID}.property.placement`,
 			new SimplePropertyChangedHandler<Group>(adapter, `groups.${group.GroupID}.placement`, "Placement", group),
+		);
+		disposalMap.set(
+			`groups.${group.GroupID}.property.velocity`,
 			new SimplePropertyChangedHandler<Group>(adapter, `groups.${group.GroupID}.velocity`, "Velocity", group),
+		);
+		disposalMap.set(
+			`groups.${group.GroupID}.property.groupType`,
 			new SimplePropertyChangedHandler<Group>(adapter, `groups.${group.GroupID}.groupType`, "GroupType", group),
+		);
+		disposalMap.set(
+			`groups.${group.GroupID}.property.Nodes`,
 			new ComplexPropertyChangedHandler<Group>(adapter, "Nodes", group, async (newValue) => {
 				return await adapter.setStateChangedAsync(
 					`groups.${group.GroupID}.productsCount`,
@@ -256,60 +275,50 @@ export class SetupGroups {
 			}),
 		);
 
+		// Setup state listeners
+		const nodeVariationStateId = `groups.${group.GroupID}.nodeVariation`;
 		const nodeVariationHandler = new SimpleStateChangeHandler<Group>(
 			adapter,
-			`groups.${group.GroupID}.nodeVariation`,
+			nodeVariationStateId,
 			"NodeVariation",
 			group,
 		);
 		await nodeVariationHandler.Initialize();
-		disposableEvents.push(nodeVariationHandler);
+		disposalMap.set(nodeVariationStateId, nodeVariationHandler);
 
-		const orderHandler = new SimpleStateChangeHandler<Group>(
-			adapter,
-			`groups.${group.GroupID}.order`,
-			"Order",
-			group,
-		);
+		const orderStateId = `groups.${group.GroupID}.order`;
+		const orderHandler = new SimpleStateChangeHandler<Group>(adapter, orderStateId, "Order", group);
 		await orderHandler.Initialize();
-		disposableEvents.push(orderHandler);
+		disposalMap.set(orderStateId, orderHandler);
 
-		const placementHandler = new SimpleStateChangeHandler<Group>(
-			adapter,
-			`groups.${group.GroupID}.placement`,
-			"Placement",
-			group,
-		);
+		const placementStateId = `groups.${group.GroupID}.placement`;
+		const placementHandler = new SimpleStateChangeHandler<Group>(adapter, placementStateId, "Placement", group);
 		await placementHandler.Initialize();
-		disposableEvents.push(placementHandler);
+		disposalMap.set(placementStateId, placementHandler);
 
+		const targetPositionStateId = `groups.${group.GroupID}.targetPosition`;
 		const targetPositionHandler = new PercentageStateChangeHandler<Group>(
 			adapter,
-			`groups.${group.GroupID}.targetPosition`,
+			targetPositionStateId,
 			group,
 			"setTargetPositionAsync",
 		);
 		await targetPositionHandler.Initialize();
-		disposableEvents.push(targetPositionHandler);
+		disposalMap.set(targetPositionStateId, targetPositionHandler);
 
+		const targetPositionRawStateId = `groups.${group.GroupID}.targetPositionRaw`;
 		const targetPositionRawHandler = new SetterStateChangeHandler<Group>(
 			adapter,
-			`groups.${group.GroupID}.targetPositionRaw`,
+			targetPositionRawStateId,
 			group,
 			"setTargetPositionRawAsync",
 		);
 		await targetPositionRawHandler.Initialize();
-		disposableEvents.push(targetPositionRawHandler);
+		disposalMap.set(targetPositionRawStateId, targetPositionRawHandler);
 
-		const velocityHandler = new SimpleStateChangeHandler<Group>(
-			adapter,
-			`groups.${group.GroupID}.velocity`,
-			"Velocity",
-			group,
-		);
+		const velocityStateId = `groups.${group.GroupID}.velocity`;
+		const velocityHandler = new SimpleStateChangeHandler<Group>(adapter, velocityStateId, "Velocity", group);
 		await velocityHandler.Initialize();
-		disposableEvents.push(velocityHandler);
-
-		return disposableEvents;
+		disposalMap.set(velocityStateId, velocityHandler);
 	}
 }

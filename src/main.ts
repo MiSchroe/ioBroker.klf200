@@ -9,6 +9,7 @@ import {
 	Connection,
 	Disposable,
 	Gateway,
+	GatewayCommand,
 	Groups,
 	GW_GET_STATE_CFM,
 	GW_REBOOT_CFM,
@@ -19,6 +20,7 @@ import {
 	Scenes,
 } from "klf-200-api";
 import { Job, scheduleJob } from "node-schedule";
+import { DisposalMap } from "./disposalMap.js";
 import { HasConnectionInterface, HasProductsInterface } from "./interfaces.js";
 import { Setup } from "./setup.js";
 import { SetupGroups } from "./setupGroups.js";
@@ -55,6 +57,7 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 	private disposables: Disposable[] = [];
 	private connectionWatchDogHandler: ConnectionWatchDogHandler;
 	private InShutdown: boolean;
+	private disposalMap = new DisposalMap();
 
 	private _Connection?: IConnection;
 	public get Connection(): IConnection | undefined {
@@ -204,11 +207,14 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 		// Setup states
 		this._Setup = await Setup.setupGlobalAsync(this, this.Gateway!);
 		this.disposables.push(this._Setup);
-		this.disposables.push(...(await SetupScenes.createScenesAsync(this, this.Scenes!)));
-		this.disposables.push(
-			...(await SetupGroups.createGroupsAsync(this, this.Groups?.Groups ?? [], this.Products?.Products ?? [])),
+		await SetupScenes.createScenesAsync(this, this.Scenes!, this.disposalMap);
+		await SetupGroups.createGroupsAsync(
+			this,
+			this.Groups?.Groups ?? [],
+			this.Products?.Products ?? [],
+			this.disposalMap,
 		);
-		this.disposables.push(...(await SetupProducts.createProductsAsync(this, this.Products?.Products ?? [])));
+		await SetupProducts.createProductsAsync(this, this.Products?.Products ?? [], this.disposalMap);
 
 		this.log.info(`Setting up notification handlers for removal...`);
 		// Setup remove notification
@@ -235,7 +241,7 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 		this.Connection?.KLF200SocketProtocol?.socket.on("close", this.connectionWatchDogHandler);
 	}
 
-	private disposeOnConnectionClosed(): void {
+	private async disposeOnConnectionClosed(): Promise<void> {
 		// Remove watchdog handler from socket
 		this.log.info(`Remove socket listener...`);
 		this.Connection?.KLF200SocketProtocol?.socket.off("close", this.connectionWatchDogHandler);
@@ -245,6 +251,7 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 		this.disposables.forEach((disposable) => {
 			disposable.dispose();
 		});
+		await this.disposalMap.disposeAll();
 	}
 
 	private async ConnectionWatchDog(hadError: boolean): Promise<void> {
@@ -259,7 +266,7 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 		}
 
 		// Clean up
-		this.disposeOnConnectionClosed();
+		await this.disposeOnConnectionClosed();
 
 		// Try to reconnect
 		this.log.info("Trying to reconnect...");
@@ -283,46 +290,46 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 	}
 
 	private async onRemovedScene(sceneId: number): Promise<void> {
-		await this.delObjectAsync(`scenes.${sceneId}`, { recursive: true });
+		const sceneStateId = `scenes.${sceneId}`;
+		await this.disposalMap.disposeId(sceneStateId);
+		await this.delObjectAsync(sceneStateId, { recursive: true });
 	}
 
 	private async onRemovedProduct(productId: number): Promise<void> {
-		await this.delObjectAsync(`products.${productId}`, { recursive: true });
+		const productStateId = `products.${productId}`;
+		await this.disposalMap.disposeId(productStateId);
+		await this.delObjectAsync(productStateId, { recursive: true });
 	}
 
 	private async onRemovedGroup(groupId: number): Promise<void> {
-		await this.delObjectAsync(`groups.${groupId}`, { recursive: true });
+		const groupStateId = `groups.${groupId}`;
+		await this.disposalMap.disposeId(groupStateId);
+		await this.delObjectAsync(groupStateId, { recursive: true });
 	}
 
-	private async onNewScene(sceneId: number): Promise<Disposable[]> {
+	private async onNewScene(sceneId: number): Promise<void> {
 		const newScene = this._Scenes?.Scenes[sceneId];
 		if (newScene) {
-			return await SetupScenes.createSceneAsync(this, newScene);
-		} else {
-			return [];
+			await SetupScenes.createSceneAsync(this, newScene, this.disposalMap);
 		}
 	}
 
-	private async onNewProduct(productId: number): Promise<Disposable[]> {
+	private async onNewProduct(productId: number): Promise<void> {
 		const newProduct = this._Products?.Products[productId];
 		if (newProduct) {
-			return await SetupProducts.createProductAsync(this, newProduct);
-		} else {
-			return [];
+			await SetupProducts.createProductAsync(this, newProduct, this.disposalMap);
 		}
 	}
 
-	private async onNewGroup(groupId: number): Promise<Disposable[]> {
+	private async onNewGroup(groupId: number): Promise<void> {
 		const newGroup = this._Groups?.Groups[groupId];
 		if (newGroup && this._Products) {
-			return await SetupGroups.createGroupAsync(this, newGroup, this._Products.Products);
-		} else {
-			return [];
+			await SetupGroups.createGroupAsync(this, newGroup, this._Products.Products, this.disposalMap);
 		}
 	}
 
 	private async onFrameReceived(frame: IGW_FRAME_RCV): Promise<void> {
-		this.log.debug(`Frame received: ${this.stringifyFrame(frame)}`);
+		this.log.debug(`Frame received (${GatewayCommand[frame.Command]}): ${this.stringifyFrame(frame)}`);
 		if (!(frame instanceof GW_GET_STATE_CFM) && !(frame instanceof GW_REBOOT_CFM)) {
 			// Confirmation messages of the GW_GET_STATE_REQ must be ignored to avoid an infinity loop
 			await this.Setup?.stateTimerHandler(this, this.Gateway!);
@@ -354,7 +361,7 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 			// Set shutdown flag
 			this.InShutdown = true;
 
-			this.disposeOnConnectionClosed();
+			await this.disposeOnConnectionClosed();
 
 			// Disconnect from the device
 			this.log.info(`Disconnecting from the KLF-200...`);
@@ -363,6 +370,7 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 			this.log.info("Cleaned everything up...");
 			callback();
 		} catch (e) {
+			this.log.error(`Error during unload: ${JSON.stringify(e)}`);
 			callback();
 		}
 	}

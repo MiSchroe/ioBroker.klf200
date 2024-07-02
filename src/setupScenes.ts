@@ -1,6 +1,7 @@
 "use strict";
 
-import { Disposable, Scene, SceneInformationEntry, Scenes, Velocity } from "klf-200-api";
+import { Scene, SceneInformationEntry, Scenes, Velocity } from "klf-200-api";
+import { DisposalMap } from "./disposalMap";
 import {
 	ComplexPropertyChangedHandler,
 	ComplexStateChangeHandler,
@@ -11,9 +12,11 @@ import { StateHelper } from "./util/stateHelper";
 import { ArrayCount } from "./util/utils";
 
 export class SetupScenes {
-	public static async createScenesAsync(adapter: ioBroker.Adapter, scenes: Scenes): Promise<Disposable[]> {
-		const disposableEvents: Disposable[] = [];
-
+	public static async createScenesAsync(
+		adapter: ioBroker.Adapter,
+		scenes: Scenes,
+		disposalMap: DisposalMap,
+	): Promise<void> {
 		// Remove old scenes
 		const currentScenesList = await adapter.getChannelsOfAsync(`scenes`);
 		adapter.log.debug(`Current Scenes List: ${JSON.stringify(currentScenesList)}`);
@@ -26,7 +29,10 @@ export class SetupScenes {
 		);
 		// Delete channels
 		for (const channel of channelsToRemove) {
-			await adapter.delObjectAsync(`scenes.${channel._id}`, { recursive: true });
+			const channelId = channel._id.split(".").reverse()[0];
+			const sceneId = `scenes.${channelId}`;
+			await disposalMap.disposeId(sceneId);
+			await adapter.delObjectAsync(sceneId, { recursive: true });
 		}
 		if (channelsToRemove.length !== 0) {
 			adapter.log.info(`${channelsToRemove.length} unknown scenes removed.`);
@@ -34,7 +40,7 @@ export class SetupScenes {
 
 		for (const scene of scenes.Scenes) {
 			if (scene) {
-				disposableEvents.push(...(await SetupScenes.createSceneAsync(adapter, scene)));
+				await SetupScenes.createSceneAsync(adapter, scene, disposalMap);
 			}
 		}
 
@@ -76,13 +82,15 @@ export class SetupScenes {
 			"refreshScenesAsync",
 		);
 		await refreshScenesChangeHandler.Initialize();
-		disposableEvents.push(refreshScenesChangeHandler);
-
-		return disposableEvents;
+		disposalMap.set("scenes.refreshScenes", refreshScenesChangeHandler);
 	}
 
-	public static async createSceneAsync(adapter: ioBroker.Adapter, scene: Scene): Promise<Disposable[]> {
-		const disposableEvents: Disposable[] = [];
+	public static async createSceneAsync(
+		adapter: ioBroker.Adapter,
+		scene: Scene,
+		disposalMap: DisposalMap,
+	): Promise<void> {
+		adapter.log.info(`Setup objects for scene ${scene.SceneName}.`);
 
 		await adapter.setObjectNotExistsAsync(`scenes.${scene.SceneID}`, {
 			type: "channel",
@@ -178,7 +186,8 @@ export class SetupScenes {
 		});
 
 		// Setup scene listeners
-		disposableEvents.push(
+		disposalMap.set(
+			`scenes.${scene.SceneID}.property.IsRunning`,
 			new ComplexPropertyChangedHandler<Scene>(adapter, "IsRunning", scene, async (newValue) => {
 				const result = await adapter.setState(`scenes.${scene.SceneID}.run`, newValue as boolean, true);
 				if (newValue === false) {
@@ -190,6 +199,9 @@ export class SetupScenes {
 				}
 				return result;
 			}),
+		);
+		disposalMap.set(
+			`scenes.${scene.SceneID}.property.Products`,
 			new ComplexPropertyChangedHandler<Scene>(adapter, "Products", scene, async (newValue) => {
 				await adapter.setStateChangedAsync(
 					`scenes.${scene.SceneID}.products`,
@@ -207,11 +219,12 @@ export class SetupScenes {
 		);
 
 		// Setup state listeners
-		const runListener = new ComplexStateChangeHandler(adapter, `scenes.${scene.SceneID}.run`, async (state) => {
+		const runStateId = `scenes.${scene.SceneID}.run`;
+		const runListener = new ComplexStateChangeHandler(adapter, runStateId, async (state) => {
 			if (state !== undefined) {
 				if (state?.val === true) {
 					// Acknowledge running state
-					await adapter.setState(`scenes.${scene.SceneID}.run`, state, true);
+					await adapter.setState(runStateId, state, true);
 					// Only start the scene if it's not running, already.
 					if (!scene.IsRunning) {
 						// Get the velocity
@@ -225,30 +238,30 @@ export class SetupScenes {
 			}
 		});
 		await runListener.Initialize();
-		disposableEvents.push(runListener);
+		disposalMap.set(runStateId, runListener);
 
-		const stopListener = new ComplexStateChangeHandler(adapter, `scenes.${scene.SceneID}.stop`, async (state) => {
+		const stopStateId = `scenes.${scene.SceneID}.stop`;
+		const stopListener = new ComplexStateChangeHandler(adapter, stopStateId, async (state) => {
 			if (state !== undefined) {
 				if (state?.val === true) {
 					// If the scene is running, acknowledge the stop state and stop the scene.
 					if (scene.IsRunning) {
 						// Acknowledge stop state first
-						await adapter.setState(`scenes.${scene.SceneID}.stop`, state, true);
+						await adapter.setState(stopStateId, state, true);
 						await scene.stopAsync();
 					} else {
 						// Set the stop state back to false, directly.
-						await adapter.setState(`scenes.${scene.SceneID}.stop`, false, true);
+						await adapter.setState(stopStateId, false, true);
 					}
 				}
 			}
 		});
 		await stopListener.Initialize();
-		disposableEvents.push(stopListener);
+		disposalMap.set(stopStateId, stopListener);
 
-		const velocityListener = new EchoStateChangeHandler(adapter, `scenes.${scene.SceneID}.velocity`);
+		const velocityStateId = `scenes.${scene.SceneID}.velocity`;
+		const velocityListener = new EchoStateChangeHandler(adapter, velocityStateId);
 		await velocityListener.Initialize();
-		disposableEvents.push(velocityListener);
-
-		return disposableEvents;
+		disposalMap.set(velocityStateId, velocityListener);
 	}
 }

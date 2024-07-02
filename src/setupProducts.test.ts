@@ -15,6 +15,7 @@ import {
 } from "klf-200-api";
 import { EventEmitter } from "stream";
 import { promisify } from "util";
+import { DisposalMap } from "./disposalMap";
 import { SetupProducts } from "./setupProducts";
 import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
@@ -63,19 +64,7 @@ describe("setupProducts", function () {
 
 	// Fake getChannelsOf
 	adapter.getChannelsOf = sinon.stub();
-	adapter.getChannelsOf.callsFake(
-		(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
-			callback(null, [
-				{
-					_id: `${adapter.namespace}.products.42`,
-					type: "channel",
-					common: {
-						name: "Test window",
-					},
-					native: {},
-				},
-			] as ioBroker.ChannelObject[]),
-	);
+
 	// Fake deleteChannel
 	adapter.deleteChannel = sinon.stub();
 	adapter.deleteChannel.callsFake((parentDevice, channelId, callback) => {
@@ -139,47 +128,35 @@ describe("setupProducts", function () {
 
 	describe("createProductAsync", function () {
 		it("should create the channel for product ID 0", async function () {
-			const disposables = await SetupProducts.createProductAsync(
-				adapter as unknown as ioBroker.Adapter,
-				mockProduct,
-			);
+			const disposalMap = new DisposalMap();
+			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
 			try {
 				assertObjectExists("products.0");
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
 		it("should have the name 'Fenster Badezimmer' for its channel name", async function () {
 			const expectedName = "Fenster Badezimmer";
-			const disposables = await SetupProducts.createProductAsync(
-				adapter as unknown as ioBroker.Adapter,
-				mockProduct,
-			);
+			const disposalMap = new DisposalMap();
+			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
 			try {
 				assertObjectCommon("products.0", { name: expectedName });
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
 		it("should have the role 'window' for its channel role", async function () {
 			const expectedName = "Fenster Badezimmer";
 			const expectedRole = "window";
-			const disposables = await SetupProducts.createProductAsync(
-				adapter as unknown as ioBroker.Adapter,
-				mockProduct,
-			);
+			const disposalMap = new DisposalMap();
+			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
 			try {
 				assertObjectCommon("products.0", { name: expectedName, role: expectedRole });
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
@@ -304,61 +281,61 @@ describe("setupProducts", function () {
 		for (const test of testCases) {
 			it(`should create the ${test.state} state object`, async function () {
 				const expectedState = test.state;
-				const disposables = await SetupProducts.createProductAsync(
+				const disposalMap = new DisposalMap();
+				await SetupProducts.createProductAsync(
 					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
+					disposalMap,
 				);
 				try {
 					assertObjectExists(`test.0.products.0.${expectedState}`);
 				} finally {
-					for (const disposable of disposables) {
-						disposable.dispose();
-					}
+					await disposalMap.disposeAll();
 				}
 			});
 
 			it(`should write the ${test.state} state`, async function () {
 				const expectedState = test.state;
-				const disposables = await SetupProducts.createProductAsync(
+				const disposalMap = new DisposalMap();
+				await SetupProducts.createProductAsync(
 					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
+					disposalMap,
 				);
 				try {
 					assertStateExists(`test.0.products.0.${expectedState}`);
 				} finally {
-					for (const disposable of disposables) {
-						disposable.dispose();
-					}
+					await disposalMap.disposeAll();
 				}
 			});
 
 			it(`should write the ${test.state} state with '${test.value}'`, async function () {
 				const expectedState = test.state;
-				const disposables = await SetupProducts.createProductAsync(
+				const disposalMap = new DisposalMap();
+				await SetupProducts.createProductAsync(
 					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
+					disposalMap,
 				);
 				try {
 					assertStateHasValue(`test.0.products.0.${expectedState}`, test.value);
 				} finally {
-					for (const disposable of disposables) {
-						disposable.dispose();
-					}
+					await disposalMap.disposeAll();
 				}
 			});
 
 			it(`should write the ${test.state} state ack`, async function () {
 				const expectedState = test.state;
-				const disposables = await SetupProducts.createProductAsync(
+				const disposalMap = new DisposalMap();
+				await SetupProducts.createProductAsync(
 					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
+					disposalMap,
 				);
 				try {
 					assertStateIsAcked(`test.0.products.0.${expectedState}`, true);
 				} finally {
-					for (const disposable of disposables) {
-						disposable.dispose();
-					}
+					await disposalMap.disposeAll();
 				}
 			});
 		}
@@ -438,18 +415,17 @@ describe("setupProducts", function () {
 		];
 
 		for (const test of testCasesForChanges) {
-			let disposables: Disposable[] = [];
+			let disposalMap: DisposalMap;
 			this.beforeEach(async function () {
-				disposables = await SetupProducts.createProductAsync(
+				disposalMap = new DisposalMap();
+				await SetupProducts.createProductAsync(
 					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
+					disposalMap,
 				);
 			});
-			this.afterEach(function () {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
-				disposables.length = 0;
+			this.afterEach(async function () {
+				await disposalMap.disposeAll();
 			});
 
 			it(`should write the ${test.state} state with '${
@@ -476,8 +452,8 @@ describe("setupProducts", function () {
 		}
 
 		it(`Each writable state should be bound to a state change handler`, async function () {
-			let disposables: Disposable[] = [];
-			disposables = await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct);
+			const disposalMap = new DisposalMap();
+			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
 			try {
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
@@ -485,6 +461,10 @@ describe("setupProducts", function () {
 					startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
 					endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
 				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
+				const disposables: Disposable[] = [];
+				disposalMap.forEach((value) => {
+					disposables.push(value);
+				});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -517,15 +497,13 @@ describe("setupProducts", function () {
 					`There are unmapped writable states: ${JSON.stringify(unmappedWritableStates)}`,
 				).to.be.an("Array").empty;
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
 		it(`Each readable state should be bound to a property change handler`, async function () {
-			let disposables: Disposable[] = [];
-			disposables = await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct);
+			const disposalMap = new DisposalMap();
+			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
 			try {
 				const allowedUnmappedStates = [
 					"test.0.products.0.category",
@@ -542,6 +520,10 @@ describe("setupProducts", function () {
 					startKey: `${adapter.namespace}.products.${mockProduct.NodeID}.`,
 					endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
 				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
+				const disposables: Disposable[] = [];
+				disposalMap.forEach((value) => {
+					disposables.push(value);
+				});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -576,9 +558,7 @@ describe("setupProducts", function () {
 					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
 				).to.be.an("Array").empty;
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
@@ -588,16 +568,12 @@ describe("setupProducts", function () {
 				.once()
 				.withExactArgs(0.5, undefined, undefined, undefined, undefined);
 
-			const disposables = await SetupProducts.createProductAsync(
-				adapter as unknown as ioBroker.Adapter,
-				mockProduct,
-			);
+			const disposalMap = new DisposalMap();
+			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
 
 			// Find the handler:
 			const stateId = `products.${mockProduct.NodeID}.targetPosition`;
-			const handler = disposables.find(
-				(disposable) => disposable instanceof BaseStateChangeHandler && disposable.StateId === stateId,
-			) as BaseStateChangeHandler;
+			const handler = disposalMap.get(stateId) as BaseStateChangeHandler;
 
 			try {
 				await handler?.onStateChange({
@@ -615,9 +591,7 @@ describe("setupProducts", function () {
 
 				mock.verify();
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
@@ -632,16 +606,12 @@ describe("setupProducts", function () {
 					},
 				]);
 
-			const disposables = await SetupProducts.createProductAsync(
-				adapter as unknown as ioBroker.Adapter,
-				mockProduct,
-			);
+			const disposalMap = new DisposalMap();
+			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
 
 			// Find the handler:
 			const stateId = `products.${mockProduct.NodeID}.targetPosition`;
-			const handler = disposables.find(
-				(disposable) => disposable instanceof BaseStateChangeHandler && disposable.StateId === stateId,
-			) as BaseStateChangeHandler;
+			const handler = disposalMap.get(stateId) as BaseStateChangeHandler;
 
 			try {
 				await adapter.setState(`products.${mockProduct.NodeID}.targetFP2Raw`, 42);
@@ -660,9 +630,7 @@ describe("setupProducts", function () {
 
 				mock.verify();
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
@@ -691,34 +659,40 @@ describe("setupProducts", function () {
 			assertObjectExists(`test.0.products.0.${expectedState}`);
 			assertObjectCommon(`test.0.products.0.${expectedState}`, { write: false } as ioBroker.StateCommon);
 
-			const disposables = await SetupProducts.createProductAsync(
-				adapter as unknown as ioBroker.Adapter,
-				mockProduct,
-			);
+			const disposalMap = new DisposalMap();
+			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
 			try {
 				assertObjectExists(`test.0.products.0.${expectedState}`);
 				assertObjectCommon(`test.0.products.0.${expectedState}`, { write: true } as ioBroker.StateCommon);
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 	});
 
 	describe("createProductsAsync", function () {
 		it("should have 1 in the value of products.productsFound state", async function () {
-			const expectedValue = 1;
-			const disposables = await SetupProducts.createProductsAsync(
-				adapter as unknown as ioBroker.Adapter,
-				mockProducts,
+			adapter.getChannelsOf.callsFake(
+				(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
+					callback(null, [
+						{
+							_id: `${adapter.namespace}.products.42`,
+							type: "channel",
+							common: {
+								name: "Test window",
+							},
+							native: {},
+						},
+					] as ioBroker.ChannelObject[]),
 			);
+
+			const expectedValue = 1;
+			const disposalMap = new DisposalMap();
+			await SetupProducts.createProductsAsync(adapter as unknown as ioBroker.Adapter, mockProducts, disposalMap);
 			try {
 				assertStateHasValue("products.productsFound", expectedValue);
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
@@ -743,10 +717,22 @@ describe("setupProducts", function () {
 			// Check, that old states exist
 			states.forEach((state) => assertObjectExists(`${adapter.namespace}.products.42.${state}`));
 
-			const disposables = await SetupProducts.createProductsAsync(
-				adapter as unknown as ioBroker.Adapter,
-				mockProducts,
+			adapter.getChannelsOf.callsFake(
+				(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
+					callback(null, [
+						{
+							_id: `${adapter.namespace}.products.42`,
+							type: "channel",
+							common: {
+								name: "Test window",
+							},
+							native: {},
+						},
+					] as ioBroker.ChannelObject[]),
 			);
+
+			const disposalMap = new DisposalMap();
+			await SetupProducts.createProductsAsync(adapter as unknown as ioBroker.Adapter, mockProducts, disposalMap);
 			try {
 				states.forEach((state) =>
 					expect(
@@ -755,9 +741,7 @@ describe("setupProducts", function () {
 					).to.throw(),
 				);
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 	});
