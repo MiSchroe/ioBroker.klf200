@@ -1,6 +1,7 @@
 import { MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
 import { Gateway, GatewayState, GatewaySubState, IConnection, SoftwareVersion } from "klf-200-api";
+import { EventEmitter } from "stream";
 import { promisify } from "util";
 import { Setup } from "./setup";
 import sinon = require("sinon");
@@ -24,21 +25,23 @@ const mockConnection = new MockConnect();
 describe("Setup", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
+	// eslint-disable-next-line @typescript-eslint/unbound-method
 	const { assertObjectExists } = utils.unit.createAsserts(database, adapter);
 
 	// Fake getChannelsOf
 	adapter.getChannelsOf = sinon.stub();
-	adapter.getChannelsOf.callsFake((parentDevice, callback) =>
-		callback(null, [
-			{
-				_id: `${adapter.namespace}.products.42`,
-				type: "channel",
-				common: {
-					name: "Test window",
+	adapter.getChannelsOf.callsFake(
+		(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
+			callback(null, [
+				{
+					_id: `${adapter.namespace}.products.42`,
+					type: "channel",
+					common: {
+						name: "Test window",
+					},
+					native: {},
 				},
-				native: {},
-			},
-		] as ioBroker.ChannelObject[]),
+			] as ioBroker.ChannelObject[]),
 	);
 	// Fake deleteChannel
 	adapter.deleteChannel = sinon.stub();
@@ -59,11 +62,32 @@ describe("Setup", function () {
 		);
 	});
 
+	// Fake recursive delObject:
+	const delObjectStub = sinon.stub(adapter, "delObject");
+	delObjectStub.withArgs(sinon.match.any, { recursive: true }).callsFake((id, recursive: any, callback) => {
+		// Delete sub-objects first
+		adapter.getObjectList(
+			{
+				startKey: `${adapter.namespace}.${id}`,
+				endkey: `${adapter.namespace}.${id}.\u9999`,
+			},
+			(err: any, res: { rows: { id: string; obj: any; doc: any }[] }) => {
+				for (const row of res.rows) {
+					adapter.delObject(row.id);
+				}
+
+				adapter.delObject(id, callback);
+			},
+		);
+	});
+	delObjectStub.callThrough();
+
 	// Promisify additional methods
-	for (const method of ["unsubscribeStates", "getChannelsOf", "deleteChannel"]) {
+	for (const method of ["unsubscribeStates", "getChannelsOf", "deleteChannel", "delObject"]) {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
 			value: promisify(adapter[method as keyof MockAdapter]),
 			writable: true,
 		});
@@ -73,23 +97,26 @@ describe("Setup", function () {
 	const mockGateway = new Gateway(mockConnection);
 
 	sinon.stub(mockGateway, "getProtocolVersionAsync").callsFake(async () => {
-		return { MajorVersion: 1, MinorVersion: 2 };
+		return Promise.resolve({ MajorVersion: 1, MinorVersion: 2 });
 	});
 	sinon.stub(mockGateway, "getStateAsync").callsFake(async () => {
-		return { GatewayState: GatewayState.GatewayMode_WithActuatorNodes, SubState: GatewaySubState.Idle };
+		return Promise.resolve({
+			GatewayState: GatewayState.GatewayMode_WithActuatorNodes,
+			SubState: GatewaySubState.Idle,
+		});
 	});
 	sinon.stub(mockGateway, "getVersionAsync").callsFake(async () => {
-		return {
+		return Promise.resolve({
 			SoftwareVersion: new SoftwareVersion(0, 2, 0, 0, 7, 1),
 			HardwareVersion: 1,
 			ProductGroup: 14,
 			ProductType: 3,
-		};
+		});
 	});
 
 	// Mock some EventEmitter functions
-	(adapter as any).getMaxListeners = sinon.stub<[], number>().returns(100);
-	(adapter as any).setMaxListeners = sinon.stub<[number], void>();
+	(adapter as EventEmitter).getMaxListeners = sinon.stub<[], number>().returns(100);
+	(adapter as EventEmitter).setMaxListeners = sinon.stub<[number], EventEmitter>();
 
 	afterEach(() => {
 		// The mocks keep track of all method invocations - reset them after each single test
@@ -228,10 +255,10 @@ describe("Setup", function () {
 			try {
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
-				> = await adapter.getObjectListAsync({
+				> = (await adapter.getObjectListAsync({
 					startKey: `${adapter.namespace}.gateway.`,
 					endkey: `${adapter.namespace}.gateway.\u9999`,
-				});
+				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)
@@ -274,10 +301,10 @@ describe("Setup", function () {
 				];
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
-				> = await adapter.getObjectListAsync({
+				> = (await adapter.getObjectListAsync({
 					startKey: `${adapter.namespace}.gateway.`,
 					endkey: `${adapter.namespace}.gateway.\u9999`,
-				});
+				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
 						// Find state in disposables (only for writable states)

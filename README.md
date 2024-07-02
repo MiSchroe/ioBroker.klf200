@@ -248,7 +248,10 @@ The values of the state provide multiple manipulation modes:
 <!-- prettier-ignore -->
 ### __WORK IN PROGRESS__
 
--   (Michael Schroeder) Upgrade dependencies, min. Node version 18.x, min. js-controller 5.x
+-   (Michael Schroeder) [#180](https://github.com/MiSchroe/ioBroker.klf200/issues/180) Fixed handling new product detection.
+-   (Michael Schroeder) Fix missing removal of event handlers.
+-   (Michael Schroeder) Upgrade dependencies, min. Node version 18.x, min. js-controller 5.x.
+-   (Michael Schroeder) Added stricter linting rules and fixed findings.
 
 ### 1.2.0 (2024-02-09)
 
