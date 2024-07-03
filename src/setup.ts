@@ -1,7 +1,6 @@
 "use strict";
 
-import { Gateway } from "klf-200-api";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { Disposable, Gateway } from "klf-200-api";
 import { TimeoutError } from "promise-timeout";
 import { ComplexStateChangeHandler } from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
@@ -26,9 +25,13 @@ export class Setup implements Disposable {
 	public startStateTimer(): void {
 		if (this._stateTimer === undefined) {
 			this._stateTimer = setTimeout(
-				async (adapter, gateway) => {
-					this._stateTimer = undefined; // Timer has fired -> delete timer id
-					await this.stateTimerHandler(adapter, gateway);
+				(adapter, gateway) => {
+					(async () => {
+						this._stateTimer = undefined; // Timer has fired -> delete timer id
+						await this.stateTimerHandler(adapter, gateway);
+					})().catch((reason: any) => {
+						this.adapter.log.error(`Error in state time: ${JSON.stringify(reason)}`);
+					});
 				},
 				5 * 60 * 1000,
 				this.adapter,
@@ -67,7 +70,7 @@ export class Setup implements Disposable {
 						adapter.log.error(`Timemout occured during getting the current gateway status.`);
 					} else {
 						adapter.log.error(`Error occured during getting the current gateway status.`);
-						adapter.log.error(`Error details: ${e}`);
+						adapter.log.error(`Error details: ${JSON.stringify(e)}`);
 					}
 				} finally {
 					// Reset the flag, so that the next call to this method will query the gateway again.

@@ -7,22 +7,26 @@
 import * as utils from "@iobroker/adapter-core";
 import {
 	Connection,
+	Disposable,
 	Gateway,
+	GatewayCommand,
 	Groups,
 	GW_GET_STATE_CFM,
 	GW_REBOOT_CFM,
 	IConnection,
+	IGW_FRAME,
 	IGW_FRAME_RCV,
 	Products,
 	Scenes,
 } from "klf-200-api";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
 import { Job, scheduleJob } from "node-schedule";
-import { Setup } from "./setup";
-import { SetupGroups } from "./setupGroups";
-import { SetupProducts } from "./setupProducts";
-import { SetupScenes } from "./setupScenes";
-import { ArrayCount, convertErrorToString } from "./util/utils";
+import { DisposalMap } from "./disposalMap.js";
+import { HasConnectionInterface, HasProductsInterface } from "./interfaces.js";
+import { Setup } from "./setup.js";
+import { SetupGroups } from "./setupGroups.js";
+import { SetupProducts } from "./setupProducts.js";
+import { SetupScenes } from "./setupScenes.js";
+import { ArrayCount, convertErrorToString } from "./util/utils.js";
 
 // Load your modules here, e.g.:
 // import * as fs from "fs";
@@ -47,12 +51,13 @@ declare global {
 	}
 }
 
-type ConnectionWatchDogHandler = (hadError: boolean) => Promise<void>;
+type ConnectionWatchDogHandler = (hadError: boolean) => void;
 
-class Klf200 extends utils.Adapter {
+class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProductsInterface {
 	private disposables: Disposable[] = [];
 	private connectionWatchDogHandler: ConnectionWatchDogHandler;
 	private InShutdown: boolean;
+	private disposalMap = new DisposalMap();
 
 	private _Connection?: IConnection;
 	public get Connection(): IConnection | undefined {
@@ -104,7 +109,13 @@ class Klf200 extends utils.Adapter {
 
 		// Setup connection watchdog handler
 		this.InShutdown = false;
-		this.connectionWatchDogHandler = this.ConnectionWatchDog.bind(this);
+		this.connectionWatchDogHandler = (hadError: boolean) => {
+			(async () => {
+				await this.ConnectionWatchDog(hadError);
+			})().catch((reason: any) => {
+				this.log.error(`Error occured in connection watch dog handler: ${JSON.stringify(reason)}`);
+			});
+		};
 	}
 
 	/**
@@ -115,7 +126,7 @@ class Klf200 extends utils.Adapter {
 			// Initialize your adapter here
 
 			// Reset the connection indicator during startup
-			await this.setStateAsync("info.connection", false, true);
+			await this.setState("info.connection", false, true);
 
 			// Decrypt password
 			if (!this.supportsFeature || !this.supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE")) {
@@ -135,7 +146,7 @@ class Klf200 extends utils.Adapter {
 			this.log.info(`Host: ${this.config.host}`);
 			try {
 				await this.Connection?.loginAsync(this.config.password);
-			} catch (error) {
+			} catch (error: any) {
 				this.log.error(`${error}`);
 				this.log.debug(`${(error as Error).stack}`);
 				this.terminate(`Login to KLF-200 device at ${this.config.host} failed.`);
@@ -155,7 +166,7 @@ class Klf200 extends utils.Adapter {
 			}
 
 			// Set the connection indicator to true
-			await this.setStateAsync("info.connection", true, true);
+			await this.setState("info.connection", true, true);
 		} catch (e) {
 			this.log.error(`Error during initialization of the adapter.`);
 			const result = convertErrorToString(e);
@@ -165,6 +176,9 @@ class Klf200 extends utils.Adapter {
 	}
 
 	private async initializeOnConnection(): Promise<void> {
+		this.log.info(`Setting up notification handler for gateway state...`);
+		this.disposables.push(this._Connection!.on(this.onFrameReceived.bind(this)));
+
 		// Read device info, scenes, groups and products and setup device
 		this.log.info(`Reading device information...`);
 		this._Gateway = new Gateway(this.Connection!);
@@ -193,11 +207,14 @@ class Klf200 extends utils.Adapter {
 		// Setup states
 		this._Setup = await Setup.setupGlobalAsync(this, this.Gateway!);
 		this.disposables.push(this._Setup);
-		this.disposables.push(...(await SetupScenes.createScenesAsync(this, this.Scenes!)));
-		this.disposables.push(
-			...(await SetupGroups.createGroupsAsync(this, this.Groups?.Groups ?? [], this.Products?.Products ?? [])),
+		await SetupScenes.createScenesAsync(this, this.Scenes!, this.disposalMap);
+		await SetupGroups.createGroupsAsync(
+			this,
+			this.Groups?.Groups ?? [],
+			this.Products?.Products ?? [],
+			this.disposalMap,
 		);
-		this.disposables.push(...(await SetupProducts.createProductsAsync(this, this.Products?.Products ?? [])));
+		await SetupProducts.createProductsAsync(this, this.Products?.Products ?? [], this.disposalMap);
 
 		this.log.info(`Setting up notification handlers for removal...`);
 		// Setup remove notification
@@ -213,9 +230,6 @@ class Klf200 extends utils.Adapter {
 			this.Products!.onNewProduct(this.onNewProduct.bind(this)),
 			this.Groups!.onChangedGroup(this.onNewGroup.bind(this)),
 		);
-
-		this.log.info(`Setting up notification handler for gateway state...`);
-		this.disposables.push(this._Connection!.on(this.onFrameReceived.bind(this)));
 
 		// Write a finish setup log entry
 		this.log.info(`Adapter is ready for use.`);
@@ -237,6 +251,7 @@ class Klf200 extends utils.Adapter {
 		this.disposables.forEach((disposable) => {
 			disposable.dispose();
 		});
+		await this.disposalMap.disposeAll();
 	}
 
 	private async ConnectionWatchDog(hadError: boolean): Promise<void> {
@@ -244,7 +259,7 @@ class Klf200 extends utils.Adapter {
 		this._Setup?.stopStateTimer();
 
 		// Reset the connection indicator
-		await this.setStateAsync("info.connection", false, true);
+		await this.setState("info.connection", false, true);
 		this.log.warn("Lost connection to KLF-200");
 		if (hadError === true) {
 			this.log.error("The underlying connection has been closed due to some error.");
@@ -261,7 +276,7 @@ class Klf200 extends utils.Adapter {
 				await this.Connection?.loginAsync(this.config.password);
 				isConnected = true;
 				this.log.info("Reconnected.");
-				await this.setStateAsync("info.connection", true, true);
+				await this.setState("info.connection", true, true);
 
 				await this.initializeOnConnection();
 			} catch (e) {
@@ -275,56 +290,67 @@ class Klf200 extends utils.Adapter {
 	}
 
 	private async onRemovedScene(sceneId: number): Promise<void> {
-		await this.deleteChannelAsync(`scenes`, `${sceneId}`);
+		const sceneStateId = `scenes.${sceneId}`;
+		await this.disposalMap.disposeId(sceneStateId);
+		await this.delObjectAsync(sceneStateId, { recursive: true });
 	}
 
 	private async onRemovedProduct(productId: number): Promise<void> {
-		await this.deleteChannelAsync(`products`, `${productId}`);
+		const productStateId = `products.${productId}`;
+		await this.disposalMap.disposeId(productStateId);
+		await this.delObjectAsync(productStateId, { recursive: true });
 	}
 
 	private async onRemovedGroup(groupId: number): Promise<void> {
-		await this.deleteChannelAsync(`groups`, `${groupId}`);
+		const groupStateId = `groups.${groupId}`;
+		await this.disposalMap.disposeId(groupStateId);
+		await this.delObjectAsync(groupStateId, { recursive: true });
 	}
 
-	private async onNewScene(sceneId: number): Promise<Disposable[]> {
+	private async onNewScene(sceneId: number): Promise<void> {
 		const newScene = this._Scenes?.Scenes[sceneId];
 		if (newScene) {
-			return await SetupScenes.createSceneAsync(this, newScene);
-		} else {
-			return [];
+			await SetupScenes.createSceneAsync(this, newScene, this.disposalMap);
 		}
 	}
 
-	private async onNewProduct(productId: number): Promise<Disposable[]> {
+	private async onNewProduct(productId: number): Promise<void> {
 		const newProduct = this._Products?.Products[productId];
 		if (newProduct) {
-			return await SetupProducts.createProductAsync(this, newProduct);
-		} else {
-			return [];
+			await SetupProducts.createProductAsync(this, newProduct, this.disposalMap);
 		}
 	}
 
-	private async onNewGroup(groupId: number): Promise<Disposable[]> {
+	private async onNewGroup(groupId: number): Promise<void> {
 		const newGroup = this._Groups?.Groups[groupId];
 		if (newGroup && this._Products) {
-			return await SetupGroups.createGroupAsync(this, newGroup, this._Products.Products);
-		} else {
-			return [];
+			await SetupGroups.createGroupAsync(this, newGroup, this._Products.Products, this.disposalMap);
 		}
 	}
 
 	private async onFrameReceived(frame: IGW_FRAME_RCV): Promise<void> {
-		this.log.debug(`Frame received: ${JSON.stringify(frame)}`);
+		this.log.debug(`Frame received (${GatewayCommand[frame.Command]}): ${this.stringifyFrame(frame)}`);
 		if (!(frame instanceof GW_GET_STATE_CFM) && !(frame instanceof GW_REBOOT_CFM)) {
 			// Confirmation messages of the GW_GET_STATE_REQ must be ignored to avoid an infinity loop
 			await this.Setup?.stateTimerHandler(this, this.Gateway!);
 		}
 	}
 
+	private stringifyFrame(frame: IGW_FRAME): string {
+		return JSON.stringify(frame, (key: string, value: any) => {
+			if (key.match(/password/i)) {
+				return "**********";
+			} else {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				return value;
+			}
+		});
+	}
+
 	private async onReboot(): Promise<void> {
 		this.log.info("Automatic reboot due to schedule in configuration");
 		this.Setup?.stopStateTimer();
-		await this.setStateAsync(`gateway.RebootGateway`, true, false);
+		await this.setState(`gateway.RebootGateway`, true, false);
 	}
 
 	/**
@@ -344,6 +370,7 @@ class Klf200 extends utils.Adapter {
 			this.log.info("Cleaned everything up...");
 			callback();
 		} catch (e) {
+			this.log.error(`Error during unload: ${JSON.stringify(e)}`);
 			callback();
 		}
 	}
@@ -409,7 +436,7 @@ class Klf200 extends utils.Adapter {
 	}
 
 	onUnhandledError(error: Error): void {
-		((this && this.log) || console).error(`Unhandled exception occured: ${error}`);
+		((this && this.log) || console).error(`Unhandled exception occured: ${JSON.stringify(error)}`);
 		this.terminate("unhandled exception", 1);
 	}
 }

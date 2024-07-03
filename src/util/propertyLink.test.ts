@@ -1,8 +1,9 @@
 import { MockAdapter, utils } from "@iobroker/testing";
 import { expect } from "chai";
-import { Component } from "klf-200-api/dist/utils/PropertyChangedEvent";
+import { Component } from "klf-200-api";
 import { promisify } from "util";
-import { setStateAsync } from "../../test/mockHelper";
+import { setState } from "../../test/mockHelper";
+import { DisposalMap } from "../disposalMap";
 import {
 	ComplexPropertyChangedHandler,
 	ComplexStateChangeHandler,
@@ -22,7 +23,7 @@ class TestComponent extends Component {
 	public async setBooleanValueAsync(v: boolean): Promise<void> {
 		if (this._BooleanValue !== v) {
 			this._BooleanValue = v;
-			this.propertyChanged("BooleanValue");
+			await this.propertyChanged("BooleanValue");
 		}
 	}
 
@@ -33,7 +34,7 @@ class TestComponent extends Component {
 	public async setNumberValueAsync(v: number): Promise<void> {
 		if (this._NumberValue !== v) {
 			this._NumberValue = v;
-			this.propertyChanged("NumberValue");
+			await this.propertyChanged("NumberValue");
 		}
 	}
 
@@ -44,7 +45,7 @@ class TestComponent extends Component {
 	public async setStringValueAsync(v: string): Promise<void> {
 		if (this._StringValue !== v) {
 			this._StringValue = v;
-			this.propertyChanged("StringValue");
+			await this.propertyChanged("StringValue");
 		}
 	}
 
@@ -55,7 +56,7 @@ class TestComponent extends Component {
 	public async setArrayValueAsync(v: string[]): Promise<void> {
 		if (this._ArrayValue !== v) {
 			this._ArrayValue = v;
-			this.propertyChanged("ArrayValue");
+			await this.propertyChanged("ArrayValue");
 		}
 	}
 
@@ -67,6 +68,7 @@ class TestComponent extends Component {
 describe("PropertyLink", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
+	// eslint-disable-next-line @typescript-eslint/unbound-method
 	const { assertStateHasValue, assertStateIsAcked } = utils.unit.createAsserts(database, adapter);
 
 	// Promisify additional methods
@@ -74,6 +76,7 @@ describe("PropertyLink", function () {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
 			value: promisify(adapter[method as keyof MockAdapter]),
 			writable: true,
 		});
@@ -143,7 +146,7 @@ describe("PropertyLink", function () {
 				},
 				native: {},
 			});
-			await adapter.setStateAsync(stateID, testComponent.NumberValue, true);
+			await adapter.setState(stateID, testComponent.NumberValue, true);
 
 			const SUT = new SimplePropertyChangedHandler<TestComponent>(
 				adapter as unknown as ioBroker.Adapter,
@@ -183,7 +186,7 @@ describe("PropertyLink", function () {
 				},
 				native: {},
 			});
-			await adapter.setStateAsync(stateID, testComponent.NumberValue, true);
+			await adapter.setState(stateID, testComponent.NumberValue, true);
 
 			const SUT = new ComplexPropertyChangedHandler<TestComponent>(
 				adapter as unknown as ioBroker.Adapter,
@@ -221,47 +224,51 @@ describe("PropertyLink", function () {
 				},
 				native: {},
 			});
-			await adapter.setStateAsync(stateID, testComponent.NumberValue, true);
+			await adapter.setState(stateID, testComponent.NumberValue, true);
 		});
 
 		it("should set the property 'NumberValue' to 43 when the adapter state is set.", async function () {
 			const expectedResult = 43;
 
-			const SUT = new SimpleStateChangeHandler<TestComponent>(
-				adapter as unknown as ioBroker.Adapter,
-				stateID,
-				"NumberValue",
-				testComponent,
-			);
+			const disposalMap = new DisposalMap();
 			try {
+				const SUT = new SimpleStateChangeHandler<TestComponent>(
+					adapter as unknown as ioBroker.Adapter,
+					stateID,
+					"NumberValue",
+					testComponent,
+				);
 				await SUT.Initialize();
+				disposalMap.set(stateID, SUT);
 
-				await setStateAsync(adapter, stateID, expectedResult, [SUT], false);
+				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
 				expect(testComponent.NumberValue).to.be.equal(expectedResult);
 			} finally {
-				await SUT.dispose();
+				await disposalMap.disposeAll();
 			}
 		});
 
 		it("should set the property 'NumberValue' to 43 when the adapter state is set with explicit setterMethodName.", async function () {
 			const expectedResult = 43;
 
-			const SUT = new SimpleStateChangeHandler<TestComponent>(
-				adapter as unknown as ioBroker.Adapter,
-				stateID,
-				"NumberValue",
-				testComponent,
-				"setNumberValueAsync",
-			);
+			const disposalMap = new DisposalMap();
 			try {
+				const SUT = new SimpleStateChangeHandler<TestComponent>(
+					adapter as unknown as ioBroker.Adapter,
+					stateID,
+					"NumberValue",
+					testComponent,
+					"setNumberValueAsync",
+				);
 				await SUT.Initialize();
+				disposalMap.set(stateID, SUT);
 
-				await setStateAsync(adapter, stateID, expectedResult, [SUT], false);
+				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
 				expect(testComponent.NumberValue).to.be.equal(expectedResult);
 			} finally {
-				await SUT.dispose();
+				await disposalMap.disposeAll();
 			}
 		});
 	});
@@ -285,22 +292,24 @@ describe("PropertyLink", function () {
 				},
 				native: {},
 			});
-			await adapter.setStateAsync(stateID, testComponent.NumberValue, true);
+			await adapter.setState(stateID, testComponent.NumberValue, true);
 		});
 
 		it("should call the provided handly exaclty once.", async function () {
 			const expectedResult = 43;
 
 			const handler = sinon.stub<[ioBroker.State | null | undefined], Promise<void>>();
-			const SUT = new ComplexStateChangeHandler(adapter as unknown as ioBroker.Adapter, stateID, handler);
+			const disposalMap = new DisposalMap();
 			try {
+				const SUT = new ComplexStateChangeHandler(adapter as unknown as ioBroker.Adapter, stateID, handler);
 				await SUT.Initialize();
+				disposalMap.set(stateID, SUT);
 
-				await setStateAsync(adapter, stateID, expectedResult, [SUT], false);
+				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
 				expect(handler.calledOnce).to.be.true;
 			} finally {
-				await SUT.dispose();
+				await disposalMap.disposeAll();
 			}
 		});
 	});
@@ -324,7 +333,7 @@ describe("PropertyLink", function () {
 				},
 				native: {},
 			});
-			await adapter.setStateAsync(stateID, testComponent.NumberValue, true);
+			await adapter.setState(stateID, testComponent.NumberValue, true);
 		});
 
 		it("should call the function TestComponent.runAMethod with parameters 1, 2, '3'.", async function () {

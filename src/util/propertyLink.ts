@@ -1,8 +1,7 @@
 "use strict";
 
 import { EventEmitter } from "events";
-import { Component, PropertyChangedEvent } from "klf-200-api/dist/utils/PropertyChangedEvent";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { Component, Disposable, PropertyChangedEvent } from "klf-200-api";
 import { PromiseQueue } from "./promiseQueue";
 import { AsyncMethodName, AsyncMethodParameters, AsyncMethodType } from "./utils";
 
@@ -21,6 +20,7 @@ export function MapAnyPropertyToState<T extends Component>(
 
 		default:
 			if (propertyValue) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 				return (propertyValue as any).toString();
 			}
 	}
@@ -100,7 +100,7 @@ export class SimplePropertyChangedHandler<T extends Component> extends BasePrope
 	}
 
 	async onPropertyChangedTypedEvent(newValue: T[keyof T]): Promise<string> {
-		return await this.Adapter.setStateAsync(this.StateId, MapAnyPropertyToState(newValue), true);
+		return await this.Adapter.setState(this.StateId, MapAnyPropertyToState(newValue), true);
 	}
 
 	dispose(): void {
@@ -110,7 +110,7 @@ export class SimplePropertyChangedHandler<T extends Component> extends BasePrope
 
 export class PercentagePropertyChangedHandler<T extends Component> extends SimplePropertyChangedHandler<T> {
 	async onPropertyChangedTypedEvent(newValue: T[keyof T]): Promise<string> {
-		return await this.Adapter.setStateAsync(
+		return await this.Adapter.setState(
 			this.StateId,
 			Math.round((MapAnyPropertyToState(newValue) as number) * 100),
 			true,
@@ -137,7 +137,7 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 	}
 
 	async onStateChange(_state: ioBroker.State | null | undefined): Promise<void> {
-		throw new Error("Method not implemented.");
+		return Promise.reject(new Error("Method not implemented."));
 	}
 
 	private async stateChanged(id: string, obj: ioBroker.State | null | undefined): Promise<void> {
@@ -162,7 +162,7 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 						q: /* ioBroker.STATE_QUALITY.DEVICE_ERROR_REPORT */ 68,
 						ack: true,
 					};
-					await this.Adapter.setStateAsync(id, errorState);
+					await this.Adapter.setState(id, errorState);
 				}
 			}
 		}
@@ -191,7 +191,7 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 export class EchoStateChangeHandler extends BaseStateChangeHandler {
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
 		if (state?.ack === false) {
-			await this.Adapter.setStateAsync(this.StateId, state.val, true);
+			await this.Adapter.setState(this.StateId, state.val, true);
 		}
 	}
 }
@@ -217,10 +217,10 @@ export class SetterStateChangeHandler<T extends Component> extends BaseStateChan
 		);
 
 		// Double check, that the setter method exists
-		if (typeof LinkedObject[this.SetterMethodName!] === "function") {
-			this.setterFunction = LinkedObject[this.SetterMethodName!] as SetterFunction["ArbitrarySetterFunction"];
+		if (typeof LinkedObject[this.SetterMethodName] === "function") {
+			this.setterFunction = LinkedObject[this.SetterMethodName] as SetterFunction["ArbitrarySetterFunction"];
 		} else {
-			throw new Error(`${String(this.SetterMethodName)!} is not a function.`);
+			throw new Error(`${String(this.SetterMethodName)} is not a function.`);
 		}
 	}
 
@@ -230,6 +230,7 @@ export class SetterStateChangeHandler<T extends Component> extends BaseStateChan
 	}
 
 	async onStateChange(state: ioBroker.State | null | undefined): Promise<void> {
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		this.Adapter.log.debug(`SetterStateChangeHandler.onStateChange: ${state}`);
 		if (state?.ack === false) {
 			await klfPromiseQueue
@@ -312,7 +313,7 @@ export class MethodCallStateChangeHandler<Type, MN extends AsyncMethodName<Type>
 		) => Promise<AsyncMethodParameters<Type, MN>>,
 	) {
 		super(Adapter, StateId, async (state: ioBroker.State | null | undefined): Promise<void> => {
-			await this.Adapter.setStateAsync(this.StateId, state !== null && state !== undefined ? state : null, true);
+			await this.Adapter.setState(this.StateId, state !== null && state !== undefined ? state : null, true);
 			if (state?.val) {
 				this.Adapter.log.silly(
 					`Calling method ${String(this.MethodName)} on class ${(LinkedObject as object).constructor.name}`,
@@ -323,7 +324,7 @@ export class MethodCallStateChangeHandler<Type, MN extends AsyncMethodName<Type>
 				} else {
 					await this.targetMethod();
 				}
-				await this.Adapter.setStateAsync(this.StateId, false, true);
+				await this.Adapter.setState(this.StateId, false, true);
 			}
 		});
 		this.targetMethod = (this.LinkedObject[this.MethodName] as CallableFunction).bind(

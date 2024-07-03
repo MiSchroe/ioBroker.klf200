@@ -8,11 +8,11 @@ export class StateHelper {
 		native: Record<string, any>,
 		value: string | number | boolean | ioBroker.State | ioBroker.SettableState | null,
 	): Promise<void> {
-		await adapter.extendObjectAsync(stateID, {
+		await adapter.extendObject(stateID, {
 			type: "state",
 			common: common,
 			native: native,
 		});
-		await adapter.setStateAsync(stateID, value, true);
+		await adapter.setState(stateID, value, true);
 	}
 }
