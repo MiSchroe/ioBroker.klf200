@@ -11,7 +11,8 @@ import {
 	Products,
 	StatusType,
 } from "klf-200-api";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { DisposalMap } from "./disposalMap";
+import { HasConnectionInterface, HasProductsInterface } from "./interfaces";
 import { levelConverter, roleConverter } from "./util/converter";
 import {
 	ComplexPropertyChangedHandler,
@@ -25,9 +26,11 @@ import { StateHelper } from "./util/stateHelper";
 import { ArrayCount, waitForSessionFinishedNtfAsync } from "./util/utils";
 
 export class SetupProducts {
-	public static async createProductsAsync(adapter: ioBroker.Adapter, products: Product[]): Promise<Disposable[]> {
-		const disposableEvents: Disposable[] = [];
-
+	public static async createProductsAsync(
+		adapter: ioBroker.Adapter,
+		products: Product[],
+		disposalMap: DisposalMap,
+	): Promise<void> {
 		// Remove old products
 		const currentProductsList = await adapter.getChannelsOfAsync(`products`);
 		adapter.log.debug(`Current Product List: ${JSON.stringify(currentProductsList)}`);
@@ -40,7 +43,10 @@ export class SetupProducts {
 		);
 		// Delete channels
 		for (const channel of channelsToRemove) {
-			await adapter.deleteChannelAsync(`products`, channel._id);
+			const channelId = channel._id.split(".").reverse()[0];
+			const productId = `products.${channelId}`;
+			await disposalMap.disposeId(productId);
+			await adapter.delObjectAsync(productId, { recursive: true });
 		}
 		if (channelsToRemove.length !== 0) {
 			adapter.log.info(`${channelsToRemove.length} unknown products removed.`);
@@ -48,7 +54,7 @@ export class SetupProducts {
 
 		for (const product of products) {
 			if (product) {
-				disposableEvents.push(...(await SetupProducts.createProductAsync(adapter, product)));
+				await SetupProducts.createProductAsync(adapter, product, disposalMap);
 			}
 		}
 
@@ -69,13 +75,13 @@ export class SetupProducts {
 			{},
 			ArrayCount(products),
 		);
-
-		return disposableEvents;
 	}
 
-	public static async createProductAsync(adapter: ioBroker.Adapter, product: Product): Promise<Disposable[]> {
-		const disposableEvents: Disposable[] = [];
-
+	public static async createProductAsync(
+		adapter: ioBroker.Adapter,
+		product: Product,
+		disposalMap: DisposalMap,
+	): Promise<void> {
 		adapter.log.info(`Setup objects for product ${product.Name}.`);
 
 		const states: Record<string, string> = {};
@@ -858,95 +864,159 @@ export class SetupProducts {
 
 		// Setup product listener
 		adapter.log.debug(`Setup change event listeners for product ${product.Name}.`);
-		disposableEvents.push(
+		disposalMap.set(
+			`products.${product.NodeID}.property.nodeVariation`,
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.nodeVariation`,
 				"NodeVariation",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.order`,
 			new SimplePropertyChangedHandler<Product>(adapter, `products.${product.NodeID}.order`, "Order", product),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.placement`,
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.placement`,
 				"Placement",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.state`,
 			new SimplePropertyChangedHandler<Product>(adapter, `products.${product.NodeID}.state`, "State", product),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.currentPositionRaw`,
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.currentPositionRaw`,
 				"CurrentPositionRaw",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.currentPosition`,
 			new PercentagePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.currentPosition`,
 				"CurrentPosition",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.targetPositionRaw`,
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.targetPositionRaw`,
 				"TargetPositionRaw",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.targetPosition`,
 			new PercentagePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.targetPosition`,
 				"TargetPosition",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.FP1CurrentPositionRaw`,
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.FP1CurrentPositionRaw`,
 				"FP1CurrentPositionRaw",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.FP2CurrentPositionRaw`,
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.FP2CurrentPositionRaw`,
 				"FP2CurrentPositionRaw",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.FP3CurrentPositionRaw`,
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.FP3CurrentPositionRaw`,
 				"FP3CurrentPositionRaw",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.FP4CurrentPositionRaw`,
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.FP4CurrentPositionRaw`,
 				"FP4CurrentPositionRaw",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.remainingTime`,
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.remainingTime`,
 				"RemainingTime",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.timestamp`,
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.timestamp`,
 				"TimeStamp",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.runStatus`,
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.runStatus`,
 				"RunStatus",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.statusReply`,
 			new SimplePropertyChangedHandler<Product>(
 				adapter,
 				`products.${product.NodeID}.statusReply`,
 				"StatusReply",
 				product,
 			),
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationMinRaw", product, async (newValue) => {
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.limitationMinRaw`,
+			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationMinRaw", product, async (_newValue) => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -967,8 +1037,11 @@ export class SetupProducts {
 				}
 				return "";
 			}),
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationMaxRaw", product, async (newValue) => {
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.limitationMaxRaw`,
+			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationMaxRaw", product, async (_newValue) => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -989,8 +1062,11 @@ export class SetupProducts {
 				}
 				return "";
 			}),
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationOriginator", product, async (newValue) => {
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.limitationOriginator`,
+			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationOriginator", product, async (_newValue) => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1006,8 +1082,11 @@ export class SetupProducts {
 				}
 				return "";
 			}),
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationTimeRaw", product, async (newValue) => {
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.limitationTimeRaw`,
+			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationTimeRaw", product, async (_newValue) => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1031,72 +1110,63 @@ export class SetupProducts {
 		);
 
 		adapter.log.debug(`Setup state change listeners for product ${product.Name}.`);
+		const nodeVariationStateId = `products.${product.NodeID}.nodeVariation`;
 		const nodeVariationHandler = new SimpleStateChangeHandler<Product>(
 			adapter,
-			`products.${product.NodeID}.nodeVariation`,
+			nodeVariationStateId,
 			"NodeVariation",
 			product,
 		);
 		await nodeVariationHandler.Initialize();
-		disposableEvents.push(nodeVariationHandler);
+		disposalMap.set(nodeVariationStateId, nodeVariationHandler);
 
-		const orderHandler = new SimpleStateChangeHandler<Product>(
-			adapter,
-			`products.${product.NodeID}.order`,
-			"Order",
-			product,
-		);
+		const orderStateId = `products.${product.NodeID}.order`;
+		const orderHandler = new SimpleStateChangeHandler<Product>(adapter, orderStateId, "Order", product);
 		await orderHandler.Initialize();
-		disposableEvents.push(orderHandler);
+		disposalMap.set(orderStateId, orderHandler);
 
-		const placementHandler = new SimpleStateChangeHandler<Product>(
-			adapter,
-			`products.${product.NodeID}.placement`,
-			"Placement",
-			product,
-		);
+		const placementStateId = `products.${product.NodeID}.placement`;
+		const placementHandler = new SimpleStateChangeHandler<Product>(adapter, placementStateId, "Placement", product);
 		await placementHandler.Initialize();
-		disposableEvents.push(placementHandler);
+		disposalMap.set(placementStateId, placementHandler);
 
-		const targetPositionHandler = new ComplexStateChangeHandler(
-			adapter,
-			`products.${product.NodeID}.targetPosition`,
-			async (state) => {
-				if (state !== undefined && state?.val !== undefined) {
-					/*
+		const targetPositionStateId = `products.${product.NodeID}.targetPosition`;
+		const targetPositionHandler = new ComplexStateChangeHandler(adapter, targetPositionStateId, async (state) => {
+			if (state !== undefined && state?.val !== undefined) {
+				/*
 						Read the states of targetFP1Raw - targetFP4Raw.
 						For each state which is not set to Ignore (0xD400)
 						add the value to the functional parameter.
 					*/
-					let functionalParameters: FunctionalParameter[] | undefined = undefined;
-					for (const parameterCounter of [1, 2, 3, 4]) {
-						const stateFP = await adapter.getStateAsync(
-							`products.${product.NodeID}.targetFP${parameterCounter}Raw`,
-						);
-						if (stateFP?.val !== undefined && stateFP.val !== 0xd400) {
-							functionalParameters = functionalParameters || [];
-							functionalParameters.push({
-								ID: parameterCounter,
-								Value: stateFP.val as number,
-							});
-						}
-					}
-					await product.setTargetPositionAsync(
-						(state.val as number) / 100,
-						undefined,
-						undefined,
-						undefined,
-						functionalParameters,
+				let functionalParameters: FunctionalParameter[] | undefined = undefined;
+				for (const parameterCounter of [1, 2, 3, 4]) {
+					const stateFP = await adapter.getStateAsync(
+						`products.${product.NodeID}.targetFP${parameterCounter}Raw`,
 					);
+					if (stateFP?.val !== undefined && stateFP.val !== 0xd400) {
+						functionalParameters = functionalParameters || [];
+						functionalParameters.push({
+							ID: parameterCounter,
+							Value: stateFP.val as number,
+						});
+					}
 				}
-			},
-		);
+				await product.setTargetPositionAsync(
+					(state.val as number) / 100,
+					undefined,
+					undefined,
+					undefined,
+					functionalParameters,
+				);
+			}
+		});
 		await targetPositionHandler.Initialize();
-		disposableEvents.push(targetPositionHandler);
+		disposalMap.set(targetPositionStateId, targetPositionHandler);
 
+		const targetPositionRawStateId = `products.${product.NodeID}.targetPositionRaw`;
 		const targetPositionRawHandler = new ComplexStateChangeHandler(
 			adapter,
-			`products.${product.NodeID}.targetPositionRaw`,
+			targetPositionRawStateId,
 			async (state) => {
 				if (state !== undefined && state?.val !== undefined) {
 					/*
@@ -1128,91 +1198,81 @@ export class SetupProducts {
 			},
 		);
 		await targetPositionRawHandler.Initialize();
-		disposableEvents.push(targetPositionRawHandler);
+		disposalMap.set(targetPositionRawStateId, targetPositionRawHandler);
 
-		const stopListener = new ComplexStateChangeHandler(
-			adapter,
-			`products.${product.NodeID}.stop`,
-			async (state) => {
-				if (state !== undefined) {
-					if (state?.val === true) {
-						// Acknowledge stop state first
-						await adapter.setStateAsync(`products.${product.NodeID}.stop`, state, true);
-						await product.stopAsync();
-						await adapter.setStateAsync(`products.${product.NodeID}.stop`, false, true);
-					}
+		const stopStateId = `products.${product.NodeID}.stop`;
+		const stopListener = new ComplexStateChangeHandler(adapter, stopStateId, async (state) => {
+			if (state !== undefined) {
+				if (state?.val === true) {
+					// Acknowledge stop state first
+					await adapter.setState(`products.${product.NodeID}.stop`, state, true);
+					await product.stopAsync();
+					await adapter.setState(`products.${product.NodeID}.stop`, false, true);
 				}
-			},
-		);
+			}
+		});
 		await stopListener.Initialize();
-		disposableEvents.push(stopListener);
+		disposalMap.set(stopStateId, stopListener);
 
-		const winkListener = new ComplexStateChangeHandler(
-			adapter,
-			`products.${product.NodeID}.wink`,
-			async (state) => {
-				if (state !== undefined) {
-					if (state?.val === true) {
-						// Acknowledge wink state first
-						await adapter.setStateAsync(`products.${product.NodeID}.wink`, state, true);
-						await product.winkAsync();
-						await adapter.setStateAsync(`products.${product.NodeID}.wink`, false, true);
-					}
+		const winkStateId = `products.${product.NodeID}.wink`;
+		const winkListener = new ComplexStateChangeHandler(adapter, winkStateId, async (state) => {
+			if (state !== undefined) {
+				if (state?.val === true) {
+					// Acknowledge wink state first
+					await adapter.setState(`products.${product.NodeID}.wink`, state, true);
+					await product.winkAsync();
+					await adapter.setState(`products.${product.NodeID}.wink`, false, true);
 				}
-			},
-		);
+			}
+		});
 		await winkListener.Initialize();
-		disposableEvents.push(winkListener);
+		disposalMap.set(winkStateId, winkListener);
 
 		for (const parameterCounter of [1, 2, 3, 4]) {
-			const targetFPRawHandler = new EchoStateChangeHandler(
-				adapter,
-				`products.${product.NodeID}.targetFP${parameterCounter}Raw`,
-			);
+			const targetFPRawStateId = `products.${product.NodeID}.targetFP${parameterCounter}Raw`;
+			const targetFPRawHandler = new EchoStateChangeHandler(adapter, targetFPRawStateId);
 			await targetFPRawHandler.Initialize();
-			disposableEvents.push(targetFPRawHandler);
+			disposalMap.set(targetFPRawStateId, targetFPRawHandler);
 		}
 
-		const refreshProductListener = new ComplexStateChangeHandler(
-			adapter,
-			`products.${product.NodeID}.refreshProduct`,
-			async (state) => {
-				if (state !== undefined) {
-					if (state?.val === true) {
-						// Acknowledge refreshProduct state first
-						await adapter.setStateAsync(`products.${product.NodeID}.refreshProduct`, state, true);
-						const sessionId = await ((adapter as any).Products as Products).requestStatusAsync(
-							product.NodeID,
-							StatusType.RequestCurrentPosition,
-							[1, 2, 3, 4],
+		const refreshProductStateId = `products.${product.NodeID}.refreshProduct`;
+		const refreshProductListener = new ComplexStateChangeHandler(adapter, refreshProductStateId, async (state) => {
+			if (state !== undefined) {
+				if (state?.val === true) {
+					// Acknowledge refreshProduct state first
+					await adapter.setState(refreshProductStateId, state, true);
+					const sessionId = await ((adapter as HasProductsInterface).Products as Products).requestStatusAsync(
+						product.NodeID,
+						StatusType.RequestCurrentPosition,
+						[1, 2, 3, 4],
+					);
+					try {
+						await waitForSessionFinishedNtfAsync(
+							adapter,
+							(adapter as HasConnectionInterface).Connection as IConnection,
+							sessionId,
 						);
-						try {
-							await waitForSessionFinishedNtfAsync(
-								adapter,
-								(adapter as any).Connection as IConnection,
-								sessionId,
-							);
-						} catch (e) {
-							if (e != "TimeoutError") {
-								throw e;
-							}
+					} catch (e) {
+						if (e != "TimeoutError") {
+							throw e;
 						}
-						await adapter.setStateAsync(`products.${product.NodeID}.refreshProduct`, false, true);
 					}
+					await adapter.setState(refreshProductStateId, false, true);
 				}
-			},
-		);
+			}
+		});
 		await refreshProductListener.Initialize();
-		disposableEvents.push(refreshProductListener);
+		disposalMap.set(refreshProductStateId, refreshProductListener);
 
+		const refreshLimitationStateId = `products.${product.NodeID}.refreshLimitation`;
 		const refreshLimitationListener = new ComplexStateChangeHandler(
 			adapter,
-			`products.${product.NodeID}.refreshLimitation`,
+			refreshLimitationStateId,
 			async (state) => {
 				if (state !== undefined) {
 					if (state?.val === true) {
 						// Acknowledge refreshLimitation state first
-						await adapter.setStateAsync(`products.${product.NodeID}.refreshLimitation`, state, true);
+						await adapter.setState(refreshLimitationStateId, state, true);
 						for await (const parameter of [
 							ParameterActive.MP,
 							ParameterActive.FP1,
@@ -1227,14 +1287,12 @@ export class SetupProducts {
 								await product.refreshLimitationAsync(limitationType, parameter);
 							}
 						}
-						await adapter.setStateAsync(`products.${product.NodeID}.refreshLimitation`, false, true);
+						await adapter.setState(refreshLimitationStateId, false, true);
 					}
 				}
 			},
 		);
 		await refreshLimitationListener.Initialize();
-		disposableEvents.push(refreshLimitationListener);
-
-		return disposableEvents;
+		disposalMap.set(refreshLimitationStateId, refreshLimitationListener);
 	}
 }

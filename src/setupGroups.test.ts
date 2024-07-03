@@ -1,6 +1,7 @@
 import { MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
 import {
+	Disposable,
 	GW_GET_ALL_NODES_INFORMATION_NTF,
 	GW_GET_GROUP_INFORMATION_NTF,
 	Group,
@@ -10,8 +11,9 @@ import {
 	Product,
 	Velocity,
 } from "klf-200-api";
-import { Disposable } from "klf-200-api/dist/utils/TypedEvent";
+import { EventEmitter } from "stream";
 import { promisify } from "util";
+import { DisposalMap } from "./disposalMap";
 import { SetupGroups } from "./setupGroups";
 import {
 	BaseStateChangeHandler,
@@ -73,23 +75,13 @@ const mockProducts = [mockProduct, mockProduct];
 describe("setupGroups", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
+	// eslint-disable-next-line @typescript-eslint/unbound-method
 	const { assertObjectExists, assertStateExists, assertStateHasValue, assertStateIsAcked, assertObjectCommon } =
 		utils.unit.createAsserts(database, adapter);
 
 	// Fake getChannelsOf
 	adapter.getChannelsOf = sinon.stub();
-	adapter.getChannelsOf.callsFake((parentDevice, callback) =>
-		callback(null, [
-			{
-				_id: `${adapter.namespace}.products.42`,
-				type: "channel",
-				common: {
-					name: "Test window",
-				},
-				native: {},
-			},
-		] as ioBroker.ChannelObject[]),
-	);
+
 	// Fake deleteChannel
 	adapter.deleteChannel = sinon.stub();
 	adapter.deleteChannel.callsFake((parentDevice, channelId, callback) => {
@@ -109,19 +101,40 @@ describe("setupGroups", function () {
 		);
 	});
 
+	// Fake recursive delObject:
+	const delObjectStub = sinon.stub(adapter, "delObject");
+	delObjectStub.withArgs(sinon.match.any, { recursive: true }).callsFake((id, recursive: any, callback) => {
+		// Delete sub-objects first
+		adapter.getObjectList(
+			{
+				startKey: `${adapter.namespace}.${id}`,
+				endkey: `${adapter.namespace}.${id}.\u9999`,
+			},
+			(err: any, res: { rows: { id: string; obj: any; doc: any }[] }) => {
+				for (const row of res.rows) {
+					adapter.delObject(row.id);
+				}
+
+				adapter.delObject(id, callback);
+			},
+		);
+	});
+	delObjectStub.callThrough();
+
 	// Promisify additional methods
-	for (const method of ["unsubscribeStates", "getChannelsOf", "deleteChannel"]) {
+	for (const method of ["unsubscribeStates", "getChannelsOf", "deleteChannel", "delObject"]) {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
 			value: promisify(adapter[method as keyof MockAdapter]),
 			writable: true,
 		});
 	}
 
 	// Mock some EventEmitter functions
-	(adapter as any).getMaxListeners = sinon.stub<[], number>().returns(100);
-	(adapter as any).setMaxListeners = sinon.stub<[number], void>();
+	(adapter as EventEmitter).getMaxListeners = sinon.stub<[], number>().returns(100);
+	(adapter as EventEmitter).setMaxListeners = sinon.stub<[number], EventEmitter>();
 
 	afterEach(() => {
 		// The mocks keep track of all method invocations - reset them after each single test
@@ -132,50 +145,50 @@ describe("setupGroups", function () {
 
 	describe("createGroupAsync", function () {
 		it("should create the channel for Group ID 50", async function () {
-			const disposables = await SetupGroups.createGroupAsync(
+			const disposalMap = new DisposalMap();
+			await SetupGroups.createGroupAsync(
 				adapter as unknown as ioBroker.Adapter,
 				mockGroup,
 				mockProducts,
+				disposalMap,
 			);
 			try {
 				assertObjectExists("groups.50");
 			} finally {
-				for (const disposable of await disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
 		it("should have the name 'Test Group' for its channel name", async function () {
 			const expectedName = "Test Group";
-			const disposables = await SetupGroups.createGroupAsync(
+			const disposalMap = new DisposalMap();
+			await SetupGroups.createGroupAsync(
 				adapter as unknown as ioBroker.Adapter,
 				mockGroup,
 				mockProducts,
+				disposalMap,
 			);
 			try {
 				assertObjectCommon("groups.50", { name: expectedName });
 			} finally {
-				for (const disposable of await disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
 		it("should have the role 'group.user' for its channel role", async function () {
 			const expectedName = "Test Group";
 			const expectedRole = "group.user";
-			const disposables = await SetupGroups.createGroupAsync(
+			const disposalMap = new DisposalMap();
+			await SetupGroups.createGroupAsync(
 				adapter as unknown as ioBroker.Adapter,
 				mockGroup,
 				mockProducts,
+				disposalMap,
 			);
 			try {
 				assertObjectCommon("groups.50", { name: expectedName, role: expectedRole });
 			} finally {
-				for (const disposable of await disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
@@ -214,66 +227,66 @@ describe("setupGroups", function () {
 		for (const test of testCases) {
 			it(`should create the ${test.state} state object`, async function () {
 				const expectedState = test.state;
-				const disposables = await SetupGroups.createGroupAsync(
+				const disposalMap = new DisposalMap();
+				await SetupGroups.createGroupAsync(
 					adapter as unknown as ioBroker.Adapter,
 					mockGroup,
 					mockProducts,
+					disposalMap,
 				);
 				try {
 					assertObjectExists(`test.0.groups.50.${expectedState}`);
 				} finally {
-					for (const disposable of await disposables) {
-						disposable.dispose();
-					}
+					await disposalMap.disposeAll();
 				}
 			});
 
 			if (test.value !== undefined) {
 				it(`should write the ${test.state} state`, async function () {
 					const expectedState = test.state;
-					const disposables = await SetupGroups.createGroupAsync(
+					const disposalMap = new DisposalMap();
+					await SetupGroups.createGroupAsync(
 						adapter as unknown as ioBroker.Adapter,
 						mockGroup,
 						mockProducts,
+						disposalMap,
 					);
 					try {
 						assertStateExists(`test.0.groups.50.${expectedState}`);
 					} finally {
-						for (const disposable of await disposables) {
-							disposable.dispose();
-						}
+						await disposalMap.disposeAll();
 					}
 				});
 
 				it(`should write the ${test.state} state with '${test.value}'`, async function () {
 					const expectedState = test.state;
-					const disposables = await SetupGroups.createGroupAsync(
+					const disposalMap = new DisposalMap();
+					await SetupGroups.createGroupAsync(
 						adapter as unknown as ioBroker.Adapter,
 						mockGroup,
 						mockProducts,
+						disposalMap,
 					);
 					try {
 						assertStateHasValue(`test.0.groups.50.${expectedState}`, test.value);
 					} finally {
-						for (const disposable of await disposables) {
-							disposable.dispose();
-						}
+						await disposalMap.disposeAll();
 					}
 				});
 
 				it(`should write the ${test.state} state ack`, async function () {
 					const expectedState = test.state;
-					const disposables = await SetupGroups.createGroupAsync(
+					const disposalMap = new DisposalMap();
+					await SetupGroups.createGroupAsync(
 						adapter as unknown as ioBroker.Adapter,
 						mockGroup,
 						mockProducts,
+						disposalMap,
 					);
 					try {
 						assertStateIsAcked(`test.0.groups.50.${expectedState}`, true);
 					} finally {
-						for (const disposable of await disposables) {
-							disposable.dispose();
-						}
+						await disposalMap.disposeAll();
 					}
 				});
 			}
@@ -308,29 +321,25 @@ describe("setupGroups", function () {
 		];
 
 		for (const test of testCasesForChanges) {
-			let disposables: Disposable[] = [];
+			let disposalMap: DisposalMap;
 			this.beforeEach(async function () {
-				disposables = await SetupGroups.createGroupAsync(
+				disposalMap = new DisposalMap();
+				await SetupGroups.createGroupAsync(
 					adapter as unknown as ioBroker.Adapter,
 					mockGroup,
 					mockProducts,
+					disposalMap,
 				);
 			});
-			this.afterEach(function () {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+			this.afterEach(async function () {
+				await disposalMap.disposeAll();
 			});
 
 			it(`should write the ${test.state} state with '${test.value}' after change notificiation`, async function () {
 				const expectedState = test.state;
-				await (adapter as unknown as ioBroker.Adapter).setStateAsync(
-					`groups.50.${test.state}`,
-					test.value,
-					false,
-				);
+				await (adapter as unknown as ioBroker.Adapter).setState(`groups.50.${test.state}`, test.value, false);
 				assertStateIsAcked(`test.0.groups.50.${expectedState}`, false);
-				mockGroup.propertyChangedEvent.emit({
+				await mockGroup.propertyChangedEvent.emit({
 					o: mockGroup,
 					propertyName: test.propertyName,
 					propertyValue: test.value,
@@ -340,13 +349,9 @@ describe("setupGroups", function () {
 
 			it(`should write the ${test.state} state ack after change notificiation`, async function () {
 				const expectedState = test.state;
-				await (adapter as unknown as ioBroker.Adapter).setStateAsync(
-					`groups.50.${test.state}`,
-					test.value,
-					false,
-				);
+				await (adapter as unknown as ioBroker.Adapter).setState(`groups.50.${test.state}`, test.value, false);
 				assertStateIsAcked(`test.0.groups.50.${expectedState}`, false);
-				mockGroup.propertyChangedEvent.emit({
+				await mockGroup.propertyChangedEvent.emit({
 					o: mockGroup,
 					propertyName: test.propertyName,
 					propertyValue: test.value,
@@ -356,18 +361,23 @@ describe("setupGroups", function () {
 		}
 
 		it(`Each writable state should be bound to a state change handler`, async function () {
-			let disposables: Disposable[] = [];
-			disposables = await SetupGroups.createGroupAsync(
+			const disposalMap = new DisposalMap();
+			await SetupGroups.createGroupAsync(
 				adapter as unknown as ioBroker.Adapter,
 				mockGroup,
 				mockProducts,
+				disposalMap,
 			);
 			try {
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
-				> = await adapter.getObjectListAsync({
+				> = (await adapter.getObjectListAsync({
 					startKey: `${adapter.namespace}.groups.${mockGroup.GroupID}.`,
 					endkey: `${adapter.namespace}.groups.${mockGroup.GroupID}.\u9999`,
+				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
+				const disposables: Disposable[] = [];
+				disposalMap.forEach((value) => {
+					disposables.push(value);
 				});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
@@ -401,18 +411,31 @@ describe("setupGroups", function () {
 					`There are unmapped writable states: ${JSON.stringify(unmappedWritableStates)}`,
 				).to.be.an("Array").empty;
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
 		it(`Each readable state should be bound to a property change handler`, async function () {
-			let disposables: Disposable[] = [];
-			disposables = await SetupGroups.createGroupsAsync(
+			adapter.getChannelsOf.callsFake(
+				(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
+					callback(null, [
+						{
+							_id: `${adapter.namespace}.products.42`,
+							type: "channel",
+							common: {
+								name: "Test window",
+							},
+							native: {},
+						},
+					] as ioBroker.ChannelObject[]),
+			);
+
+			const disposalMap = new DisposalMap();
+			await SetupGroups.createGroupsAsync(
 				adapter as unknown as ioBroker.Adapter,
 				mockGroups,
 				mockProducts,
+				disposalMap,
 			);
 			try {
 				const allowedUnmappedStates: string[] = [];
@@ -421,9 +444,13 @@ describe("setupGroups", function () {
 				};
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
-				> = await adapter.getObjectListAsync({
+				> = (await adapter.getObjectListAsync({
 					startKey: `${adapter.namespace}.groups.${mockGroup.GroupID}.`,
 					endkey: `${adapter.namespace}.groups.${mockGroup.GroupID}.\u9999`,
+				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
+				const disposables: Disposable[] = [];
+				disposalMap.forEach((value) => {
+					disposables.push(value);
 				});
 				const unmappedWritableStates = objectList.rows
 					.map((value) => {
@@ -461,27 +488,39 @@ describe("setupGroups", function () {
 					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
 				).to.be.an("Array").empty;
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 	});
 
 	describe("createGroupsAsync", function () {
 		it("should have 1 in the value of groups.groupsFound state", async function () {
+			adapter.getChannelsOf.callsFake(
+				(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
+					callback(null, [
+						{
+							_id: `${adapter.namespace}.products.42`,
+							type: "channel",
+							common: {
+								name: "Test window",
+							},
+							native: {},
+						},
+					] as ioBroker.ChannelObject[]),
+			);
+
 			const expectedValue = 1;
-			const disposables = await SetupGroups.createGroupsAsync(
+			const disposalMap = new DisposalMap();
+			await SetupGroups.createGroupsAsync(
 				adapter as unknown as ioBroker.Adapter,
 				mockGroups,
 				mockProducts,
+				disposalMap,
 			);
 			try {
 				assertStateHasValue("groups.groupsFound", expectedValue);
 			} finally {
-				for (const disposable of await disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 
@@ -506,10 +545,26 @@ describe("setupGroups", function () {
 			// Check, that old states exist
 			states.forEach((state) => assertObjectExists(`${adapter.namespace}.groups.42.${state}`));
 
-			const disposables = await SetupGroups.createGroupsAsync(
+			adapter.getChannelsOf.callsFake(
+				(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
+					callback(null, [
+						{
+							_id: `${adapter.namespace}.products.42`,
+							type: "channel",
+							common: {
+								name: "Test window",
+							},
+							native: {},
+						},
+					] as ioBroker.ChannelObject[]),
+			);
+
+			const disposalMap = new DisposalMap();
+			await SetupGroups.createGroupsAsync(
 				adapter as unknown as ioBroker.Adapter,
 				mockGroups,
 				mockProducts,
+				disposalMap,
 			);
 			try {
 				states.forEach((state) =>
@@ -519,9 +574,7 @@ describe("setupGroups", function () {
 					).to.throw(),
 				);
 			} finally {
-				for (const disposable of disposables) {
-					disposable.dispose();
-				}
+				await disposalMap.disposeAll();
 			}
 		});
 	});
