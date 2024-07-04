@@ -1,10 +1,21 @@
 "use strict";
 
-import { ActuatorType, FunctionalParameter, IConnection, Product, Products, StatusType } from "klf-200-api";
+import {
+	ActuatorType,
+	FunctionalParameter,
+	IConnection,
+	LimitationType,
+	LockTime,
+	ParameterActive,
+	Product,
+	Products,
+	StatusType,
+} from "klf-200-api";
 import { DisposalMap } from "./disposalMap";
 import { HasConnectionInterface, HasProductsInterface } from "./interfaces";
 import { levelConverter, roleConverter } from "./util/converter";
 import {
+	ComplexPropertyChangedHandler,
 	ComplexStateChangeHandler,
 	EchoStateChangeHandler,
 	PercentagePropertyChangedHandler,
@@ -19,6 +30,7 @@ export class SetupProducts {
 		adapter: ioBroker.Adapter,
 		products: Product[],
 		disposalMap: DisposalMap,
+		productLimitationError: Set<string>,
 	): Promise<void> {
 		// Remove old products
 		const currentProductsList = await adapter.getChannelsOfAsync(`products`);
@@ -43,7 +55,7 @@ export class SetupProducts {
 
 		for (const product of products) {
 			if (product) {
-				await SetupProducts.createProductAsync(adapter, product, disposalMap);
+				await SetupProducts.createProductAsync(adapter, product, disposalMap, productLimitationError);
 			}
 		}
 
@@ -70,6 +82,7 @@ export class SetupProducts {
 		adapter: ioBroker.Adapter,
 		product: Product,
 		disposalMap: DisposalMap,
+		productLimitationError: Set<string>,
 	): Promise<void> {
 		adapter.log.info(`Setup objects for product ${product.Name}.`);
 
@@ -110,6 +123,13 @@ export class SetupProducts {
 			ActuatorType.VentilationPoint,
 			ActuatorType.ExteriorHeating,
 		];
+
+		const statesLimitationTimeRaw: Record<string, string> = {};
+		// Fill limitation time raw states
+		for (let value = 0; value <= 252; value++) {
+			statesLimitationTimeRaw[`${value}`] = `${LockTime.lockTimeValueToLockTimeForLimitation(value)} seconds`;
+		}
+		statesLimitationTimeRaw["253"] = "Forever";
 
 		await adapter.setObjectNotExistsAsync(`products.${product.NodeID}`, {
 			type: "channel",
@@ -681,6 +701,191 @@ export class SetupProducts {
 			false,
 		);
 
+		/*
+			Limitation states
+		*/
+
+		for (const parameter of [
+			ParameterActive.MP,
+			ParameterActive.FP1,
+			ParameterActive.FP2,
+			ParameterActive.FP3,
+			ParameterActive.FP4,
+		]) {
+			if (!productLimitationError.has(JSON.stringify([product.NodeID, parameter]))) {
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}MinRaw`,
+					{
+						name: `limitation${ParameterActive[parameter]}MinRaw`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						max: 0xffff,
+						desc: `Min limitation of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`} raw value`,
+						states: InverseProductTypes.indexOf(product.TypeID) === -1 ? states : statesReverse,
+					},
+					{},
+					product.getLimitationMinRaw(parameter),
+				);
+
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}MaxRaw`,
+					{
+						name: `limitation${ParameterActive[parameter]}MaxRaw`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						max: 0xffff,
+						desc: `Max limitation of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`} raw value`,
+						states: InverseProductTypes.indexOf(product.TypeID) === -1 ? states : statesReverse,
+					},
+					{},
+					product.getLimitationMaxRaw(parameter),
+				);
+
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}Min`,
+					{
+						name: `limitation${ParameterActive[parameter]}Min`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						max: 100,
+						unit: "%",
+						desc: `Min limitation of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`} in percent`,
+					},
+					{},
+					Math.round(product.getLimitationMin(parameter) * 100),
+				);
+
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}Max`,
+					{
+						name: `limitation${ParameterActive[parameter]}Max`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						max: 100,
+						unit: "%",
+						desc: `Max limitation of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`} in percent`,
+					},
+					{},
+					Math.round(product.getLimitationMax(parameter) * 100),
+				);
+
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}Originator`,
+					{
+						name: `limitation${ParameterActive[parameter]}Originator`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						max: 255,
+						desc: `Origin of the limitation for ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
+						states: {
+							"1": "User remote control",
+							"2": "Rain sensor",
+							"3": "Timer controlled",
+							"5": "UPS unit",
+							"8": "Stand alone automatic controls (SAAC)",
+							"9": "Wind sensor",
+							"11": "Electric load shed",
+							"12": "Local light sensor",
+							"13": "Unspecified environment sensor",
+							"255": "Emergency controlled",
+						},
+					},
+					{},
+					product.getLimitationOriginator(parameter),
+				);
+
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRaw`,
+					{
+						name: `limitation${ParameterActive[parameter]}TimeRaw`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						max: 255,
+						desc: `Limitation time raw value of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
+						states: statesLimitationTimeRaw,
+					},
+					{},
+					product.getLimitationTimeRaw(parameter),
+				);
+
+				let limitationTime = NaN;
+				try {
+					limitationTime = product.getLimitationTime(parameter);
+				} catch (error) {
+					if (error instanceof Error && error.message === "Lock time value out of range.") {
+						limitationTime = NaN;
+					}
+				}
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}Time`,
+					{
+						name: `limitation${ParameterActive[parameter]}Time`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						desc: `Limitation time of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`} in seconds`,
+					},
+					{},
+					limitationTime,
+				);
+			} else {
+				// Eventually remove objects:
+				for (const state of [
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}MinRaw`,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}MaxRaw`,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}Min`,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}Max`,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}Originator`,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRaw`,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}Time`,
+				]) {
+					await adapter.delObjectAsync(state);
+				}
+			}
+		}
+
+		await StateHelper.createAndSetStateAsync(
+			adapter,
+			`products.${product.NodeID}.refreshLimitation`,
+			{
+				name: "refresLimitation",
+				role: "button.play",
+				type: "boolean",
+				read: false,
+				write: true,
+				desc: "Set to true to re-read the limitations of the product from the KLF-200",
+			},
+			{},
+			false,
+		);
+
 		// Setup product listener
 		adapter.log.debug(`Setup change event listeners for product ${product.Name}.`);
 		disposalMap.set(
@@ -831,6 +1036,111 @@ export class SetupProducts {
 				"StatusReply",
 				product,
 			),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.limitationMinRaw`,
+			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationMinRaw", product, async (_newValue) => {
+				for (const parameter of [
+					ParameterActive.MP,
+					ParameterActive.FP1,
+					ParameterActive.FP2,
+					ParameterActive.FP3,
+					ParameterActive.FP4,
+				]) {
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}MinRaw`,
+						product.getLimitationMinRaw(parameter),
+						true,
+					);
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}Min`,
+						Math.round(product.getLimitationMin(parameter) * 100),
+						true,
+					);
+				}
+				return "";
+			}),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.limitationMaxRaw`,
+			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationMaxRaw", product, async (_newValue) => {
+				for (const parameter of [
+					ParameterActive.MP,
+					ParameterActive.FP1,
+					ParameterActive.FP2,
+					ParameterActive.FP3,
+					ParameterActive.FP4,
+				]) {
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}MaxRaw`,
+						product.getLimitationMaxRaw(parameter),
+						true,
+					);
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}Max`,
+						Math.round(product.getLimitationMax(parameter) * 100),
+						true,
+					);
+				}
+				return "";
+			}),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.limitationOriginator`,
+			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationOriginator", product, async (_newValue) => {
+				for (const parameter of [
+					ParameterActive.MP,
+					ParameterActive.FP1,
+					ParameterActive.FP2,
+					ParameterActive.FP3,
+					ParameterActive.FP4,
+				]) {
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}Originator`,
+						product.getLimitationOriginator(parameter),
+						true,
+					);
+				}
+				return "";
+			}),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.limitationTimeRaw`,
+			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationTimeRaw", product, async (_newValue) => {
+				for (const parameter of [
+					ParameterActive.MP,
+					ParameterActive.FP1,
+					ParameterActive.FP2,
+					ParameterActive.FP3,
+					ParameterActive.FP4,
+				]) {
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRaw`,
+						product.getLimitationTimeRaw(parameter),
+						true,
+					);
+
+					let limitationTime = NaN;
+					try {
+						limitationTime = Math.round(product.getLimitationTime(parameter) * 100);
+					} catch (error) {
+						if (error instanceof Error && error.message === "Lock time value out of range.") {
+							limitationTime = NaN;
+						}
+					}
+
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}Time`,
+						limitationTime,
+						true,
+					);
+				}
+				return "";
+			}),
 		);
 
 		adapter.log.debug(`Setup state change listeners for product ${product.Name}.`);
@@ -987,5 +1297,46 @@ export class SetupProducts {
 		});
 		await refreshProductListener.Initialize();
 		disposalMap.set(refreshProductStateId, refreshProductListener);
+
+		const refreshLimitationStateId = `products.${product.NodeID}.refreshLimitation`;
+		const refreshLimitationListener = new ComplexStateChangeHandler(
+			adapter,
+			refreshLimitationStateId,
+			async (state) => {
+				if (state !== undefined) {
+					if (state?.val === true) {
+						// Acknowledge refreshLimitation state first
+						await adapter.setState(refreshLimitationStateId, state, true);
+
+						// Get a list of defined parameters:
+						const parameters: ParameterActive[] = [];
+						for (const [key, value] of [
+							[ParameterActive.MP, "limitationMPMaxRaw"],
+							[ParameterActive.FP1, "limitationFP1MaxRaw"],
+							[ParameterActive.FP2, "limitationFP2MaxRaw"],
+							[ParameterActive.FP3, "limitationFP3MaxRaw"],
+							[ParameterActive.FP4, "limitationFP4MaxRaw"],
+						] as const) {
+							const existingState = await adapter.objectExists(`products.${product.NodeID}.${value}`);
+							if (existingState) {
+								parameters.push(key);
+							}
+						}
+
+						for await (const parameter of parameters) {
+							for await (const limitationType of [
+								LimitationType.MinimumLimitation,
+								LimitationType.MaximumLimitation,
+							]) {
+								await product.refreshLimitationAsync(limitationType, parameter);
+							}
+						}
+						await adapter.setState(refreshLimitationStateId, false, true);
+					}
+				}
+			},
+		);
+		await refreshLimitationListener.Initialize();
+		disposalMap.set(refreshLimitationStateId, refreshLimitationListener);
 	}
 }
