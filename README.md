@@ -207,14 +207,20 @@ The following devices are defined:
     -   wink - Set this state to true to let the product wink. This is used to
         identify a device, e.g. a window will move its handle, a roller shutter
         will move up and down a little bit. This state is writable, only.
-    -   Limitation-related states (each state for main parameter (XX=MP) and functional parameters 1-4 (XX=FP1-FP4)):
+    -   Limitation-related states (each state for main parameter (XX=MP) and functional parameters 1-4 (XX=FP1-FP4), if applicable):
         -   limitationXXMinRaw - Raw value of min limitation of the product. See the table at [Functional parameters](#functional-parameters).
         -   limitationXXMaxRaw - Raw value of max limitation of the product. See the table at [Functional parameters](#functional-parameters).
         -   limitationXXMin - Raw value of min limitation of the product mapped to percentage (0-100%).
         -   limitationXXMax - Raw value of max limitation of the product mapped to percentage (0-100%).
         -   limitationXXOriginator - Origin of the limitation.
         -   limitationXXTimeRaw - Raw value of the time of the limitation.
-        -   limitationXXTime - Raw value of the limitation time mapped to percentage (0-100%).
+        -   limitationXXTime - Raw value of the limitation time mapped to seconds.
+
+> **Note:** According to the type of the actuator the raw values will be mapped either to a range of 0%-100% or 100%-0%.
+> This can be irritating especially for the limitation values, where the max limitation value can be lower than the min
+> limitation value. The logic behind is that the min _raw_ value starts at 0 and the max _raw_ value ends at 51200 and a
+> limitation, e.g. from a rain sensor, will be set by setting these raw values internally.
+> If you need it the _right_ way, please use aliases in ioBroker.
 
 ##### Functional parameters and other raw values
 

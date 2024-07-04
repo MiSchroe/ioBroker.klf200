@@ -120,13 +120,19 @@ class Klf200 extends utils.Adapter {
       this.log.error(`Error during initialization of the adapter.`);
       const result = (0, import_utils.convertErrorToString)(e);
       this.log.error(result);
+      if (e instanceof Error && e.stack) {
+        this.log.debug(e.stack);
+      }
       this.terminate ? this.terminate(result) : process.exit(1);
     }
   }
   async initializeOnConnection() {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
     this.log.info(`Setting up notification handler for gateway state...`);
-    this.disposables.push(this._Connection.on(this.onFrameReceived.bind(this)));
+    this.disposables.push(
+      this._Connection.on(this.onFrameReceived.bind(this)),
+      this._Connection.onFrameSent(this.onFrameSent.bind(this))
+    );
     this.log.info(`Reading device information...`);
     this._Gateway = new import_klf_200_api.Gateway(this.Connection);
     this.log.info(`Enabling the house status monitor...`);
@@ -144,6 +150,29 @@ class Klf200 extends utils.Adapter {
     this.log.info(`Reading products...`);
     this._Products = await import_klf_200_api.Products.createProductsAsync(this.Connection);
     this.log.info(`${(0, import_utils.ArrayCount)(this.Products.Products)} products found.`);
+    this.log.info(`Reading product limitations...`);
+    const productLimitationError = /* @__PURE__ */ new Set();
+    for (const product of this._Products.Products) {
+      for (const limitationType of [import_klf_200_api.LimitationType.MinimumLimitation, import_klf_200_api.LimitationType.MaximumLimitation]) {
+        for (const parameterActive of [
+          import_klf_200_api.ParameterActive.MP,
+          import_klf_200_api.ParameterActive.FP1,
+          import_klf_200_api.ParameterActive.FP2,
+          import_klf_200_api.ParameterActive.FP3,
+          import_klf_200_api.ParameterActive.FP4
+        ]) {
+          try {
+            await product.refreshLimitationAsync(limitationType, parameterActive);
+          } catch (error) {
+            if (error instanceof Error && (error.message.startsWith("Unexpected node ID") || error.message.startsWith("Unexpected parameter ID"))) {
+              productLimitationError.add(JSON.stringify([product.NodeID, parameterActive]));
+            } else {
+              throw error;
+            }
+          }
+        }
+      }
+    }
     this._Setup = await import_setup.Setup.setupGlobalAsync(this, this.Gateway);
     this.disposables.push(this._Setup);
     await import_setupScenes.SetupScenes.createScenesAsync(this, this.Scenes, this.disposalMap);
@@ -153,7 +182,12 @@ class Klf200 extends utils.Adapter {
       (_g = (_f = this.Products) == null ? void 0 : _f.Products) != null ? _g : [],
       this.disposalMap
     );
-    await import_setupProducts.SetupProducts.createProductsAsync(this, (_i = (_h = this.Products) == null ? void 0 : _h.Products) != null ? _i : [], this.disposalMap);
+    await import_setupProducts.SetupProducts.createProductsAsync(
+      this,
+      (_i = (_h = this.Products) == null ? void 0 : _h.Products) != null ? _i : [],
+      this.disposalMap,
+      productLimitationError
+    );
     this.log.info(`Setting up notification handlers for removal...`);
     this.disposables.push(
       this.Scenes.onRemovedScene(this.onRemovedScene.bind(this)),
@@ -233,7 +267,27 @@ class Klf200 extends utils.Adapter {
     var _a;
     const newProduct = (_a = this._Products) == null ? void 0 : _a.Products[productId];
     if (newProduct) {
-      await import_setupProducts.SetupProducts.createProductAsync(this, newProduct, this.disposalMap);
+      const productLimitationError = /* @__PURE__ */ new Set();
+      for (const limitationType of [import_klf_200_api.LimitationType.MinimumLimitation, import_klf_200_api.LimitationType.MaximumLimitation]) {
+        for (const parameterActive of [
+          import_klf_200_api.ParameterActive.MP,
+          import_klf_200_api.ParameterActive.FP1,
+          import_klf_200_api.ParameterActive.FP2,
+          import_klf_200_api.ParameterActive.FP3,
+          import_klf_200_api.ParameterActive.FP4
+        ]) {
+          try {
+            await newProduct.refreshLimitationAsync(limitationType, parameterActive);
+          } catch (error) {
+            if (error instanceof Error && (error.message.startsWith("Unexpected node ID") || error.message.startsWith("Unexpected parameter ID"))) {
+              productLimitationError.add(JSON.stringify([newProduct.NodeID, parameterActive]));
+            } else {
+              throw error;
+            }
+          }
+        }
+      }
+      await import_setupProducts.SetupProducts.createProductAsync(this, newProduct, this.disposalMap, productLimitationError);
     }
   }
   async onNewGroup(groupId) {
@@ -249,6 +303,10 @@ class Klf200 extends utils.Adapter {
     if (!(frame instanceof import_klf_200_api.GW_GET_STATE_CFM) && !(frame instanceof import_klf_200_api.GW_REBOOT_CFM)) {
       await ((_a = this.Setup) == null ? void 0 : _a.stateTimerHandler(this, this.Gateway));
     }
+  }
+  async onFrameSent(frame) {
+    this.log.debug(`Frame sent (${import_klf_200_api.GatewayCommand[frame.Command]}): ${this.stringifyFrame(frame)}`);
+    return Promise.resolve();
   }
   stringifyFrame(frame) {
     return JSON.stringify(frame, (key, value) => {

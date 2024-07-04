@@ -16,6 +16,9 @@ import {
 	IConnection,
 	IGW_FRAME,
 	IGW_FRAME_RCV,
+	IGW_FRAME_REQ,
+	LimitationType,
+	ParameterActive,
 	Products,
 	Scenes,
 } from "klf-200-api";
@@ -171,13 +174,19 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 			this.log.error(`Error during initialization of the adapter.`);
 			const result = convertErrorToString(e);
 			this.log.error(result);
+			if (e instanceof Error && e.stack) {
+				this.log.debug(e.stack);
+			}
 			this.terminate ? this.terminate(result) : process.exit(1);
 		}
 	}
 
 	private async initializeOnConnection(): Promise<void> {
 		this.log.info(`Setting up notification handler for gateway state...`);
-		this.disposables.push(this._Connection!.on(this.onFrameReceived.bind(this)));
+		this.disposables.push(
+			this._Connection!.on(this.onFrameReceived.bind(this)),
+			this._Connection!.onFrameSent(this.onFrameSent.bind(this)),
+		);
 
 		// Read device info, scenes, groups and products and setup device
 		this.log.info(`Reading device information...`);
@@ -204,10 +213,33 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 		this._Products = await Products.createProductsAsync(this.Connection!);
 		this.log.info(`${ArrayCount(this.Products!.Products)} products found.`);
 
-		// this.log.info(`Reading product limitations...`);
-		// for await (const product of this._Products) {
-
-		// }
+		this.log.info(`Reading product limitations...`);
+		const productLimitationError = new Set<string>();
+		for (const product of this._Products.Products) {
+			for (const limitationType of [LimitationType.MinimumLimitation, LimitationType.MaximumLimitation]) {
+				for (const parameterActive of [
+					ParameterActive.MP,
+					ParameterActive.FP1,
+					ParameterActive.FP2,
+					ParameterActive.FP3,
+					ParameterActive.FP4,
+				]) {
+					try {
+						await product.refreshLimitationAsync(limitationType, parameterActive);
+					} catch (error) {
+						if (
+							error instanceof Error &&
+							(error.message.startsWith("Unexpected node ID") ||
+								error.message.startsWith("Unexpected parameter ID"))
+						) {
+							productLimitationError.add(JSON.stringify([product.NodeID, parameterActive]));
+						} else {
+							throw error;
+						}
+					}
+				}
+			}
+		}
 
 		// Setup states
 		this._Setup = await Setup.setupGlobalAsync(this, this.Gateway!);
@@ -219,7 +251,12 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 			this.Products?.Products ?? [],
 			this.disposalMap,
 		);
-		await SetupProducts.createProductsAsync(this, this.Products?.Products ?? [], this.disposalMap);
+		await SetupProducts.createProductsAsync(
+			this,
+			this.Products?.Products ?? [],
+			this.disposalMap,
+			productLimitationError,
+		);
 
 		this.log.info(`Setting up notification handlers for removal...`);
 		// Setup remove notification
@@ -322,7 +359,31 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 	private async onNewProduct(productId: number): Promise<void> {
 		const newProduct = this._Products?.Products[productId];
 		if (newProduct) {
-			await SetupProducts.createProductAsync(this, newProduct, this.disposalMap);
+			const productLimitationError = new Set<string>();
+			for (const limitationType of [LimitationType.MinimumLimitation, LimitationType.MaximumLimitation]) {
+				for (const parameterActive of [
+					ParameterActive.MP,
+					ParameterActive.FP1,
+					ParameterActive.FP2,
+					ParameterActive.FP3,
+					ParameterActive.FP4,
+				]) {
+					try {
+						await newProduct.refreshLimitationAsync(limitationType, parameterActive);
+					} catch (error) {
+						if (
+							error instanceof Error &&
+							(error.message.startsWith("Unexpected node ID") ||
+								error.message.startsWith("Unexpected parameter ID"))
+						) {
+							productLimitationError.add(JSON.stringify([newProduct.NodeID, parameterActive]));
+						} else {
+							throw error;
+						}
+					}
+				}
+			}
+			await SetupProducts.createProductAsync(this, newProduct, this.disposalMap, productLimitationError);
 		}
 	}
 
@@ -339,6 +400,11 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 			// Confirmation messages of the GW_GET_STATE_REQ must be ignored to avoid an infinity loop
 			await this.Setup?.stateTimerHandler(this, this.Gateway!);
 		}
+	}
+
+	private async onFrameSent(frame: IGW_FRAME_REQ): Promise<void> {
+		this.log.debug(`Frame sent (${GatewayCommand[frame.Command]}): ${this.stringifyFrame(frame)}`);
+		return Promise.resolve();
 	}
 
 	private stringifyFrame(frame: IGW_FRAME): string {

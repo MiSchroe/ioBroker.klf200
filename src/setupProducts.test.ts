@@ -7,6 +7,7 @@ import {
 	IConnection,
 	NodeOperatingState,
 	NodeVariation,
+	ParameterActive,
 	PowerSaveMode,
 	Product,
 	RunStatus,
@@ -129,7 +130,12 @@ describe("setupProducts", function () {
 	describe("createProductAsync", function () {
 		it("should create the channel for product ID 0", async function () {
 			const disposalMap = new DisposalMap();
-			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
+			await SetupProducts.createProductAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProduct,
+				disposalMap,
+				new Set<string>(),
+			);
 			try {
 				assertObjectExists("products.0");
 			} finally {
@@ -140,7 +146,12 @@ describe("setupProducts", function () {
 		it("should have the name 'Fenster Badezimmer' for its channel name", async function () {
 			const expectedName = "Fenster Badezimmer";
 			const disposalMap = new DisposalMap();
-			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
+			await SetupProducts.createProductAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProduct,
+				disposalMap,
+				new Set<string>(),
+			);
 			try {
 				assertObjectCommon("products.0", { name: expectedName });
 			} finally {
@@ -152,7 +163,12 @@ describe("setupProducts", function () {
 			const expectedName = "Fenster Badezimmer";
 			const expectedRole = "window";
 			const disposalMap = new DisposalMap();
-			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
+			await SetupProducts.createProductAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProduct,
+				disposalMap,
+				new Set<string>(),
+			);
 			try {
 				assertObjectCommon("products.0", { name: expectedName, role: expectedRole });
 			} finally {
@@ -287,11 +303,11 @@ describe("setupProducts", function () {
 			},
 			{
 				state: "limitationMPMin",
-				value: 0,
+				value: 100,
 			},
 			{
 				state: "limitationMPMax",
-				value: 100,
+				value: 0,
 			},
 			{
 				state: "limitationMPOriginator",
@@ -315,11 +331,11 @@ describe("setupProducts", function () {
 			},
 			{
 				state: "limitationFP1Min",
-				value: 0,
+				value: 100,
 			},
 			{
 				state: "limitationFP1Max",
-				value: 100,
+				value: 0,
 			},
 			{
 				state: "limitationFP1Originator",
@@ -343,11 +359,11 @@ describe("setupProducts", function () {
 			},
 			{
 				state: "limitationFP2Min",
-				value: 0,
+				value: 100,
 			},
 			{
 				state: "limitationFP2Max",
-				value: 100,
+				value: 0,
 			},
 			{
 				state: "limitationFP2Originator",
@@ -371,11 +387,11 @@ describe("setupProducts", function () {
 			},
 			{
 				state: "limitationFP3Min",
-				value: 0,
+				value: 100,
 			},
 			{
 				state: "limitationFP3Max",
-				value: 100,
+				value: 0,
 			},
 			{
 				state: "limitationFP3Originator",
@@ -399,11 +415,11 @@ describe("setupProducts", function () {
 			},
 			{
 				state: "limitationFP4Min",
-				value: 0,
+				value: 100,
 			},
 			{
 				state: "limitationFP4Max",
-				value: 100,
+				value: 0,
 			},
 			{
 				state: "limitationFP4Originator",
@@ -430,6 +446,7 @@ describe("setupProducts", function () {
 					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
 					disposalMap,
+					new Set<string>(),
 				);
 				try {
 					assertObjectExists(`test.0.products.0.${expectedState}`);
@@ -445,6 +462,7 @@ describe("setupProducts", function () {
 					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
 					disposalMap,
+					new Set<string>(),
 				);
 				try {
 					assertStateExists(`test.0.products.0.${expectedState}`);
@@ -460,6 +478,7 @@ describe("setupProducts", function () {
 					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
 					disposalMap,
+					new Set<string>(),
 				);
 				try {
 					assertStateHasValue(`test.0.products.0.${expectedState}`, test.value);
@@ -475,6 +494,7 @@ describe("setupProducts", function () {
 					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
 					disposalMap,
+					new Set<string>(),
 				);
 				try {
 					assertStateIsAcked(`test.0.products.0.${expectedState}`, true);
@@ -566,6 +586,7 @@ describe("setupProducts", function () {
 					adapter as unknown as ioBroker.Adapter,
 					mockProduct,
 					disposalMap,
+					new Set<string>(),
 				);
 			});
 			this.afterEach(async function () {
@@ -597,7 +618,12 @@ describe("setupProducts", function () {
 
 		it(`Each writable state should be bound to a state change handler`, async function () {
 			const disposalMap = new DisposalMap();
-			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
+			await SetupProducts.createProductAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProduct,
+				disposalMap,
+				new Set<string>(),
+			);
 			try {
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
@@ -647,7 +673,12 @@ describe("setupProducts", function () {
 
 		it(`Each readable state should be bound to a property change handler`, async function () {
 			const disposalMap = new DisposalMap();
-			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
+			await SetupProducts.createProductAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProduct,
+				disposalMap,
+				new Set<string>(),
+			);
 			try {
 				const allowedUnmappedStates = [
 					"test.0.products.0.category",
@@ -748,7 +779,12 @@ describe("setupProducts", function () {
 				.withExactArgs(0.5, undefined, undefined, undefined, undefined);
 
 			const disposalMap = new DisposalMap();
-			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
+			await SetupProducts.createProductAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProduct,
+				disposalMap,
+				new Set<string>(),
+			);
 
 			// Find the handler:
 			const stateId = `products.${mockProduct.NodeID}.targetPosition`;
@@ -786,7 +822,12 @@ describe("setupProducts", function () {
 				]);
 
 			const disposalMap = new DisposalMap();
-			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
+			await SetupProducts.createProductAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProduct,
+				disposalMap,
+				new Set<string>(),
+			);
 
 			// Find the handler:
 			const stateId = `products.${mockProduct.NodeID}.targetPosition`;
@@ -839,7 +880,12 @@ describe("setupProducts", function () {
 			assertObjectCommon(`test.0.products.0.${expectedState}`, { write: false } as ioBroker.StateCommon);
 
 			const disposalMap = new DisposalMap();
-			await SetupProducts.createProductAsync(adapter as unknown as ioBroker.Adapter, mockProduct, disposalMap);
+			await SetupProducts.createProductAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProduct,
+				disposalMap,
+				new Set<string>(),
+			);
 			try {
 				assertObjectExists(`test.0.products.0.${expectedState}`);
 				assertObjectCommon(`test.0.products.0.${expectedState}`, { write: true } as ioBroker.StateCommon);
@@ -847,6 +893,49 @@ describe("setupProducts", function () {
 				await disposalMap.disposeAll();
 			}
 		});
+
+		for (const expectedState of [
+			"limitationFP1MinRaw",
+			"limitationFP1MaxRaw",
+			"limitationFP1Min",
+			"limitationFP1Max",
+			"limitationFP1Originator",
+			"limitationFP1TimeRaw",
+			"limitationFP1Time",
+		]) {
+			it(`shouldn't create a state for ${expectedState} of FP1`, async function () {
+				const disposalMap = new DisposalMap();
+				await SetupProducts.createProductAsync(
+					adapter as unknown as ioBroker.Adapter,
+					mockProduct,
+					disposalMap,
+					new Set<string>([JSON.stringify([0, ParameterActive.FP1])]),
+				);
+				try {
+					expect(database.hasObject(`test.0.products.0.${expectedState}`)).to.be.false;
+				} finally {
+					await disposalMap.disposeAll();
+				}
+			});
+
+			it(`shouldn't remove an existing state for ${expectedState} of FP1`, async function () {
+				database.publishState(`test.0.products.0.${expectedState}`, {});
+				assertObjectExists(`test.0.products.0.${expectedState}`);
+
+				const disposalMap = new DisposalMap();
+				await SetupProducts.createProductAsync(
+					adapter as unknown as ioBroker.Adapter,
+					mockProduct,
+					disposalMap,
+					new Set<string>([JSON.stringify([0, ParameterActive.FP1])]),
+				);
+				try {
+					expect(database.hasObject(`test.0.products.0.${expectedState}`)).to.be.false;
+				} finally {
+					await disposalMap.disposeAll();
+				}
+			});
+		}
 	});
 
 	describe("createProductsAsync", function () {
@@ -867,7 +956,12 @@ describe("setupProducts", function () {
 
 			const expectedValue = 1;
 			const disposalMap = new DisposalMap();
-			await SetupProducts.createProductsAsync(adapter as unknown as ioBroker.Adapter, mockProducts, disposalMap);
+			await SetupProducts.createProductsAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProducts,
+				disposalMap,
+				new Set<string>(),
+			);
 			try {
 				assertStateHasValue("products.productsFound", expectedValue);
 			} finally {
@@ -911,7 +1005,12 @@ describe("setupProducts", function () {
 			);
 
 			const disposalMap = new DisposalMap();
-			await SetupProducts.createProductsAsync(adapter as unknown as ioBroker.Adapter, mockProducts, disposalMap);
+			await SetupProducts.createProductsAsync(
+				adapter as unknown as ioBroker.Adapter,
+				mockProducts,
+				disposalMap,
+				new Set<string>(),
+			);
 			try {
 				states.forEach((state) =>
 					expect(
