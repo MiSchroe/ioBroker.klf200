@@ -22,6 +22,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var utils = __toESM(require("@iobroker/adapter-core"));
+var import_dm_utils = require("@iobroker/dm-utils");
 var import_klf_200_api = require("klf-200-api");
 var import_node_schedule = require("node-schedule");
 var import_disposalMap = require("./disposalMap.js");
@@ -35,6 +36,7 @@ class Klf200 extends utils.Adapter {
   connectionWatchDogHandler;
   InShutdown;
   disposalMap = new import_disposalMap.DisposalMap();
+  deviceManagement;
   _Connection;
   get Connection() {
     return this._Connection;
@@ -65,6 +67,7 @@ class Klf200 extends utils.Adapter {
       ...options,
       name: "klf200"
     });
+    this.deviceManagement = new KLF200DeviceManagement(this);
     process.on("unhandledRejection", this.onUnhandledRejection.bind(this));
     process.on("uncaughtException", this.onUnhandledError.bind(this));
     this.on("ready", this.onReady.bind(this));
@@ -399,6 +402,33 @@ class Klf200 extends utils.Adapter {
     (this && this.log || console).error(`Unhandled exception occured: ${JSON.stringify(error)}`);
     this.terminate("unhandled exception", 1);
   }
+}
+class KLF200DeviceManagement extends import_dm_utils.DeviceManagement {
+  async listDevices() {
+    const devices = [];
+    if (this.adapter.Products) {
+      for (const product of this.adapter.Products.Products) {
+        devices.push({
+          id: `products.${product.NodeID}`,
+          name: product.Name
+        });
+      }
+    }
+    return Promise.resolve(devices);
+  }
+  // protected override getInstanceInfo(): RetVal<InstanceDetails> {}
+  // protected override getDeviceDetails(id: string): RetVal<DeviceDetails | null | { error: string }> {}
+  // protected override handleInstanceAction(
+  // 	actionId: string,
+  // 	context?: ActionContext,
+  // 	options?: { value?: number | string | boolean; [key: string]: any },
+  // ): RetVal<ErrorResponse> | RetVal<RefreshResponse> {}
+  // protected override handleDeviceAction(
+  // 	deviceId: string,
+  // 	actionId: string,
+  // 	context?: ActionContext,
+  // 	options?: { value?: number | string | boolean; [key: string]: any },
+  // ): RetVal<ErrorResponse> | RetVal<RefreshResponse> {}
 }
 if (require.main !== module) {
   module.exports = (options) => new Klf200(options);

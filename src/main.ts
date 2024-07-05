@@ -5,6 +5,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from "@iobroker/adapter-core";
+import { DeviceInfo, DeviceManagement } from "@iobroker/dm-utils";
 import {
 	Connection,
 	Disposable,
@@ -61,6 +62,7 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 	private connectionWatchDogHandler: ConnectionWatchDogHandler;
 	private InShutdown: boolean;
 	private disposalMap = new DisposalMap();
+	private readonly deviceManagement: KLF200DeviceManagement;
 
 	private _Connection?: IConnection;
 	public get Connection(): IConnection | undefined {
@@ -99,6 +101,7 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 			...options,
 			name: "klf200",
 		});
+		this.deviceManagement = new KLF200DeviceManagement(this);
 
 		// Trace unhandled errors
 		process.on("unhandledRejection", this.onUnhandledRejection.bind(this));
@@ -510,6 +513,34 @@ class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProduct
 		((this && this.log) || console).error(`Unhandled exception occured: ${JSON.stringify(error)}`);
 		this.terminate("unhandled exception", 1);
 	}
+}
+
+class KLF200DeviceManagement extends DeviceManagement<Klf200> {
+	protected override async listDevices(): Promise<DeviceInfo[]> {
+		const devices: DeviceInfo[] = [];
+		if (this.adapter.Products) {
+			for (const product of this.adapter.Products.Products) {
+				devices.push({
+					id: `products.${product.NodeID}`,
+					name: product.Name,
+				});
+			}
+		}
+		return Promise.resolve(devices);
+	}
+	// protected override getInstanceInfo(): RetVal<InstanceDetails> {}
+	// protected override getDeviceDetails(id: string): RetVal<DeviceDetails | null | { error: string }> {}
+	// protected override handleInstanceAction(
+	// 	actionId: string,
+	// 	context?: ActionContext,
+	// 	options?: { value?: number | string | boolean; [key: string]: any },
+	// ): RetVal<ErrorResponse> | RetVal<RefreshResponse> {}
+	// protected override handleDeviceAction(
+	// 	deviceId: string,
+	// 	actionId: string,
+	// 	context?: ActionContext,
+	// 	options?: { value?: number | string | boolean; [key: string]: any },
+	// ): RetVal<ErrorResponse> | RetVal<RefreshResponse> {}
 }
 
 if (require.main !== module) {
