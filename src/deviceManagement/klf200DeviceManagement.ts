@@ -564,7 +564,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		assert(context, "handleAddScene: Action context shouldn't be null or undefined.");
 		const differentNameCondition = `[${this.adapter.Scenes?.Scenes.filter((scene) => scene !== undefined)
 			.map((scene) => {
-				return `"${scene.SceneName.replace("\\", "\\\\").replace(`"`, `\\"`)}"`;
+				return `"${scene.SceneName.replace(/(\\|")/g, "\\$1")}"`;
 			})
 			.join(",")}]`;
 		const newSceneName = await this.showRenameForm(
