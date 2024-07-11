@@ -27,7 +27,7 @@ export class SetupGroups {
 		const channelsToRemove = currentGroupsList.filter(
 			(channel) =>
 				!groups.some((group) => {
-					return group.GroupID === Number.parseInt(channel._id.split(".").reverse()[0]);
+					return group && group.GroupID === Number.parseInt(channel._id.split(".").reverse()[0]);
 				}),
 		);
 		// Delete channels
@@ -74,7 +74,7 @@ export class SetupGroups {
 	): Promise<void> {
 		adapter.log.info(`Setup objects for group ${group.Name}.`);
 
-		await adapter.setObjectNotExistsAsync(`groups.${group.GroupID}`, {
+		await adapter.extendObject(`groups.${group.GroupID}`, {
 			type: "channel",
 			common: {
 				name: group.Name,
@@ -240,38 +240,29 @@ export class SetupGroups {
 		// Setup group listener
 		disposalMap.set(
 			`groups.${group.GroupID}.property.nodeVariation`,
-			new SimplePropertyChangedHandler<Group>(
-				adapter,
-				`groups.${group.GroupID}.nodeVariation`,
-				"NodeVariation",
-				group,
-			),
+			new SimplePropertyChangedHandler(adapter, `groups.${group.GroupID}.nodeVariation`, "NodeVariation", group),
 		);
 
 		disposalMap.set(
 			`groups.${group.GroupID}.property.order`,
-			new SimplePropertyChangedHandler<Group>(adapter, `groups.${group.GroupID}.order`, "Order", group),
+			new SimplePropertyChangedHandler(adapter, `groups.${group.GroupID}.order`, "Order", group),
 		);
 		disposalMap.set(
 			`groups.${group.GroupID}.property.placement`,
-			new SimplePropertyChangedHandler<Group>(adapter, `groups.${group.GroupID}.placement`, "Placement", group),
+			new SimplePropertyChangedHandler(adapter, `groups.${group.GroupID}.placement`, "Placement", group),
 		);
 		disposalMap.set(
 			`groups.${group.GroupID}.property.velocity`,
-			new SimplePropertyChangedHandler<Group>(adapter, `groups.${group.GroupID}.velocity`, "Velocity", group),
+			new SimplePropertyChangedHandler(adapter, `groups.${group.GroupID}.velocity`, "Velocity", group),
 		);
 		disposalMap.set(
 			`groups.${group.GroupID}.property.groupType`,
-			new SimplePropertyChangedHandler<Group>(adapter, `groups.${group.GroupID}.groupType`, "GroupType", group),
+			new SimplePropertyChangedHandler(adapter, `groups.${group.GroupID}.groupType`, "GroupType", group),
 		);
 		disposalMap.set(
 			`groups.${group.GroupID}.property.Nodes`,
-			new ComplexPropertyChangedHandler<Group>(adapter, "Nodes", group, async (newValue) => {
-				return await adapter.setStateChangedAsync(
-					`groups.${group.GroupID}.productsCount`,
-					ArrayCount(newValue as number[]),
-					true,
-				);
+			new ComplexPropertyChangedHandler(adapter, "Nodes", group, async (newValue) => {
+				await adapter.setStateChangedAsync(`groups.${group.GroupID}.productsCount`, ArrayCount(newValue), true);
 			}),
 		);
 

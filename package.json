@@ -88,7 +88,7 @@
     "prepare": "npm run build",
     "release": "release-script",
     "translate": "translate-adapter",
-    "deploy:container": "npm pack && cross-conf-env docker cp ./$npm_package_name-$npm_package_version.tgz iobroker:/opt/iobroker/tarballs/ && cross-conf-env docker exec iobroker npm install /opt/iobroker/tarballs/$npm_package_name-$npm_package_version.tgz --workdir /opt/iobroker && cross-conf-env docker exec iobroker iobroker restart klf200.0"
+    "deploy:container": "npm pack && cross-conf-env docker cp ./$npm_package_name-$npm_package_version.tgz iobroker:/opt/iobroker/tarballs/ && cross-conf-env docker exec iobroker npm install /opt/iobroker/tarballs/$npm_package_name-$npm_package_version.tgz --workdir /opt/iobroker && cross-conf-env docker exec iobroker iobroker upload klf200 && cross-conf-env docker exec iobroker iobroker restart klf200.0"
   },
   "nyc": {
     "include": [

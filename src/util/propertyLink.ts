@@ -5,8 +5,8 @@ import { Component, Disposable, PropertyChangedEvent } from "klf-200-api";
 import { PromiseQueue } from "./promiseQueue";
 import { AsyncMethodName, AsyncMethodParameters, AsyncMethodType } from "./utils";
 
-export function MapAnyPropertyToState<T extends Component>(
-	propertyValue: T[keyof T],
+export function MapAnyPropertyToState<T extends Component, P extends keyof T>(
+	propertyValue: T[P],
 ): string | number | boolean | null {
 	switch (typeof propertyValue) {
 		case "boolean":
@@ -28,11 +28,11 @@ export function MapAnyPropertyToState<T extends Component>(
 	return null;
 }
 
-export interface PropertyChangedEventHandler<T extends Component> {
+export interface PropertyChangedEventHandler<T extends Component, P extends keyof T> {
 	readonly Adapter: ioBroker.Adapter;
-	readonly Property: keyof T;
+	readonly Property: P;
 	readonly LinkedObject: T;
-	onPropertyChangedTypedEvent(newValue: T[keyof T]): Promise<string>;
+	onPropertyChangedTypedEvent(newValue: T[P]): Promise<void>;
 }
 
 export interface StateChangedEventHandler {
@@ -41,25 +41,25 @@ export interface StateChangedEventHandler {
 	onStateChange(state: ioBroker.State | null | undefined): Promise<void>;
 }
 
-export abstract class BasePropertyChangedHandler<T extends Component>
-	implements PropertyChangedEventHandler<T>, Disposable
+export abstract class BasePropertyChangedHandler<T extends Component, P extends keyof T>
+	implements PropertyChangedEventHandler<T, P>, Disposable
 {
 	protected disposable?: Disposable;
 
 	constructor(
 		readonly Adapter: ioBroker.Adapter,
-		readonly Property: keyof T,
+		readonly Property: P,
 		readonly LinkedObject: T,
 	) {
 		this.disposable = LinkedObject.propertyChangedEvent.on(async (event: PropertyChangedEvent) => {
 			if (event.propertyName === this.Property) {
-				return await this.onPropertyChangedTypedEvent(event.propertyValue as T[keyof T]);
+				await this.onPropertyChangedTypedEvent(event.propertyValue as T[P]);
 			}
 		});
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	onPropertyChangedTypedEvent(newValue: T[keyof T]): Promise<string> {
+	onPropertyChangedTypedEvent(newValue: T[P]): Promise<void> {
 		throw new Error("Method not implemented.");
 	}
 
@@ -68,20 +68,25 @@ export abstract class BasePropertyChangedHandler<T extends Component>
 	}
 }
 
-export type OnPropertyChangedHandlerFunctionType<T extends Component> = (newValue: T[keyof T]) => Promise<string>;
+export type OnPropertyChangedHandlerFunctionType<T extends Component, P extends keyof T> = (
+	newValue: T[P],
+) => Promise<void>;
 
-export class ComplexPropertyChangedHandler<T extends Component> extends BasePropertyChangedHandler<T> {
+export class ComplexPropertyChangedHandler<T extends Component, P extends keyof T> extends BasePropertyChangedHandler<
+	T,
+	P
+> {
 	constructor(
 		Adapter: ioBroker.Adapter,
-		Property: keyof T,
+		Property: P,
 		LinkedObject: T,
-		readonly Handler: OnPropertyChangedHandlerFunctionType<T>,
+		readonly Handler: OnPropertyChangedHandlerFunctionType<T, P>,
 	) {
 		super(Adapter, Property, LinkedObject);
 	}
 
-	async onPropertyChangedTypedEvent(newValue: T[keyof T]): Promise<string> {
-		return await this.Handler(newValue);
+	async onPropertyChangedTypedEvent(newValue: T[P]): Promise<void> {
+		await this.Handler(newValue);
 	}
 
 	dispose(): void {
@@ -89,18 +94,21 @@ export class ComplexPropertyChangedHandler<T extends Component> extends BaseProp
 	}
 }
 
-export class SimplePropertyChangedHandler<T extends Component> extends BasePropertyChangedHandler<T> {
+export class SimplePropertyChangedHandler<T extends Component, P extends keyof T> extends BasePropertyChangedHandler<
+	T,
+	P
+> {
 	constructor(
 		Adapter: ioBroker.Adapter,
 		readonly StateId: string,
-		Property: keyof T,
+		Property: P,
 		LinkedObject: T,
 	) {
 		super(Adapter, Property, LinkedObject);
 	}
 
-	async onPropertyChangedTypedEvent(newValue: T[keyof T]): Promise<string> {
-		return await this.Adapter.setState(this.StateId, MapAnyPropertyToState(newValue), true);
+	async onPropertyChangedTypedEvent(newValue: T[P]): Promise<void> {
+		await this.Adapter.setState(this.StateId, MapAnyPropertyToState(newValue), true);
 	}
 
 	dispose(): void {
@@ -108,13 +116,12 @@ export class SimplePropertyChangedHandler<T extends Component> extends BasePrope
 	}
 }
 
-export class PercentagePropertyChangedHandler<T extends Component> extends SimplePropertyChangedHandler<T> {
-	async onPropertyChangedTypedEvent(newValue: T[keyof T]): Promise<string> {
-		return await this.Adapter.setState(
-			this.StateId,
-			Math.round((MapAnyPropertyToState(newValue) as number) * 100),
-			true,
-		);
+export class PercentagePropertyChangedHandler<
+	T extends Component,
+	P extends keyof T,
+> extends SimplePropertyChangedHandler<T, P> {
+	async onPropertyChangedTypedEvent(newValue: T[P]): Promise<void> {
+		await this.Adapter.setState(this.StateId, Math.round((MapAnyPropertyToState(newValue) as number) * 100), true);
 	}
 }
 

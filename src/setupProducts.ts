@@ -39,7 +39,7 @@ export class SetupProducts {
 		const channelsToRemove = currentProductsList.filter(
 			(channel) =>
 				!products.some((product) => {
-					return product.NodeID === Number.parseInt(channel._id.split(".").reverse()[0]);
+					return product && product.NodeID === Number.parseInt(channel._id.split(".").reverse()[0]);
 				}),
 		);
 		// Delete channels
@@ -131,7 +131,7 @@ export class SetupProducts {
 		}
 		statesLimitationTimeRaw["253"] = "Forever";
 
-		await adapter.setObjectNotExistsAsync(`products.${product.NodeID}`, {
+		await adapter.extendObject(`products.${product.NodeID}`, {
 			type: "channel",
 			common: {
 				name: product.Name,
@@ -889,8 +889,19 @@ export class SetupProducts {
 		// Setup product listener
 		adapter.log.debug(`Setup change event listeners for product ${product.Name}.`);
 		disposalMap.set(
+			`products.${product.NodeID}.property.name`,
+			new ComplexPropertyChangedHandler(adapter, "Name", product, async (newValue) => {
+				await adapter.extendObject(`products.${product.NodeID}`, {
+					common: {
+						name: newValue,
+					},
+				});
+			}),
+		);
+
+		disposalMap.set(
 			`products.${product.NodeID}.property.nodeVariation`,
-			new SimplePropertyChangedHandler<Product>(
+			new SimplePropertyChangedHandler(
 				adapter,
 				`products.${product.NodeID}.nodeVariation`,
 				"NodeVariation",
@@ -900,27 +911,22 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.order`,
-			new SimplePropertyChangedHandler<Product>(adapter, `products.${product.NodeID}.order`, "Order", product),
+			new SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.order`, "Order", product),
 		);
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.placement`,
-			new SimplePropertyChangedHandler<Product>(
-				adapter,
-				`products.${product.NodeID}.placement`,
-				"Placement",
-				product,
-			),
+			new SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.placement`, "Placement", product),
 		);
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.state`,
-			new SimplePropertyChangedHandler<Product>(adapter, `products.${product.NodeID}.state`, "State", product),
+			new SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.state`, "State", product),
 		);
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.currentPositionRaw`,
-			new SimplePropertyChangedHandler<Product>(
+			new SimplePropertyChangedHandler(
 				adapter,
 				`products.${product.NodeID}.currentPositionRaw`,
 				"CurrentPositionRaw",
@@ -930,7 +936,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.currentPosition`,
-			new PercentagePropertyChangedHandler<Product>(
+			new PercentagePropertyChangedHandler(
 				adapter,
 				`products.${product.NodeID}.currentPosition`,
 				"CurrentPosition",
@@ -940,7 +946,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.targetPositionRaw`,
-			new SimplePropertyChangedHandler<Product>(
+			new SimplePropertyChangedHandler(
 				adapter,
 				`products.${product.NodeID}.targetPositionRaw`,
 				"TargetPositionRaw",
@@ -950,7 +956,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.targetPosition`,
-			new PercentagePropertyChangedHandler<Product>(
+			new PercentagePropertyChangedHandler(
 				adapter,
 				`products.${product.NodeID}.targetPosition`,
 				"TargetPosition",
@@ -960,7 +966,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.FP1CurrentPositionRaw`,
-			new SimplePropertyChangedHandler<Product>(
+			new SimplePropertyChangedHandler(
 				adapter,
 				`products.${product.NodeID}.FP1CurrentPositionRaw`,
 				"FP1CurrentPositionRaw",
@@ -970,7 +976,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.FP2CurrentPositionRaw`,
-			new SimplePropertyChangedHandler<Product>(
+			new SimplePropertyChangedHandler(
 				adapter,
 				`products.${product.NodeID}.FP2CurrentPositionRaw`,
 				"FP2CurrentPositionRaw",
@@ -980,7 +986,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.FP3CurrentPositionRaw`,
-			new SimplePropertyChangedHandler<Product>(
+			new SimplePropertyChangedHandler(
 				adapter,
 				`products.${product.NodeID}.FP3CurrentPositionRaw`,
 				"FP3CurrentPositionRaw",
@@ -990,7 +996,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.FP4CurrentPositionRaw`,
-			new SimplePropertyChangedHandler<Product>(
+			new SimplePropertyChangedHandler(
 				adapter,
 				`products.${product.NodeID}.FP4CurrentPositionRaw`,
 				"FP4CurrentPositionRaw",
@@ -1000,7 +1006,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.remainingTime`,
-			new SimplePropertyChangedHandler<Product>(
+			new SimplePropertyChangedHandler(
 				adapter,
 				`products.${product.NodeID}.remainingTime`,
 				"RemainingTime",
@@ -1010,37 +1016,22 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.timestamp`,
-			new SimplePropertyChangedHandler<Product>(
-				adapter,
-				`products.${product.NodeID}.timestamp`,
-				"TimeStamp",
-				product,
-			),
+			new SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.timestamp`, "TimeStamp", product),
 		);
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.runStatus`,
-			new SimplePropertyChangedHandler<Product>(
-				adapter,
-				`products.${product.NodeID}.runStatus`,
-				"RunStatus",
-				product,
-			),
+			new SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.runStatus`, "RunStatus", product),
 		);
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.statusReply`,
-			new SimplePropertyChangedHandler<Product>(
-				adapter,
-				`products.${product.NodeID}.statusReply`,
-				"StatusReply",
-				product,
-			),
+			new SimplePropertyChangedHandler(adapter, `products.${product.NodeID}.statusReply`, "StatusReply", product),
 		);
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.limitationMinRaw`,
-			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationMinRaw", product, async (_newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "LimitationMinRaw", product, async (_newValue) => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1059,13 +1050,12 @@ export class SetupProducts {
 						true,
 					);
 				}
-				return "";
 			}),
 		);
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.limitationMaxRaw`,
-			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationMaxRaw", product, async (_newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "LimitationMaxRaw", product, async (_newValue) => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1084,13 +1074,12 @@ export class SetupProducts {
 						true,
 					);
 				}
-				return "";
 			}),
 		);
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.limitationOriginator`,
-			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationOriginator", product, async (_newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "LimitationOriginator", product, async (_newValue) => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1104,13 +1093,12 @@ export class SetupProducts {
 						true,
 					);
 				}
-				return "";
 			}),
 		);
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.limitationTimeRaw`,
-			new ComplexPropertyChangedHandler<Product>(adapter, "LimitationTimeRaw", product, async (_newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "LimitationTimeRaw", product, async (_newValue) => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1139,7 +1127,6 @@ export class SetupProducts {
 						true,
 					);
 				}
-				return "";
 			}),
 		);
 
