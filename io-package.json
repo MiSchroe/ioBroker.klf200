@@ -144,7 +144,11 @@
 			{
 				"js-controller": ">=5.0.0"
 			}
-		]
+		],
+		"messagebox": true,
+		"supportedMessages": {
+			"deviceManager": true
+		}
 	},
 	"native": {
 		"host": "velux-klf-",

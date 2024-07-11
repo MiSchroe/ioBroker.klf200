@@ -1,6 +1,6 @@
 "use strict";
 
-import { Scene, SceneInformationEntry, Scenes, Velocity } from "klf-200-api";
+import { Scene, Scenes, Velocity } from "klf-200-api";
 import { DisposalMap } from "./disposalMap";
 import {
 	ComplexPropertyChangedHandler,
@@ -24,7 +24,7 @@ export class SetupScenes {
 		const channelsToRemove = currentScenesList.filter(
 			(channel) =>
 				!scenes.Scenes.some((scene) => {
-					return scene.SceneID === Number.parseInt(channel._id.split(".").reverse()[0]);
+					return scene && scene.SceneID === Number.parseInt(channel._id.split(".").reverse()[0]);
 				}),
 		);
 		// Delete channels
@@ -92,7 +92,7 @@ export class SetupScenes {
 	): Promise<void> {
 		adapter.log.info(`Setup objects for scene ${scene.SceneName}.`);
 
-		await adapter.setObjectNotExistsAsync(`scenes.${scene.SceneID}`, {
+		await adapter.extendObject(`scenes.${scene.SceneID}`, {
 			type: "channel",
 			common: {
 				name: scene.SceneName,
@@ -188,8 +188,8 @@ export class SetupScenes {
 		// Setup scene listeners
 		disposalMap.set(
 			`scenes.${scene.SceneID}.property.IsRunning`,
-			new ComplexPropertyChangedHandler<Scene>(adapter, "IsRunning", scene, async (newValue) => {
-				const result = await adapter.setState(`scenes.${scene.SceneID}.run`, newValue as boolean, true);
+			new ComplexPropertyChangedHandler(adapter, "IsRunning", scene, async (newValue) => {
+				await adapter.setState(`scenes.${scene.SceneID}.run`, newValue, true);
 				if (newValue === false) {
 					/*
 						If a running scene was stopped by using the stop state,
@@ -197,24 +197,19 @@ export class SetupScenes {
 					*/
 					await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.stop`, false, true);
 				}
-				return result;
 			}),
 		);
 		disposalMap.set(
 			`scenes.${scene.SceneID}.property.Products`,
-			new ComplexPropertyChangedHandler<Scene>(adapter, "Products", scene, async (newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "Products", scene, async (newValue) => {
 				await adapter.setStateChangedAsync(
 					`scenes.${scene.SceneID}.products`,
 					{
-						val: JSON.stringify(newValue as SceneInformationEntry[]),
+						val: JSON.stringify(newValue),
 					},
 					true,
 				);
-				return await adapter.setStateChangedAsync(
-					`scenes.${scene.SceneID}.productsCount`,
-					ArrayCount(newValue as SceneInformationEntry[]),
-					true,
-				);
+				await adapter.setStateChangedAsync(`scenes.${scene.SceneID}.productsCount`, ArrayCount(newValue), true);
 			}),
 		);
 

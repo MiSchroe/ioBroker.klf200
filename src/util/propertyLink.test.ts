@@ -121,7 +121,9 @@ describe("PropertyLink", function () {
 			it(`should return a ${testCase.ExpectedTypeName} value for the type of the return value`, function () {
 				const testComponent = new TestComponent();
 				const expectedResult = testCase.ExpectedTypeName;
-				const result = typeof MapAnyPropertyToState<TestComponent>(testComponent[testCase.TestPropertyName]);
+				const result = typeof MapAnyPropertyToState<TestComponent, keyof TestComponent>(
+					testComponent[testCase.TestPropertyName],
+				);
 				expect(result).to.be.equal(expectedResult);
 			});
 		});
@@ -148,7 +150,7 @@ describe("PropertyLink", function () {
 			});
 			await adapter.setState(stateID, testComponent.NumberValue, true);
 
-			const SUT = new SimplePropertyChangedHandler<TestComponent>(
+			const SUT = new SimplePropertyChangedHandler(
 				adapter as unknown as ioBroker.Adapter,
 				stateID,
 				"NumberValue",
@@ -172,7 +174,7 @@ describe("PropertyLink", function () {
 			const stateID = "NumberValue";
 			const testComponent = new TestComponent();
 			const expectedResult = 43;
-			const handler = sinon.stub<[TestComponent[keyof TestComponent]], Promise<string>>();
+			const handler = sinon.stub<[TestComponent[keyof TestComponent]], Promise<void>>();
 			await adapter.setObjectNotExistsAsync(stateID, {
 				type: "state",
 				common: {
@@ -188,7 +190,7 @@ describe("PropertyLink", function () {
 			});
 			await adapter.setState(stateID, testComponent.NumberValue, true);
 
-			const SUT = new ComplexPropertyChangedHandler<TestComponent>(
+			const SUT = new ComplexPropertyChangedHandler(
 				adapter as unknown as ioBroker.Adapter,
 				"NumberValue",
 				testComponent,
