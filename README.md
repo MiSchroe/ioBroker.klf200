@@ -260,7 +260,7 @@ The values of the state provide multiple manipulation modes:
 	### __WORK IN PROGRESS__
 -->
 <!-- prettier-ignore -->
-### __WORK IN PROGRESS__
+### 1.3.0 (2024-07-15)
 
 -   (Michael Schroeder) [#180](https://github.com/MiSchroe/ioBroker.klf200/issues/180) Fixed handling new product detection.
 -   (Michael Schroeder) [#47](https://github.com/MiSchroe/ioBroker.klf200/issues/47), [#113](https://github.com/MiSchroe/ioBroker.klf200/issues/113) Support limitations (e.g. rain sensor)
