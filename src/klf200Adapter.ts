@@ -2,6 +2,8 @@
 // you need to create an adapter
 import * as utils from "@iobroker/adapter-core";
 import assert from "assert";
+import { exec } from "child_process";
+import * as fs from "fs/promises";
 import {
 	Connection,
 	DiscoverStatus,
@@ -52,6 +54,7 @@ import {
 } from "klf-200-api";
 import { Job, scheduleJob } from "node-schedule";
 import { timeout } from "promise-timeout";
+import { promisify } from "util";
 import { KLF200DeviceManagement } from "./deviceManagement/klf200DeviceManagement.js";
 import { DisposalMap } from "./disposalMap.js";
 import { HasConnectionInterface, HasProductsInterface } from "./interfaces.js";
@@ -59,6 +62,7 @@ import { Setup } from "./setup.js";
 import { SetupGroups } from "./setupGroups.js";
 import { SetupProducts } from "./setupProducts.js";
 import { SetupScenes } from "./setupScenes.js";
+import { Translate } from "./translate.js";
 import { ArrayCount, convertErrorToString } from "./util/utils.js";
 
 // Load your modules here, e.g.:
@@ -107,7 +111,7 @@ export declare interface Klf200 {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProductsInterface {
+export class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProductsInterface, Translate {
 	private disposables: Disposable[] = [];
 	private connectionWatchDogHandler: ConnectionWatchDogHandler;
 	private InShutdown: boolean;
@@ -175,6 +179,204 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		};
 	}
 
+	private languageFiles?: Partial<Omit<Record<ioBroker.Languages, Record<string, string>>, "en">> & {
+		en: Record<string, string>;
+	};
+
+	/**
+	 * Loads a language file of a given language into memory.
+	 *
+	 * @param language Language key of the language file that should be loaded into memory.
+	 */
+	private async loadLanguage(language: ioBroker.Languages): Promise<void> {
+		if (!this.languageFiles && language !== "en") {
+			// Load english language file first
+			await this.loadLanguage("en");
+		}
+
+		if (this.languageFiles && language in this.languageFiles) {
+			// If language is already loaded, do nothing
+			return;
+		}
+
+		// Load language file
+		const filePath = `${this.adapterDir}/admin/i18n/${language}/translations.json`;
+		try {
+			await fs.access(filePath, fs.constants.R_OK);
+		} catch (error) {
+			throw new Error(`Could not load language file ${filePath}.`, {
+				cause: error,
+			});
+		}
+		const translations = JSON.parse(await fs.readFile(filePath, { encoding: "utf8", flag: "r" })) as Record<
+			string,
+			string
+		>;
+
+		if (!this.languageFiles) {
+			assert(
+				language === "en",
+				`Language 'en' should be loaded first. Instead, it was tried to load ${language}.`,
+			);
+			this.languageFiles = { en: translations };
+			return;
+		}
+
+		this.languageFiles[language] = translations;
+	}
+
+	private replaceContext(text: string, context: Record<string, string>): string {
+		return text.replace(/\{(\w+)\}/g, (_, key: string) => context[key] || "");
+	}
+
+	/**
+	 * Returns the translated text of the given textKey in the given language.
+	 *
+	 * @param language Target language into which the text should be translated.
+	 * @param textKey Key of the text in the i18n json files that should be translated.
+	 * @param Context Context object that should be used for substitutions in the translation.
+	 *
+	 * @example
+	 * // ./admin/i18n/de/translations.json:
+	 * // {
+	 * //     "helloworld": "Hallo Welt!"
+	 * // }
+	 * // returns 'Hallo Welt!'
+	 * await translateTo('de', 'helloworld');
+	 *
+	 * @example
+	 * // ./admin/i18n/de/translations.json:
+	 * // {
+	 * //     "helloworld-parameter": "Hallo {who}!"
+	 * // }
+	 * // returns 'Hallo Welt!'
+	 * await translateTo('de', 'helloworld-parameter', { who: 'Welt' });
+	 */
+	public async translateTo(
+		language: ioBroker.Languages,
+		textKey: string,
+		context?: Record<string, string>,
+	): Promise<string> {
+		await this.loadLanguage(language);
+		assert(this.languageFiles, `At least english language file should be loaded in memory.`);
+		assert(this.languageFiles[language], `Language file for language ${language} should be loaded in memory.`);
+
+		// Check if translation exists and throw an error if the language is english.
+		// Otherwise, fallback to english.
+		if (language === "en" && !(textKey in this.languageFiles.en)) {
+			throw new Error(`Could not find translation for ${textKey} in ${language}.`);
+		}
+		if (!(textKey in this.languageFiles[language])) {
+			// Write a warning into the log
+			this.log.warn(
+				`Could not find translation for ${textKey} in ${language}. Please help translate this adapter into another language and visit https://weblate.iobroker.net/ for more information.`,
+			);
+			// Fallback to english
+			return await this.translateTo("en", textKey, context);
+		}
+
+		// Return translation
+		const text = this.languageFiles[language][textKey];
+		if (context) {
+			return this.replaceContext(text, context);
+		} else {
+			return text;
+		}
+	}
+
+	/**
+	 * Returns the translated text of the given textKey in the system language.
+	 *
+	 * @param textKey Key of the text in the i18n json files that should be translated.
+	 * @param context Context object that should be used for substitutions in the translation.
+	 *
+	 * @example
+	 * // ./admin/i18n/de/translations.json:
+	 * // {
+	 * //     "helloworld": "Hallo Welt!"
+	 * // }
+	 * // returns 'Hallo Welt!'
+	 * await translate('helloworld');
+	 *
+	 * @example
+	 * // ./admin/i18n/de/translations.json:
+	 * // {
+	 * //     "helloworld-parameter": "Hallo {who}!"
+	 * // }
+	 * // returns 'Hallo Welt!'
+	 * await translate('helloworld-parameter', { who: 'Welt' });
+	 */
+	public async translate(textKey: string, context?: Record<string, string>): Promise<string> {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+		return this.translateTo(this.systemConfig?.language || "en", textKey, context);
+	}
+
+	private allLanguagesLoaded = false;
+
+	/**
+	 * Returns an object containing all translations of the given textKey.
+	 *
+	 * @param textKey Key of the text in the i18n json files that should be translated.
+	 * @param context Context object that should be used for substitutions in the translation.
+	 *
+	 * @example
+	 * // ./admin/i18n/en/translations.json:
+	 * // {
+	 * //     "helloworld": "Hello World!"
+	 * // }
+	 * // ./admin/i18n/de/translations.json:
+	 * // {
+	 * //     "helloworld": "Hallo Welt!"
+	 * // }
+	 * // returns {
+	 * //     en: 'Hello World!',
+	 * //     de: 'Hallo Welt!'
+	 * // }
+	 * await getTranslatedObject('helloworld');
+	 *
+	 * @example
+	 * // ./admin/i18n/en/translations.json:
+	 * // {
+	 * //     "helloname-parameter": "Hello, {who}!"
+	 * // }
+	 * // ./admin/i18n/de/translations.json:
+	 * // {
+	 * //     "helloname-parameter": "Hallo, {who}!"
+	 * // }
+	 * // returns {
+	 * //     en: 'Hello, Jane Doe!',
+	 * //     de: 'Hallo, Jane Doe!'
+	 * // }
+	 * await getTranslatedObject('helloname-parameter', { who: 'Jane Doe' });
+	 */
+	public async getTranslatedObject(textKey: string, context?: Record<string, string>): Promise<ioBroker.Translated> {
+		const result: ioBroker.Translated = { en: textKey };
+
+		// Read languages only once
+		if (!this.allLanguagesLoaded) {
+			const readDirResults = await fs.readdir(`${this.adapterDir}/admin/i18n`, {
+				withFileTypes: false,
+				recursive: false,
+				encoding: "utf8",
+			});
+			for (const readDirResult of readDirResults) {
+				await this.loadLanguage(readDirResult as ioBroker.Languages);
+			}
+			this.allLanguagesLoaded = true;
+		}
+		assert(this.languageFiles, "languageFiles must be defined");
+
+		// Get the translation for all languages
+		for (const language of Object.keys(this.languageFiles)) {
+			result[language as ioBroker.Languages] = await this.translateTo(
+				language as ioBroker.Languages,
+				textKey,
+				context,
+			);
+		}
+		return result;
+	}
+
 	/**
 	 * Is called when databases are connected and adapter received configuration.
 	 */
@@ -198,6 +400,13 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 					this.config.host,
 					Buffer.from(this.config.SSLPublicKey),
 					this.config.SSLFingerprint,
+				);
+			}
+			try {
+				this.log.info(`klf-200-api version: ${await this.getKlfApiVersion()}`);
+			} catch (error) {
+				this.log.warn(
+					`Error occurred when reading the version of the klf-200-api package: ${JSON.stringify(error)}`,
 				);
 			}
 			this.log.info(`Host: ${this.config.host}`);
@@ -1025,6 +1234,26 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			disposable?.dispose();
 			disposable = undefined;
 		}
+	}
+
+	/**
+	 * Retrieves the version of the klf-200-api module.
+	 *
+	 * @return {string} The version of the klf-200-api module.
+	 */
+	private async getKlfApiVersion(): Promise<string> {
+		const execAsync = promisify(exec);
+		const { stdout: moduleInfoString } = await execAsync("npm list klf-200-api --depth=0 --json");
+
+		if (!moduleInfoString) {
+			throw new Error("Could not find klf-200-api module.");
+		}
+
+		const moduleInfo: { dependencies: Record<string, { version: string }> } = JSON.parse(moduleInfoString) as {
+			dependencies: Record<string, { version: string }>;
+		};
+
+		return moduleInfo.dependencies["klf-200-api"].version;
 	}
 
 	/**
