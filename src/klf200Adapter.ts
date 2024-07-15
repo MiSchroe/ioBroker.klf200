@@ -402,7 +402,13 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 					this.config.SSLFingerprint,
 				);
 			}
-			this.log.info(`klf-api-200 version: ${await this.getKlfApiVersion()}`);
+			try {
+				this.log.info(`klf-200-api version: ${await this.getKlfApiVersion()}`);
+			} catch (error) {
+				this.log.warn(
+					`Error occurred when reading the version of the klf-200-api package: ${JSON.stringify(error)}`,
+				);
+			}
 			this.log.info(`Host: ${this.config.host}`);
 			try {
 				await this.Connection?.loginAsync(this.config.password);
