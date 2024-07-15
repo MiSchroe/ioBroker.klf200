@@ -19,7 +19,7 @@ type sceneActionType = "deleteScene" | "renameScene";
 type deviceActionType = productActionType | groupActionType | sceneActionType;
 
 type GroupEditDialogData = {
-	dialogTitle: string;
+	dialogTitle: ioBroker.StringOrTranslated;
 	groupId?: number;
 	groupName?: string;
 	products: number[];
@@ -43,19 +43,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 							{
 								id: "deleteProduct",
 								icon: "fa-solid fa-trash-can",
-								description: {
-									en: "Delete this device",
-									de: "Gerät löschen",
-									ru: "Удалить это устройство",
-									pt: "Excluir este dispositivo",
-									nl: "Verwijder dit apparaat",
-									fr: "Supprimer cet appareil",
-									it: "Elimina questo dispositivo",
-									es: "Eliminar este dispositivo",
-									pl: "Usuń to urządzenie",
-									"zh-cn": "删除此设备",
-									uk: "Видалити цей пристрій",
-								},
+								description: await this.adapter.getTranslatedObject("dm-device-product-delete"),
 								handler: () => {
 									return { refresh: false };
 								},
@@ -63,19 +51,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 							{
 								id: "renameProduct",
 								icon: "fa-solid fa-pen",
-								description: {
-									en: "Rename this device",
-									de: "Gerät umbenennen",
-									ru: "Переименовать это устройство",
-									pt: "Renomear este dispositivo",
-									nl: "Hernoem dit apparaat",
-									fr: "Renommer cet appareil",
-									it: "Rinomina questo dispositivo",
-									es: "Renombrar este dispositivo",
-									pl: "Zmień nazwę tego urządzenia",
-									"zh-cn": "重命名此设备",
-									uk: "Перейменуйте цей пристрій",
-								},
+								description: await this.adapter.getTranslatedObject("dm-device-product-rename"),
 								handler: () => {
 									return { refresh: false };
 								},
@@ -83,9 +59,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 							{
 								id: "winkProduct",
 								icon: "fa-solid fa-bell",
-								description: {
-									en: "Wink device",
-								},
+								description: await this.adapter.getTranslatedObject("dm-device-product-wink"),
 								handler: () => {
 									return { refresh: false };
 								},
@@ -107,10 +81,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 							{
 								id: "deleteGroup",
 								icon: "fa-solid fa-trash-can",
-								description: {
-									en: "Delete this group",
-									de: "Gruppe löschen",
-								},
+								description: await this.adapter.getTranslatedObject("dm-device-group-delete"),
 								handler: () => {
 									return { refresh: false };
 								},
@@ -118,10 +89,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 							{
 								id: "editGroup",
 								icon: "fa-solid fa-pen",
-								description: {
-									en: "Edit this group",
-									de: "Gruppe anpassen",
-								},
+								description: await this.adapter.getTranslatedObject("dm-device-group-edit"),
 								handler: () => {
 									return { refresh: false };
 								},
@@ -143,10 +111,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 							{
 								id: "deleteScene",
 								icon: "fa-solid fa-trash-can",
-								description: {
-									en: "Delete this scene",
-									de: "Szene löschen",
-								},
+								description: await this.adapter.getTranslatedObject("dm-device-scene-delete"),
 								handler: () => {
 									return { refresh: false };
 								},
@@ -154,10 +119,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 							{
 								id: "renameScene",
 								icon: "fa-solid fa-pen",
-								description: {
-									en: "Rename this scene",
-									de: "Szene umbenennen",
-								},
+								description: await this.adapter.getTranslatedObject("dm-device-scene-rename"),
 								handler: () => {
 									return { refresh: false };
 								},
@@ -180,19 +142,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					id: "discover",
 					icon: "fas fa-search",
 					title: "",
-					description: {
-						en: "Discover new devices",
-						de: "Neue Geräte suchen",
-						ru: "Обнаружить новые устройства",
-						pt: "Descubra novos dispositivos",
-						nl: "Ontdek nieuwe apparaten",
-						fr: "Découvrir de nouveaux appareils",
-						it: "Scopri nuovi dispositivi",
-						es: "Descubrir nuevos dispositivos",
-						pl: "Odkryj nowe urządzenia",
-						"zh-cn": "发现新设备",
-						uk: "Виявити нові пристрої",
-					},
+					description: await this.adapter.getTranslatedObject("dm-instance-discover"),
 					handler: () => {
 						return { refresh: false };
 					},
@@ -201,10 +151,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					id: "addGroup",
 					icon: "fas fa-users",
 					title: "",
-					description: {
-						en: "Create a new group",
-						de: "Neue Gruppe anlegen",
-					},
+					description: await this.adapter.getTranslatedObject("dm-instance-creategroup"),
 					handler: () => {
 						return { refresh: false };
 					},
@@ -213,10 +160,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					id: "addScene",
 					icon: "fas fa-film",
 					title: "",
-					description: {
-						en: "Create a new scene",
-						de: "Neue Szene anlegen",
-					},
+					description: await this.adapter.getTranslatedObject("dm-instance-createscene"),
 					handler: () => {
 						return { refresh: false };
 					},
@@ -225,10 +169,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				// 	id: "sendToRemote",
 				// 	icon: "fas fa-upload",
 				// 	title: "",
-				// 	description: {
-				// 		en: "Copy to remote control",
-				// 		de: "Kopie an Fernbedienung übertragen",
-				// 	},
+				// 	description: await this.adapter.getTranslatedObject("dm-instance-sendtoremote"),
 				// 	handler: () => {
 				// 		return { refresh: false };
 				// 	},
@@ -237,10 +178,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				// 	id: "receiveFromRemote",
 				// 	icon: "fas fa-download",
 				// 	title: "",
-				// 	description: {
-				// 		en: "Receive from remote control",
-				// 		de: "Von einer Fernbedienung empfangen",
-				// 	},
+				// 	description: await this.adapter.getTranslatedObject("dm-instance-receivefromremote"),
 				// 	handler: () => {
 				// 		return { refresh: false };
 				// 	},
@@ -313,7 +251,10 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 
 	private async handleInstanceDiscover(context?: ActionContext): Promise<RefreshResponse> {
 		// Start discovery
-		const progressDialog = await context?.openProgress("Discovering new devices", { indeterminate: true });
+		const progressDialog = await context?.openProgress(
+			await this.adapter.translate("dm-instance-discover-progress-title"),
+			{ indeterminate: true },
+		);
 		try {
 			try {
 				const refresh = await this.adapter.onDiscover();
@@ -321,7 +262,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				return { refresh: refresh };
 			} catch (error) {
 				await context?.showMessage(
-					`An error occured during discovering new products:\n${this.getErrorMessage(error)}.`,
+					`${await this.adapter.translate("dm-instance-discover-progress-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			// Return the result
@@ -345,13 +286,15 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 
 	private async handleProductDelete(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
 		const productId = parseInt(deviceId.split(".").reverse()[0]);
-		const confirmationDialog = await context?.showConfirmation(`Do you wan't to delete product ID ${productId}?`);
+		const confirmationDialog = await context?.showConfirmation(
+			await this.adapter.translate("dm-device-product-delete-confirm", { productId: productId.toString() }),
+		);
 		if (confirmationDialog) {
 			try {
 				await this.adapter.onRemoveProduct(productId);
 			} catch (error) {
 				await context?.showMessage(
-					`An error occured during deleting the product:\n${this.getErrorMessage(error)}.`,
+					`${await this.adapter.translate("dm-device-product-delete-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			return Promise.resolve({ refresh: true });
@@ -370,13 +313,18 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 
 		const oldName = product.Name;
 		assert(context, "handleProductRename: Action context shouldn't be null or undefined.");
-		const newName = await this.showRenameForm(context, "Rename product", "New product name", oldName);
+		const newName = await this.showRenameForm(
+			context,
+			await this.adapter.getTranslatedObject("dm-device-product-rename-form-title"),
+			await this.adapter.getTranslatedObject("dm-device-product-rename-form-label"),
+			oldName,
+		);
 		if (newName !== undefined) {
 			try {
 				await this.adapter.onRenameProduct(productId, newName);
 			} catch (error) {
 				await context?.showMessage(
-					`An error occured during renaming the product:\n${this.getErrorMessage(error)}.`,
+					`${await this.adapter.translate("dm-device-product-rename-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			return { refresh: true };
@@ -390,7 +338,9 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		try {
 			await this.adapter.onWinkProduct(productId);
 		} catch (error) {
-			await context?.showMessage(`An error occured during winking the product:\n${this.getErrorMessage(error)}.`);
+			await context?.showMessage(
+				`${await this.adapter.translate("dm-device-product-wink-error")}\n${this.getErrorMessage(error)}.`,
+			);
 		}
 		return Promise.resolve({ refresh: false });
 	}
@@ -407,13 +357,17 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					label: "Group ID",
 					disabled: "true",
 					hidden: "data.groupId === undefined",
-					placeholder: "Will be generated automatically.",
+					placeholder: await this.adapter.getTranslatedObject(
+						"dm-device-group-edit-form-groupId-placeholder",
+					),
 				},
 				groupName: {
 					type: "text",
 					label: "Group name",
 					validator: "data.groupName !== undefined && data.groupName !== ''",
-					validatorErrorText: "Group name must not be empty.",
+					validatorErrorText: await this.adapter.translate(
+						"dm-device-group-edit-form-groupName-validatorErrorText",
+					),
 					validatorNoSaveOnError: true,
 				},
 				tableHeaderCB: {
@@ -424,7 +378,9 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				},
 				tableHeaderProductName: {
 					type: "staticText",
-					label: "Product name",
+					label: await this.adapter.getTranslatedObject(
+						"dm-device-group-edit-form-tableHeaderProductName-label",
+					),
 				},
 			},
 		};
@@ -513,7 +469,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 	private async handleAddGroup(context?: ActionContext): Promise<RefreshResponse> {
 		assert(context, "handleAddGroup: Action context shouldn't be null or undefined.");
 		const newGroup = await this.showGroupEditDialog(context, {
-			dialogTitle: "Add group",
+			dialogTitle: await this.adapter.getTranslatedObject("dm-instance-creategroup-form-title"),
 			products: [],
 		});
 		if (newGroup === undefined) {
@@ -523,7 +479,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				await this.adapter.onAddGroup(newGroup.groupName || "", newGroup.products);
 			} catch (error) {
 				await context?.showMessage(
-					`An error occured during adding the group:\n${this.getErrorMessage(error)}.`,
+					`${await this.adapter.translate("dm-instance-creategroup-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			return { refresh: true };
@@ -541,7 +497,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		assert(context, "handleAddGroup: Action context shouldn't be null or undefined.");
 
 		const editGroup = await this.showGroupEditDialog(context, {
-			dialogTitle: "Edit Group",
+			dialogTitle: await this.adapter.getTranslatedObject("dm-device-group-edit-form-title"),
 			groupId: groupId,
 			groupName: group.Name,
 			products: group.Nodes,
@@ -553,7 +509,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				await this.adapter.onChangeGroup(groupId, editGroup.groupName || "", editGroup.products);
 			} catch (error) {
 				await context?.showMessage(
-					`An error occured during changing the group:\n${this.getErrorMessage(error)}.`,
+					`${await this.adapter.translate("dm-device-group-edit-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			return { refresh: true };
@@ -569,18 +525,20 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			.join(",")}]`;
 		const newSceneName = await this.showRenameForm(
 			context,
-			"Add scene",
-			"Scene name",
+			await this.adapter.getTranslatedObject("dm-instance-createscene-form-title"),
+			await this.adapter.getTranslatedObject("dm-instance-createscene-form-label"),
 			"",
 			`data.name !== undefined && data.name.trim() !== ''${differentNameCondition === "" ? "" : ` && !${differentNameCondition}.includes(data.name)`}`,
-			differentNameCondition === "" ? undefined : "Scene name must be unique.",
+			differentNameCondition === ""
+				? undefined
+				: await this.adapter.translate("dm-instance-createscene-form-unique-name-condition"),
 		);
 		if (newSceneName !== undefined) {
 			let dlg: ProgressDialog | undefined;
 			try {
 				dlg = await context.openProgress("Add scene", {
 					indeterminate: true,
-					label: "Initializing nodes...",
+					label: await this.adapter.getTranslatedObject("dm-instance-createscene-progress-initialization"),
 				});
 				const failedNodes = await this.adapter.onNewSceneInitialize();
 
@@ -589,7 +547,12 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				dlg = undefined;
 
 				const confirmationDialog = await context.showConfirmation(
-					`Use your remote to control your products to setup your scene. ${failedNodes.length > 0 ? `Some nodes have been failed during initialization: ${failedNodes.join(", ")}` : ""}`,
+					failedNodes.length === 0
+						? await this.adapter.getTranslatedObject("dm-instance-createscene-progress-use-remote")
+						: await this.adapter.getTranslatedObject(
+								"dm-instance-createscene-progress-use-remote-with-failed-nodes",
+								{ failedNodes: failedNodes.join(", ") },
+							),
 				);
 				if (!confirmationDialog) {
 					await this.adapter.onNewSceneCancel();
@@ -602,7 +565,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				dlg = undefined;
 
 				await context?.showMessage(
-					`An error occured during recoding a new scene:\n${this.getErrorMessage(error)}.`,
+					`${await this.adapter.translate("dm-instance-createscene-error")}\n${this.getErrorMessage(error)}.`,
 				);
 				return { refresh: true };
 			}
@@ -612,13 +575,15 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 
 	private async handleGroupDelete(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
 		const groupId = parseInt(deviceId.split(".").reverse()[0]);
-		const confirmationDialog = await context?.showConfirmation(`Do you wan't to delete group ID ${groupId}?`);
+		const confirmationDialog = await context?.showConfirmation(
+			await this.adapter.getTranslatedObject("dm-device-group-delete-confirm", { groupId: groupId.toString() }),
+		);
 		if (confirmationDialog) {
 			try {
 				await this.adapter.onRemoveGroup(groupId);
 			} catch (error) {
 				await context?.showMessage(
-					`An error occured during deleting the group:\n${this.getErrorMessage(error)}.`,
+					`${await this.adapter.translate("dm-device-group-delete-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			return Promise.resolve({ refresh: true });
@@ -629,13 +594,15 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 
 	private async handleSceneDelete(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
 		const sceneId = parseInt(deviceId.split(".").reverse()[0]);
-		const confirmationDialog = await context?.showConfirmation(`Do you wan't to delete scene ID ${sceneId}?`);
+		const confirmationDialog = await context?.showConfirmation(
+			await this.adapter.getTranslatedObject("dm-device-scene-delete-confirm", { sceneId: sceneId.toString() }),
+		);
 		if (confirmationDialog) {
 			try {
 				await this.adapter.onRemoveScene(sceneId);
 			} catch (error) {
 				await context?.showMessage(
-					`An error occured during deleting the scene:\n${this.getErrorMessage(error)}.`,
+					`${await this.adapter.translate("dm-device-scene-delete-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			return Promise.resolve({ refresh: true });
@@ -654,13 +621,18 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 
 		const oldName = scene.SceneName;
 		assert(context, "handleSceneRename: Action context shouldn't be null or undefined.");
-		const newName = await this.showRenameForm(context, "Rename scene", "New scene name", oldName);
+		const newName = await this.showRenameForm(
+			context,
+			await this.adapter.getTranslatedObject("dm-device-scene-rename-form-title"),
+			await this.adapter.getTranslatedObject("dm-device-scene-rename-form-label"),
+			oldName,
+		);
 		if (newName !== undefined) {
 			try {
 				await this.adapter.onRenameScene(sceneId, newName);
 			} catch (error) {
 				await context?.showMessage(
-					`An error occured during renaming the scene:\n${this.getErrorMessage(error)}.`,
+					`${await this.adapter.translate("dm-device-scene-rename-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			return { refresh: true };
@@ -671,8 +643,8 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 
 	private async showRenameForm(
 		context: ActionContext,
-		title: string,
-		label: string,
+		title: ioBroker.StringOrTranslated,
+		label: ioBroker.StringOrTranslated,
 		oldValue: string,
 		validator?: string,
 		validatorErrorText?: string,
