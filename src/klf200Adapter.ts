@@ -2,7 +2,6 @@
 // you need to create an adapter
 import * as utils from "@iobroker/adapter-core";
 import assert from "assert";
-import { exec } from "child_process";
 import * as fs from "fs/promises";
 import {
 	Connection,
@@ -53,8 +52,8 @@ import {
 	Velocity,
 } from "klf-200-api";
 import { Job, scheduleJob } from "node-schedule";
+import path from "path";
 import { timeout } from "promise-timeout";
-import { promisify } from "util";
 import { KLF200DeviceManagement } from "./deviceManagement/klf200DeviceManagement.js";
 import { DisposalMap } from "./disposalMap.js";
 import { HasConnectionInterface, HasProductsInterface } from "./interfaces.js";
@@ -1242,18 +1241,19 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * @return {string} The version of the klf-200-api module.
 	 */
 	private async getKlfApiVersion(): Promise<string> {
-		const execAsync = promisify(exec);
-		const { stdout: moduleInfoString } = await execAsync("npm list klf-200-api --depth=0 --json");
+		let klf200ModulePath = require.resolve("klf-200-api");
+		this.log.debug(`klf-200-api found in path ${klf200ModulePath}`);
 
-		if (!moduleInfoString) {
-			throw new Error("Could not find klf-200-api module.");
+		while (path.basename(klf200ModulePath) !== "klf-200-api") {
+			// Go up one step until we have found the root of the module:
+			klf200ModulePath = path.dirname(klf200ModulePath);
 		}
 
-		const moduleInfo: { dependencies: Record<string, { version: string }> } = JSON.parse(moduleInfoString) as {
-			dependencies: Record<string, { version: string }>;
-		};
+		const klf200PackageJsonPath = path.join(klf200ModulePath, "package.json");
 
-		return moduleInfo.dependencies["klf-200-api"].version;
+		const moduleInfo = JSON.parse(await fs.readFile(klf200PackageJsonPath, "utf8")) as { version: string };
+
+		return moduleInfo.version;
 	}
 
 	/**

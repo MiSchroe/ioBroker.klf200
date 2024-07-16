@@ -260,6 +260,10 @@ The values of the state provide multiple manipulation modes:
 	### __WORK IN PROGRESS__
 -->
 <!-- prettier-ignore -->
+### __WORK IN PROGRESS__
+
+-   (Michael Schroeder) [#214](https://github.com/MiSchroe/ioBroker.klf200/issues/214) Fixed error while retrieving the version number of the klf-200-api package.
+
 ### 1.3.0 (2024-07-15)
 
 -   (Michael Schroeder) [#180](https://github.com/MiSchroe/ioBroker.klf200/issues/180) Fixed handling new product detection.
