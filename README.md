@@ -263,6 +263,7 @@ The values of the state provide multiple manipulation modes:
 ### __WORK IN PROGRESS__
 
 -   (Michael Schroeder) [#214](https://github.com/MiSchroe/ioBroker.klf200/issues/214) Fixed error while retrieving the version number of the klf-200-api package.
+-   (Michael Schroeder) [#215](https://github.com/MiSchroe/ioBroker.klf200/issues/215) Added a device manager tab to the settings dialog for managing devices, groups and scenes.
 
 ### 1.3.0 (2024-07-15)
 

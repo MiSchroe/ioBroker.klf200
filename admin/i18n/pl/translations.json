@@ -1,6 +1,7 @@
 {
     "Advanced SSL configuration": "Zaawansowana konfiguracja SSL",
     "Cron pattern for automatic reboot": "Wzór Cron do automatycznego restartu",
+    "DeviceManager-tab-label": "Zarządzanie urządzeniami",
     "Enable automatic reboot": "Włącz automatyczne ponowne uruchamianie",
     "SSL Description": "Komunikacja pomiędzy tym adapterem i KLF-200 jest zabezpieczona certyfikatem SSL z podpisem własnym. Wygląda na to, że wszystkie urządzenia mają ten sam certyfikat. W przypadku, gdy zostanie to zmienione w przyszłej aktualizacji oprogramowania sprzętowego, możesz podać odcisk palca SSL i klucz publiczny. Zwykle nie musisz podawać żadnych informacji w tych polach.",
     "SSL Fingerprint": "Odcisk palca SSL",

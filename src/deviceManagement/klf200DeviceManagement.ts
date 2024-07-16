@@ -58,7 +58,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 							},
 							{
 								id: "winkProduct",
-								icon: "fa-solid fa-bell",
+								icon: "fa-solid fa-eye",
 								description: await this.adapter.getTranslatedObject("dm-device-product-wink"),
 								handler: () => {
 									return { refresh: false };
@@ -149,7 +149,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				},
 				{
 					id: "addGroup",
-					icon: "fas fa-users",
+					icon: "fas fa-link",
 					title: "",
 					description: await this.adapter.getTranslatedObject("dm-instance-creategroup"),
 					handler: () => {
@@ -158,7 +158,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				},
 				{
 					id: "addScene",
-					icon: "fas fa-film",
+					icon: "fas fa-play",
 					title: "",
 					description: await this.adapter.getTranslatedObject("dm-instance-createscene"),
 					handler: () => {
