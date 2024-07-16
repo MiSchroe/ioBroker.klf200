@@ -1,6 +1,7 @@
 {
     "Advanced SSL configuration": "Configurazione SSL avanzata",
     "Cron pattern for automatic reboot": "Pattern Cron per il riavvio automatico",
+    "DeviceManager-tab-label": "Gestione dei dispositivi",
     "Enable automatic reboot": "Abilita il riavvio automatico",
     "SSL Description": "La comunicazione tra questo adattatore e il KLF-200 è protetta utilizzando un certificato SSL autofirmato. Tutti i dispositivi sembrano avere lo stesso certificato. Nel caso in cui questo venga modificato con un futuro aggiornamento del firmware è possibile fornire l'impronta digitale SSL e la chiave pubblica. Di solito non è necessario fornire alcuna informazione in questi campi.",
     "SSL Fingerprint": "Impronta digitale SSL",

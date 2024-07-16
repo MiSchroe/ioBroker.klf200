@@ -1,6 +1,7 @@
 {
     "Advanced SSL configuration": "Advanced SSL configuration",
     "Cron pattern for automatic reboot": "Cron pattern for automatic reboot",
+    "DeviceManager-tab-label": "Device management",
     "Enable automatic reboot": "Enable automatic reboot",
     "SSL Description": "The communication between this adapter and the KLF-200 is secured using a self-signed SSL certificate. All devices seem to have the same certificate. In case that this will be changed with a future firmware update you can provide the SSL fingerprint and the public key. Usually, you don't have to provide any information in these fields.",
     "SSL Fingerprint": "SSL Fingerprint",

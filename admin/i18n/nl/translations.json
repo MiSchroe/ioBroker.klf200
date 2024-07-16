@@ -1,6 +1,7 @@
 {
     "Advanced SSL configuration": "Geavanceerde SSL-configuratie",
     "Cron pattern for automatic reboot": "Cron-patroon voor automatisch opnieuw opstarten",
+    "DeviceManager-tab-label": "Apparaatbeheer",
     "Enable automatic reboot": "Automatisch opnieuw opstarten inschakelen",
     "SSL Description": "De communicatie tussen deze adapter en de KLF-200 is beveiligd met een zelfondertekend SSL-certificaat. Alle apparaten lijken hetzelfde certificaat te hebben. In het geval dat dit bij een toekomstige firmware-update wordt gewijzigd, kunt u de SSL-vingerafdruk en de openbare sleutel opgeven. Normaal gesproken hoeft u in deze velden geen informatie in te vullen.",
     "SSL Fingerprint": "SSL-vingerafdruk",

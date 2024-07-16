@@ -1,6 +1,7 @@
 {
     "Advanced SSL configuration": "高级 SSL 配置",
     "Cron pattern for automatic reboot": "用于自动重启的 Cron 模式",
+    "DeviceManager-tab-label": "设备管理",
     "Enable automatic reboot": "启用自动重启",
     "SSL Description": "该适配器和 KLF-200 之间的通信使用自签名 SSL 证书进行保护。所有设备似乎都有相同的证书。如果将来的固件更新会改变这一点，您可以提供 SSL 指纹和公钥。 通常，您不必在这些字段中提供任何信息。",
     "SSL Fingerprint": "SSL 指纹",
