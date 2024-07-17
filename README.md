@@ -264,6 +264,8 @@ The values of the state provide multiple manipulation modes:
 
 -   (Michael Schroeder) [#214](https://github.com/MiSchroe/ioBroker.klf200/issues/214) Fixed error while retrieving the version number of the klf-200-api package.
 -   (Michael Schroeder) [#215](https://github.com/MiSchroe/ioBroker.klf200/issues/215) Added a device manager tab to the settings dialog for managing devices, groups and scenes.
+-   (Michael Schroeder) [#217](https://github.com/MiSchroe/ioBroker.klf200/issues/217) Refresh statusReply after reading the limitations to show correct values.
+-   (Michael Schroeder) [#218](https://github.com/MiSchroe/ioBroker.klf200/issues/218) Refresh runStatus after reading the limitations to show correct values.
 
 ### 1.3.0 (2024-07-15)
 

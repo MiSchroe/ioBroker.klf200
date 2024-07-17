@@ -49,6 +49,7 @@ import {
 	RenameSceneStatus,
 	Scene,
 	Scenes,
+	StatusType,
 	Velocity,
 } from "klf-200-api";
 import { Job, scheduleJob } from "node-schedule";
@@ -62,7 +63,7 @@ import { SetupGroups } from "./setupGroups.js";
 import { SetupProducts } from "./setupProducts.js";
 import { SetupScenes } from "./setupScenes.js";
 import { Translate } from "./translate.js";
-import { ArrayCount, convertErrorToString } from "./util/utils.js";
+import { ArrayCount, convertErrorToString, waitForSessionFinishedNtfAsync } from "./util/utils.js";
 
 // Load your modules here, e.g.:
 // import * as fs from "fs";
@@ -489,6 +490,11 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 						ParameterActive.FP3,
 						ParameterActive.FP4,
 					]) {
+						const productLimitationErrorEntry = JSON.stringify([product.NodeID, parameterActive]);
+						if (productLimitationError.has(productLimitationErrorEntry)) {
+							// Skip additional checks if the parameter was already erronous
+							continue;
+						}
 						try {
 							await product.refreshLimitationAsync(limitationType, parameterActive);
 						} catch (error) {
@@ -497,11 +503,27 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 								(error.message.startsWith("Unexpected node ID") ||
 									error.message.startsWith("Unexpected parameter ID"))
 							) {
-								productLimitationError.add(JSON.stringify([product.NodeID, parameterActive]));
+								productLimitationError.add(productLimitationErrorEntry);
 							} else {
 								throw error;
 							}
 						}
+					}
+				}
+
+				// After trying to read all limitations, refresh the product to set runStatus und statusReply to a clean state
+				const sessionId = await this.Products?.requestStatusAsync(
+					product.NodeID,
+					StatusType.RequestCurrentPosition,
+					[1, 2, 3, 4],
+				);
+				try {
+					assert(this.Connection, "Connection is undefined");
+					assert(sessionId, "SessionId is undefined");
+					await waitForSessionFinishedNtfAsync(this, this.Connection, sessionId);
+				} catch (e) {
+					if (e != "TimeoutError") {
+						throw e;
 					}
 				}
 			}
