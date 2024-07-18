@@ -121,9 +121,7 @@ describe("PropertyLink", function () {
 			it(`should return a ${testCase.ExpectedTypeName} value for the type of the return value`, function () {
 				const testComponent = new TestComponent();
 				const expectedResult = testCase.ExpectedTypeName;
-				const result = typeof MapAnyPropertyToState<TestComponent, keyof TestComponent>(
-					testComponent[testCase.TestPropertyName],
-				);
+				const result = typeof MapAnyPropertyToState(testComponent[testCase.TestPropertyName]);
 				expect(result).to.be.equal(expectedResult);
 			});
 		});

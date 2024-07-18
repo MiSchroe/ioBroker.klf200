@@ -55,6 +55,7 @@ import {
 import { Job, scheduleJob } from "node-schedule";
 import path from "path";
 import { timeout } from "promise-timeout";
+import { ConnectionOptions } from "tls";
 import { KLF200DeviceManagement } from "./deviceManagement/klf200DeviceManagement.js";
 import { DisposalMap } from "./disposalMap.js";
 import { HasConnectionInterface, HasProductsInterface } from "./interfaces.js";
@@ -82,6 +83,7 @@ declare global {
 			advancedSSLConfiguration: boolean;
 			SSLPublicKey: string;
 			SSLFingerprint: string;
+			SSLConnectionOptions: ConnectionOptions;
 			// Or use a catch-all approach
 			// [key: string]: any;
 		}
@@ -392,16 +394,6 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 				this.config.password = this.decrypt(this.config.password);
 			}
 
-			// Setup connection and initialize objects and states
-			if (!this.config.advancedSSLConfiguration) {
-				this._Connection = new Connection(this.config.host);
-			} else {
-				this._Connection = new Connection(
-					this.config.host,
-					Buffer.from(this.config.SSLPublicKey),
-					this.config.SSLFingerprint,
-				);
-			}
 			try {
 				this.log.info(`klf-200-api version: ${await this.getKlfApiVersion()}`);
 			} catch (error) {
@@ -410,6 +402,26 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 				);
 			}
 			this.log.info(`Host: ${this.config.host}`);
+
+			// Setup connection and initialize objects and states
+			if (!this.config.advancedSSLConfiguration) {
+				this.log.debug("Regular login.");
+				this._Connection = new Connection(this.config.host);
+			} else if (this.config.SSLConnectionOptions) {
+				this.log.debug(
+					`Debug login with SSL ConnectionOptions: ${JSON.stringify(this.config.SSLConnectionOptions)}`,
+				);
+				this._Connection = new Connection(this.config.host, this.config.SSLConnectionOptions);
+			} else {
+				this.log.debug(
+					`Advanced login with SSL public key: ${this.config.SSLPublicKey} and fingerprint: ${this.config.SSLFingerprint}`,
+				);
+				this._Connection = new Connection(
+					this.config.host,
+					Buffer.from(this.config.SSLPublicKey),
+					this.config.SSLFingerprint,
+				);
+			}
 			try {
 				await this.Connection?.loginAsync(this.config.password);
 			} catch (error: any) {
