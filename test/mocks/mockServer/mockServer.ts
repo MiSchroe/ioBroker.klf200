@@ -76,12 +76,12 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 			Build: 0,
 			MicroBuild: 0,
 		},
-		HardwareVersion: 42,
+		HardwareVersion: 5,
 		ProductGroup: 14,
 		ProductType: 3,
-		ProtocolMajorVersion: 42,
-		ProtocolMinorVersion: 42,
-		GatewayState: GatewayState.GatewayMode_WithActuatorNodes,
+		ProtocolMajorVersion: 3,
+		ProtocolMinorVersion: 14,
+		GatewayState: GatewayState.GatewayMode_NoActuatorNodes,
 		GatewaySubState: GatewaySubState.Idle,
 		IPAddress: "127.0.0.1",
 		NetworkMask: "255.255.255.255",
@@ -709,9 +709,9 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 										: product.RemainingTime,
 							);
 						for (const functionalParameter of fp) {
-							ab.addBytes(functionalParameter + 1);
+							ab.addBytes(functionalParameter);
 							switch (functionalParameter) {
-								case 0:
+								case 1:
 									ab.addInts(
 										statusType === StatusType.RequestCurrentPosition
 											? product.FP1CurrentPositionRaw
@@ -721,7 +721,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 									);
 									break;
 
-								case 1:
+								case 2:
 									ab.addInts(
 										statusType === StatusType.RequestCurrentPosition
 											? product.FP2CurrentPositionRaw
@@ -731,7 +731,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 									);
 									break;
 
-								case 2:
+								case 3:
 									ab.addInts(
 										statusType === StatusType.RequestCurrentPosition
 											? product.FP3CurrentPositionRaw
@@ -741,7 +741,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 									);
 									break;
 
-								case 3:
+								case 4:
 									ab.addInts(
 										statusType === StatusType.RequestCurrentPosition
 											? product.FP4CurrentPositionRaw
@@ -752,7 +752,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 									break;
 
 								default:
-									throw new Error(`Only FP1-4 are supported. You tried ${functionalParameter + 1}.`);
+									throw new Error(`Only FP1-4 are supported. You tried ${functionalParameter}.`);
 							}
 						}
 
@@ -808,6 +808,30 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 										limitationType === 1 ? limitation.MaxValue : 0,
 									)
 									.addBytes(limitation.LimitationOriginator, limitation.LimitationTime)
+									.toBuffer(),
+							),
+						);
+					} else if (parameterId === 0) {
+						resultBuffers.push(
+							addCommandAndLengthToBuffer(
+								GatewayCommand.GW_LIMITATION_STATUS_NTF,
+								new ArrayBuilder()
+									.addInts(sessionId)
+									.addBytes(node, parameterId)
+									.addInts(limitationType === 0 ? 0 : 0, limitationType === 1 ? 0xc800 : 0)
+									.addBytes(255, 255)
+									.toBuffer(),
+							),
+						);
+					} else {
+						resultBuffers.push(
+							addCommandAndLengthToBuffer(
+								GatewayCommand.GW_LIMITATION_STATUS_NTF,
+								new ArrayBuilder()
+									.addInts(sessionId)
+									.addBytes(0, 9)
+									.addInts(limitationType === 0 ? 0 : 0, limitationType === 1 ? 0xc800 : 0)
+									.addBytes(255, 255)
 									.toBuffer(),
 							),
 						);
@@ -1543,11 +1567,11 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 
 	function getFunctionalParamters(FPI1: number, FPI2: number): number[] {
 		const result: number[] = [];
-		for (let index = 1; index < 9; index++) {
-			if (FPI1 & 0x80) result.push(index);
+		for (let index = 0; index < 8; index++) {
+			if (FPI1 & (0x80 >>> index)) result.push(index + 1);
 		}
-		for (let index = 9; index < 17; index++) {
-			if (FPI2 & 0x80) result.push(index);
+		for (let index = 0; index < 8; index++) {
+			if (FPI2 & (0x80 >>> index)) result.push(index + 9);
 		}
 		return result;
 	}

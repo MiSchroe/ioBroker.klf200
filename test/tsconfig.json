@@ -1,7 +1,8 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"noImplicitAny": false
+		"noImplicitAny": false,
+		"typeRoots": ["../node_modules/@types", "../node_modules/@iobroker"]
 	},
 	"include": ["./**/*.js", "./**/*.ts", "unit.js"]
 }
