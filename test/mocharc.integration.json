@@ -1,5 +1,5 @@
 {
 	"require": ["test/mocha.setup.js", "source-map-support/register"],
-	"watch-files": ["src/{**/*,*}.test.ts"],
+	"watch-files": ["src/{**/*,*}.test.ts", "test/{**/*,*}.ts"],
 	"node-option": ["import=tsx"]
 }
