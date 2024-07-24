@@ -58,6 +58,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 	*/
 
 	const HOST = "localhost";
+	let actualPassword = "velux123";
 
 	const options: TlsOptions = {
 		key: readFileSync(path.join(__dirname, "server-key.pem")),
@@ -387,14 +388,30 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 		// Now, we do the default handling
 		switch (commandRequest) {
 			// Gateway & general messages:
-			case GatewayCommand.GW_PASSWORD_ENTER_REQ:
-				return [addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_ENTER_CFM, [GW_COMMON_STATUS.SUCCESS])];
+			case GatewayCommand.GW_PASSWORD_ENTER_REQ: {
+				const currentPassword = readZString(frameBuffer.subarray(3, 35));
+				if (currentPassword === actualPassword) {
+					return [
+						addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_ENTER_CFM, [GW_COMMON_STATUS.SUCCESS]),
+					];
+				} else {
+					return [
+						addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_ENTER_CFM, [GW_COMMON_STATUS.ERROR]),
+					];
+				}
+			}
 
-			case GatewayCommand.GW_PASSWORD_CHANGE_REQ:
-				return [
-					addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_CHANGE_CFM, [GW_COMMON_STATUS.SUCCESS]),
-					addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_CHANGE_NTF, frameBuffer.subarray(33, 65)),
-				];
+			case GatewayCommand.GW_PASSWORD_CHANGE_REQ: {
+				const currentPassword = readZString(frameBuffer.subarray(3, 35));
+				const newPassword = readZString(frameBuffer.subarray(35, 67));
+				if (currentPassword === actualPassword) {
+					actualPassword = newPassword;
+					return [
+						addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_CHANGE_CFM, [GW_COMMON_STATUS.ERROR]),
+					];
+				} else {
+				}
+			}
 
 			case GatewayCommand.GW_GET_VERSION_REQ:
 				return [
