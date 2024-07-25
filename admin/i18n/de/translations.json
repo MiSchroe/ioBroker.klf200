@@ -40,7 +40,7 @@
     "dm-instance-createscene-form-label": "Szenenname",
     "dm-instance-createscene-form-title": "Szene hinzufügen",
     "dm-instance-createscene-form-unique-name-condition": "Der Szenenname muss eindeutig sein.",
-    "dm-instance-createscene-progress-initialization": "Produkte werden initialisiert...",
+    "dm-instance-createscene-progress-initialization": "Produkte werden initialisiert…",
     "dm-instance-createscene-progress-use-remote": "Verwenden Sie Ihre Fernbedienung, um Ihre Produkte zu steuern und Ihre Szene einzurichten.",
     "dm-instance-createscene-progress-use-remote-with-failed-nodes": "Verwenden Sie Ihre Fernbedienung, um Ihre Produkte zu steuern und Ihre Szene einzurichten. Bei einigen Produkten ist während der Initialisierung ein Fehler aufgetreten: {failedNodes}.",
     "dm-instance-discover": "Nach neuen Geräten suchen",
