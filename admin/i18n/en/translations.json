@@ -40,7 +40,7 @@
     "dm-instance-createscene-form-label": "Scene name",
     "dm-instance-createscene-form-title": "Add scene",
     "dm-instance-createscene-form-unique-name-condition": "Scene name must be unique.",
-    "dm-instance-createscene-progress-initialization": "Initializing nodes...",
+    "dm-instance-createscene-progress-initialization": "Initializing nodes…",
     "dm-instance-createscene-progress-use-remote": "Use your remote to control your products to setup your scene.",
     "dm-instance-createscene-progress-use-remote-with-failed-nodes": "Use your remote to control your products to setup your scene. Some nodes have failed during initialization: {failedNodes}.",
     "dm-instance-discover": "Discover new devices",
