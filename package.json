@@ -10,7 +10,8 @@
   "license": "MIT",
   "keywords": [
     "KLF-200",
-    "VELUX"
+    "VELUX",
+    "ioBroker"
   ],
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "@alcalzone/release-script": "^3.8.0",
     "@alcalzone/release-script-plugin-iobroker": "^3.7.2",
     "@alcalzone/release-script-plugin-license": "^3.7.0",
+    "@alcalzone/release-script-plugin-manual-review": "^3.7.0",
     "@iobroker/adapter-dev": "^1.3.0",
     "@iobroker/testing": "^4.1.3",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
@@ -89,8 +91,8 @@
     "test": "npm run test:tstap && npm run test:packagetap",
     "test:unit": "npm run test:ts",
     "check": "tsc -p tsconfig.build.json --noEmit",
-    "coverage": "nyc mocha --config test/mocharc.custom.json src/{**/*,*}.test.ts",
-    "coveragejunit": "nyc --reporter=cobertura --reporter=html mocha --config test/mocharc.custom.json src/{**/*,*}.test.ts --reporter mocha-junit-reporter",
+    "coverage": "c8 mocha --config test/mocharc.custom.json src/{**/*,*}.test.ts",
+    "coveragejunit": "c8 --reporter=cobertura --reporter=html mocha --config test/mocharc.custom.json src/{**/*,*}.test.ts --reporter mocha-junit-reporter",
     "lint": "eslint --ext .ts src",
     "prepare": "npm run build",
     "release": "release-script",
@@ -121,5 +123,12 @@
   "bugs": {
     "url": "https://github.com/MiSchroe/ioBroker.klf200/issues"
   },
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "files": [
+    "build",
+    "admin",
+    "docs",
+    "img",
+    "io-package.json"
+  ]
 }
