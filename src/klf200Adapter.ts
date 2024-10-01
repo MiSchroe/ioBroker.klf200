@@ -106,6 +106,7 @@ import {
 	GW_RENAME_SCENE_REQ,
 	GW_RTC_SET_TIME_ZONE_CFM,
 	GW_RTC_SET_TIME_ZONE_REQ,
+	GW_SESSION_FINISHED_NTF,
 	GW_SET_CONTACT_INPUT_LINK_CFM,
 	GW_SET_CONTACT_INPUT_LINK_REQ,
 	GW_SET_FACTORY_DEFAULT_CFM,
@@ -125,6 +126,7 @@ import {
 	GW_SET_UTC_CFM,
 	GW_SET_UTC_REQ,
 	GW_STATUS_REQUEST_CFM,
+	GW_STATUS_REQUEST_NTF,
 	GW_STATUS_REQUEST_REQ,
 	GW_STOP_SCENE_CFM,
 	GW_STOP_SCENE_REQ,
@@ -190,6 +192,11 @@ declare global {
 type ConnectionWatchDogHandler = (hadError: boolean) => void;
 
 const refreshTimeoutMS = 120_000; // Wait max. 2 minutes for the notification.
+
+type ResponsiveProductResult = {
+	NodeID: number;
+	FPs: number[];
+};
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export declare interface Klf200 {
@@ -838,8 +845,43 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		this._Products = await Products.createProductsAsync(this.Connection!);
 		this.log.info(`${ArrayCount(this.Products!.Products)} products found.`);
 
-		this.log.info(`Reading product limitations...`);
+		this.log.info(`Checking for unresponsive products...`);
 		const productLimitationError = new Set<string>();
+		const responsiveProducts = await this.checkResponsiveProducts(
+			this._Products.Products.map((product) => product.NodeID),
+		);
+		for (const product of this._Products.Products) {
+			const responsiveProduct = responsiveProducts.find(
+				(responsiveProduct) => responsiveProduct.NodeID === product.NodeID,
+			);
+			if (responsiveProduct === undefined) {
+				this.log.warn(`Product ${product.NodeID} is not responding.`);
+				for (const parameterActive of [
+					ParameterActive.MP,
+					ParameterActive.FP1,
+					ParameterActive.FP2,
+					ParameterActive.FP3,
+					ParameterActive.FP4,
+				]) {
+					const productLimitationErrorEntry = JSON.stringify([product.NodeID, parameterActive]);
+					productLimitationError.add(productLimitationErrorEntry);
+				}
+			} else {
+				for (const parameterActive of [
+					ParameterActive.FP1,
+					ParameterActive.FP2,
+					ParameterActive.FP3,
+					ParameterActive.FP4,
+				]) {
+					if (!responsiveProduct.FPs.includes(parameterActive)) {
+						const productLimitationErrorEntry = JSON.stringify([product.NodeID, parameterActive]);
+						productLimitationError.add(productLimitationErrorEntry);
+					}
+				}
+			}
+		}
+
+		this.log.info(`Reading product limitations...`);
 		for (const product of this._Products.Products) {
 			if (product) {
 				this.log.info(`Reading limitations for product ${product.NodeID}...`);
@@ -941,6 +983,41 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		this._Setup?.startStateTimer();
 
 		this.Connection?.KLF200SocketProtocol?.socket.on("close", this.connectionWatchDogHandler);
+	}
+
+	private async checkResponsiveProducts(productIds: number[]): Promise<ResponsiveProductResult[]> {
+		const responsiveProducts: ResponsiveProductResult[] = [];
+		let sessionId = -1;
+		let handler: Disposable | undefined = undefined;
+		const handlerPromise = timeout(
+			new Promise<ResponsiveProductResult[]>((resolve, reject) => {
+				try {
+					handler = this._Connection?.on(
+						(event) => {
+							if (event instanceof GW_SESSION_FINISHED_NTF && event.SessionID === sessionId) {
+								handler?.dispose();
+								handler = undefined;
+								resolve(responsiveProducts.sort());
+							} else if (event instanceof GW_STATUS_REQUEST_NTF && event.SessionID === sessionId) {
+								responsiveProducts.push({
+									NodeID: event.NodeID,
+									FPs: event.ParameterData?.map((parameter) => parameter.ID) || [],
+								});
+							}
+						},
+						[GatewayCommand.GW_SESSION_FINISHED_NTF, GatewayCommand.GW_STATUS_REQUEST_NTF],
+					);
+				} catch (error) {
+					reject(error);
+				}
+			}),
+			30_000,
+		);
+		const statusRequestCfm = await this._Connection?.sendFrameAsync(
+			new GW_STATUS_REQUEST_REQ(productIds, StatusType.RequestCurrentPosition, [1, 2, 3, 4]),
+		);
+		sessionId = statusRequestCfm?.SessionID || sessionId;
+		return await handlerPromise;
 	}
 
 	private async disposeOnConnectionClosed(): Promise<void> {
