@@ -482,6 +482,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		const productLimitationError = new Set<string>();
 		for (const product of this._Products.Products) {
 			if (product) {
+				this.log.info(`Reading limitations for product ${product.NodeID}...`);
 				for (const limitationType of [LimitationType.MinimumLimitation, LimitationType.MaximumLimitation]) {
 					for (const parameterActive of [
 						ParameterActive.MP,
@@ -505,6 +506,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 							) {
 								productLimitationError.add(productLimitationErrorEntry);
 							} else {
+								this.log.error((error as Error).toString());
 								throw error;
 							}
 						}
@@ -522,7 +524,11 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 					assert(sessionId, "SessionId is undefined");
 					await waitForSessionFinishedNtfAsync(this, this.Connection, sessionId);
 				} catch (e) {
-					if (e != "TimeoutError") {
+					if (e instanceof Error && e.message === "Timeout error") {
+						this.log.warn(`Failed to refresh product ${product.NodeID} after timeout. Ignoring error.`);
+					} else {
+						this.log.debug(`Failed to refresh product ${product.NodeID}.`);
+						this.log.error((e as Error).toString());
 						throw e;
 					}
 				}
