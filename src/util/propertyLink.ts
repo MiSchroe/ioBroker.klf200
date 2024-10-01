@@ -5,9 +5,11 @@ import { Component, Disposable, PropertyChangedEvent } from "klf-200-api";
 import { PromiseQueue } from "./promiseQueue";
 import { AsyncMethodName, AsyncMethodParameters, AsyncMethodType } from "./utils";
 
-export function MapAnyPropertyToState<T extends Component, P extends keyof T>(
-	propertyValue: T[P],
-): string | number | boolean | null {
+export function MapAnyPropertyToState<T>(propertyValue: T): string | number | boolean | null {
+	if (propertyValue === undefined) {
+		return null;
+	}
+
 	switch (typeof propertyValue) {
 		case "boolean":
 			return propertyValue as boolean;
@@ -118,7 +120,7 @@ export class SimplePropertyChangedHandler<T extends Component, P extends keyof T
 
 export class PercentagePropertyChangedHandler<
 	T extends Component,
-	P extends keyof T,
+	P extends keyof T & { [K in keyof T]: T[K] extends number ? K : never }[keyof T],
 > extends SimplePropertyChangedHandler<T, P> {
 	async onPropertyChangedTypedEvent(newValue: T[P]): Promise<void> {
 		await this.Adapter.setState(this.StateId, Math.round((MapAnyPropertyToState(newValue) as number) * 100), true);

@@ -374,13 +374,13 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					type: "staticText",
 					xs: 2,
 					newLine: true,
-					label: "ID",
+					text: "ID",
+					controlStyle: {},
 				},
 				tableHeaderProductName: {
 					type: "staticText",
-					label: await this.adapter.getTranslatedObject(
-						"dm-device-group-edit-form-tableHeaderProductName-label",
-					),
+					text: await this.adapter.translate("dm-device-group-edit-form-tableHeaderProductName-label"),
+					controlStyle: {},
 				},
 			},
 		};
@@ -428,10 +428,11 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					};
 					form.items[`${product.NodeID}_name`] = {
 						type: "staticText",
-						label: product.Name,
+						text: product.Name,
 						tooltip: ActuatorType[product.TypeID],
 						data: product.TypeID,
 						disabled: conditionsMap.get(product.TypeID),
+						controlStyle: {},
 					};
 					formData[cbName] = groupEditDialogData.products.includes(product.NodeID);
 
