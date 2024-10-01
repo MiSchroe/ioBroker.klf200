@@ -262,8 +262,9 @@ The values of the state provide multiple manipulation modes:
 <!-- prettier-ignore -->
 ### __WORK IN PROGRESS__
 
+-   (Michael Schroeder) [#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Fixed timeout error during adapter start in some special cases.
 -   (Michael Schroeder) [#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Run integration tests against a virtual mock version of an KLF-200.
--   (Michael Schroeder) [#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Fix findings of Adapter Checker.
+-   (Michael Schroeder) [#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Fixed findings of Adapter Checker.
 -   (Michael Schroeder) Upgrade dependencies
 
 ### 1.3.1 (2024-07-17)
