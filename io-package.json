@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "klf200",
-		"version": "1.3.1",
+		"version": "1.3.2",
 		"news": {
+			"1.3.2": {
+				"en": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Fixed timeout error during adapter start in some special cases.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Fixed an issue that logged the same log entry multiple times.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Run integration tests against a virtual mock version of an KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Fixed findings of Adapter Checker.\nUpgrade dependencies",
+				"de": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Behobener Timeout-Fehler beim Adapterstart in einigen speziellen Fällen.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Es wurde ein Problem behoben, das den gleichen Log-Eintrag mehrfach protokolliert hat.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Integrationstests werden gegen eine virtuelle Mock-Version eines KLF-200 ausgeführt.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Ergebnisse des Adapter Checkers sind behoben.\nAbhängigkeiten aktualisiert",
+				"ru": "[#224] (https://github.com/MiSchroe/ioBroker.klf200/issues/224) Исправленная ошибка таймаута во время адаптера начинается в некоторых особых случаях.\n[#246] (https://github.com/MiSchroe/ioBroker.klf200/issues/246) Исправлена проблема, которая несколько раз регистрировала один и тот же вход.\n[#210] (https://github.com/MiSchroe/ioBroker.klf200/issues/210) Запустите интеграционные тесты против виртуальной версии KLF-200.\n[#233] (https://github.com/MiSchroe/ioBroker.klf200/issues/233) Исправленные результаты проверки адаптера.\nЗависимость от повышения качества",
+				"pt": "[#224] (https://github.com/MiSchroe/ioBroker.klf200/issues/224) O erro de tempo limite fixo durante o início do adaptador em alguns casos especiais.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Corrigido um problema que registrou a mesma entrada de log várias vezes.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Execute testes de integração contra uma versão virtual de um KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Achados fixos do verificador do adaptador.\nDependências de atualização",
+				"nl": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Vaste timeout fout tijdens adapter start in sommige speciale gevallen.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Een probleem opgelost dat dezelfde log invoer meerdere keren logde.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Voer integratietests uit tegen een virtuele schijnversie van een KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Vaste bevindingen van Adapter Checker.\nUpgrade afhankelijkheden",
+				"fr": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Erreur de timeout corrigée pendant le démarrage de l'adaptateur dans certains cas particuliers.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Correction d'un problème qui a enregistré la même entrée de journal plusieurs fois.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Exécutez des tests d'intégration contre une version virtuelle simulée d'un KLF-200.\n[#233] (https://github.com/MiSchroe/ioBroker.klf200/issues/233) Correction des résultats de la vérification de l'adaptateur.\nAmélioration des dépendances",
+				"it": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Errore di timeout fisso durante l'avvio dell'adattatore in alcuni casi speciali.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Risolto un problema che ha registrato la stessa voce di registro più volte.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Eseguire test di integrazione contro una versione virtuale mock di un KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Risultati fissi di Adattatore Checker.\nDipendenze di aggiornamento",
+				"es": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Error de tiempo fijo durante el inicio del adaptador en algunos casos especiales.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Arregló un problema que registró la misma entrada de registro varias veces.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Ejecute pruebas de integración contra una versión virtual de un KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Conclusiones fijas de Adapter Checker.\nAumentar las dependencias",
+				"pl": "[# 224] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 224) Naprawiono błąd timeout podczas uruchamiania adaptera w niektórych szczególnych przypadkach.\n[# 246] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 246) Naprawiono problem, który wielokrotnie zapisywał ten sam wpis.\n[# 210] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 210) Uruchom testy integracyjne na wirtualną wersję modelową KLF- 200.\n[# 233] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 233) Ustalone wyniki kontroli adaptera.\nUaktualnienie zależności",
+				"uk": "[#224](https://github.com/MiSchroe/ioBroker.klf200/products/224) Виправлена помилка часу при запуску адаптера в деяких спеціальних випадках.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/products/246) Виправлено проблему, що ввійшло той самий запис журналу кілька разів.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/products/210) Тести з інтеграції Run на віртуальну версію KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/products/233) Виправлені результати перевірки адаптера.\nПідвищення залежності",
+				"zh-cn": "[224] (https://github.com/Mischroe/ioBroker.klf200/issues/224) (中文(简体) ). 适配器期间的固定超时错误在一些特殊情况下启动.\n[246] (https://github.com/Mischroe/ioBroker.klf200/issues/246) (中文(简体) ). 解决了一个问题,多次登录同一日志条目.\n[210] (https://github.com/Mischroe/ioBroker.klf200/issues/210) (中文(简体) ). 针对虚拟模拟版本的KLF-200运行集成测试.\n[第233号](https://github.com/Mischroe/ioBroker.klf200/issues/233). 固定发现的适配器检查器.\n升级依赖关系"
+			},
 			"1.3.1": {
 				"en": "[#214](https://github.com/MiSchroe/ioBroker.klf200/issues/214) Fixed error while retrieving the version number of the klf-200-api package.\n[#215](https://github.com/MiSchroe/ioBroker.klf200/issues/215) Added a device manager tab to the settings dialog for managing devices, groups and scenes.\n[#217](https://github.com/MiSchroe/ioBroker.klf200/issues/217) Refresh statusReply after reading the limitations to show correct values.\n[#218](https://github.com/MiSchroe/ioBroker.klf200/issues/218) Refresh runStatus after reading the limitations to show correct values.",
 				"de": "[#214](https://github.com/MiSchroe/ioBroker.klf200/issues/214) Fehler beim Abrufen der Versionsnummer des klf-200-api-Pakets behoben.\n[#215](https://github.com/MiSchroe/ioBroker.klf200/issues/215) Hinzufügen eines Gerätemanager-Tab in den Einstellungen Dialog für die Verwaltung von Geräten, Gruppen und Szenen.\n[#217](https://github.com/MiSchroe/ioBroker.klf200/issues/217) Refresh statusReply nach dem Lesen der Einschränkungen, um korrekte Werte anzuzeigen.\n[#218](https://github.com/MiSchroe/ioBroker.klf200/issues/218) Refresh runStatus nach dem Lesen der Einschränkungen, um korrekte Werte anzuzeigen.",
@@ -80,19 +93,6 @@
 				"pl": "(Michael Schroeder) Napraw [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Ustaw wiele stanów naraz, np. w Blockly",
 				"zh-cn": "（Michael Schroeder）修复[＃49]（https://github.com/MiSchroe/ioBroker.klf200/issues/49）一次设置多个状态，例如在块状",
 				"uk": "(Michael Schroeder) Виправити [#49](https://github.com/MiSchroe/ioBroker.klf200/issues/49) Встановити кілька станів одночасно, напр. в Блоклі"
-			},
-			"1.0.0": {
-				"en": "Support for KLF firmware 2.0.0.71",
-				"de": "Umstellung auf KLF-Firmware 2.0.0.71",
-				"ru": "Поддержка прошивки KLF 2.0.0.71",
-				"pt": "Suporte para o firmware KLF 2.0.0.71",
-				"nl": "Ondersteuning voor KLF-firmware 2.0.0.71",
-				"fr": "Prise en charge du firmware KLF 2.0.0.71",
-				"it": "Supporto per il firmware KLF 2.0.0.71",
-				"es": "Soporte para firmware KLF 2.0.0.71",
-				"pl": "Obsługa oprogramowania KLF 2.0.0.71",
-				"zh-cn": "支持KLF固件2.0.0.71",
-				"uk": "Підтримка прошивки KLF 2.0.0.71"
 			}
 		},
 		"titleLang": {
