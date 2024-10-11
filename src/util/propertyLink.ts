@@ -150,12 +150,12 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 	}
 
 	private async stateChanged(id: string, obj: ioBroker.State | null | undefined): Promise<void> {
-		this.Adapter.log.silly(
-			`State changed event received for id ${id}. New state: ${JSON.stringify(obj)}. Handled by ${
-				this.constructor.name
-			}`,
-		);
 		if (id === `${this.Adapter.namespace}.${this.StateId}`) {
+			this.Adapter.log.silly(
+				`State changed event received for id ${id}. New state: ${JSON.stringify(obj)}. Handled by ${
+					this.constructor.name
+				}`,
+			);
 			try {
 				await this.onStateChange(obj);
 			} catch (error) {
