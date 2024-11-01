@@ -849,34 +849,36 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		this.log.info(`Checking for unresponsive products...`);
 		const productLimitationError = new Set<string>();
 		const responsiveProducts = await this.checkResponsiveProducts(
-			this._Products.Products.map((product) => product.NodeID),
+			this._Products.Products.filter((product) => product).map((product) => product.NodeID),
 		);
 		for (const product of this._Products.Products) {
-			const responsiveProduct = responsiveProducts.find(
-				(responsiveProduct) => responsiveProduct.NodeID === product.NodeID,
-			);
-			if (responsiveProduct === undefined) {
-				this.log.warn(`Product ${product.NodeID} is not responding.`);
-				for (const parameterActive of [
-					ParameterActive.MP,
-					ParameterActive.FP1,
-					ParameterActive.FP2,
-					ParameterActive.FP3,
-					ParameterActive.FP4,
-				]) {
-					const productLimitationErrorEntry = JSON.stringify([product.NodeID, parameterActive]);
-					productLimitationError.add(productLimitationErrorEntry);
-				}
-			} else {
-				for (const parameterActive of [
-					ParameterActive.FP1,
-					ParameterActive.FP2,
-					ParameterActive.FP3,
-					ParameterActive.FP4,
-				]) {
-					if (!responsiveProduct.FPs.includes(parameterActive)) {
+			if (product) {
+				const responsiveProduct = responsiveProducts.find(
+					(responsiveProduct) => responsiveProduct.NodeID === product.NodeID,
+				);
+				if (responsiveProduct === undefined) {
+					this.log.warn(`Product ${product.NodeID} is not responding.`);
+					for (const parameterActive of [
+						ParameterActive.MP,
+						ParameterActive.FP1,
+						ParameterActive.FP2,
+						ParameterActive.FP3,
+						ParameterActive.FP4,
+					]) {
 						const productLimitationErrorEntry = JSON.stringify([product.NodeID, parameterActive]);
 						productLimitationError.add(productLimitationErrorEntry);
+					}
+				} else {
+					for (const parameterActive of [
+						ParameterActive.FP1,
+						ParameterActive.FP2,
+						ParameterActive.FP3,
+						ParameterActive.FP4,
+					]) {
+						if (!responsiveProduct.FPs.includes(parameterActive)) {
+							const productLimitationErrorEntry = JSON.stringify([product.NodeID, parameterActive]);
+							productLimitationError.add(productLimitationErrorEntry);
+						}
 					}
 				}
 			}

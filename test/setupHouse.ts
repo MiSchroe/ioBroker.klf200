@@ -269,3 +269,88 @@ export async function setupHouseMockup(mockServerController: MockServerControlle
 		},
 	});
 }
+
+export async function setupHouseMockupNonConsecutiveProductNumbers(
+	mockServerController: MockServerController,
+): Promise<void> {
+	// Setup products
+	const products: Product[] = [
+		{
+			NodeID: 2,
+			Name: "Window 1",
+			TypeID: ActuatorType.WindowOpener,
+			SubType: 1,
+			Order: 0,
+			Placement: 0,
+			Velocity: Velocity.Default,
+			NodeVariation: NodeVariation.Kip,
+			PowerSaveMode: PowerSaveMode.LowPowerMode,
+			SerialNumber: Buffer.from([0, 0, 0, 0, 0, 0, 0, 0]).toString("base64"), // base64 encoded Buffer
+			ProductGroup: 0,
+			ProductType: 0,
+			State: NodeOperatingState.Done,
+			CurrentPositionRaw: 0xc800,
+			FP1CurrentPositionRaw: 0xf7ff,
+			FP2CurrentPositionRaw: 0xf7ff,
+			FP3CurrentPositionRaw: 0xf7ff,
+			FP4CurrentPositionRaw: 0xf7ff,
+			RemainingTime: 0,
+			TimeStamp: new Date("2012-01-01T11:13:55.000Z").toISOString(),
+			ProductAlias: [new ActuatorAlias(0xd803, 0xba00)],
+			RunStatus: RunStatus.ExecutionCompleted,
+			StatusReply: StatusReply.Ok,
+			TargetPositionRaw: 0xc800,
+			FP1TargetPositionRaw: 0xd400,
+			FP2TargetPositionRaw: 0xd400,
+			FP3TargetPositionRaw: 0xd400,
+			FP4TargetPositionRaw: 0xd400,
+		},
+		{
+			NodeID: 4,
+			Name: "Window 2",
+			TypeID: ActuatorType.WindowOpener,
+			SubType: 1,
+			Order: 0,
+			Placement: 0,
+			Velocity: Velocity.Default,
+			NodeVariation: NodeVariation.Kip,
+			PowerSaveMode: PowerSaveMode.LowPowerMode,
+			SerialNumber: Buffer.from([0, 0, 0, 0, 0, 0, 0, 0]).toString("base64"), // base64 encoded Buffer
+			ProductGroup: 0,
+			ProductType: 0,
+			State: NodeOperatingState.Done,
+			CurrentPositionRaw: 0xc800,
+			FP1CurrentPositionRaw: 0xf7ff,
+			FP2CurrentPositionRaw: 0xf7ff,
+			FP3CurrentPositionRaw: 0xf7ff,
+			FP4CurrentPositionRaw: 0xf7ff,
+			RemainingTime: 0,
+			TimeStamp: new Date().toISOString(),
+			ProductAlias: [new ActuatorAlias(0xd803, 0xba00)],
+			RunStatus: RunStatus.ExecutionCompleted,
+			StatusReply: StatusReply.Ok,
+			TargetPositionRaw: 0xc800,
+			FP1TargetPositionRaw: 0xd400,
+			FP2TargetPositionRaw: 0xd400,
+			FP3TargetPositionRaw: 0xd400,
+			FP4TargetPositionRaw: 0xd400,
+		},
+	];
+
+	for (const product of products) {
+		await mockServerController.sendCommand({
+			command: "SetProduct",
+			productId: product.NodeID,
+			product: product,
+		});
+	}
+
+	// Setup gateway
+	await mockServerController.sendCommand({
+		command: "SetGateway",
+		gateway: {
+			GatewayState: GatewayState.GatewayMode_WithActuatorNodes,
+			GatewaySubState: GatewaySubState.Idle,
+		},
+	});
+}
