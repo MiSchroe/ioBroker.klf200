@@ -15,7 +15,7 @@ import {
 } from "klf-200-api";
 import path from "path";
 import { MockServerController } from "./mocks/mockServerController";
-import { setupHouseMockup } from "./setupHouse";
+import { setupHouseMockup, setupHouseMockupNonConsecutiveProductNumbers } from "./setupHouse";
 
 // Run integration tests - See https://github.com/ioBroker/testing for a detailed explanation and further options
 tests.integration(path.join(__dirname, ".."), {
@@ -379,6 +379,100 @@ tests.integration(path.join(__dirname, ".."), {
 									expect(sut).to.be.null;
 								});
 							}
+						});
+					});
+				});
+			},
+		);
+
+		suite(
+			"Regular test with mock server and complete household with multiple, non-consecutive numbered products",
+			function (getHarness) {
+				let harness: TestHarness;
+				let mockServerController: MockServerController;
+
+				before(async function () {
+					this.timeout(60_000);
+					// Debugging:
+					// this.timeout(60 * 60_000);
+
+					harness = getHarness();
+					mockServerController = await MockServerController.createMockServer();
+
+					// Setup household
+					await setupHouseMockupNonConsecutiveProductNumbers(mockServerController);
+
+					console.log(`Setup configuration for ${harness.adapterName}`);
+
+					// Setup adapter configuration
+					await harness.changeAdapterConfig(harness.adapterName, {
+						native: {
+							host: "localhost",
+							// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
+							password: "velux123",
+							enableAutomaticReboot: false,
+							advancedSSLConfiguration: true,
+							SSLConnectionOptions: {
+								rejectUnauthorized: true,
+								requestCert: true,
+								ca: readFileSync(path.join(__dirname, "mocks/mockServer", "ca-crt.pem"), "utf8"),
+								key: readFileSync(path.join(__dirname, "mocks/mockServer", "client1-key.pem"), "utf8"),
+								cert: readFileSync(path.join(__dirname, "mocks/mockServer", "client1-crt.pem"), "utf8"),
+							},
+						},
+						protectedNative: [],
+						encryptedNative: [],
+					});
+
+					// Start adapter
+					await harness.startAdapterAndWait(true, {
+						SEND_FRAME_TIMEOUT: (3600 * 10).toString(), // 10 hours
+					});
+				});
+
+				after(async function () {
+					await harness.stopAdapter();
+					if (mockServerController) {
+						await mockServerController[Symbol.asyncDispose]();
+					}
+				});
+
+				describe("Simple startup checks", function () {
+					describe("Complete household", function () {
+						it("Should start without error", function () {
+							expect(harness.isAdapterRunning()).to.be.true;
+						});
+
+						it("Gateway state should reflect having some products", async function () {
+							const sut = await Promise.resolve(
+								getState(harness, `${harness.adapterName}.0.gateway.GatewayState`),
+							);
+							expect(sut).to.have.property("val", GatewayState.GatewayMode_WithActuatorNodes);
+							expect(sut).to.have.property("ack", true);
+						});
+
+						it("Should have found no groups", async function () {
+							const sut = await Promise.resolve(
+								getState(harness, `${harness.adapterName}.0.groups.groupsFound`),
+							);
+							expect(sut).to.have.property("val", 0);
+							expect(sut).to.have.property("ack", true);
+						});
+
+						it("Should have found some products", async function () {
+							const sut = await Promise.resolve(
+								getState(harness, `${harness.adapterName}.0.products.productsFound`),
+							);
+							expect(sut).to.have.property("val", 2);
+							expect(sut).to.have.property("ack", true);
+						});
+
+						it("Should have found no scenes", async function () {
+							const sut = await Promise.resolve(
+								getState(harness, `${harness.adapterName}.0.scenes.scenesFound`),
+							);
+							expect(sut).to.have.property("val", 0);
+							expect(sut).to.have.property("ack", true);
 						});
 					});
 				});

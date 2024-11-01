@@ -262,7 +262,7 @@ The values of the state provide multiple manipulation modes:
 <!-- prettier-ignore -->
 ### __WORK IN PROGRESS__
 
--   (Michael Schroeder) [#251](https://github.com/MiSchroe/ioBroker.klf200/issues/251) Added recommended settings for responsive design of the settings dialog.
+-   (Michael Schroeder) [#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Fixed an issue that the adapter didn't start when the product nodes weren't numbered from 0 onwards.
 
 ### 1.3.2 (2024-10-01)
 
