@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "klf200",
-		"version": "1.3.2",
+		"version": "1.3.3",
 		"news": {
+			"1.3.3": {
+				"en": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Fixed an issue that the adapter didn't start when the product nodes weren't numbered from 0 onwards.",
+				"de": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Es wurde ein Problem behoben, dass der Adapter nicht gestartet wurde, wenn die Produktknoten nicht ab 0 nummeriert waren.",
+				"ru": "[#250] (https://github.com/MiSchroe/ioBroker.klf200/issues/250) Исправлена проблема, которую адаптер не начал, когда узлы продукта не были пронумерованы с 0 вперед.",
+				"pt": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Corrigido um problema que o adaptador não começou quando os nós do produto não foram contados a partir de 0 em diante.",
+				"nl": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Een probleem opgelost dat de adapter niet startte toen de productknooppunten niet vanaf 0 genummerd werden.",
+				"fr": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Correction d'un problème que l'adaptateur n'a pas commencé lorsque les nœuds du produit n'étaient pas numérotés à partir de 0.",
+				"it": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Risolto un problema che l'adattatore non ha iniziato quando i nodi del prodotto non sono stati numerati da 0 in poi.",
+				"es": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Arregló un problema que el adaptador no comenzó cuando los nodos del producto no estaban numerados de 0 hacia adelante.",
+				"pl": "[# 250] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 250) Naprawiono problem, że adapter nie zaczął się, gdy węzły produktu nie były numerowane od 0.",
+				"uk": "[#250](https://github.com/MiSchroe/ioBroker.klf200/products/250) Виправлено проблему, що перехідник не почався, коли вузли продукту не були зануреними з 0 навардії.",
+				"zh-cn": "[# 250] (https://github.com/Mischroe/ioBroker.klf200/issues/250) (中文(简体) ). 固定了一个问题,当产品节点从0开始没有编号时适配器没有开始."
+			},
 			"1.3.2": {
 				"en": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Fixed timeout error during adapter start in some special cases.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Fixed an issue that logged the same log entry multiple times.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Run integration tests against a virtual mock version of an KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Fixed findings of Adapter Checker.\nUpgrade dependencies",
 				"de": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Behobener Timeout-Fehler beim Adapterstart in einigen speziellen Fällen.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Es wurde ein Problem behoben, das den gleichen Log-Eintrag mehrfach protokolliert hat.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Integrationstests werden gegen eine virtuelle Mock-Version eines KLF-200 ausgeführt.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Ergebnisse des Adapter Checkers sind behoben.\nAbhängigkeiten aktualisiert",
@@ -80,19 +93,6 @@
 				"pl": "(Michael Schroeder) Wsparcie parametrów funkcjonalnych do sterowania m.in. prędkość, markiza pozioma itp.",
 				"uk": "(Michael Schroeder) Підтримка функціональних параметрів для керування, напр. швидкість, горизонтальний тент тощо.",
 				"zh-cn": "(Michael Schroeder) 支持功能参数来控制，例如速度、水平遮阳篷等"
-			},
-			"1.0.1": {
-				"en": "(Michael Schroeder) Fix [#49](https://github.com/MiSchroe/ioBroker.klf200/issues/49) Set multiple states at once, e.g. in Blockly",
-				"de": "(Michael Schroeder) Fix [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Mehrere Zustände gleichzeitig festlegen, z. in Blockly",
-				"ru": "(Michael Schroeder) Исправление [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Установка нескольких состояний одновременно, например, в блоке",
-				"pt": "(Michael Schroeder) Correção [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Defina vários estados ao mesmo tempo, por exemplo em Blockly",
-				"nl": "(Michael Schroeder) Fix [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Stel meerdere toestanden tegelijk in, b.v. in Blockly",
-				"fr": "(Michael Schroeder) Correction [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Définissez plusieurs états à la fois, par ex. à Blockly",
-				"it": "(Michael Schroeder) Correzione [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Impostare più stati contemporaneamente, ad es. in Blockly",
-				"es": "(Michael Schroeder) Solución [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Establezca varios estados a la vez, p. en Blockly",
-				"pl": "(Michael Schroeder) Napraw [# 49] (https://github.com/MiSchroe/ioBroker.klf200/issues/49) Ustaw wiele stanów naraz, np. w Blockly",
-				"zh-cn": "（Michael Schroeder）修复[＃49]（https://github.com/MiSchroe/ioBroker.klf200/issues/49）一次设置多个状态，例如在块状",
-				"uk": "(Michael Schroeder) Виправити [#49](https://github.com/MiSchroe/ioBroker.klf200/issues/49) Встановити кілька станів одночасно, напр. в Блоклі"
 			}
 		},
 		"titleLang": {
