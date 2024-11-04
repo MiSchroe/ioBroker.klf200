@@ -1,7 +1,9 @@
 {
-	"$schema": "https://github.com/ioBroker/adapter-react-v5/raw/main/schemas/jsonConfig.json",
 	"i18n": true,
 	"type": "tabs",
+	"tabsStyle": {
+		"width": "calc(100% - 100px)"
+	},
 	"items": {
 		"optionstab": {
 			"type": "panel",
@@ -12,23 +14,32 @@
 					"type": "text",
 					"label": "host",
 					"help": "host-help",
+					"xs": 12,
 					"sm": 12,
-					"md": 6
+					"md": 6,
+					"lg": 4,
+					"xl": 4
 				},
 				"password": {
 					"type": "password",
 					"label": "password",
 					"help": "password-help",
 					"maxLength": 32,
+					"xs": 12,
 					"sm": 12,
-					"md": 6
+					"md": 6,
+					"lg": 4,
+					"xl": 4
 				},
 				"enableAutomaticReboot": {
 					"newLine": true,
 					"type": "checkbox",
 					"label": "Enable automatic reboot",
+					"xs": 12,
 					"sm": 12,
-					"md": 6
+					"md": 6,
+					"lg": 4,
+					"xl": 4
 				},
 				"automaticRebootCronTime": {
 					"type": "cron",
@@ -36,8 +47,11 @@
 					"complex": true,
 					"simple": true,
 					"hidden": "!data.enableAutomaticReboot",
+					"xs": 12,
 					"sm": 12,
-					"md": 6
+					"md": 6,
+					"lg": 4,
+					"xl": 4
 				}
 			}
 		},
@@ -49,21 +63,31 @@
 				"SSLDescription": {
 					"type": "staticText",
 					"text": "SSL Description",
-					"sm": 12
+					"xs": 12,
+					"sm": 12,
+					"md": 12,
+					"lg": 12,
+					"xl": 12
 				},
 				"advancedSSLConfiguration": {
 					"newLine": true,
 					"type": "checkbox",
 					"label": "Advanced SSL configuration",
+					"xs": 12,
 					"sm": 12,
-					"md": 6
+					"md": 6,
+					"lg": 4,
+					"xl": 4
 				},
 				"SSLFingerprint": {
 					"type": "text",
 					"label": "SSL Fingerprint",
 					"hidden": "!data.advancedSSLConfiguration",
+					"xs": 12,
 					"sm": 12,
-					"md": 6
+					"md": 6,
+					"lg": 4,
+					"xl": 4
 				},
 				"SSLPublicKey": {
 					"newLine": true,
@@ -71,9 +95,11 @@
 					"label": "SSL Public Key",
 					"hidden": "!data.advancedSSLConfiguration",
 					"minRows": 10,
+					"xs": 12,
 					"sm": 12,
 					"md": 12,
-					"lg": 12
+					"lg": 12,
+					"xl": 12
 				}
 			}
 		},

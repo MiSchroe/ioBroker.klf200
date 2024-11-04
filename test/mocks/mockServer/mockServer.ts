@@ -677,6 +677,17 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				const fp = getFunctionalParamters(frameBuffer.readUInt8(27), frameBuffer.readUInt8(28));
 				const resultBuffers: Buffer[] = [];
 
+				// Check that referenced nodes exist, otherwise return an error frame.
+				if (nodes.some((nodeId) => !products.has(nodeId))) {
+					resultBuffers.push(
+						addCommandAndLengthToBuffer(
+							GatewayCommand.GW_ERROR_NTF,
+							new ArrayBuilder().addBytes(GW_ERROR.InvalidFrameStructure).toBuffer(),
+						),
+					);
+					return resultBuffers;
+				}
+
 				resultBuffers.push(
 					addCommandAndLengthToBuffer(
 						GatewayCommand.GW_STATUS_REQUEST_CFM,
