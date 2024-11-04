@@ -1,5 +1,4 @@
 {
-	"$schema": "https://github.com/ioBroker/adapter-react-v5/raw/main/schemas/jsonConfig.json",
 	"i18n": true,
 	"type": "tabs",
 	"tabsStyle": {
