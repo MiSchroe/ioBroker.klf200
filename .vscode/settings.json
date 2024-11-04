@@ -8,5 +8,11 @@
 			"source.organizeImports": "explicit"
 		}
 	},
-	"nodeTdd.reporter": "tap"
+	"nodeTdd.reporter": "tap",
+	"json.schemas": [
+		{
+			"fileMatch": ["**/jsonConfig.json"],
+			"url": "https://github.com/ioBroker/adapter-react-v5/raw/main/schemas/jsonConfig.json"
+		}
+	]
 }
