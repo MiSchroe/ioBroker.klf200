@@ -156,9 +156,11 @@ import path from "path";
 import { env } from "process";
 import { timeout } from "promise-timeout";
 import { ConnectionOptions } from "tls";
+import { ConnectionTest, ConnectionTestResult } from "./connectionTest.js";
 import { KLF200DeviceManagement } from "./deviceManagement/klf200DeviceManagement.js";
 import { DisposalMap } from "./disposalMap.js";
 import { HasConnectionInterface, HasProductsInterface } from "./interfaces.js";
+import { ConnectionTestMessage } from "./messages/connectionTestMessage.js";
 import { Setup } from "./setup.js";
 import { SetupGroups } from "./setupGroups.js";
 import { SetupProducts } from "./setupProducts.js";
@@ -783,7 +785,8 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			} catch (error: any) {
 				this.log.error(`${error}`);
 				this.log.debug(`${(error as Error).stack}`);
-				this.terminate(`Login to KLF-200 device at ${this.config.host} failed.`);
+				this.log.error(`Login to KLF-200 device at ${this.config.host} failed.`);
+				this.log.error(`Please use the Test Connection button in the settings dialog of the adapter.`);
 				return;
 			}
 			this.log.info("Connected to interface.");
@@ -1733,6 +1736,16 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		return moduleInfo.version;
 	}
 
+	private async runConnectionTests(
+		hostname: string,
+		password: string,
+		connectionOptions?: ConnectionOptions,
+		progressCallback?: (progress: ConnectionTestResult[]) => Promise<void>,
+	): Promise<ConnectionTestResult[]> {
+		const connectionTest = new ConnectionTest();
+		return await connectionTest.runTests(hostname, password, connectionOptions, progressCallback);
+	}
+
 	/**
 	 * Is called when adapter shuts down - callback has to be called under any circumstances!
 	 */
@@ -1790,15 +1803,30 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 */
 	private onMessage(obj: ioBroker.Message): void {
 		this.log.debug(`Message received: ${JSON.stringify(obj)}`);
-		// if (typeof obj === "object" && obj.message) {
-		// 	if (obj.command === "send") {
-		// 		// e.g. send email or pushover or whatever
-		// 		this.log.info("send command");
 
-		// 		// Send response in callback if required
-		// 		if (obj.callback) this.sendTo(obj.from, obj.command, "Message received", obj.callback);
-		// 	}
-		// }
+		if (typeof obj === "object" && obj.message) {
+			if (obj.command === "ConnectionTest") {
+				const data: ConnectionTestMessage = obj.message as ConnectionTestMessage;
+				this.runConnectionTests(
+					data.hostname,
+					this.decrypt(data.password),
+					data.connectionOptions,
+					async (progress: ConnectionTestResult[]): Promise<void> => {
+						await this.sendToAsync(obj.from, obj.command, progress);
+					},
+				)
+					.then(
+						// Send a finalization token
+						async (result) => {
+							await this.sendToAsync(obj.from, obj.command, result);
+							await this.sendToAsync(obj.from, obj.command, "<EOF>");
+						},
+					)
+					.catch((error) => {
+						this.log.error(`Error during connection test: ${error}`);
+					});
+			}
+		}
 	}
 
 	getErrorMessage(err: Error | string): string {

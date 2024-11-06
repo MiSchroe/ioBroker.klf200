@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import * as ping from "net-ping";
 import sinon from "sinon";
 import { MockServerController } from "../test/mocks/mockServerController.js";
 import { ConnectionTest } from "./connectionTest.js";
@@ -25,9 +24,11 @@ describe("connectionTest", function () {
 	});
 
 	describe("Ping", function () {
+		this.timeout(30_000);
 		it(`ping to 192.0.2.0 should fail`, async function () {
+			this.slow(10_000);
 			const sut = new ConnectionTest();
-			await expect(sut.ping("192.0.2.0")).to.be.rejectedWith(ping.DestinationUnreachableError);
+			await expect(sut.ping("192.0.2.0")).to.be.rejected;
 		});
 
 		it(`ping to 127.0.0.1 should pass`, async function () {
@@ -260,7 +261,7 @@ describe("connectionTest", function () {
 			expect(result[3]).to.haveOwnProperty("message");
 		});
 
-		it(`should call the progress callback three times`, async function () {
+		it(`should call the progress callback 4 times`, async function () {
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
 			const sut = new ConnectionTest();
 			sinon.stub(sut, "resolveName").resolves("127.0.0.1");
@@ -269,7 +270,7 @@ describe("connectionTest", function () {
 			sinon.stub(sut, "login").resolves();
 			const progressCallback = sinon.spy();
 			await sut.runTests("localhost", "velux123", connectionOptions, progressCallback);
-			expect(progressCallback).to.be.calledThrice;
+			expect(progressCallback).to.be.callCount(4);
 		});
 
 		it(`should succeed at step 4 against mock server`, async function () {

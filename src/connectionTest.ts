@@ -23,6 +23,7 @@ export interface IConnectionTest {
 		hostname: string,
 		password: string,
 		connectionOptions?: ConnectionOptions,
+		progressCallback?: (progress: ConnectionTestResult[]) => Promise<void>,
 	): Promise<ConnectionTestResult[]>;
 }
 
@@ -90,7 +91,7 @@ export class ConnectionTest implements IConnectionTest {
 		hostname: string,
 		password: string,
 		connectionOptions?: ConnectionOptions,
-		progressCallback?: (progress: ConnectionTestResult[]) => void,
+		progressCallback?: (progress: ConnectionTestResult[]) => Promise<void>,
 	): Promise<ConnectionTestResult[]> {
 		const result: ConnectionTestResult[] = [
 			{
@@ -115,11 +116,14 @@ export class ConnectionTest implements IConnectionTest {
 			},
 		];
 
-		const callProgressCallback = function (): void {
+		const callProgressCallback = async function (): Promise<void> {
 			if (progressCallback) {
-				progressCallback(result);
+				await progressCallback(result);
 			}
 		};
+
+		// Send the progress data back for display
+		await callProgressCallback();
 
 		// Step 1: Name lookup
 		try {
@@ -131,7 +135,7 @@ export class ConnectionTest implements IConnectionTest {
 				message: `Hostname ${hostname} resolves to IP address ${ipadress}.`,
 				result: ipadress,
 			};
-			callProgressCallback();
+			await callProgressCallback();
 
 			// Step 2: Ping
 			try {
@@ -143,7 +147,7 @@ export class ConnectionTest implements IConnectionTest {
 					message: `Ping was successful after ${ms} milliseconds.`,
 					result: ms,
 				};
-				callProgressCallback();
+				await callProgressCallback();
 
 				// Step 3: TLS connection
 				try {
@@ -154,7 +158,7 @@ export class ConnectionTest implements IConnectionTest {
 						success: true,
 						message: `Secure connection successful.`,
 					};
-					callProgressCallback();
+					await callProgressCallback();
 
 					// Step 4: Login
 					try {
