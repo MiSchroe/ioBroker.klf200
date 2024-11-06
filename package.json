@@ -78,8 +78,9 @@
   "scripts": {
     "prebuild:adapter": "rimraf ./build",
     "build:ts": "tsc -p tsconfig.build.json",
-    "build": "gulp",
+    "build:admin": "gulp",
     "build:adapter": "build-adapter typescript",
+    "build": "npm run build:adapter && npm run build:admin",
     "watch:ts": "build-adapter typescript --watch",
     "watch": "npm run watch:ts",
     "test:ts": "mocha --config test/mocharc.custom.json src/{**/*,*}.test.ts",

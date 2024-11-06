@@ -98,8 +98,12 @@ gulp.task("2-compile", async () => build());
 
 gulp.task("3-copy", () =>
 	Promise.all([
-		gulp.src(["src-admin/build/static/js/*.js"]).pipe(gulp.dest("admin/custom/static/js")),
-		gulp.src(["src-admin/build/static/js/*.map"]).pipe(gulp.dest("admin/custom/static/js")),
+		gulp
+			.src(["src-admin/build/static/js/*.js", "!src-admin/build/static/js/vendors*.js"])
+			.pipe(gulp.dest("admin/custom/static/js")),
+		gulp
+			.src(["src-admin/build/static/js/*.map", "!src-admin/build/static/js/vendors*.map"])
+			.pipe(gulp.dest("admin/custom/static/js")),
 		gulp.src(["src-admin/build/customComponents.js"]).pipe(gulp.dest("admin/custom")),
 		gulp.src(["src-admin/build/customComponents.js.map"]).pipe(gulp.dest("admin/custom")),
 		gulp.src(["src-admin/src/i18n/*.json"]).pipe(gulp.dest("admin/custom/i18n")),
