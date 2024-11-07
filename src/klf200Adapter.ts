@@ -1826,12 +1826,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 					async (progress: ConnectionTestResult[]): Promise<void> => {
 						try {
 							this.logLastConnectionTestResultStep(progress);
-							this.emit("message", {
-								command: "ConnectionTestProgress",
-								message: progress,
-								from: obj.from,
-							});
-							// this.sendTo(this.name, "ConnectionTestProgress", progress);
+							this.sendTo(this.name, "ConnectionTestProgress", progress);
 							// await this.sendToAsync(obj.from, obj.command, progress, { timeout: 1000 });
 						} catch (error: any) {
 							this.log.error(`Error during connection test: ${error}`);
