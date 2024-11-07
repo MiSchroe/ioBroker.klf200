@@ -166,6 +166,7 @@ import { SetupGroups } from "./setupGroups.js";
 import { SetupProducts } from "./setupProducts.js";
 import { SetupScenes } from "./setupScenes.js";
 import { Translate } from "./translate.js";
+import { StateHelper } from "./util/stateHelper.js";
 import { ArrayCount, convertErrorToString, waitForSessionFinishedNtfAsync } from "./util/utils.js";
 
 // Load your modules here, e.g.:
@@ -486,6 +487,53 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		return result;
 	}
 
+	private async setupTestConnectionStates(): Promise<void> {
+		this.log.info("Setup objects for test connection.");
+
+		await this.setObjectNotExistsAsync("TestConnection", {
+			type: "channel",
+			common: {
+				name: "TestConnection",
+				expert: true,
+			},
+			native: {},
+		});
+
+		await StateHelper.createAndSetStateAsync(
+			this,
+			"TestConnection.running",
+			{
+				name: "running",
+				role: "indicator.state",
+				type: "boolean",
+				read: true,
+				write: true,
+				def: false,
+				desc: "Test connection is running",
+				expert: true,
+			},
+			{},
+			false,
+		);
+
+		await StateHelper.createAndSetStateAsync(
+			this,
+			"TestConnection.testResults",
+			{
+				name: "testResults",
+				role: "state",
+				type: "object",
+				read: true,
+				write: true,
+				def: "[]",
+				desc: "Test connection results",
+				expert: true,
+			},
+			{},
+			"[]",
+		);
+	}
+
 	/**
 	 * Is called when databases are connected and adapter received configuration.
 	 */
@@ -509,6 +557,8 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 				);
 			}
 			this.log.info(`Host: ${this.config.host}`);
+
+			await this.setupTestConnectionStates();
 
 			// Setup connection and initialize objects and states
 			if (!this.config.advancedSSLConfiguration) {
@@ -1807,6 +1857,19 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		}
 	}
 
+	private convertProgressErrors(progress: ConnectionTestResult[]): ConnectionTestResult[] {
+		return progress.map((result) => {
+			return new ConnectionTestResult(
+				result.stepOrder,
+				result.stepName,
+				result.run,
+				result.success,
+				result.message,
+				result.result instanceof Error ? result.result.message : result.result,
+			);
+		});
+	}
+
 	/**
 	 * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
 	 * Using this method requires "common.message" property to be set to true in io-package.json
@@ -1818,34 +1881,41 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			if (obj.command === "ConnectionTest") {
 				const data: ConnectionTestMessage = obj.message as ConnectionTestMessage;
 				this.log.info(`Starting connection test...`);
-				this.runConnectionTests(
-					data.hostname,
-					this.decrypt(data.password),
-					// TODO: Create connection options based on the provided advanced SSL configuration
-					undefined,
-					async (progress: ConnectionTestResult[]): Promise<void> => {
+
+				this.setState("TestConnection.testResults", "[]", true)
+					.then(async () => {
 						try {
-							this.logLastConnectionTestResultStep(progress);
-							this.sendTo(this.name, "ConnectionTestProgress", progress);
-							// await this.sendToAsync(obj.from, obj.command, progress, { timeout: 1000 });
+							await this.setState("TestConnection.running", true, true);
+							const result = await this.runConnectionTests(
+								data.hostname,
+								this.decrypt(data.password),
+								// TODO: Create connection options based on the provided advanced SSL configuration
+								undefined,
+								async (progress: ConnectionTestResult[]): Promise<void> => {
+									try {
+										this.logLastConnectionTestResultStep(progress);
+										const cleansedProgress = this.convertProgressErrors(progress);
+										await this.setState(
+											"TestConnection.testResults",
+											JSON.stringify(cleansedProgress),
+											true,
+										);
+									} catch (error: any) {
+										this.log.error(`Error during connection test: ${error}`);
+									}
+								},
+							);
+							// Send the final result
+							this.logLastConnectionTestResultStep(result);
+							const cleansedResult = this.convertProgressErrors(result);
+							await this.setState("TestConnection.testResults", JSON.stringify(cleansedResult), true);
+							this.sendTo(obj.from, obj.command, cleansedResult, obj.callback);
 						} catch (error: any) {
 							this.log.error(`Error during connection test: ${error}`);
+						} finally {
+							await this.setState("TestConnection.running", false, true);
 						}
-					},
-				)
-					.then(
-						// Send a finalization token
-						(result) => {
-							try {
-								this.logLastConnectionTestResultStep(result);
-								this.sendTo(obj.from, obj.command, result, obj.callback);
-								// await this.sendToAsync(obj.from, obj.command, result, { timeout: 1000 });
-								// await this.sendToAsync(obj.from, obj.command, "<EOF>", { timeout: 1000 });
-							} catch (error: any) {
-								this.log.error(`Error during connection test: ${error}`);
-							}
-						},
-					)
+					})
 					.catch((error) => {
 						this.log.error(`Error during connection test: ${error}`);
 					});

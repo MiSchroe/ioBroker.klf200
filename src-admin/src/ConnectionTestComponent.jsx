@@ -37,19 +37,41 @@ class ConnectionTestComponent extends ConfigGeneric {
 		this.props.socket
 			.getState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`)
 			.then(async (state) => {
-				if (state && state.val) {
-					this.setState({
-						alive: state.val,
-					});
+				if (state && state.val !== undefined) {
+					this.setState({ alive: state.val });
 				} else {
-					this.setState({
-						alive: false,
-					});
+					this.setState({ alive: false });
+				}
+
+				const testRunning = await this.props.socket.getState(
+					`${this.props.adapterName}.${this.props.instance}.TestConnection.running`,
+				);
+				if (testRunning && testRunning.val === true) {
+					this.setState({ testRunning: true });
+
+					const testResults = await this.props.socket.getState(
+						`${this.props.adapterName}.${this.props.instance}.TestConnection.testResults`,
+					);
+					if (testResults && testResults.val !== undefined) {
+						this.setState({ testResults: JSON.parse(testResults.val || "[]") });
+					}
+				} else {
+					this.setState({ testRunning: false });
+					this.props.socket.setState(
+						`${this.props.adapterName}.${this.props.instance}.TestConnection.testResults`,
+						"[]",
+						true,
+					);
 				}
 
 				await this.props.socket.subscribeState(
 					`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`,
 					this.onAliveChanged,
+				);
+
+				await this.props.socket.subscribeState(
+					`${this.props.adapterName}.${this.props.instance}.TestConnection.*`,
+					this.onChangedState,
 				);
 			});
 	}
@@ -61,6 +83,10 @@ class ConnectionTestComponent extends ConfigGeneric {
 			`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`,
 			this.onAliveChanged,
 		);
+		this.props.socket.unsubscribeState(
+			`${this.props.adapterName}.${this.props.instance}.TestConnection.*`,
+			this.onChangedState,
+		);
 	}
 
 	onAliveChanged = (id, state) => {
@@ -70,53 +96,48 @@ class ConnectionTestComponent extends ConfigGeneric {
 		}
 	};
 
+	onChangedState = (id, state) => {
+		if (id.endsWith(".running")) {
+			const testRunning = state ? state.val : false;
+			if (testRunning !== this.state.testRunning) {
+				this.setState({ testRunning: testRunning });
+			}
+		} else if (id.endsWith(".testResults")) {
+			const testResults = state ? JSON.parse(state.val || "[]") : [];
+			this.setState({ testResults: testResults });
+		}
+	};
+
 	onConnectionTestProgress(data, sourceInstance, messageType) {
 		if (messageType === "ConnectionTestProgress") {
 			this.setState({ testResults: data });
 		}
 	}
 
-	testConnectionHandler = () => {
-		this.setState({ testRunning: true }, async () => {
-			try {
-				// const secret = this.props.socket.systemConfig?.native?.secret || "Zgfr56gFe87jJOM";
-				const message = {
-					command: "ConnectionTest",
-					hostname: this.props.data.host,
-					password: await this.props.socket.encrypt(this.props.data.password),
+	testConnectionHandler = async () => {
+		try {
+			const message = {
+				command: "ConnectionTest",
+				hostname: this.props.data.host,
+				password: await this.props.socket.encrypt(this.props.data.password),
+			};
+			// Set the advanced SSL configuration if enabled
+			if (this.props.data.advancedSSLConfiguration) {
+				message.advancedSSLConfiguration = {
+					sslFingerprint: this.props.data.SSLFingerprint,
+					sslPublicKey: this.props.data.SSLPublicKey,
 				};
-				// Set the advanced SSL configuration if enabled
-				if (this.props.data.advancedSSLConfiguration) {
-					message.advancedSSLConfiguration = {
-						sslFingerprint: this.props.data.SSLFingerprint,
-						sslPublicKey: this.props.data.SSLPublicKey,
-					};
-				}
-
-				// Register for ConnectionTest messages
-				await this.props.socket.subscribeOnInstance(
-					`${this.props.adapterName}.${this.props.instance}`,
-					"ConnectionTestProgress",
-					undefined,
-					this.onConnectionTestProgress,
-				);
-
-				const connectionTestResult = await this.props.socket.sendTo(
-					`${this.props.adapterName}.${this.props.instance}`,
-					message.command,
-					message,
-				);
-
-				this.setState({ testResults: connectionTestResult });
-			} finally {
-				this.setState({ testRunning: false });
-				await this.props.socket.unsubscribeFromInstance(
-					`${this.props.adapterName}.${this.props.instance}`,
-					"ConnectionTestProgress",
-					this.onConnectionTestProgress,
-				);
 			}
-		});
+
+			const connectionTestResult = await this.props.socket.sendTo(
+				`${this.props.adapterName}.${this.props.instance}`,
+				message.command,
+				message,
+			);
+
+			this.setState({ testResults: connectionTestResult });
+		} finally {
+		}
 	};
 
 	renderItem(error, disabled, defaultValue) {
