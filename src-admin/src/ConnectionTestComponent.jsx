@@ -27,7 +27,6 @@ class ConnectionTestComponent extends ConfigGeneric {
 		this.state = {
 			alive: false,
 			testRunning: false,
-			native: props.data,
 			testResults: [],
 		};
 	}
@@ -35,28 +34,33 @@ class ConnectionTestComponent extends ConfigGeneric {
 	componentDidMount() {
 		super.componentDidMount();
 
-		this.props.socket.getState(`system.adapter.klf200.${this.props.instance}.alive`).then(async (state) => {
-			if (state && state.val) {
-				this.setState({
-					alive: state.val,
-				});
-			} else {
-				this.setState({
-					alive: false,
-				});
-			}
+		this.props.socket
+			.getState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`)
+			.then(async (state) => {
+				if (state && state.val) {
+					this.setState({
+						alive: state.val,
+					});
+				} else {
+					this.setState({
+						alive: false,
+					});
+				}
 
-			await this.props.socket.subscribeState(
-				`system.adapter.klf200.${this.props.instance}.alive`,
-				this.onAliveChanged,
-			);
-		});
+				await this.props.socket.subscribeState(
+					`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`,
+					this.onAliveChanged,
+				);
+			});
 	}
 
 	componentWillUnmount() {
 		super.componentWillUnmount();
 
-		this.props.socket.unsubscribeState(`system.adapter.klf200.${this.props.instance}.alive`, this.onAliveChanged);
+		this.props.socket.unsubscribeState(
+			`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`,
+			this.onAliveChanged,
+		);
 	}
 
 	onAliveChanged = (id, state) => {
@@ -66,32 +70,56 @@ class ConnectionTestComponent extends ConfigGeneric {
 		}
 	};
 
+	onConnectionTestProgress(data, sourceInstance, messageType) {
+		if (messageType === "ConnectionTestProgress") {
+			this.setState({ testResults: data });
+		}
+	}
+
 	testConnectionHandler = () => {
 		this.setState({ testRunning: true }, async () => {
 			try {
+				// const secret = this.props.socket.systemConfig?.native?.secret || "Zgfr56gFe87jJOM";
 				const message = {
 					command: "ConnectionTest",
-					hostname: ConfigGeneric.getValue(this.props.data, "hostname"),
-					password: ConfigGeneric.getValue(this.props.data, "password"),
+					hostname: this.props.data.host,
+					password: await this.props.socket.encrypt(this.props.data.password),
 				};
-				// Set the connection options if the advanced SSL configuration is enabled
-				if (ConfigGeneric.getValue(this.props.data, "advancedSSLConfiguration")) {
-					message.connectionOptions = {
-						sslFingerprint: ConfigGeneric.getValue(this.props.data, "SSLFingerprint"),
-						sslPublicKey: ConfigGeneric.getValue(this.props.data, "SSLPublicKey"),
+				// Set the advanced SSL configuration if enabled
+				if (this.props.data.advancedSSLConfiguration) {
+					message.advancedSSLConfiguration = {
+						sslFingerprint: this.props.data.SSLFingerprint,
+						sslPublicKey: this.props.data.SSLPublicKey,
 					};
 				}
 
-				await this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, "command", "test");
+				// Register for ConnectionTest messages
+				await this.props.socket.subscribeOnInstance(
+					`${this.props.adapterName}.${this.props.instance}`,
+					"ConnectionTestProgress",
+					undefined,
+					this.onConnectionTestProgress,
+				);
+
+				const connectionTestResult = await this.props.socket.sendTo(
+					`${this.props.adapterName}.${this.props.instance}`,
+					message.command,
+					message,
+				);
+
+				this.setState({ testResults: connectionTestResult });
 			} finally {
 				this.setState({ testRunning: false });
+				await this.props.socket.unsubscribeFromInstance(
+					`${this.props.adapterName}.${this.props.instance}`,
+					"ConnectionTestProgress",
+					this.onConnectionTestProgress,
+				);
 			}
 		});
 	};
 
 	renderItem(error, disabled, defaultValue) {
-		const value = ConfigGeneric.getValue(this.props.data, "hostname");
-
 		return (
 			<>
 				<Button

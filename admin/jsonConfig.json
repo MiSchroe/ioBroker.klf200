@@ -55,7 +55,7 @@
 				},
 				"testConnection": {
 					"type": "custom",
-					"url": "custom/customComponent.js",
+					"url": "custom/customComponents.js",
 					"name": "ConfigCustomKlf200Set/Components/ConnectionTestComponent",
 					"newLine": true,
 					"xs": 12,

@@ -41,12 +41,6 @@ const withMediaQuery =
 	};
 
 class ConnectionTestResultTableComponent extends ConfigGeneric {
-	constructor(props) {
-		super(props);
-
-		this.state = props.data;
-	}
-
 	renderItem(error, disabled, defaultValue) {
 		const matches = this.props.mediaQuery;
 
@@ -65,7 +59,7 @@ class ConnectionTestResultTableComponent extends ConfigGeneric {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							{this.state.testResults.map((testResult) => (
+							{this.props.data.testResults.map((testResult) => (
 								<TableRow
 									key={testResult.stepOrder}
 									sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -92,7 +86,7 @@ class ConnectionTestResultTableComponent extends ConfigGeneric {
 					spacing={1}
 					sx={{ marginTop: 1, overflow: "auto", height: "100%" }}
 				>
-					{this.state.testResults.map((testResult) => (
+					{this.props.data.testResults.map((testResult) => (
 						<Grid container key={testResult.stepOrder}>
 							<Grid
 								item

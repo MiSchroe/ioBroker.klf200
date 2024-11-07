@@ -1797,6 +1797,16 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		}
 	}
 
+	private logLastConnectionTestResultStep(progress: ConnectionTestResult[]): void {
+		this.log.silly(`Logging the last run step of the connection test of the progress: ${JSON.stringify(progress)}`);
+		const lastResultRun = progress.findLast((progress) => progress.run);
+		if (lastResultRun !== undefined) {
+			this.log.info(
+				`Connection test step ${lastResultRun.stepOrder}: ${lastResultRun.stepName} - ${lastResultRun.success ? "✅" : "❌"}.${lastResultRun.result !== undefined ? ` Result: ${String(lastResultRun.result)}` : ""} Message: ${lastResultRun.message}.`,
+			);
+		}
+	}
+
 	/**
 	 * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
 	 * Using this method requires "common.message" property to be set to true in io-package.json
@@ -1807,19 +1817,38 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		if (typeof obj === "object" && obj.message) {
 			if (obj.command === "ConnectionTest") {
 				const data: ConnectionTestMessage = obj.message as ConnectionTestMessage;
+				this.log.info(`Starting connection test...`);
 				this.runConnectionTests(
 					data.hostname,
 					this.decrypt(data.password),
-					data.connectionOptions,
+					// TODO: Create connection options based on the provided advanced SSL configuration
+					undefined,
 					async (progress: ConnectionTestResult[]): Promise<void> => {
-						await this.sendToAsync(obj.from, obj.command, progress);
+						try {
+							this.logLastConnectionTestResultStep(progress);
+							this.emit("message", {
+								command: "ConnectionTestProgress",
+								message: progress,
+								from: obj.from,
+							});
+							// this.sendTo(this.name, "ConnectionTestProgress", progress);
+							// await this.sendToAsync(obj.from, obj.command, progress, { timeout: 1000 });
+						} catch (error: any) {
+							this.log.error(`Error during connection test: ${error}`);
+						}
 					},
 				)
 					.then(
 						// Send a finalization token
-						async (result) => {
-							await this.sendToAsync(obj.from, obj.command, result);
-							await this.sendToAsync(obj.from, obj.command, "<EOF>");
+						(result) => {
+							try {
+								this.logLastConnectionTestResultStep(result);
+								this.sendTo(obj.from, obj.command, result, obj.callback);
+								// await this.sendToAsync(obj.from, obj.command, result, { timeout: 1000 });
+								// await this.sendToAsync(obj.from, obj.command, "<EOF>", { timeout: 1000 });
+							} catch (error: any) {
+								this.log.error(`Error during connection test: ${error}`);
+							}
 						},
 					)
 					.catch((error) => {
