@@ -24,9 +24,6 @@ module.exports = {
 		],
 		configure: (webpackConfig) => {
 			webpackConfig.output.publicPath = "./";
-			webpackConfig.resolve = webpackConfig.resolve || {};
-			webpackConfig.resolve.fallback = webpackConfig.resolve.fallback || {};
-			webpackConfig.resolve.fallback.os = false;
 			return webpackConfig;
 		},
 	},

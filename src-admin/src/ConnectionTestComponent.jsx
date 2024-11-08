@@ -1,15 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import { Button } from "@mui/material";
 
-// important to make from package and not from some children.
-// invalid
-// import ConfigGeneric from '@iobroker/json-config/ConfigGeneric';
-// valid
-import { ConfigGeneric } from "@iobroker/json-config";
 import ConnectionTestResultTableComponent from "./ConnectionTestResultTableComponent";
-import { hostname } from "os";
 
 const styles = {
 	button: {
@@ -20,166 +14,115 @@ const styles = {
 	},
 };
 
-class ConnectionTestComponent extends ConfigGeneric {
-	constructor(props) {
-		super(props);
+const ConnectionTestComponent = ({ adapterName, instance, socket, data }) => {
+	const [alive, setAlive] = useState(false);
+	const [testRunning, setTestRunning] = useState(false);
+	const [testResults, setTestResults] = useState([]);
 
-		this.state = {
-			alive: false,
-			testRunning: false,
-			testResults: [],
+	useEffect(() => {
+		const onAliveChanged = (id, state) => {
+			const alive = state ? state.val : false;
+			setAlive(alive);
 		};
-	}
 
-	componentDidMount() {
-		super.componentDidMount();
+		const getAliveState = async () => {
+			const stateAlive = await socket.getState(`system.adapter.${adapterName}.${instance}.alive`);
 
-		this.props.socket
-			.getState(`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`)
-			.then(async (state) => {
-				if (state && state.val !== undefined) {
-					this.setState({ alive: state.val });
-				} else {
-					this.setState({ alive: false });
-				}
-
-				const testRunning = await this.props.socket.getState(
-					`${this.props.adapterName}.${this.props.instance}.TestConnection.running`,
-				);
-				if (testRunning && testRunning.val === true) {
-					this.setState({ testRunning: true });
-
-					const testResults = await this.props.socket.getState(
-						`${this.props.adapterName}.${this.props.instance}.TestConnection.testResults`,
-					);
-					if (testResults && testResults.val !== undefined) {
-						this.setState({ testResults: JSON.parse(testResults.val || "[]") });
-					}
-				} else {
-					this.setState({ testRunning: false });
-					this.props.socket.setState(
-						`${this.props.adapterName}.${this.props.instance}.TestConnection.testResults`,
-						"[]",
-						true,
-					);
-				}
-
-				await this.props.socket.subscribeState(
-					`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`,
-					this.onAliveChanged,
-				);
-
-				await this.props.socket.subscribeState(
-					`${this.props.adapterName}.${this.props.instance}.TestConnection.*`,
-					this.onChangedState,
-				);
-			});
-	}
-
-	componentWillUnmount() {
-		super.componentWillUnmount();
-
-		this.props.socket.unsubscribeState(
-			`system.adapter.${this.props.adapterName}.${this.props.instance}.alive`,
-			this.onAliveChanged,
-		);
-		this.props.socket.unsubscribeState(
-			`${this.props.adapterName}.${this.props.instance}.TestConnection.*`,
-			this.onChangedState,
-		);
-	}
-
-	onAliveChanged = (id, state) => {
-		const alive = state ? state.val : false;
-		if (alive !== this.state.alive) {
-			this.setState({ alive: alive });
-		}
-	};
-
-	onChangedState = (id, state) => {
-		if (id.endsWith(".running")) {
-			const testRunning = state ? state.val : false;
-			if (testRunning !== this.state.testRunning) {
-				this.setState({ testRunning: testRunning });
+			if (stateAlive && stateAlive.val !== undefined) {
+				setAlive(stateAlive.val);
+			} else {
+				setAlive(false);
 			}
-		} else if (id.endsWith(".testResults")) {
-			const testResults = state ? JSON.parse(state.val || "[]") : [];
-			this.setState({ testResults: testResults });
-		}
-	};
 
-	onConnectionTestProgress(data, sourceInstance, messageType) {
-		if (messageType === "ConnectionTestProgress") {
-			this.setState({ testResults: data });
-		}
-	}
+			await socket.subscribeState(`system.adapter.${adapterName}.${instance}.alive`, onAliveChanged);
+		};
+		getAliveState();
 
-	testConnectionHandler = async () => {
+		// Return a cleanup function to unsubscribe from events
+		return () => {
+			// Unsubscribe from events here
+			socket.unsubscribeState(`system.adapter.${adapterName}.${instance}.alive`, onAliveChanged);
+		};
+	}, []);
+
+	useEffect(() => {
+		const onChangedState = (id, state) => {
+			if (id.endsWith(".running")) {
+				const testRunning = state ? state.val : false;
+				setTestRunning(testRunning);
+			} else if (id.endsWith(".testResults")) {
+				const testResults = state ? JSON.parse(state.val || "[]") : [];
+				setTestResults(testResults);
+			}
+		};
+
+		const getRunningState = async () => {
+			const stateTestRunning = await socket.getState(`${adapterName}.${instance}.TestConnection.running`);
+
+			if (stateTestRunning && stateTestRunning.val === true) {
+				setTestRunning(stateTestRunning.val);
+
+				const stateTestResults = await socket.getState(`${adapterName}.${instance}.TestConnection.testResults`);
+
+				if (stateTestResults && stateTestResults.val !== undefined) {
+					setTestResults(JSON.parse(stateTestResults.val || "[]"));
+				}
+			} else {
+				setTestRunning(false);
+
+				socket.setState(`${adapterName}.${instance}.TestConnection.testResults`, "[]", true);
+			}
+
+			await socket.subscribeState(`${adapterName}.${instance}.TestConnection.*`, onChangedState);
+		};
+		getRunningState();
+
+		// Return a cleanup function to unsubscribe from events
+		return () => {
+			// Unsubscribe from events here
+			socket.unsubscribeState(`${adapterName}.${instance}.TestConnection.*`, onChangedState);
+		};
+	}, []);
+
+	const testConnectionHandler = async () => {
 		try {
 			const message = {
 				command: "ConnectionTest",
-				hostname: this.props.data.host,
-				password: await this.props.socket.encrypt(this.props.data.password),
+				hostname: data.host,
+				password: await socket.encrypt(data.password),
 			};
+
 			// Set the advanced SSL configuration if enabled
-			if (this.props.data.advancedSSLConfiguration) {
+			if (data.advancedSSLConfiguration) {
 				message.advancedSSLConfiguration = {
-					sslFingerprint: this.props.data.SSLFingerprint,
-					sslPublicKey: this.props.data.SSLPublicKey,
+					sslFingerprint: data.SSLFingerprint,
+					sslPublicKey: data.SSLPublicKey,
 				};
 			}
 
-			const connectionTestResult = await this.props.socket.sendTo(
-				`${this.props.adapterName}.${this.props.instance}`,
-				message.command,
-				message,
-			);
+			const connectionTestResult = await socket.sendTo(`${adapterName}.${instance}`, message.command, message);
 
-			this.setState({ testResults: connectionTestResult });
+			setTestResults(connectionTestResult);
 		} finally {
 		}
 	};
 
-	renderItem(error, disabled, defaultValue) {
-		return (
-			<>
-				<Button
-					style={styles.button}
-					color="secondary"
-					variant="contained"
-					disabled={!this.state.alive || this.state.testRunning}
-					onClick={this.testConnectionHandler}
-				>
-					Test connection
-				</Button>
-				{this.state.testRunning || this.state.testResults.length > 0 ? (
-					<ConnectionTestResultTableComponent
-						socket={this.props.socket}
-						themeType={this.state.themeType}
-						themeName={this.state.themeName}
-						data={this.state}
-						onError={() => {}}
-						schema={{
-							name: "ConfigCustomKlf200Set/Components/ConnectionTestResultTableComponent",
-							type: "custom",
-						}}
-					></ConnectionTestResultTableComponent>
-				) : null}
-			</>
-		);
-	}
-}
-
-ConnectionTestComponent.propTypes = {
-	socket: PropTypes.object.isRequired,
-	themeType: PropTypes.string,
-	themeName: PropTypes.string,
-	style: PropTypes.object,
-	data: PropTypes.object.isRequired,
-	attr: PropTypes.string,
-	schema: PropTypes.object,
-	onError: PropTypes.func,
-	onChange: PropTypes.func,
+	return (
+		<React.Fragment>
+			<Button
+				style={styles.button}
+				color="secondary"
+				variant="contained"
+				disabled={!alive || testRunning}
+				onClick={testConnectionHandler}
+			>
+				Test connection
+			</Button>
+			{(testRunning || testResults.length > 0) && (
+				<ConnectionTestResultTableComponent testResults={testResults} />
+			)}
+		</React.Fragment>
+	);
 };
 
 export default ConnectionTestComponent;
