@@ -263,6 +263,7 @@ The values of the state provide multiple manipulation modes:
 ### __WORK IN PROGRESS__
 
 -   (Michael Schroeder) [#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Fixed issues found by the adapter checker.
+-   (Michael Schroeder) [#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Added a connection test button to help identify connection problems.
 
 ### 1.3.3 (2024-11-01)
 

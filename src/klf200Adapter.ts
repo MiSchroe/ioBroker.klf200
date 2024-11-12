@@ -155,7 +155,7 @@ import { Job, scheduleJob } from "node-schedule";
 import path from "path";
 import { env } from "process";
 import { timeout } from "promise-timeout";
-import { ConnectionOptions } from "tls";
+import { checkServerIdentity as checkServerIdentityOriginal, ConnectionOptions } from "tls";
 import { ConnectionTest, ConnectionTestResult } from "./connectionTest.js";
 import { KLF200DeviceManagement } from "./deviceManagement/klf200DeviceManagement.js";
 import { DisposalMap } from "./disposalMap.js";
@@ -1848,7 +1848,9 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	}
 
 	private logLastConnectionTestResultStep(progress: ConnectionTestResult[]): void {
-		this.log.silly(`Logging the last run step of the connection test of the progress: ${JSON.stringify(progress)}`);
+		this.log.silly(
+			`Logging the last run step of the connection test of the progress: ${JSON.stringify(this.convertProgressErrors(progress))}`,
+		);
 		const lastResultRun = progress.findLast((progress) => progress.run);
 		if (lastResultRun !== undefined) {
 			this.log.info(
@@ -1870,6 +1872,24 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		});
 	}
 
+	private createConnectionOptions(data: ConnectionTestMessage): ConnectionOptions {
+		const klf200Connection = new Connection(
+			data.hostname,
+			data.advancedSSLConfiguration?.sslPublicKey !== undefined
+				? Buffer.from(data.advancedSSLConfiguration?.sslPublicKey)
+				: undefined,
+			data.advancedSSLConfiguration?.sslFingerprint,
+		);
+		return {
+			rejectUnauthorized: true,
+			ca: klf200Connection.CA,
+			checkServerIdentity: (host, cert) => {
+				if (cert.fingerprint === klf200Connection.fingerprint) return undefined;
+				else return checkServerIdentityOriginal(host, cert);
+			},
+		};
+	}
+
 	/**
 	 * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
 	 * Using this method requires "common.message" property to be set to true in io-package.json
@@ -1879,47 +1899,41 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 		if (typeof obj === "object" && obj.message) {
 			if (obj.command === "ConnectionTest") {
-				const data: ConnectionTestMessage = obj.message as ConnectionTestMessage;
-				this.log.info(`Starting connection test...`);
-
-				this.setState("TestConnection.testResults", "[]", true)
-					.then(async () => {
-						try {
-							await this.setState("TestConnection.running", true, true);
-							const result = await this.runConnectionTests(
-								data.hostname,
-								this.decrypt(data.password),
-								// TODO: Create connection options based on the provided advanced SSL configuration
-								undefined,
-								async (progress: ConnectionTestResult[]): Promise<void> => {
-									try {
-										this.logLastConnectionTestResultStep(progress);
-										const cleansedProgress = this.convertProgressErrors(progress);
-										await this.setState(
-											"TestConnection.testResults",
-											JSON.stringify(cleansedProgress),
-											true,
-										);
-									} catch (error: any) {
-										this.log.error(`Error during connection test: ${error}`);
-									}
-								},
-							);
-							// Send the final result
-							this.logLastConnectionTestResultStep(result);
-							const cleansedResult = this.convertProgressErrors(result);
-							await this.setState("TestConnection.testResults", JSON.stringify(cleansedResult), true);
-							this.sendTo(obj.from, obj.command, cleansedResult, obj.callback);
-						} catch (error: any) {
-							this.log.error(`Error during connection test: ${error}`);
-						} finally {
-							await this.setState("TestConnection.running", false, true);
-						}
-					})
-					.catch((error) => {
-						this.log.error(`Error during connection test: ${error}`);
-					});
+				this.handleMessageConnectionTest(obj).catch((error) => this.log.error((error as Error).message));
 			}
+		}
+	}
+
+	private async handleMessageConnectionTest(obj: ioBroker.Message): Promise<void> {
+		const data: ConnectionTestMessage = obj.message as ConnectionTestMessage;
+		this.log.info(`Starting connection test...`);
+
+		try {
+			await this.setState("TestConnection.testResults", "[]", true);
+			await this.setState("TestConnection.running", true, true);
+			const result = await this.runConnectionTests(
+				data.hostname,
+				this.decrypt(data.password),
+				this.createConnectionOptions(data),
+				async (progress: ConnectionTestResult[]): Promise<void> => {
+					try {
+						this.logLastConnectionTestResultStep(progress);
+						const cleansedProgress = this.convertProgressErrors(progress);
+						await this.setState("TestConnection.testResults", JSON.stringify(cleansedProgress), true);
+					} catch (error: any) {
+						this.log.error(`Error during connection test: ${(error as Error).message}`);
+					}
+				},
+			);
+			// Send the final result
+			this.logLastConnectionTestResultStep(result);
+			const cleansedResult = this.convertProgressErrors(result);
+			await this.setState("TestConnection.testResults", JSON.stringify(cleansedResult), true);
+			this.sendTo(obj.from, obj.command, cleansedResult, obj.callback);
+		} catch (error: any) {
+			this.log.error(`Error during connection test: ${(error as Error).message}`);
+		} finally {
+			await this.setState("TestConnection.running", false, true);
 		}
 	}
 

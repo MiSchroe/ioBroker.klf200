@@ -1,5 +1,8 @@
 {
-  "custom_easy_Instance": "Instancia",
-  "custom_easy_Config": "Configuración",
-  "custom_easy_Tab": "Pestaña"
+    "custom_klf200_test_connection_button": "Conexión de prueba",
+    "custom_klf200_test_connection_not_alive_hint": "El adaptador debe haberse iniciado para poder probar la conexión.",
+    "custom_klf200_test_connection_status_header": "Estado",
+    "custom_klf200_test_connection_step_name_header": "Nombre del paso",
+    "custom_klf200_test_connection_result_header": "Resultado",
+    "custom_klf200_test_connection_message_header": "Mensaje"
 }

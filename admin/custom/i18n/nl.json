@@ -1,5 +1,8 @@
 {
-  "custom_easy_Instance": "Voorbeeld",
-  "custom_easy_Config": "Configuratie",
-  "custom_easy_Tab": "Tab"
+    "custom_klf200_test_connection_button": "Verbinding testen",
+    "custom_klf200_test_connection_not_alive_hint": "Om de verbinding te kunnen testen, moet de adapter gestart zijn.",
+    "custom_klf200_test_connection_status_header": "Status",
+    "custom_klf200_test_connection_step_name_header": "Naam van stap",
+    "custom_klf200_test_connection_result_header": "Resultaat",
+    "custom_klf200_test_connection_message_header": "Bericht"
 }

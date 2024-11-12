@@ -4,13 +4,11 @@ import PropTypes from "prop-types";
 import { Button } from "@mui/material";
 
 import ConnectionTestResultTableComponent from "./ConnectionTestResultTableComponent";
+import { I18n } from "@iobroker/adapter-react-v5";
 
 const styles = {
 	button: {
 		minWidth: 150,
-	},
-	table: {
-		minWidth: 650,
 	},
 };
 
@@ -116,8 +114,9 @@ const ConnectionTestComponent = ({ adapterName, instance, socket, data }) => {
 				disabled={!alive || testRunning}
 				onClick={testConnectionHandler}
 			>
-				Test connection
+				{I18n.t("custom_klf200_test_connection_button")}
 			</Button>
+			{!alive && <p>{I18n.t("custom_klf200_test_connection_not_alive")}</p>}
 			{(testRunning || testResults.length > 0) && (
 				<ConnectionTestResultTableComponent testResults={testResults} />
 			)}

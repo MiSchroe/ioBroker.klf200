@@ -15,6 +15,7 @@ import {
 	Box,
 	Grid,
 } from "@mui/material";
+import { I18n } from "@iobroker/adapter-react-v5";
 
 const ConnectionTestResultTableComponent = ({ testResults }) => {
 	const theme = useTheme();
@@ -27,11 +28,13 @@ const ConnectionTestResultTableComponent = ({ testResults }) => {
 					<TableHead>
 						<TableRow>
 							<TableCell align="left" size="small">
-								Status
+								{I18n.t("custom_klf200_test_connection_status_header")}
 							</TableCell>
-							<TableCell align="left">Step name</TableCell>
-							<TableCell align="left">Result</TableCell>
-							<TableCell align="left">Message</TableCell>
+							<TableCell align="left">
+								{I18n.t("custom_klf200_test_connection_step_name_header")}
+							</TableCell>
+							<TableCell align="left">{I18n.t("custom_klf200_test_connection_result_header")}</TableCell>
+							<TableCell align="left">{I18n.t("custom_klf200_test_connection_message_header")}</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -65,25 +68,25 @@ const ConnectionTestResultTableComponent = ({ testResults }) => {
 				{testResults.map((testResult) => (
 					<Grid container key={testResult.stepOrder}>
 						<Grid item xs={6} display="flex" justifyContent="left" alignItems="left" fontWeight={"bold"}>
-							Step name
+							{I18n.t("custom_klf200_test_connection_step_name_header")}
 						</Grid>
 						<Grid item xs={6}>
 							{testResult.stepName}
 						</Grid>
 						<Grid item xs={6} display="flex" justifyContent="left" alignItems="left" fontWeight={"bold"}>
-							Status
+							{I18n.t("custom_klf200_test_connection_status_header")}
 						</Grid>
 						<Grid item xs={6}>
 							{testResult.run ? (testResult.success ? "✅" : "❌") : ""}
 						</Grid>
 						<Grid item xs={6} display="flex" justifyContent="left" alignItems="left" fontWeight={"bold"}>
-							Result
+							{I18n.t("custom_klf200_test_connection_result_header")}
 						</Grid>
 						<Grid item xs={6}>
 							{String(testResult.result ?? "")}
 						</Grid>
 						<Grid item xs={6} display="flex" justifyContent="left" alignItems="left" fontWeight={"bold"}>
-							Message
+							{I18n.t("custom_klf200_test_connection_message_header")}
 						</Grid>
 						<Grid item xs={6}>
 							{testResult.message ?? ""}

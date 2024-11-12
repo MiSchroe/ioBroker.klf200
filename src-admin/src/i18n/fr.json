@@ -1,5 +1,8 @@
 {
-  "custom_easy_Instance": "Exemple",
-  "custom_easy_Config": "Configuration",
-  "custom_easy_Tab": "Languette"
+    "custom_klf200_test_connection_button": "Tester la connexion",
+    "custom_klf200_test_connection_not_alive_hint": "L'adaptateur doit avoir été démarré pour pouvoir tester la connexion.",
+    "custom_klf200_test_connection_status_header": "Statut",
+    "custom_klf200_test_connection_step_name_header": "Nom de l'étape",
+    "custom_klf200_test_connection_result_header": "Résultat",
+    "custom_klf200_test_connection_message_header": "Message"
 }
