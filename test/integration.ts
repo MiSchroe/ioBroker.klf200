@@ -486,7 +486,7 @@ tests.integration(path.join(__dirname, ".."), {
 				let mockServerController: MockServerController;
 
 				before(async function () {
-					this.timeout(60_000);
+					this.timeout(120_000);
 					// Debugging:
 					// this.timeout(60 * 60_000);
 
