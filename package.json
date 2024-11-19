@@ -1,6 +1,6 @@
 {
   "name": "iobroker.klf200",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Controls products and scenes connected to a KLF-200 interface",
   "author": {
     "name": "Michael Schroeder",
