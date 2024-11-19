@@ -1792,7 +1792,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		connectionOptions?: ConnectionOptions,
 		progressCallback?: (progress: ConnectionTestResult[]) => Promise<void>,
 	): Promise<ConnectionTestResult[]> {
-		const connectionTest = new ConnectionTest();
+		const connectionTest = new ConnectionTest(this);
 		return await connectionTest.runTests(hostname, password, connectionOptions, progressCallback);
 	}
 

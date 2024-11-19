@@ -2,6 +2,7 @@ import { lookup } from "dns/promises";
 import { Connection } from "klf-200-api";
 import * as ping from "net-ping";
 import { connect, ConnectionOptions, TLSSocket } from "tls";
+import { Translate } from "./translate";
 
 export class ConnectionTestResult {
 	public constructor(
@@ -28,6 +29,8 @@ export interface IConnectionTest {
 }
 
 export class ConnectionTest implements IConnectionTest {
+	constructor(private readonly translation: Translate) {}
+
 	async resolveName(hostname: string): Promise<string> {
 		const result = await lookup(hostname, { all: false, verbatim: false });
 		return result.address;
@@ -96,22 +99,22 @@ export class ConnectionTest implements IConnectionTest {
 		const result: ConnectionTestResult[] = [
 			{
 				stepOrder: 1,
-				stepName: "Name lookup",
+				stepName: await this.translation.translate("connection-test-step-name-name-lookup"),
 				run: false,
 			},
 			{
 				stepOrder: 2,
-				stepName: "Ping",
+				stepName: await this.translation.translate("connection-test-step-name-ping"),
 				run: false,
 			},
 			{
 				stepOrder: 3,
-				stepName: "Connection",
+				stepName: await this.translation.translate("connection-test-step-name-connection"),
 				run: false,
 			},
 			{
 				stepOrder: 4,
-				stepName: "Login",
+				stepName: await this.translation.translate("connection-test-step-name-login"),
 				run: false,
 			},
 		];
@@ -127,24 +130,30 @@ export class ConnectionTest implements IConnectionTest {
 
 		// Step 1: Name lookup
 		try {
-			const ipadress = await this.resolveName(hostname);
+			const ipaddress = await this.resolveName(hostname);
 			result[0] = {
 				...result[0],
 				run: true,
 				success: true,
-				message: `Hostname ${hostname} resolves to IP address ${ipadress}.`,
-				result: ipadress,
+				message: await this.translation.translate("connection-test-message-name-lookup-success", {
+					hostname: hostname,
+					ipaddress: ipaddress,
+				}),
+				result: ipaddress,
 			};
 			await callProgressCallback();
 
 			// Step 2: Ping
 			try {
-				const ms = await this.ping(ipadress);
+				const ms = await this.ping(ipaddress);
 				result[1] = {
 					...result[1],
 					run: true,
 					success: true,
-					message: `Ping was successful after ${ms} milliseconds.`,
+					// message: `Ping was successful after ${ms} milliseconds.`,
+					message: await this.translation.translate("connection-test-message-ping-success", {
+						ms: ms.toString(),
+					}),
 					result: ms,
 				};
 				await callProgressCallback();
@@ -156,7 +165,7 @@ export class ConnectionTest implements IConnectionTest {
 						...result[2],
 						run: true,
 						success: true,
-						message: `Secure connection successful.`,
+						message: await this.translation.translate("connection-test-message-connection-success"),
 					};
 					await callProgressCallback();
 
@@ -167,14 +176,16 @@ export class ConnectionTest implements IConnectionTest {
 							...result[3],
 							run: true,
 							success: true,
-							message: `Login successful.`,
+							message: await this.translation.translate("connection-test-message-login-success"),
 						};
 					} catch (error) {
 						result[3] = {
 							...result[3],
 							run: true,
 							success: false,
-							message: `Login failed: ${(error as Error).message}`,
+							message: await this.translation.translate("connection-test-message-login-failure", {
+								message: (error as Error).message,
+							}),
 							result: error as Error,
 						};
 					}
@@ -183,7 +194,9 @@ export class ConnectionTest implements IConnectionTest {
 						...result[2],
 						run: true,
 						success: false,
-						message: `Can't establish a secure connection: ${(error as Error).message}`,
+						message: await this.translation.translate("connection-test-message-connection-failure", {
+							message: (error as Error).message,
+						}),
 						result: error as Error,
 					};
 				}
@@ -192,7 +205,10 @@ export class ConnectionTest implements IConnectionTest {
 					...result[1],
 					run: true,
 					success: false,
-					message: `Can't ping IP address ${ipadress}: ${(error as Error).message}`,
+					message: await this.translation.translate("connection-test-message-ping-failure", {
+						ipaddress: ipaddress,
+						message: (error as Error).message,
+					}),
 					result: error as Error,
 				};
 			}
@@ -201,7 +217,9 @@ export class ConnectionTest implements IConnectionTest {
 				...result[0],
 				run: true,
 				success: false,
-				message: `Can't resolve hostname ${hostname} to an IP address.`,
+				message: await this.translation.translate("connection-test-message-name-lookup-failure", {
+					hostname: hostname,
+				}),
 				result: error as Error,
 			};
 		}
