@@ -1016,14 +1016,22 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			}),
 			30_000,
 		);
-		const statusRequestReq = new GW_STATUS_REQUEST_REQ(productIds, StatusType.RequestCurrentPosition, [1, 2, 3, 4]);
-		sessionId = statusRequestReq.SessionID;
-		const statusRequestCfm = await this._Connection?.sendFrameAsync(statusRequestReq);
-		if (statusRequestCfm?.CommandStatus === CommandStatus.CommandAccepted) {
-			return await handlerPromise;
-		} else {
-			return Promise.reject(new Error(statusRequestCfm?.getError()));
+		const chunkSize = 20;
+		for (let i = 0; i < Math.ceil(productIds.length / chunkSize); i++) {
+			const statusRequestReq = new GW_STATUS_REQUEST_REQ(
+				productIds.slice(i * chunkSize, (i + 1) * chunkSize),
+				StatusType.RequestCurrentPosition,
+				[1, 2, 3, 4],
+			);
+			sessionId = statusRequestReq.SessionID;
+			const statusRequestCfm = await this._Connection?.sendFrameAsync(statusRequestReq);
+			if (statusRequestCfm?.CommandStatus === CommandStatus.CommandAccepted) {
+				await handlerPromise;
+			} else {
+				return Promise.reject(new Error(statusRequestCfm?.getError()));
+			}
 		}
+		return responsiveProducts;
 	}
 
 	private async disposeOnConnectionClosed(): Promise<void> {

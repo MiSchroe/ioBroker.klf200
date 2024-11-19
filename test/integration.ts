@@ -478,6 +478,138 @@ tests.integration(path.join(__dirname, ".."), {
 				});
 			},
 		);
+
+		suite(
+			"Regular test with mock server and complete household with 42 non-consecutive numbered products",
+			function (getHarness) {
+				let harness: TestHarness;
+				let mockServerController: MockServerController;
+
+				before(async function () {
+					this.timeout(120_000);
+					// Debugging:
+					// this.timeout(60 * 60_000);
+
+					harness = getHarness();
+					mockServerController = await MockServerController.createMockServer();
+
+					// Setup household
+					await setupHouseMockupNonConsecutiveProductNumbers(mockServerController);
+					// Only add 40 nodes. 2 nodes are already present.
+					for (let index = 0; index < 40; index++) {
+						const product = {
+							NodeID: 5 + index,
+							Name: `Window ${5 + index}`,
+							TypeID: ActuatorType.WindowOpener,
+							SubType: 1,
+							Order: 0,
+							Placement: 0,
+							Velocity: Velocity.Default,
+							NodeVariation: NodeVariation.Kip,
+							PowerSaveMode: PowerSaveMode.LowPowerMode,
+							SerialNumber: Buffer.from([0, 0, 0, 0, 0, 0, 0, 0]).toString("base64"), // base64 encoded Buffer
+							ProductGroup: 0,
+							ProductType: 0,
+							State: NodeOperatingState.Done,
+							CurrentPositionRaw: 0xc800,
+							FP1CurrentPositionRaw: 0xf7ff,
+							FP2CurrentPositionRaw: 0xf7ff,
+							FP3CurrentPositionRaw: 0xf7ff,
+							FP4CurrentPositionRaw: 0xf7ff,
+							RemainingTime: 0,
+							TimeStamp: new Date("2012-01-01T11:13:55.000Z").toISOString(),
+							ProductAlias: [new ActuatorAlias(0xd803, 0xba00)],
+							RunStatus: RunStatus.ExecutionCompleted,
+							StatusReply: StatusReply.Ok,
+							TargetPositionRaw: 0xc800,
+							FP1TargetPositionRaw: 0xd400,
+							FP2TargetPositionRaw: 0xd400,
+							FP3TargetPositionRaw: 0xd400,
+							FP4TargetPositionRaw: 0xd400,
+						};
+						await mockServerController.sendCommand({
+							command: "SetProduct",
+							productId: product.NodeID,
+							product: product,
+						});
+					}
+
+					console.log(`Setup configuration for ${harness.adapterName}`);
+
+					// Setup adapter configuration
+					await harness.changeAdapterConfig(harness.adapterName, {
+						native: {
+							host: "localhost",
+							// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
+							password: "velux123",
+							enableAutomaticReboot: false,
+							advancedSSLConfiguration: true,
+							SSLConnectionOptions: {
+								rejectUnauthorized: true,
+								requestCert: true,
+								ca: readFileSync(path.join(__dirname, "mocks/mockServer", "ca-crt.pem"), "utf8"),
+								key: readFileSync(path.join(__dirname, "mocks/mockServer", "client1-key.pem"), "utf8"),
+								cert: readFileSync(path.join(__dirname, "mocks/mockServer", "client1-crt.pem"), "utf8"),
+							},
+						},
+						protectedNative: [],
+						encryptedNative: [],
+					});
+
+					// Start adapter
+					await harness.startAdapterAndWait(true, {
+						SEND_FRAME_TIMEOUT: (3600 * 10).toString(), // 10 hours
+					});
+				});
+
+				after(async function () {
+					await harness.stopAdapter();
+					if (mockServerController) {
+						await mockServerController[Symbol.asyncDispose]();
+					}
+				});
+
+				describe("Simple startup checks", function () {
+					describe("Complete household", function () {
+						it("Should start without error", function () {
+							expect(harness.isAdapterRunning()).to.be.true;
+						});
+
+						it("Gateway state should reflect having some products", async function () {
+							const sut = await Promise.resolve(
+								getState(harness, `${harness.adapterName}.0.gateway.GatewayState`),
+							);
+							expect(sut).to.have.property("val", GatewayState.GatewayMode_WithActuatorNodes);
+							expect(sut).to.have.property("ack", true);
+						});
+
+						it("Should have found no groups", async function () {
+							const sut = await Promise.resolve(
+								getState(harness, `${harness.adapterName}.0.groups.groupsFound`),
+							);
+							expect(sut).to.have.property("val", 0);
+							expect(sut).to.have.property("ack", true);
+						});
+
+						it("Should have found some products", async function () {
+							const sut = await Promise.resolve(
+								getState(harness, `${harness.adapterName}.0.products.productsFound`),
+							);
+							expect(sut).to.have.property("val", 42);
+							expect(sut).to.have.property("ack", true);
+						});
+
+						it("Should have found no scenes", async function () {
+							const sut = await Promise.resolve(
+								getState(harness, `${harness.adapterName}.0.scenes.scenesFound`),
+							);
+							expect(sut).to.have.property("val", 0);
+							expect(sut).to.have.property("ack", true);
+						});
+					});
+				});
+			},
+		);
 	},
 });
 
