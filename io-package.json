@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "klf200",
-    "version": "1.3.4",
+    "version": "1.3.5",
     "news": {
+      "1.3.5": {
+        "en": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Fixed an issue during startup of the adapter if more than 20 nodes are present.",
+        "de": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Ein Problem beim Start des Adapters wurde behoben, wenn mehr als 20 Knoten vorhanden sind.",
+        "ru": "[#264] (https://github.com/MiSchroe/ioBroker.klf200/issues/264) Исправлена проблема при запуске адаптера, если присутствует более 20 узлов.",
+        "pt": "[#264] (https://github.com/MiSchroe/ioBroker.klf200/issues/264) Corrigido um problema durante a inicialização do adaptador se mais de 20 nós estiverem presentes.",
+        "nl": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Een probleem opgelost tijdens het opstarten van de adapter als meer dan 20 knooppunten aanwezig zijn.",
+        "fr": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Correction d'un problème lors du démarrage de l'adaptateur si plus de 20 nœuds sont présents.",
+        "it": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Risolto un problema durante l'avvio dell'adattatore se sono presenti più di 20 nodi.",
+        "es": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Arreglado un problema durante la puesta en marcha del adaptador si están presentes más de 20 nodos.",
+        "pl": "[# 264] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 264) Naprawiono problem podczas uruchamiania adaptera, jeśli jest więcej niż 20 węzłów.",
+        "uk": "[#264](https://github.com/MiSchroe/ioBroker.klf200/products/264) Виправлено проблему при запуску адаптера, якщо присутні більше 20 вузлів.",
+        "zh-cn": "[#264] (https://github.com/miSchroe/ioBroker.klf200/issues/264) (中文(简体) ). 如果有20多个节点,则在适配器启动期间解决了一个问题."
+      },
       "1.3.4": {
         "en": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Fixed issues found by the adapter checker.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Fixed an issue during startup of the adapter if more than 20 nodes are present.",
         "de": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Behobene Probleme des Adapter-Checkers.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Ein Problem beim Start des Adapters wurde behoben, wenn mehr als 20 Knoten vorhanden sind.",
@@ -80,19 +93,6 @@
         "pl": "[# 126] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 126) Naprawiono Adapter- Kontrola ostrzeżenia.\n[# 124] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 124) Dodano komunikat pomocy dla hasła w oknie konfiguracji.\n[# 106] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 106) Naprawiono nieobsługiwany wyjątek od odrzucenia.\n[# 135] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 135) Naprawiono ostrzeżenie dla ustawień administratora.\n[# 137] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 137) Naprawiono Github Workflows.\n[# 40] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 40) Listę można odświeżyć.\n[# 129] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 129) Państwo Cel Raw jest w stanie poprzeć dodatkowe scenariusze.\n[# 133] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 133) Dodano stan odświeżenia produktu, aby ręcznie odświeżyć stan produktu.",
         "uk": "[#126](https://github.com/MiSchroe/ioBroker.klf200/products/126) Виправлено попередження адаптера-Чекера.\n[#124](https://github.com/MiSchroe/ioBroker.klf200/products/124) Додайте повідомлення про пароль у діалоговому вікні конфігурації.\n[#106](https://github.com/MiSchroe/ioBroker.klf200/products/106) Виправлено несвоєчасне виключення відхилення.\n[#135](https://github.com/MiSchroe/ioBroker.klf200/products/135) Виправлено попередження про налаштування адміністратора.\n[#137](https://github.com/MiSchroe/ioBroker.klf200/products/137) Виправлені Github Робочі процеси.\n[#40](https://github.com/MiSchroe/ioBroker.klf200/products/40) Список сцени можна оновити.\n[#129](https://github.com/MiSchroe/ioBroker.klf200/products/129) Державна цільоваПозиціяПравила на підтримку додаткових сценаріїв.\n[#133](https://github.com/MiSchroe/ioBroker.klf200/products/133) Додано стан освіжаючого продукту вручну оновити стан продукту.",
         "zh-cn": "[#126] (https://github.com/Mischroe/ioBroker.klf200/issues/126) (中文(简体) ). 固定适配器-检查器警告.\n[#124] (https://github.com/Mischroe/ioBroker.klf200/issues/124) (中文(简体) ). 在配置对话框中添加密码的帮助消息 .\n[#106] (https://github.com/Mischroe/ioBroker.klf200/issues/106). 解决了一个无端拒绝的例外.\n[# 135] (https://github.com/Mischroe/ioBroker.klf200/issues/135) (中文(简体) ). 管理员设置的固定警告 .\n[#137] (https://github.com/MiSchroe/ioBroker.klf200/issues/137). 固定Github工作流程.\n[40] (https://github.com/Mischroe/ioBroker.klf200/issues/40) (中文(简体) ). 场景列表可以刷新.\n[#129] (https://github.com/Mischroe/ioBroker.klf200/issues/129) (中文(简体) ). 状态目标PositionRaw可以写作支持额外的情景.\n[#133] (https://github.com/Mischroe/ioBroker.klf200/issues/133) (中文(简体) ). 添加了更新的Product状态以手动刷新产品的状态."
-      },
-      "1.1.2": {
-        "en": "Bumped version number",
-        "de": "Gepflegte Versionsnummer",
-        "ru": "Bumped номер версии",
-        "pt": "Número de versão Bumped",
-        "nl": "Vertaling:",
-        "fr": "Numéro de version Bumped",
-        "it": "Numero di versione Bumped",
-        "es": "Número de versión agrupada",
-        "pl": "Wersja Bumped",
-        "uk": "Ім'я користувача",
-        "zh-cn": "倾销版本"
       }
     },
     "titleLang": {
