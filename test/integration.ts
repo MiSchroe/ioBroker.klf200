@@ -606,6 +606,16 @@ tests.integration(path.join(__dirname, ".."), {
 							expect(sut).to.have.property("val", 0);
 							expect(sut).to.have.property("ack", true);
 						});
+
+						it("Should have limitation states for product 30", async function () {
+							const sut = await Promise.resolve(
+								getState(harness, `${harness.adapterName}.0.products.30.limitationMPMinRaw`),
+							);
+							expect(sut).not.to.be.undefined;
+							expect(sut).not.to.be.null;
+							expect(sut).to.be.an("object");
+							expect(sut).to.have.property("val");
+						});
 					});
 				});
 			},
