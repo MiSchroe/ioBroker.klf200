@@ -1043,40 +1043,48 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 	private async checkResponsiveProducts(productIds: number[]): Promise<ResponsiveProductResult[]> {
 		const responsiveProducts: ResponsiveProductResult[] = [];
-		let sessionId = -1;
-		let handler: Disposable | undefined = undefined;
-		const handlerPromise = timeout(
-			new Promise<ResponsiveProductResult[]>((resolve, reject) => {
-				try {
-					handler = this._Connection?.on(
-						(event) => {
-							if (event instanceof GW_SESSION_FINISHED_NTF && event.SessionID === sessionId) {
-								handler?.dispose();
-								handler = undefined;
-								resolve(responsiveProducts.sort());
-							} else if (event instanceof GW_STATUS_REQUEST_NTF && event.SessionID === sessionId) {
-								responsiveProducts.push({
-									NodeID: event.NodeID,
-									FPs: event.ParameterData?.map((parameter) => parameter.ID) || [],
-								});
-							}
-						},
-						[GatewayCommand.GW_SESSION_FINISHED_NTF, GatewayCommand.GW_STATUS_REQUEST_NTF],
-					);
-				} catch (error) {
-					reject(error);
-				}
-			}),
-			30_000,
-		);
-		const statusRequestReq = new GW_STATUS_REQUEST_REQ(productIds, StatusType.RequestCurrentPosition, [1, 2, 3, 4]);
-		sessionId = statusRequestReq.SessionID;
-		const statusRequestCfm = await this._Connection?.sendFrameAsync(statusRequestReq);
-		if (statusRequestCfm?.CommandStatus === CommandStatus.CommandAccepted) {
-			return await handlerPromise;
-		} else {
-			return Promise.reject(new Error(statusRequestCfm?.getError()));
+		const chunkSize = 20;
+		for (let i = 0; i < Math.ceil(productIds.length / chunkSize); i++) {
+			let sessionId = -1;
+			let handler: Disposable | undefined = undefined;
+			const handlerPromise = timeout(
+				new Promise<ResponsiveProductResult[]>((resolve, reject) => {
+					try {
+						handler = this._Connection?.on(
+							(event) => {
+								if (event instanceof GW_SESSION_FINISHED_NTF && event.SessionID === sessionId) {
+									handler?.dispose();
+									handler = undefined;
+									resolve(responsiveProducts);
+								} else if (event instanceof GW_STATUS_REQUEST_NTF && event.SessionID === sessionId) {
+									responsiveProducts.push({
+										NodeID: event.NodeID,
+										FPs: event.ParameterData?.map((parameter) => parameter.ID) || [],
+									});
+								}
+							},
+							[GatewayCommand.GW_SESSION_FINISHED_NTF, GatewayCommand.GW_STATUS_REQUEST_NTF],
+						);
+					} catch (error) {
+						reject(error);
+					}
+				}),
+				30_000,
+			);
+			const statusRequestReq = new GW_STATUS_REQUEST_REQ(
+				productIds.slice(i * chunkSize, (i + 1) * chunkSize),
+				StatusType.RequestCurrentPosition,
+				[1, 2, 3, 4],
+			);
+			sessionId = statusRequestReq.SessionID;
+			const statusRequestCfm = await this._Connection?.sendFrameAsync(statusRequestReq);
+			if (statusRequestCfm?.CommandStatus === CommandStatus.CommandAccepted) {
+				await handlerPromise;
+			} else {
+				return Promise.reject(new Error(statusRequestCfm?.getError()));
+			}
 		}
+		return responsiveProducts.sort();
 	}
 
 	private async disposeOnConnectionClosed(): Promise<void> {
