@@ -18,8 +18,10 @@
 			"request": "launch",
 			"name": "Launch Program",
 			"skipFiles": ["<node_internals>/**"],
-			"program": "${workspaceFolder}\\build\\main.js",
-			"outFiles": ["${workspaceFolder}/**/*.js"]
+			"program": "${workspaceFolder}/src/main.ts",
+			"args": ["--debug", "0"],
+			"preLaunchTask": "tsc: build - tsconfig.build.json",
+			"outFiles": ["${workspaceFolder}/build/**/*.js"]
 		}
 	]
 }

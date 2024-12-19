@@ -14,5 +14,9 @@
 			"fileMatch": ["**/jsonConfig.json"],
 			"url": "https://github.com/ioBroker/adapter-react-v5/raw/main/schemas/jsonConfig.json"
 		}
-	]
+	],
+	"mochaExplorer.files": "build/{**/*,*}.test.js",
+	"mochaExplorer.require": ["test/mocha.setup.js", "source-map-support/register"],
+	"mochaExplorer.watch": "build/{**/*,*}.js"
 }
+
