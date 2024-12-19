@@ -31,8 +31,8 @@
 	// Uncomment the next line if you want to keep your containers running after VS Code shuts down.
 	// "shutdownAction": "none",
 
-	// When creating the container, delete unnecessary adapters, disable error reporting, set the license as confirmed, and install/update this adapter
-	"postCreateCommand": "iob del discovery && iob plugin disable sentry && iob object set system.config common.licenseConfirmed=true && NPM_PACK=$(npm pack) && iob url \"$(pwd)/$NPM_PACK\" --debug && rm \"$NPM_PACK\""
+	// When creating the container, wait for iobroker to be started, delete unnecessary adapters, disable error reporting, set the license as confirmed, and install/update this adapter
+	"postCreateCommand": "until iob status | grep -q \"iobroker is running on this host.\"; do sleep 1; done && iob del discovery && iob plugin disable sentry && iob object set system.config common.licenseConfirmed=true && NPM_PACK=$(npm pack) && iob url \"$(pwd)/$NPM_PACK\" --debug && rm \"$NPM_PACK\""
 
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
 	//"remoteUser": "iobroker"
