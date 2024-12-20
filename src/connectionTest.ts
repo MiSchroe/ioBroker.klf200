@@ -1,8 +1,11 @@
+import debugModule from "debug";
 import { lookup } from "dns/promises";
 import { Connection } from "klf-200-api";
 import * as ping from "net-ping";
 import { connect, ConnectionOptions, TLSSocket } from "tls";
 import { Translate } from "./translate";
+
+const debug = debugModule("connectionTest");
 
 export class ConnectionTestResult {
 	public constructor(
@@ -32,50 +35,63 @@ export class ConnectionTest implements IConnectionTest {
 	constructor(private readonly translation: Translate) {}
 
 	async resolveName(hostname: string): Promise<string> {
+		debug(`Resolving name for hostname: ${hostname}`);
 		const result = await lookup(hostname, { all: false, verbatim: false });
+		debug(`Resolved address: ${result.address}`);
 		return result.address;
 	}
 
 	async ping(ipadress: string): Promise<number> {
+		debug(`Pinging IP address: ${ipadress}`);
 		const session = ping.createSession({ packetSize: 64 });
 		try {
 			return new Promise<number>((resolve, reject) => {
 				session.pingHost(ipadress, (err, _target, sent, rcvd) => {
 					if (err) {
+						debug(`Ping error: ${err.message}`);
 						session.close();
 						reject(err);
 					} else {
+						const latency = rcvd.valueOf() - sent.valueOf();
+						debug(`Ping successful, latency: ${latency}ms`);
 						session.close();
-						resolve(rcvd.valueOf() - sent.valueOf());
+						resolve(latency);
 					}
 				});
 			});
 		} catch (error) {
+			debug(`Ping exception: ${(error as Error).message}`);
 			session.close();
 			throw error;
 		}
 	}
 
 	async connectTlsSocket(hostname: string, port: number, connectionOptions?: ConnectionOptions): Promise<void> {
+		debug(`Connecting to TLS socket at ${hostname}:${port}`);
 		return new Promise<void>((resolve, reject) => {
 			let sckt: TLSSocket | undefined;
 			try {
 				sckt = connect(port, hostname, connectionOptions, () => {
 					if (sckt?.authorized) {
+						debug("TLS connection authorized");
 						sckt?.destroy();
 						sckt = undefined;
 						resolve();
 					} else {
+						debug(`TLS connection authorization error: ${sckt?.authorizationError.message}`);
 						reject(sckt?.authorizationError);
 						sckt = undefined;
 					}
 				});
-				sckt.on("error", (error) => {
+				sckt.on("error", (error: Error) => {
+					debug(`TLS connection error: ${error.message}`);
 					reject(error);
 				});
 			} catch (error) {
-				sckt?.destroy();
-				sckt = undefined;
+				debug(`TLS connection exception: ${(error as Error).message}`);
+				if (sckt) {
+					sckt.destroy();
+				}
 				reject(error);
 			}
 		});
@@ -227,3 +243,4 @@ export class ConnectionTest implements IConnectionTest {
 		return result;
 	}
 }
+

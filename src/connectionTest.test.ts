@@ -1,8 +1,11 @@
 import { expect } from "chai";
+import debugModule from "debug";
 import sinon from "sinon";
 import { MockServerController } from "../test/mocks/mockServerController.js";
 import { ConnectionTest } from "./connectionTest.js";
 import { Translate } from "./translate.js";
+
+const debug = debugModule("testing:connectionTest");
 
 class TranslationMock implements Translate {
 	translateTo(language: ioBroker.Languages, textKey: string, _context?: Record<string, string>): Promise<string> {
@@ -91,12 +94,17 @@ describe("connectionTest", function () {
 
 		it(`should connect to localhost`, async function () {
 			this.slow(2_000);
+			debug("Starting mock server");
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
 			await using mockServerController = await MockServerController.createMockServer();
+			debug("Mock server started");
+			debug("Creating connection options");
 			const sut = new ConnectionTest(new TranslationMock());
+			debug("Connecting to localhost");
 			await expect(
 				sut.connectTlsSocket("localhost", 51200, MockServerController.getMockServerConnectionOptions()),
 			).to.be.fulfilled;
+			debug("Connected to localhost");
 		});
 	});
 
@@ -322,3 +330,4 @@ describe("connectionTest", function () {
 		});
 	});
 });
+

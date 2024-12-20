@@ -348,7 +348,8 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 	// Try to fix:
 	// net stop winnat
 	// net start winnat
-	server.on("error", function (error) {
+	server.on("error", function (error: Error) {
+		debug(`Server error: ${error.message}`);
 		console.error(error);
 		server.close(() => {
 			process.exit(1);
@@ -359,6 +360,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 	});
 
 	server.listen(KLF200_PORT, HOST, () => {
+		debug(`Server is listening on ${HOST}:${KLF200_PORT}`);
 		if (process.send !== undefined) {
 			process.send("ready");
 		}
@@ -1604,3 +1606,4 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 		return result;
 	}
 })();
+
