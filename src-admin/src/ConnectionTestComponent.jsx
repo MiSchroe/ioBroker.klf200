@@ -116,7 +116,7 @@ const ConnectionTestComponent = ({ adapterName, instance, socket, data }) => {
 			>
 				{I18n.t("custom_klf200_test_connection_button")}
 			</Button>
-			{!alive && <p>{I18n.t("custom_klf200_test_connection_not_alive")}</p>}
+			{!alive && <p>{I18n.t("custom_klf200_test_connection_not_alive_hint")}</p>}
 			{(testRunning || testResults.length > 0) && (
 				<ConnectionTestResultTableComponent testResults={testResults} />
 			)}
@@ -125,3 +125,4 @@ const ConnectionTestComponent = ({ adapterName, instance, socket, data }) => {
 };
 
 export default ConnectionTestComponent;
+
