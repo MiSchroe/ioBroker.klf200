@@ -1,0 +1,8 @@
+{
+    "custom_klf200_test_connection_button": "测试连接",
+    "custom_klf200_test_connection_not_alive_hint": "适配器必须已启动才能测试连接。",
+    "custom_klf200_test_connection_status_header": "地位",
+    "custom_klf200_test_connection_step_name_header": "步骤名称",
+    "custom_klf200_test_connection_result_header": "结果",
+    "custom_klf200_test_connection_message_header": "信息"
+}

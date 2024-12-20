@@ -1,0 +1,8 @@
+{
+    "custom_klf200_test_connection_button": "Conexão de teste",
+    "custom_klf200_test_connection_not_alive_hint": "O adaptador deve ter sido iniciado para testar a conexão.",
+    "custom_klf200_test_connection_status_header": "Status",
+    "custom_klf200_test_connection_step_name_header": "Nome da etapa",
+    "custom_klf200_test_connection_result_header": "Resultado",
+    "custom_klf200_test_connection_message_header": "Mensagem"
+}
