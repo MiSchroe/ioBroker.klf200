@@ -42,7 +42,7 @@ class TranslationMock implements Translate {
 	}
 }
 
-describe.only("connectionTest", function () {
+describe("connectionTest", function () {
 	describe("Name resolution", function () {
 		it(`something.invalid should not be resolved`, async function () {
 			const sut = new ConnectionTest(new TranslationMock());
@@ -55,10 +55,10 @@ describe.only("connectionTest", function () {
 			expect(result).to.be.equal("127.0.0.1");
 		});
 
-		it(`localhost should be resolved to 127.0.0.1`, async function () {
+		it(`localhost should be resolved to 127.0.0.1 (or ::1)`, async function () {
 			const sut = new ConnectionTest(new TranslationMock());
 			const result = await sut.resolveName("localhost");
-			expect(result).to.be.equal("127.0.0.1");
+			expect(result).to.be.oneOf(["127.0.0.1", "::1"]);
 		});
 	});
 
