@@ -155,15 +155,18 @@ import { Job, scheduleJob } from "node-schedule";
 import path from "path";
 import { env } from "process";
 import { timeout } from "promise-timeout";
-import { ConnectionOptions } from "tls";
+import { checkServerIdentity as checkServerIdentityOriginal, ConnectionOptions } from "tls";
+import { ConnectionTest, ConnectionTestResult } from "./connectionTest.js";
 import { KLF200DeviceManagement } from "./deviceManagement/klf200DeviceManagement.js";
 import { DisposalMap } from "./disposalMap.js";
 import { HasConnectionInterface, HasProductsInterface } from "./interfaces.js";
+import { ConnectionTestMessage } from "./messages/connectionTestMessage.js";
 import { Setup } from "./setup.js";
 import { SetupGroups } from "./setupGroups.js";
 import { SetupProducts } from "./setupProducts.js";
 import { SetupScenes } from "./setupScenes.js";
 import { Translate } from "./translate.js";
+import { StateHelper } from "./util/stateHelper.js";
 import { ArrayCount, convertErrorToString, waitForSessionFinishedNtfAsync } from "./util/utils.js";
 
 // Load your modules here, e.g.:
@@ -484,6 +487,53 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		return result;
 	}
 
+	private async setupTestConnectionStates(): Promise<void> {
+		this.log.info("Setup objects for test connection.");
+
+		await this.setObjectNotExistsAsync("TestConnection", {
+			type: "channel",
+			common: {
+				name: "TestConnection",
+				expert: true,
+			},
+			native: {},
+		});
+
+		await StateHelper.createAndSetStateAsync(
+			this,
+			"TestConnection.running",
+			{
+				name: "running",
+				role: "indicator.state",
+				type: "boolean",
+				read: true,
+				write: true,
+				def: false,
+				desc: "Test connection is running",
+				expert: true,
+			},
+			{},
+			false,
+		);
+
+		await StateHelper.createAndSetStateAsync(
+			this,
+			"TestConnection.testResults",
+			{
+				name: "testResults",
+				role: "state",
+				type: "object",
+				read: true,
+				write: true,
+				def: "[]",
+				desc: "Test connection results",
+				expert: true,
+			},
+			{},
+			"[]",
+		);
+	}
+
 	/**
 	 * Is called when databases are connected and adapter received configuration.
 	 */
@@ -507,6 +557,8 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 				);
 			}
 			this.log.info(`Host: ${this.config.host}`);
+
+			await this.setupTestConnectionStates();
 
 			// Setup connection and initialize objects and states
 			if (!this.config.advancedSSLConfiguration) {
@@ -783,7 +835,8 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			} catch (error: any) {
 				this.log.error(`${error}`);
 				this.log.debug(`${(error as Error).stack}`);
-				this.terminate(`Login to KLF-200 device at ${this.config.host} failed.`);
+				this.log.error(`Login to KLF-200 device at ${this.config.host} failed.`);
+				this.log.error(`Please use the Test Connection button in the settings dialog of the adapter.`);
 				return;
 			}
 			this.log.info("Connected to interface.");
@@ -1741,6 +1794,16 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		return moduleInfo.version;
 	}
 
+	private async runConnectionTests(
+		hostname: string,
+		password: string,
+		connectionOptions?: ConnectionOptions,
+		progressCallback?: (progress: ConnectionTestResult[]) => Promise<void>,
+	): Promise<ConnectionTestResult[]> {
+		const connectionTest = new ConnectionTest(this);
+		return await connectionTest.runTests(hostname, password, connectionOptions, progressCallback);
+	}
+
 	/**
 	 * Is called when adapter shuts down - callback has to be called under any circumstances!
 	 */
@@ -1792,21 +1855,94 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		}
 	}
 
+	private logLastConnectionTestResultStep(progress: ConnectionTestResult[]): void {
+		this.log.silly(
+			`Logging the last run step of the connection test of the progress: ${JSON.stringify(this.convertProgressErrors(progress))}`,
+		);
+		const lastResultRun = progress.findLast((progress) => progress.run);
+		if (lastResultRun !== undefined) {
+			this.log.info(
+				`Connection test step ${lastResultRun.stepOrder}: ${lastResultRun.stepName} - ${lastResultRun.success ? "✅" : "❌"}.${lastResultRun.result !== undefined ? ` Result: ${String(lastResultRun.result)}` : ""} Message: ${lastResultRun.message}.`,
+			);
+		}
+	}
+
+	private convertProgressErrors(progress: ConnectionTestResult[]): ConnectionTestResult[] {
+		return progress.map((result) => {
+			return new ConnectionTestResult(
+				result.stepOrder,
+				result.stepName,
+				result.run,
+				result.success,
+				result.message,
+				result.result instanceof Error ? result.result.message : result.result,
+			);
+		});
+	}
+
+	private createConnectionOptions(data: ConnectionTestMessage): ConnectionOptions {
+		const klf200Connection = new Connection(
+			data.hostname,
+			data.advancedSSLConfiguration?.sslPublicKey !== undefined
+				? Buffer.from(data.advancedSSLConfiguration?.sslPublicKey)
+				: undefined,
+			data.advancedSSLConfiguration?.sslFingerprint,
+		);
+		return {
+			rejectUnauthorized: true,
+			ca: klf200Connection.CA,
+			checkServerIdentity: (host, cert) => {
+				if (cert.fingerprint === klf200Connection.fingerprint) return undefined;
+				else return checkServerIdentityOriginal(host, cert);
+			},
+		};
+	}
+
 	/**
 	 * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
 	 * Using this method requires "common.message" property to be set to true in io-package.json
 	 */
 	private onMessage(obj: ioBroker.Message): void {
 		this.log.debug(`Message received: ${JSON.stringify(obj)}`);
-		// if (typeof obj === "object" && obj.message) {
-		// 	if (obj.command === "send") {
-		// 		// e.g. send email or pushover or whatever
-		// 		this.log.info("send command");
 
-		// 		// Send response in callback if required
-		// 		if (obj.callback) this.sendTo(obj.from, obj.command, "Message received", obj.callback);
-		// 	}
-		// }
+		if (typeof obj === "object" && obj.message) {
+			if (obj.command === "ConnectionTest") {
+				this.handleMessageConnectionTest(obj).catch((error) => this.log.error((error as Error).message));
+			}
+		}
+	}
+
+	private async handleMessageConnectionTest(obj: ioBroker.Message): Promise<void> {
+		const data: ConnectionTestMessage = obj.message as ConnectionTestMessage;
+		this.log.info(`Starting connection test...`);
+
+		try {
+			await this.setState("TestConnection.testResults", "[]", true);
+			await this.setState("TestConnection.running", true, true);
+			const result = await this.runConnectionTests(
+				data.hostname,
+				this.decrypt(data.password),
+				this.createConnectionOptions(data),
+				async (progress: ConnectionTestResult[]): Promise<void> => {
+					try {
+						this.logLastConnectionTestResultStep(progress);
+						const cleansedProgress = this.convertProgressErrors(progress);
+						await this.setState("TestConnection.testResults", JSON.stringify(cleansedProgress), true);
+					} catch (error: any) {
+						this.log.error(`Error during connection test: ${(error as Error).message}`);
+					}
+				},
+			);
+			// Send the final result
+			this.logLastConnectionTestResultStep(result);
+			const cleansedResult = this.convertProgressErrors(result);
+			await this.setState("TestConnection.testResults", JSON.stringify(cleansedResult), true);
+			this.sendTo(obj.from, obj.command, cleansedResult, obj.callback);
+		} catch (error: any) {
+			this.log.error(`Error during connection test: ${(error as Error).message}`);
+		} finally {
+			await this.setState("TestConnection.running", false, true);
+		}
 	}
 
 	getErrorMessage(err: Error | string): string {

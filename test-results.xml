@@ -1,0 +1,995 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="242.561" tests="453" failures="0">
+  <testsuite name="Root Suite" timestamp="2024-12-30T10:05:22" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="connectionTest" timestamp="2024-12-30T10:05:22" tests="0" file="C:\Users\micha\source\repos\ioBroker.klf200\src\connectionTest.test.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Name resolution" timestamp="2024-12-30T10:05:22" tests="3" file="C:\Users\micha\source\repos\ioBroker.klf200\src\connectionTest.test.ts" time="0.026" failures="0">
+    <testcase name="connectionTest Name resolution something.invalid should not be resolved" time="0.018" classname="something.invalid should not be resolved">
+    </testcase>
+    <testcase name="connectionTest Name resolution 127.0.0.1 should be resolved to 127.0.0.1" time="0.001" classname="127.0.0.1 should be resolved to 127.0.0.1">
+    </testcase>
+    <testcase name="connectionTest Name resolution localhost should be resolved to 127.0.0.1" time="0.004" classname="localhost should be resolved to 127.0.0.1">
+    </testcase>
+  </testsuite>
+  <testsuite name="Ping" timestamp="2024-12-30T10:05:22" tests="4" file="C:\Users\micha\source\repos\ioBroker.klf200\src\connectionTest.test.ts" time="0.295" failures="0">
+    <testcase name="connectionTest Ping ping to 192.0.2.0 should fail" time="0.194" classname="ping to 192.0.2.0 should fail">
+    </testcase>
+    <testcase name="connectionTest Ping ping to 127.0.0.1 should pass" time="0.005" classname="ping to 127.0.0.1 should pass">
+    </testcase>
+    <testcase name="connectionTest Ping ping to localhost should fail" time="0.000" classname="ping to localhost should fail">
+    </testcase>
+    <testcase name="connectionTest Ping ping to 8.8.8.8 should pass" time="0.094" classname="ping to 8.8.8.8 should pass">
+    </testcase>
+  </testsuite>
+  <testsuite name="TLS Socket connection" timestamp="2024-12-30T10:05:22" tests="2" file="C:\Users\micha\source\repos\ioBroker.klf200\src\connectionTest.test.ts" time="25.624" failures="0">
+    <testcase name="connectionTest TLS Socket connection shouldn&apos;t connect to 192.0.2.0" time="21.246" classname="shouldn&apos;t connect to 192.0.2.0">
+    </testcase>
+    <testcase name="connectionTest TLS Socket connection should connect to localhost" time="4.377" classname="should connect to localhost">
+    </testcase>
+  </testsuite>
+  <testsuite name="Login" timestamp="2024-12-30T10:05:48" tests="2" file="C:\Users\micha\source\repos\ioBroker.klf200\src\connectionTest.test.ts" time="5.836" failures="0">
+    <testcase name="connectionTest Login shouldn&apos;t login with the wrong password" time="3.219" classname="shouldn&apos;t login with the wrong password">
+    </testcase>
+    <testcase name="connectionTest Login should login with the correct password" time="2.616" classname="should login with the correct password">
+    </testcase>
+  </testsuite>
+  <testsuite name="runTests" timestamp="2024-12-30T10:05:54" tests="12" file="C:\Users\micha\source\repos\ioBroker.klf200\src\connectionTest.test.ts" time="9.975" failures="0">
+    <testcase name="connectionTest runTests should fulfil" time="3.189" classname="should fulfil">
+    </testcase>
+    <testcase name="connectionTest runTests should return 4 steps" time="3.004" classname="should return 4 steps">
+    </testcase>
+    <testcase name="connectionTest runTests should fail at step 1" time="0.008" classname="should fail at step 1">
+    </testcase>
+    <testcase name="connectionTest runTests should succeed at step 1" time="0.004" classname="should succeed at step 1">
+    </testcase>
+    <testcase name="connectionTest runTests should fail at step 2" time="0.005" classname="should fail at step 2">
+    </testcase>
+    <testcase name="connectionTest runTests should succeed at step 2" time="0.006" classname="should succeed at step 2">
+    </testcase>
+    <testcase name="connectionTest runTests should fail at step 3" time="0.004" classname="should fail at step 3">
+    </testcase>
+    <testcase name="connectionTest runTests should succeed at step 3" time="0.004" classname="should succeed at step 3">
+    </testcase>
+    <testcase name="connectionTest runTests should fail at step 4" time="0.010" classname="should fail at step 4">
+    </testcase>
+    <testcase name="connectionTest runTests should succeed at step 4" time="0.004" classname="should succeed at step 4">
+    </testcase>
+    <testcase name="connectionTest runTests should call the progress callback 4 times" time="0.005" classname="should call the progress callback 4 times">
+    </testcase>
+    <testcase name="connectionTest runTests should succeed at step 4 against mock server" time="3.727" classname="should succeed at step 4 against mock server">
+    </testcase>
+  </testsuite>
+  <testsuite name="disposalMap" timestamp="2024-12-30T10:06:04" tests="0" file="C:\Users\micha\source\repos\ioBroker.klf200\src\disposalMap.test.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="disposeId" timestamp="2024-12-30T10:06:04" tests="3" file="C:\Users\micha\source\repos\ioBroker.klf200\src\disposalMap.test.ts" time="0.004" failures="0">
+    <testcase name="disposalMap disposeId should call and remove a single entry" time="0.001" classname="should call and remove a single entry">
+    </testcase>
+    <testcase name="disposalMap disposeId should call and remove 2 entries" time="0.000" classname="should call and remove 2 entries">
+    </testcase>
+    <testcase name="disposalMap disposeId should call and remove 2 entries but should leave the remaining entries" time="0.001" classname="should call and remove 2 entries but should leave the remaining entries">
+    </testcase>
+  </testsuite>
+  <testsuite name="disposeAll" timestamp="2024-12-30T10:06:04" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\disposalMap.test.ts" time="0.001" failures="0">
+    <testcase name="disposalMap disposeAll should call and remove all entries" time="0.001" classname="should call and remove all entries">
+    </testcase>
+  </testsuite>
+  <testsuite name="module to test =&gt; function to test" timestamp="2024-12-30T10:06:04" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\main.test.ts" time="0.000" failures="0">
+    <testcase name="module to test =&gt; function to test should return 5" time="0.000" classname="should return 5">
+    </testcase>
+  </testsuite>
+  <testsuite name="Setup" timestamp="2024-12-30T10:06:04" tests="0" file="C:\Users\micha\source\repos\ioBroker.klf200\src\setup.test.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="setupGlobalAsync" timestamp="2024-12-30T10:06:04" tests="20" file="C:\Users\micha\source\repos\ioBroker.klf200\src\setup.test.ts" time="0.062" failures="0">
+    <testcase name="Setup setupGlobalAsync should generate products device" time="0.005" classname="should generate products device">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync shouldn&apos;t throw if products device already exists" time="0.003" classname="shouldn&apos;t throw if products device already exists">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate productsFound state" time="0.004" classname="should generate productsFound state">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate scenes device" time="0.002" classname="should generate scenes device">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync shouldn&apos;t throw if scenes device already exists" time="0.002" classname="shouldn&apos;t throw if scenes device already exists">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate scenesFound state" time="0.001" classname="should generate scenesFound state">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate groups device" time="0.002" classname="should generate groups device">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync shouldn&apos;t throw if groups device already exists" time="0.001" classname="shouldn&apos;t throw if groups device already exists">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate groupsFound state" time="0.002" classname="should generate groupsFound state">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate gateway device" time="0.002" classname="should generate gateway device">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync shouldn&apos;t throw if gateway device already exists" time="0.002" classname="shouldn&apos;t throw if gateway device already exists">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate gateway ProtocolVersion state" time="0.002" classname="should generate gateway ProtocolVersion state">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate gateway SoftwareVersion state" time="0.002" classname="should generate gateway SoftwareVersion state">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate gateway HardwareVersion state" time="0.002" classname="should generate gateway HardwareVersion state">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate gateway ProductGroup state" time="0.002" classname="should generate gateway ProductGroup state">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate gateway ProductType state" time="0.003" classname="should generate gateway ProductType state">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate gateway GatewayState" time="0.003" classname="should generate gateway GatewayState">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync should generate gateway GatewaySubState" time="0.003" classname="should generate gateway GatewaySubState">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync Each writable state should be bound to a state change handler" time="0.006" classname="Each writable state should be bound to a state change handler">
+    </testcase>
+    <testcase name="Setup setupGlobalAsync Each readable state should be bound to a property change handler" time="0.004" classname="Each readable state should be bound to a property change handler">
+    </testcase>
+  </testsuite>
+  <testsuite name="setupGroups" timestamp="2024-12-30T10:06:04" tests="0" file="C:\Users\micha\source\repos\ioBroker.klf200\src\setupGroups.test.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="createGroupAsync" timestamp="2024-12-30T10:06:04" tests="41" file="C:\Users\micha\source\repos\ioBroker.klf200\src\setupGroups.test.ts" time="1.654" failures="0">
+    <testcase name="setupGroups createGroupAsync should create the channel for Group ID 50" time="0.006" classname="should create the channel for Group ID 50">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should have the name &apos;Test Group&apos; for its channel name" time="0.008" classname="should have the name &apos;Test Group&apos; for its channel name">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should have the role &apos;group.user&apos; for its channel role" time="0.007" classname="should have the role &apos;group.user&apos; for its channel role">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should create the productsCount state object" time="0.004" classname="should create the productsCount state object">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the productsCount state" time="0.003" classname="should write the productsCount state">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the productsCount state with &apos;2&apos;" time="0.004" classname="should write the productsCount state with &apos;2&apos;">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the productsCount state ack" time="0.008" classname="should write the productsCount state ack">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should create the groupType state object" time="0.005" classname="should create the groupType state object">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the groupType state" time="0.007" classname="should write the groupType state">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the groupType state with &apos;0&apos;" time="0.003" classname="should write the groupType state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the groupType state ack" time="0.006" classname="should write the groupType state ack">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should create the nodeVariation state object" time="0.006" classname="should create the nodeVariation state object">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the nodeVariation state" time="0.006" classname="should write the nodeVariation state">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the nodeVariation state with &apos;2&apos;" time="0.006" classname="should write the nodeVariation state with &apos;2&apos;">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the nodeVariation state ack" time="0.008" classname="should write the nodeVariation state ack">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should create the order state object" time="0.006" classname="should create the order state object">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the order state" time="0.005" classname="should write the order state">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the order state with &apos;0&apos;" time="0.012" classname="should write the order state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the order state ack" time="0.016" classname="should write the order state ack">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should create the placement state object" time="0.005" classname="should create the placement state object">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the placement state" time="0.006" classname="should write the placement state">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the placement state with &apos;0&apos;" time="0.006" classname="should write the placement state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the placement state ack" time="0.003" classname="should write the placement state ack">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should create the velocity state object" time="0.005" classname="should create the velocity state object">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the velocity state" time="0.005" classname="should write the velocity state">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the velocity state with &apos;1&apos;" time="0.008" classname="should write the velocity state with &apos;1&apos;">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the velocity state ack" time="0.011" classname="should write the velocity state ack">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should create the targetPosition state object" time="0.007" classname="should create the targetPosition state object">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should create the targetPositionRaw state object" time="0.007" classname="should create the targetPositionRaw state object">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the order state with &apos;1&apos; after change notificiation" time="0.001" classname="should write the order state with &apos;1&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the order state ack after change notificiation" time="0.001" classname="should write the order state ack after change notificiation">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the placement state with &apos;1&apos; after change notificiation" time="0.001" classname="should write the placement state with &apos;1&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the placement state ack after change notificiation" time="0.001" classname="should write the placement state ack after change notificiation">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the velocity state with &apos;2&apos; after change notificiation" time="0.000" classname="should write the velocity state with &apos;2&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the velocity state ack after change notificiation" time="0.001" classname="should write the velocity state ack after change notificiation">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the nodeVariation state with &apos;1&apos; after change notificiation" time="0.001" classname="should write the nodeVariation state with &apos;1&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the nodeVariation state ack after change notificiation" time="0.000" classname="should write the nodeVariation state ack after change notificiation">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the groupType state with &apos;1&apos; after change notificiation" time="0.001" classname="should write the groupType state with &apos;1&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync should write the groupType state ack after change notificiation" time="0.001" classname="should write the groupType state ack after change notificiation">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync Each writable state should be bound to a state change handler" time="0.009" classname="Each writable state should be bound to a state change handler">
+    </testcase>
+    <testcase name="setupGroups createGroupAsync Each readable state should be bound to a property change handler" time="0.011" classname="Each readable state should be bound to a property change handler">
+    </testcase>
+  </testsuite>
+  <testsuite name="createGroupsAsync" timestamp="2024-12-30T10:06:05" tests="2" file="C:\Users\micha\source\repos\ioBroker.klf200\src\setupGroups.test.ts" time="0.032" failures="0">
+    <testcase name="setupGroups createGroupsAsync should have 1 in the value of groups.groupsFound state" time="0.015" classname="should have 1 in the value of groups.groupsFound state">
+    </testcase>
+    <testcase name="setupGroups createGroupsAsync should delete a group that doesn&apos;t exist anymore" time="0.014" classname="should delete a group that doesn&apos;t exist anymore">
+    </testcase>
+  </testsuite>
+  <testsuite name="setupProducts" timestamp="2024-12-30T10:06:05" tests="0" file="C:\Users\micha\source\repos\ioBroker.klf200\src\setupProducts.test.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="createProductAsync" timestamp="2024-12-30T10:06:05" tests="306" file="C:\Users\micha\source\repos\ioBroker.klf200\src\setupProducts.test.ts" time="198.528" failures="0">
+    <testcase name="setupProducts createProductAsync should create the channel for product ID 0" time="0.024" classname="should create the channel for product ID 0">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should have the name &apos;Fenster Badezimmer&apos; for its channel name" time="0.034" classname="should have the name &apos;Fenster Badezimmer&apos; for its channel name">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should have the role &apos;window&apos; for its channel role" time="0.057" classname="should have the role &apos;window&apos; for its channel role">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the category state object" time="0.028" classname="should create the category state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the category state" time="0.037" classname="should write the category state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the category state with &apos;Window opener with integrated rain sensor&apos;" time="0.021" classname="should write the category state with &apos;Window opener with integrated rain sensor&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the category state ack" time="0.029" classname="should write the category state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the currentPosition state object" time="0.029" classname="should create the currentPosition state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the currentPosition state" time="0.025" classname="should write the currentPosition state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the currentPosition state with &apos;0&apos;" time="0.045" classname="should write the currentPosition state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the currentPosition state ack" time="0.025" classname="should write the currentPosition state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the currentPositionRaw state object" time="0.045" classname="should create the currentPositionRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the currentPositionRaw state" time="0.026" classname="should write the currentPositionRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the currentPositionRaw state with &apos;51200&apos;" time="0.029" classname="should write the currentPositionRaw state with &apos;51200&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the currentPositionRaw state ack" time="0.029" classname="should write the currentPositionRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the FP1CurrentPositionRaw state object" time="0.025" classname="should create the FP1CurrentPositionRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP1CurrentPositionRaw state" time="0.029" classname="should write the FP1CurrentPositionRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP1CurrentPositionRaw state with &apos;63487&apos;" time="0.036" classname="should write the FP1CurrentPositionRaw state with &apos;63487&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP1CurrentPositionRaw state ack" time="0.034" classname="should write the FP1CurrentPositionRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the FP2CurrentPositionRaw state object" time="0.022" classname="should create the FP2CurrentPositionRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP2CurrentPositionRaw state" time="0.030" classname="should write the FP2CurrentPositionRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP2CurrentPositionRaw state with &apos;63487&apos;" time="0.029" classname="should write the FP2CurrentPositionRaw state with &apos;63487&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP2CurrentPositionRaw state ack" time="0.028" classname="should write the FP2CurrentPositionRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the FP3CurrentPositionRaw state object" time="0.027" classname="should create the FP3CurrentPositionRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP3CurrentPositionRaw state" time="0.026" classname="should write the FP3CurrentPositionRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP3CurrentPositionRaw state with &apos;63487&apos;" time="0.022" classname="should write the FP3CurrentPositionRaw state with &apos;63487&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP3CurrentPositionRaw state ack" time="0.020" classname="should write the FP3CurrentPositionRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the FP4CurrentPositionRaw state object" time="0.027" classname="should create the FP4CurrentPositionRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP4CurrentPositionRaw state" time="0.036" classname="should write the FP4CurrentPositionRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP4CurrentPositionRaw state with &apos;63487&apos;" time="0.062" classname="should write the FP4CurrentPositionRaw state with &apos;63487&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP4CurrentPositionRaw state ack" time="0.079" classname="should write the FP4CurrentPositionRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the nodeVariation state object" time="0.027" classname="should create the nodeVariation state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the nodeVariation state" time="0.025" classname="should write the nodeVariation state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the nodeVariation state with &apos;0&apos;" time="0.017" classname="should write the nodeVariation state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the nodeVariation state ack" time="0.020" classname="should write the nodeVariation state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the order state object" time="0.026" classname="should create the order state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the order state" time="0.019" classname="should write the order state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the order state with &apos;0&apos;" time="0.017" classname="should write the order state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the order state ack" time="0.016" classname="should write the order state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the placement state object" time="0.046" classname="should create the placement state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the placement state" time="0.031" classname="should write the placement state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the placement state with &apos;1&apos;" time="0.030" classname="should write the placement state with &apos;1&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the placement state ack" time="0.041" classname="should write the placement state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the powerSaveMode state object" time="0.032" classname="should create the powerSaveMode state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the powerSaveMode state" time="0.030" classname="should write the powerSaveMode state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the powerSaveMode state with &apos;1&apos;" time="0.061" classname="should write the powerSaveMode state with &apos;1&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the powerSaveMode state ack" time="0.027" classname="should write the powerSaveMode state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the productType state object" time="0.021" classname="should create the productType state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the productType state" time="0.030" classname="should write the productType state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the productType state with &apos;7&apos;" time="0.026" classname="should write the productType state with &apos;7&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the productType state ack" time="0.024" classname="should write the productType state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the refreshProduct state object" time="0.034" classname="should create the refreshProduct state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the refreshProduct state" time="0.039" classname="should write the refreshProduct state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the refreshProduct state with &apos;false&apos;" time="0.026" classname="should write the refreshProduct state with &apos;false&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the refreshProduct state ack" time="0.028" classname="should write the refreshProduct state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the remainingTime state object" time="0.026" classname="should create the remainingTime state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the remainingTime state" time="0.033" classname="should write the remainingTime state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the remainingTime state with &apos;0&apos;" time="0.022" classname="should write the remainingTime state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the remainingTime state ack" time="0.048" classname="should write the remainingTime state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the runStatus state object" time="0.027" classname="should create the runStatus state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the runStatus state" time="0.032" classname="should write the runStatus state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the runStatus state with &apos;0&apos;" time="0.031" classname="should write the runStatus state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the runStatus state ack" time="0.029" classname="should write the runStatus state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the serialNumber state object" time="0.024" classname="should create the serialNumber state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the serialNumber state" time="0.030" classname="should write the serialNumber state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the serialNumber state with &apos;00:00:00:00:00:00:00:00&apos;" time="0.031" classname="should write the serialNumber state with &apos;00:00:00:00:00:00:00:00&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the serialNumber state ack" time="0.024" classname="should write the serialNumber state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the state state object" time="0.025" classname="should create the state state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the state state" time="0.020" classname="should write the state state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the state state with &apos;5&apos;" time="0.037" classname="should write the state state with &apos;5&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the state state ack" time="0.024" classname="should write the state state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the statusReply state object" time="0.036" classname="should create the statusReply state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the statusReply state" time="0.025" classname="should write the statusReply state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the statusReply state with &apos;0&apos;" time="0.031" classname="should write the statusReply state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the statusReply state ack" time="0.031" classname="should write the statusReply state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the subType state object" time="0.041" classname="should create the subType state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the subType state" time="0.026" classname="should write the subType state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the subType state with &apos;1&apos;" time="0.030" classname="should write the subType state with &apos;1&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the subType state ack" time="0.023" classname="should write the subType state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the targetPositionRaw state object" time="0.026" classname="should create the targetPositionRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetPositionRaw state" time="0.017" classname="should write the targetPositionRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetPositionRaw state with &apos;51200&apos;" time="0.035" classname="should write the targetPositionRaw state with &apos;51200&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetPositionRaw state ack" time="0.038" classname="should write the targetPositionRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the typeID state object" time="0.040" classname="should create the typeID state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the typeID state" time="0.036" classname="should write the typeID state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the typeID state with &apos;4&apos;" time="0.045" classname="should write the typeID state with &apos;4&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the typeID state ack" time="0.047" classname="should write the typeID state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the velocity state object" time="0.090" classname="should create the velocity state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the velocity state" time="0.045" classname="should write the velocity state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the velocity state with &apos;1&apos;" time="0.033" classname="should write the velocity state with &apos;1&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the velocity state ack" time="0.050" classname="should write the velocity state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the stop state object" time="0.069" classname="should create the stop state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the stop state" time="0.037" classname="should write the stop state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the stop state with &apos;false&apos;" time="0.067" classname="should write the stop state with &apos;false&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the stop state ack" time="0.042" classname="should write the stop state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the wink state object" time="0.022" classname="should create the wink state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the wink state" time="0.021" classname="should write the wink state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the wink state with &apos;false&apos;" time="0.032" classname="should write the wink state with &apos;false&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the wink state ack" time="0.035" classname="should write the wink state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the targetFP1Raw state object" time="0.047" classname="should create the targetFP1Raw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetFP1Raw state" time="0.038" classname="should write the targetFP1Raw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetFP1Raw state with &apos;54272&apos;" time="0.041" classname="should write the targetFP1Raw state with &apos;54272&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetFP1Raw state ack" time="0.039" classname="should write the targetFP1Raw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the targetFP2Raw state object" time="0.022" classname="should create the targetFP2Raw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetFP2Raw state" time="0.033" classname="should write the targetFP2Raw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetFP2Raw state with &apos;54272&apos;" time="0.025" classname="should write the targetFP2Raw state with &apos;54272&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetFP2Raw state ack" time="0.020" classname="should write the targetFP2Raw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the targetFP3Raw state object" time="0.025" classname="should create the targetFP3Raw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetFP3Raw state" time="0.026" classname="should write the targetFP3Raw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetFP3Raw state with &apos;54272&apos;" time="0.020" classname="should write the targetFP3Raw state with &apos;54272&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetFP3Raw state ack" time="0.024" classname="should write the targetFP3Raw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the targetFP4Raw state object" time="0.026" classname="should create the targetFP4Raw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetFP4Raw state" time="0.020" classname="should write the targetFP4Raw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetFP4Raw state with &apos;54272&apos;" time="0.029" classname="should write the targetFP4Raw state with &apos;54272&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetFP4Raw state ack" time="0.027" classname="should write the targetFP4Raw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationMPMinRaw state object" time="0.030" classname="should create the limitationMPMinRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPMinRaw state" time="0.034" classname="should write the limitationMPMinRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPMinRaw state with &apos;0&apos;" time="0.024" classname="should write the limitationMPMinRaw state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPMinRaw state ack" time="0.038" classname="should write the limitationMPMinRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationMPMaxRaw state object" time="0.024" classname="should create the limitationMPMaxRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPMaxRaw state" time="0.026" classname="should write the limitationMPMaxRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPMaxRaw state with &apos;51200&apos;" time="0.025" classname="should write the limitationMPMaxRaw state with &apos;51200&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPMaxRaw state ack" time="0.024" classname="should write the limitationMPMaxRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationMPMin state object" time="0.036" classname="should create the limitationMPMin state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPMin state" time="0.037" classname="should write the limitationMPMin state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPMin state with &apos;100&apos;" time="0.022" classname="should write the limitationMPMin state with &apos;100&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPMin state ack" time="0.024" classname="should write the limitationMPMin state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationMPMax state object" time="0.024" classname="should create the limitationMPMax state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPMax state" time="0.021" classname="should write the limitationMPMax state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPMax state with &apos;0&apos;" time="0.025" classname="should write the limitationMPMax state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPMax state ack" time="0.022" classname="should write the limitationMPMax state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationMPOriginator state object" time="0.019" classname="should create the limitationMPOriginator state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPOriginator state" time="0.028" classname="should write the limitationMPOriginator state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPOriginator state with &apos;1&apos;" time="0.020" classname="should write the limitationMPOriginator state with &apos;1&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPOriginator state ack" time="0.016" classname="should write the limitationMPOriginator state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationMPTimeRaw state object" time="0.025" classname="should create the limitationMPTimeRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPTimeRaw state" time="0.022" classname="should write the limitationMPTimeRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPTimeRaw state with &apos;253&apos;" time="0.015" classname="should write the limitationMPTimeRaw state with &apos;253&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPTimeRaw state ack" time="0.026" classname="should write the limitationMPTimeRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationMPTime state object" time="0.025" classname="should create the limitationMPTime state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPTime state" time="0.025" classname="should write the limitationMPTime state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPTime state with &apos;Infinity&apos;" time="0.029" classname="should write the limitationMPTime state with &apos;Infinity&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationMPTime state ack" time="0.029" classname="should write the limitationMPTime state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP1MinRaw state object" time="0.042" classname="should create the limitationFP1MinRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1MinRaw state" time="0.030" classname="should write the limitationFP1MinRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1MinRaw state with &apos;0&apos;" time="0.038" classname="should write the limitationFP1MinRaw state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1MinRaw state ack" time="0.037" classname="should write the limitationFP1MinRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP1MaxRaw state object" time="0.025" classname="should create the limitationFP1MaxRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1MaxRaw state" time="0.046" classname="should write the limitationFP1MaxRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1MaxRaw state with &apos;51200&apos;" time="0.031" classname="should write the limitationFP1MaxRaw state with &apos;51200&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1MaxRaw state ack" time="0.036" classname="should write the limitationFP1MaxRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP1Min state object" time="0.021" classname="should create the limitationFP1Min state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1Min state" time="0.021" classname="should write the limitationFP1Min state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1Min state with &apos;100&apos;" time="0.018" classname="should write the limitationFP1Min state with &apos;100&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1Min state ack" time="0.020" classname="should write the limitationFP1Min state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP1Max state object" time="0.022" classname="should create the limitationFP1Max state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1Max state" time="0.039" classname="should write the limitationFP1Max state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1Max state with &apos;0&apos;" time="0.023" classname="should write the limitationFP1Max state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1Max state ack" time="0.022" classname="should write the limitationFP1Max state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP1Originator state object" time="0.029" classname="should create the limitationFP1Originator state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1Originator state" time="0.024" classname="should write the limitationFP1Originator state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1Originator state with &apos;1&apos;" time="0.020" classname="should write the limitationFP1Originator state with &apos;1&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1Originator state ack" time="0.031" classname="should write the limitationFP1Originator state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP1TimeRaw state object" time="0.044" classname="should create the limitationFP1TimeRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1TimeRaw state" time="0.028" classname="should write the limitationFP1TimeRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1TimeRaw state with &apos;253&apos;" time="0.033" classname="should write the limitationFP1TimeRaw state with &apos;253&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1TimeRaw state ack" time="0.039" classname="should write the limitationFP1TimeRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP1Time state object" time="0.036" classname="should create the limitationFP1Time state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1Time state" time="0.025" classname="should write the limitationFP1Time state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1Time state with &apos;Infinity&apos;" time="0.034" classname="should write the limitationFP1Time state with &apos;Infinity&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP1Time state ack" time="0.023" classname="should write the limitationFP1Time state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP2MinRaw state object" time="0.027" classname="should create the limitationFP2MinRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2MinRaw state" time="0.032" classname="should write the limitationFP2MinRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2MinRaw state with &apos;0&apos;" time="0.037" classname="should write the limitationFP2MinRaw state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2MinRaw state ack" time="0.030" classname="should write the limitationFP2MinRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP2MaxRaw state object" time="0.021" classname="should create the limitationFP2MaxRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2MaxRaw state" time="0.035" classname="should write the limitationFP2MaxRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2MaxRaw state with &apos;51200&apos;" time="0.027" classname="should write the limitationFP2MaxRaw state with &apos;51200&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2MaxRaw state ack" time="0.027" classname="should write the limitationFP2MaxRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP2Min state object" time="0.035" classname="should create the limitationFP2Min state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2Min state" time="0.031" classname="should write the limitationFP2Min state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2Min state with &apos;100&apos;" time="0.030" classname="should write the limitationFP2Min state with &apos;100&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2Min state ack" time="0.035" classname="should write the limitationFP2Min state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP2Max state object" time="0.023" classname="should create the limitationFP2Max state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2Max state" time="0.023" classname="should write the limitationFP2Max state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2Max state with &apos;0&apos;" time="0.058" classname="should write the limitationFP2Max state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2Max state ack" time="0.067" classname="should write the limitationFP2Max state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP2Originator state object" time="0.034" classname="should create the limitationFP2Originator state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2Originator state" time="0.030" classname="should write the limitationFP2Originator state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2Originator state with &apos;1&apos;" time="0.030" classname="should write the limitationFP2Originator state with &apos;1&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2Originator state ack" time="0.050" classname="should write the limitationFP2Originator state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP2TimeRaw state object" time="0.044" classname="should create the limitationFP2TimeRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2TimeRaw state" time="0.035" classname="should write the limitationFP2TimeRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2TimeRaw state with &apos;253&apos;" time="0.084" classname="should write the limitationFP2TimeRaw state with &apos;253&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2TimeRaw state ack" time="0.075" classname="should write the limitationFP2TimeRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP2Time state object" time="0.040" classname="should create the limitationFP2Time state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2Time state" time="0.031" classname="should write the limitationFP2Time state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2Time state with &apos;Infinity&apos;" time="0.031" classname="should write the limitationFP2Time state with &apos;Infinity&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP2Time state ack" time="0.046" classname="should write the limitationFP2Time state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP3MinRaw state object" time="0.031" classname="should create the limitationFP3MinRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3MinRaw state" time="0.033" classname="should write the limitationFP3MinRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3MinRaw state with &apos;0&apos;" time="0.038" classname="should write the limitationFP3MinRaw state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3MinRaw state ack" time="0.049" classname="should write the limitationFP3MinRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP3MaxRaw state object" time="0.284" classname="should create the limitationFP3MaxRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3MaxRaw state" time="0.071" classname="should write the limitationFP3MaxRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3MaxRaw state with &apos;51200&apos;" time="0.070" classname="should write the limitationFP3MaxRaw state with &apos;51200&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3MaxRaw state ack" time="0.075" classname="should write the limitationFP3MaxRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP3Min state object" time="0.051" classname="should create the limitationFP3Min state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3Min state" time="0.042" classname="should write the limitationFP3Min state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3Min state with &apos;100&apos;" time="0.049" classname="should write the limitationFP3Min state with &apos;100&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3Min state ack" time="0.036" classname="should write the limitationFP3Min state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP3Max state object" time="0.031" classname="should create the limitationFP3Max state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3Max state" time="0.041" classname="should write the limitationFP3Max state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3Max state with &apos;0&apos;" time="0.040" classname="should write the limitationFP3Max state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3Max state ack" time="0.039" classname="should write the limitationFP3Max state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP3Originator state object" time="0.130" classname="should create the limitationFP3Originator state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3Originator state" time="0.071" classname="should write the limitationFP3Originator state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3Originator state with &apos;1&apos;" time="0.068" classname="should write the limitationFP3Originator state with &apos;1&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3Originator state ack" time="0.059" classname="should write the limitationFP3Originator state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP3TimeRaw state object" time="0.061" classname="should create the limitationFP3TimeRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3TimeRaw state" time="0.043" classname="should write the limitationFP3TimeRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3TimeRaw state with &apos;253&apos;" time="0.078" classname="should write the limitationFP3TimeRaw state with &apos;253&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3TimeRaw state ack" time="0.045" classname="should write the limitationFP3TimeRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP3Time state object" time="0.099" classname="should create the limitationFP3Time state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3Time state" time="0.111" classname="should write the limitationFP3Time state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3Time state with &apos;Infinity&apos;" time="0.080" classname="should write the limitationFP3Time state with &apos;Infinity&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP3Time state ack" time="0.046" classname="should write the limitationFP3Time state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP4MinRaw state object" time="0.043" classname="should create the limitationFP4MinRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4MinRaw state" time="0.047" classname="should write the limitationFP4MinRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4MinRaw state with &apos;0&apos;" time="0.045" classname="should write the limitationFP4MinRaw state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4MinRaw state ack" time="0.052" classname="should write the limitationFP4MinRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP4MaxRaw state object" time="0.044" classname="should create the limitationFP4MaxRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4MaxRaw state" time="0.080" classname="should write the limitationFP4MaxRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4MaxRaw state with &apos;51200&apos;" time="0.050" classname="should write the limitationFP4MaxRaw state with &apos;51200&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4MaxRaw state ack" time="0.065" classname="should write the limitationFP4MaxRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP4Min state object" time="0.116" classname="should create the limitationFP4Min state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4Min state" time="0.062" classname="should write the limitationFP4Min state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4Min state with &apos;100&apos;" time="0.091" classname="should write the limitationFP4Min state with &apos;100&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4Min state ack" time="0.100" classname="should write the limitationFP4Min state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP4Max state object" time="0.113" classname="should create the limitationFP4Max state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4Max state" time="0.077" classname="should write the limitationFP4Max state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4Max state with &apos;0&apos;" time="0.044" classname="should write the limitationFP4Max state with &apos;0&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4Max state ack" time="0.059" classname="should write the limitationFP4Max state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP4Originator state object" time="0.045" classname="should create the limitationFP4Originator state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4Originator state" time="0.092" classname="should write the limitationFP4Originator state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4Originator state with &apos;1&apos;" time="0.063" classname="should write the limitationFP4Originator state with &apos;1&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4Originator state ack" time="0.075" classname="should write the limitationFP4Originator state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP4TimeRaw state object" time="0.142" classname="should create the limitationFP4TimeRaw state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4TimeRaw state" time="0.055" classname="should write the limitationFP4TimeRaw state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4TimeRaw state with &apos;253&apos;" time="0.053" classname="should write the limitationFP4TimeRaw state with &apos;253&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4TimeRaw state ack" time="0.075" classname="should write the limitationFP4TimeRaw state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the limitationFP4Time state object" time="0.056" classname="should create the limitationFP4Time state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4Time state" time="0.075" classname="should write the limitationFP4Time state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4Time state with &apos;Infinity&apos;" time="0.067" classname="should write the limitationFP4Time state with &apos;Infinity&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the limitationFP4Time state ack" time="0.050" classname="should write the limitationFP4Time state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should create the refreshLimitation state object" time="0.068" classname="should create the refreshLimitation state object">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the refreshLimitation state" time="0.059" classname="should write the refreshLimitation state">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the refreshLimitation state with &apos;false&apos;" time="0.060" classname="should write the refreshLimitation state with &apos;false&apos;">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the refreshLimitation state ack" time="0.072" classname="should write the refreshLimitation state ack">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetPosition state with &apos;50&apos; after change notificiation" time="0.002" classname="should write the targetPosition state with &apos;50&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetPosition state ack after change notificiation" time="0.002" classname="should write the targetPosition state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the currentPositionRaw state with &apos;51456&apos; after change notificiation" time="0.002" classname="should write the currentPositionRaw state with &apos;51456&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the currentPositionRaw state ack after change notificiation" time="0.040" classname="should write the currentPositionRaw state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP1CurrentPositionRaw state with &apos;51456&apos; after change notificiation" time="0.008" classname="should write the FP1CurrentPositionRaw state with &apos;51456&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP1CurrentPositionRaw state ack after change notificiation" time="0.002" classname="should write the FP1CurrentPositionRaw state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP2CurrentPositionRaw state with &apos;51456&apos; after change notificiation" time="0.030" classname="should write the FP2CurrentPositionRaw state with &apos;51456&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP2CurrentPositionRaw state ack after change notificiation" time="0.001" classname="should write the FP2CurrentPositionRaw state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP3CurrentPositionRaw state with &apos;51456&apos; after change notificiation" time="0.002" classname="should write the FP3CurrentPositionRaw state with &apos;51456&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP3CurrentPositionRaw state ack after change notificiation" time="0.002" classname="should write the FP3CurrentPositionRaw state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP4CurrentPositionRaw state with &apos;51456&apos; after change notificiation" time="0.003" classname="should write the FP4CurrentPositionRaw state with &apos;51456&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the FP4CurrentPositionRaw state ack after change notificiation" time="0.003" classname="should write the FP4CurrentPositionRaw state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the nodeVariation state with &apos;2&apos; after change notificiation" time="0.001" classname="should write the nodeVariation state with &apos;2&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the nodeVariation state ack after change notificiation" time="0.003" classname="should write the nodeVariation state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the order state with &apos;2&apos; after change notificiation" time="0.002" classname="should write the order state with &apos;2&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the order state ack after change notificiation" time="0.002" classname="should write the order state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the placement state with &apos;1&apos; after change notificiation" time="0.002" classname="should write the placement state with &apos;1&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the placement state ack after change notificiation" time="0.002" classname="should write the placement state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the remainingTime state with &apos;8&apos; after change notificiation" time="0.003" classname="should write the remainingTime state with &apos;8&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the remainingTime state ack after change notificiation" time="0.003" classname="should write the remainingTime state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the runStatus state with &apos;2&apos; after change notificiation" time="0.001" classname="should write the runStatus state with &apos;2&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the runStatus state ack after change notificiation" time="0.002" classname="should write the runStatus state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the state state with &apos;4&apos; after change notificiation" time="0.002" classname="should write the state state with &apos;4&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the state state ack after change notificiation" time="0.001" classname="should write the state state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the statusReply state with &apos;22&apos; after change notificiation" time="0.002" classname="should write the statusReply state with &apos;22&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the statusReply state ack after change notificiation" time="0.006" classname="should write the statusReply state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetPositionRaw state with &apos;51456&apos; after change notificiation" time="0.002" classname="should write the targetPositionRaw state with &apos;51456&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should write the targetPositionRaw state ack after change notificiation" time="0.004" classname="should write the targetPositionRaw state ack after change notificiation">
+    </testcase>
+    <testcase name="setupProducts createProductAsync Each writable state should be bound to a state change handler" time="0.052" classname="Each writable state should be bound to a state change handler">
+    </testcase>
+    <testcase name="setupProducts createProductAsync Each readable state should be bound to a property change handler" time="0.140" classname="Each readable state should be bound to a property change handler">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should call setTargetPositionAsync without functional parameters" time="0.087" classname="should call setTargetPositionAsync without functional parameters">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should call setTargetPositionAsync with functional parameters" time="0.102" classname="should call setTargetPositionAsync with functional parameters">
+    </testcase>
+    <testcase name="setupProducts createProductAsync should change the setTargetPositionRawAsync state object to writable" time="0.051" classname="should change the setTargetPositionRawAsync state object to writable">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t create a state for limitationFP1MinRaw of FP1" time="0.046" classname="shouldn&apos;t create a state for limitationFP1MinRaw of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t remove an existing state for limitationFP1MinRaw of FP1" time="0.044" classname="shouldn&apos;t remove an existing state for limitationFP1MinRaw of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t create a state for limitationFP1MaxRaw of FP1" time="0.034" classname="shouldn&apos;t create a state for limitationFP1MaxRaw of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t remove an existing state for limitationFP1MaxRaw of FP1" time="0.049" classname="shouldn&apos;t remove an existing state for limitationFP1MaxRaw of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t create a state for limitationFP1Min of FP1" time="0.058" classname="shouldn&apos;t create a state for limitationFP1Min of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t remove an existing state for limitationFP1Min of FP1" time="0.054" classname="shouldn&apos;t remove an existing state for limitationFP1Min of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t create a state for limitationFP1Max of FP1" time="0.044" classname="shouldn&apos;t create a state for limitationFP1Max of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t remove an existing state for limitationFP1Max of FP1" time="0.047" classname="shouldn&apos;t remove an existing state for limitationFP1Max of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t create a state for limitationFP1Originator of FP1" time="0.080" classname="shouldn&apos;t create a state for limitationFP1Originator of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t remove an existing state for limitationFP1Originator of FP1" time="0.077" classname="shouldn&apos;t remove an existing state for limitationFP1Originator of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t create a state for limitationFP1TimeRaw of FP1" time="0.040" classname="shouldn&apos;t create a state for limitationFP1TimeRaw of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t remove an existing state for limitationFP1TimeRaw of FP1" time="0.052" classname="shouldn&apos;t remove an existing state for limitationFP1TimeRaw of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t create a state for limitationFP1Time of FP1" time="0.047" classname="shouldn&apos;t create a state for limitationFP1Time of FP1">
+    </testcase>
+    <testcase name="setupProducts createProductAsync shouldn&apos;t remove an existing state for limitationFP1Time of FP1" time="0.131" classname="shouldn&apos;t remove an existing state for limitationFP1Time of FP1">
+    </testcase>
+  </testsuite>
+  <testsuite name="createProductsAsync" timestamp="2024-12-30T10:09:24" tests="2" file="C:\Users\micha\source\repos\ioBroker.klf200\src\setupProducts.test.ts" time="0.098" failures="0">
+    <testcase name="setupProducts createProductsAsync should have 1 in the value of products.productsFound state" time="0.049" classname="should have 1 in the value of products.productsFound state">
+    </testcase>
+    <testcase name="setupProducts createProductsAsync should delete a product that doesn&apos;t exist anymore" time="0.047" classname="should delete a product that doesn&apos;t exist anymore">
+    </testcase>
+  </testsuite>
+  <testsuite name="setupScenes" timestamp="2024-12-30T10:09:24" tests="0" file="C:\Users\micha\source\repos\ioBroker.klf200\src\setupScenes.test.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="createSceneAsync" timestamp="2024-12-30T10:09:24" tests="22" file="C:\Users\micha\source\repos\ioBroker.klf200\src\setupScenes.test.ts" time="0.218" failures="0">
+    <testcase name="setupScenes createSceneAsync should create the channel for Scene ID 0" time="0.005" classname="should create the channel for Scene ID 0">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should have the name &apos;Close all windows&apos; for its channel name" time="0.004" classname="should have the name &apos;Close all windows&apos; for its channel name">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should have the role &apos;scene&apos; for its channel role" time="0.006" classname="should have the role &apos;scene&apos; for its channel role">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should create the productsCount state object" time="0.004" classname="should create the productsCount state object">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should write the productsCount state" time="0.004" classname="should write the productsCount state">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should write the productsCount state with &apos;3&apos;" time="0.004" classname="should write the productsCount state with &apos;3&apos;">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should write the productsCount state ack" time="0.005" classname="should write the productsCount state ack">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should create the run state object" time="0.003" classname="should create the run state object">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should write the run state" time="0.003" classname="should write the run state">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should write the run state with &apos;false&apos;" time="0.003" classname="should write the run state with &apos;false&apos;">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should write the run state ack" time="0.004" classname="should write the run state ack">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should create the stop state object" time="0.004" classname="should create the stop state object">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should write the stop state" time="0.003" classname="should write the stop state">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should write the stop state with &apos;false&apos;" time="0.009" classname="should write the stop state with &apos;false&apos;">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should write the stop state ack" time="0.003" classname="should write the stop state ack">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should create the velocity state object" time="0.003" classname="should create the velocity state object">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should create the velocity state object with a default value of 0" time="0.004" classname="should create the velocity state object with a default value of 0">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should write the run state with &apos;true&apos; after change notificiation" time="0.003" classname="should write the run state with &apos;true&apos; after change notificiation">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync should write the run state ack after change notificiation" time="0.001" classname="should write the run state ack after change notificiation">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync Each writable state should be bound to a state change handler" time="0.006" classname="Each writable state should be bound to a state change handler">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync Each readable state should be bound to a property change handler" time="0.008" classname="Each readable state should be bound to a property change handler">
+    </testcase>
+    <testcase name="setupScenes createSceneAsync Running a scene should use the velocity to start the scene." time="0.014" classname="Running a scene should use the velocity to start the scene.">
+    </testcase>
+  </testsuite>
+  <testsuite name="createScenesAsync" timestamp="2024-12-30T10:09:24" tests="6" file="C:\Users\micha\source\repos\ioBroker.klf200\src\setupScenes.test.ts" time="0.075" failures="0">
+    <testcase name="setupScenes createScenesAsync should have 1 in the value of scenes.scenesFound state" time="0.009" classname="should have 1 in the value of scenes.scenesFound state">
+    </testcase>
+    <testcase name="setupScenes createScenesAsync should delete a scene that doesn&apos;t exist anymore" time="0.007" classname="should delete a scene that doesn&apos;t exist anymore">
+    </testcase>
+    <testcase name="setupScenes createScenesAsync should have a state refreshScenes" time="0.005" classname="should have a state refreshScenes">
+    </testcase>
+    <testcase name="setupScenes createScenesAsync should call refreshScenesAsync when the state is set to true" time="0.010" classname="should call refreshScenesAsync when the state is set to true">
+    </testcase>
+    <testcase name="setupScenes createScenesAsync should have disposables after creating the scenes" time="0.007" classname="should have disposables after creating the scenes">
+    </testcase>
+    <testcase name="setupScenes createScenesAsync should have no pending disposables for scene 0 after deleting the last scene" time="0.020" classname="should have no pending disposables for scene 0 after deleting the last scene">
+    </testcase>
+  </testsuite>
+  <testsuite name="converter =&gt; convert" timestamp="2024-12-30T10:09:24" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\converter.test.ts" time="0.001" failures="0">
+    <testcase name="converter =&gt; convert should return window for ActuatorType.WindowOpener" time="0.000" classname="should return window for ActuatorType.WindowOpener">
+    </testcase>
+  </testsuite>
+  <testsuite name="roleConverter =&gt; convert" timestamp="2024-12-30T10:09:24" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\converter.test.ts" time="0.000" failures="0">
+    <testcase name="roleConverter =&gt; convert should return window for ActuatorType.WindowOpener" time="0.000" classname="should return window for ActuatorType.WindowOpener">
+    </testcase>
+  </testsuite>
+  <testsuite name="levelConverter =&gt; convert" timestamp="2024-12-30T10:09:24" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\converter.test.ts" time="0.001" failures="0">
+    <testcase name="levelConverter =&gt; convert should return level.blind for ActuatorType.WindowOpener" time="0.000" classname="should return level.blind for ActuatorType.WindowOpener">
+    </testcase>
+  </testsuite>
+  <testsuite name="PromiseQueue" timestamp="2024-12-30T10:09:24" tests="0" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\promiseQueue.test.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="push" timestamp="2024-12-30T10:09:24" tests="3" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\promiseQueue.test.ts" time="0.007" failures="0">
+    <testcase name="PromiseQueue push should be able to push different types of return values including void." time="0.003" classname="should be able to push different types of return values including void.">
+    </testcase>
+    <testcase name="PromiseQueue push should be able to run subsequent calls with a rejected promise in the middle." time="0.001" classname="should be able to run subsequent calls with a rejected promise in the middle.">
+    </testcase>
+    <testcase name="PromiseQueue push should be rejected with a rejected promise at the end." time="0.001" classname="should be rejected with a rejected promise at the end.">
+    </testcase>
+  </testsuite>
+  <testsuite name="PropertyLink" timestamp="2024-12-30T10:09:24" tests="0" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\propertyLink.test.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="MapAnyPropertyToState with BooleanValue" timestamp="2024-12-30T10:09:24" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\propertyLink.test.ts" time="0.001" failures="0">
+    <testcase name="PropertyLink MapAnyPropertyToState with BooleanValue should return a boolean value for the type of the return value" time="0.001" classname="should return a boolean value for the type of the return value">
+    </testcase>
+  </testsuite>
+  <testsuite name="MapAnyPropertyToState with NumberValue" timestamp="2024-12-30T10:09:24" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\propertyLink.test.ts" time="0.001" failures="0">
+    <testcase name="PropertyLink MapAnyPropertyToState with NumberValue should return a number value for the type of the return value" time="0.000" classname="should return a number value for the type of the return value">
+    </testcase>
+  </testsuite>
+  <testsuite name="MapAnyPropertyToState with StringValue" timestamp="2024-12-30T10:09:24" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\propertyLink.test.ts" time="0.003" failures="0">
+    <testcase name="PropertyLink MapAnyPropertyToState with StringValue should return a string value for the type of the return value" time="0.001" classname="should return a string value for the type of the return value">
+    </testcase>
+  </testsuite>
+  <testsuite name="MapAnyPropertyToState with ArrayValue" timestamp="2024-12-30T10:09:24" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\propertyLink.test.ts" time="0.010" failures="0">
+    <testcase name="PropertyLink MapAnyPropertyToState with ArrayValue should return a string value for the type of the return value" time="0.007" classname="should return a string value for the type of the return value">
+    </testcase>
+  </testsuite>
+  <testsuite name="SimplePropertyChangedHandler" timestamp="2024-12-30T10:09:24" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\propertyLink.test.ts" time="0.002" failures="0">
+    <testcase name="PropertyLink SimplePropertyChangedHandler should set the state &apos;NumberValue&apos; to 43 with ack." time="0.002" classname="should set the state &apos;NumberValue&apos; to 43 with ack.">
+    </testcase>
+  </testsuite>
+  <testsuite name="ComplexPropertyChangedHandler" timestamp="2024-12-30T10:09:24" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\propertyLink.test.ts" time="0.004" failures="0">
+    <testcase name="PropertyLink ComplexPropertyChangedHandler should call the supplied handler function exactly once." time="0.003" classname="should call the supplied handler function exactly once.">
+    </testcase>
+  </testsuite>
+  <testsuite name="SimpleStateChangeHandler" timestamp="2024-12-30T10:09:24" tests="2" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\propertyLink.test.ts" time="0.032" failures="0">
+    <testcase name="PropertyLink SimpleStateChangeHandler should set the property &apos;NumberValue&apos; to 43 when the adapter state is set." time="0.017" classname="should set the property &apos;NumberValue&apos; to 43 when the adapter state is set.">
+    </testcase>
+    <testcase name="PropertyLink SimpleStateChangeHandler should set the property &apos;NumberValue&apos; to 43 when the adapter state is set with explicit setterMethodName." time="0.013" classname="should set the property &apos;NumberValue&apos; to 43 when the adapter state is set with explicit setterMethodName.">
+    </testcase>
+  </testsuite>
+  <testsuite name="ComplexStateChangeHandler" timestamp="2024-12-30T10:09:24" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\propertyLink.test.ts" time="0.015" failures="0">
+    <testcase name="PropertyLink ComplexStateChangeHandler should call the provided handly exaclty once." time="0.015" classname="should call the provided handly exaclty once.">
+    </testcase>
+  </testsuite>
+  <testsuite name="MethodCallStateChangeHandler" timestamp="2024-12-30T10:09:24" tests="1" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\propertyLink.test.ts" time="0.005" failures="0">
+    <testcase name="PropertyLink MethodCallStateChangeHandler should call the function TestComponent.runAMethod with parameters 1, 2, &apos;3&apos;." time="0.003" classname="should call the function TestComponent.runAMethod with parameters 1, 2, &apos;3&apos;.">
+    </testcase>
+  </testsuite>
+  <testsuite name="StateHelper" timestamp="2024-12-30T10:09:24" tests="0" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\stateHelper.test.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="createAndSetStateAsync" timestamp="2024-12-30T10:09:24" tests="3" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\stateHelper.test.ts" time="0.004" failures="0">
+    <testcase name="StateHelper createAndSetStateAsync should generate state products.42.level" time="0.000" classname="should generate state products.42.level">
+    </testcase>
+    <testcase name="StateHelper createAndSetStateAsync state products.42.level should have value 50" time="0.001" classname="state products.42.level should have value 50">
+    </testcase>
+    <testcase name="StateHelper createAndSetStateAsync state products.42.level should be acknowledged" time="0.001" classname="state products.42.level should be acknowledged">
+    </testcase>
+  </testsuite>
+  <testsuite name="utils" timestamp="2024-12-30T10:09:24" tests="0" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\utils.test.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="ArrayCount" timestamp="2024-12-30T10:09:24" tests="3" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\utils.test.ts" time="0.001" failures="0">
+    <testcase name="utils ArrayCount should count the number of non-empty elements" time="0.000" classname="should count the number of non-empty elements">
+    </testcase>
+    <testcase name="utils ArrayCount should work on an empty array" time="0.000" classname="should work on an empty array">
+    </testcase>
+    <testcase name="utils ArrayCount should work on an empty array with a defined length" time="0.000" classname="should work on an empty array with a defined length">
+    </testcase>
+  </testsuite>
+  <testsuite name="convertErrorToString" timestamp="2024-12-30T10:09:24" tests="2" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\utils.test.ts" time="0.002" failures="0">
+    <testcase name="utils convertErrorToString should return the provided string on string input" time="0.001" classname="should return the provided string on string input">
+    </testcase>
+    <testcase name="utils convertErrorToString should return the provided message on Error input" time="0.001" classname="should return the provided message on Error input">
+    </testcase>
+  </testsuite>
+  <testsuite name="waitForSessionFinishedNtfAsync" timestamp="2024-12-30T10:09:24" tests="2" file="C:\Users\micha\source\repos\ioBroker.klf200\src\util\utils.test.ts" time="0.021" failures="0">
+    <testcase name="utils waitForSessionFinishedNtfAsync should be fulfilled when the notification is sent" time="0.006" classname="should be fulfilled when the notification is sent">
+    </testcase>
+    <testcase name="utils waitForSessionFinishedNtfAsync should be rejected when the notification is not sent" time="0.002" classname="should be rejected when the notification is not sent">
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -3,6 +3,8 @@
 	"eslint.enable": true,
 	"editor.formatOnSave": true,
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"files.insertFinalNewline": false,
+	"files.trimFinalNewlines": true,
 	"[typescript]": {
 		"editor.codeActionsOnSave": {
 			"source.organizeImports": "explicit"
@@ -17,6 +19,7 @@
 	],
 	"mochaExplorer.files": "build/{**/*,*}.test.js",
 	"mochaExplorer.require": ["test/mocha.setup.js", "source-map-support/register"],
-	"mochaExplorer.watch": "build/{**/*,*}.js"
+	"mochaExplorer.watch": "build/{**/*,*}.js",
+	"prettier.configPath": "./.prettierrc.js"
 }
 

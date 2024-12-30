@@ -1,6 +1,7 @@
 import { tests } from "@iobroker/testing";
 import { TestHarness } from "@iobroker/testing/build/tests/integration/lib/harness";
 import { expect } from "chai";
+import crypto from "crypto";
 import { readFileSync } from "fs";
 import {
 	ActuatorAlias,
@@ -19,7 +20,7 @@ import { setupHouseMockup, setupHouseMockupNonConsecutiveProductNumbers } from "
 
 // Run integration tests - See https://github.com/ioBroker/testing for a detailed explanation and further options
 tests.integration(path.join(__dirname, ".."), {
-	allowedExitCodes: [11],
+	// allowedExitCodes: [11],
 
 	defineAdditionalTests({ suite }) {
 		suite("Regular test without mock server", (getHarness) => {
@@ -29,10 +30,9 @@ tests.integration(path.join(__dirname, ".."), {
 				harness = getHarness();
 			});
 
-			it("Should start and terminate itself with exit code 11", async function () {
+			it("Should start", async function () {
 				this.timeout(60_000);
-				await expect(harness.startAdapterAndWait(true)).to.be.rejectedWith(Error);
-				expect(harness.adapterExit).to.be.equal(11);
+				await expect(harness.startAdapterAndWait()).to.be.fulfilled;
 			});
 		});
 
@@ -49,11 +49,15 @@ tests.integration(path.join(__dirname, ".."), {
 				console.log(`Setup configuration for ${harness.adapterName}`);
 
 				// Setup adapter configuration
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+				const data = await harness.objects.getObjectAsync(`system.config`);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+				const systemSecret: string = data?.native?.secret;
 				await harness.changeAdapterConfig(harness.adapterName, {
 					native: {
 						host: "localhost",
 						// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
-						password: "velux123",
+						password: encrypt(systemSecret, "velux123"),
 						enableAutomaticReboot: false,
 						advancedSSLConfiguration: true,
 						SSLConnectionOptions: {
@@ -64,8 +68,6 @@ tests.integration(path.join(__dirname, ".."), {
 							cert: readFileSync(path.join(__dirname, "mocks/mockServer", "client1-crt.pem"), "utf8"),
 						},
 					},
-					protectedNative: [],
-					encryptedNative: [],
 				});
 
 				// Start adapter
@@ -177,11 +179,15 @@ tests.integration(path.join(__dirname, ".."), {
 				console.log(`Setup configuration for ${harness.adapterName}`);
 
 				// Setup adapter configuration
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+				const data = await harness.objects.getObjectAsync(`system.config`);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+				const systemSecret: string = data?.native?.secret;
 				await harness.changeAdapterConfig(harness.adapterName, {
 					native: {
 						host: "localhost",
 						// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
-						password: "velux123",
+						password: encrypt(systemSecret, "velux123"),
 						enableAutomaticReboot: false,
 						advancedSSLConfiguration: true,
 						SSLConnectionOptions: {
@@ -192,8 +198,6 @@ tests.integration(path.join(__dirname, ".."), {
 							cert: readFileSync(path.join(__dirname, "mocks/mockServer", "client1-crt.pem"), "utf8"),
 						},
 					},
-					protectedNative: [],
-					encryptedNative: [],
 				});
 
 				// Start adapter
@@ -270,11 +274,15 @@ tests.integration(path.join(__dirname, ".."), {
 					console.log(`Setup configuration for ${harness.adapterName}`);
 
 					// Setup adapter configuration
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+					const data = await harness.objects.getObjectAsync(`system.config`);
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+					const systemSecret: string = data?.native?.secret;
 					await harness.changeAdapterConfig(harness.adapterName, {
 						native: {
 							host: "localhost",
 							// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
-							password: "velux123",
+							password: encrypt(systemSecret, "velux123"),
 							enableAutomaticReboot: false,
 							advancedSSLConfiguration: true,
 							SSLConnectionOptions: {
@@ -285,8 +293,6 @@ tests.integration(path.join(__dirname, ".."), {
 								cert: readFileSync(path.join(__dirname, "mocks/mockServer", "client1-crt.pem"), "utf8"),
 							},
 						},
-						protectedNative: [],
-						encryptedNative: [],
 					});
 
 					// Start adapter
@@ -405,11 +411,15 @@ tests.integration(path.join(__dirname, ".."), {
 					console.log(`Setup configuration for ${harness.adapterName}`);
 
 					// Setup adapter configuration
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+					const data = await harness.objects.getObjectAsync(`system.config`);
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+					const systemSecret: string = data?.native?.secret;
 					await harness.changeAdapterConfig(harness.adapterName, {
 						native: {
 							host: "localhost",
 							// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
-							password: "velux123",
+							password: encrypt(systemSecret, "velux123"),
 							enableAutomaticReboot: false,
 							advancedSSLConfiguration: true,
 							SSLConnectionOptions: {
@@ -420,8 +430,6 @@ tests.integration(path.join(__dirname, ".."), {
 								cert: readFileSync(path.join(__dirname, "mocks/mockServer", "client1-crt.pem"), "utf8"),
 							},
 						},
-						protectedNative: [],
-						encryptedNative: [],
 					});
 
 					// Start adapter
@@ -537,11 +545,15 @@ tests.integration(path.join(__dirname, ".."), {
 					console.log(`Setup configuration for ${harness.adapterName}`);
 
 					// Setup adapter configuration
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+					const data = await harness.objects.getObjectAsync(`system.config`);
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+					const systemSecret: string = data?.native?.secret;
 					await harness.changeAdapterConfig(harness.adapterName, {
 						native: {
 							host: "localhost",
 							// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
-							password: "velux123",
+							password: encrypt(systemSecret, "velux123"),
 							enableAutomaticReboot: false,
 							advancedSSLConfiguration: true,
 							SSLConnectionOptions: {
@@ -552,8 +564,6 @@ tests.integration(path.join(__dirname, ".."), {
 								cert: readFileSync(path.join(__dirname, "mocks/mockServer", "client1-crt.pem"), "utf8"),
 							},
 						},
-						protectedNative: [],
-						encryptedNative: [],
 					});
 
 					// Start adapter
@@ -628,3 +638,13 @@ async function getState(harness: TestHarness, stateName: string): Promise<ioBrok
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 	return (await Promise.resolve(harness.states.getStateAsync(stateName))) as ioBroker.State;
 }
+
+function encrypt(key: string, value: string): string {
+	const iv = crypto.randomBytes(16);
+	const cipher = crypto.createCipheriv("aes-192-cbc", Buffer.from(key, "hex"), iv);
+
+	const encrypted = Buffer.concat([cipher.update(value), cipher.final()]);
+
+	return `$/aes-192-cbc:${iv.toString("hex")}:${encrypted.toString("hex")}`;
+}
+

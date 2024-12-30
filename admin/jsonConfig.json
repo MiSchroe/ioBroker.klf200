@@ -52,6 +52,18 @@
 					"md": 6,
 					"lg": 4,
 					"xl": 4
+				},
+				"testConnection": {
+					"type": "custom",
+					"url": "custom/customComponents.js",
+					"name": "ConfigCustomKlf200Set/Components/ConnectionTestComponent",
+					"newLine": true,
+					"i18n": true,
+					"xs": 12,
+					"sm": 12,
+					"md": 12,
+					"lg": 12,
+					"xl": 12
 				}
 			}
 		},

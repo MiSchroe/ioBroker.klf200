@@ -27,8 +27,10 @@
 		// Consider targetting es2017 or higher if you require the new NodeJS 8+ features
 		// "target": "es2017",
 		"sourceMap": true,
-		"inlineSourceMap": false
+		"inlineSourceMap": false,
+		"typeRoots": ["./node_modules/@types", "./types"],
+		"jsx": "react-jsx"
 	},
-	"include": ["**/*.ts", "test/mocha.setup.js", "test/unit.js"],
+	"include": ["**/*.ts", "test/mocha.setup.js", "test/unit.js", "./types/**/*.d.ts"],
 	"exclude": ["build/**", "node_modules/**", "admin/**"]
 }

@@ -6,6 +6,7 @@ import { readFileSync } from "fs";
 import { Connection, IConnection } from "klf-200-api";
 import { join } from "path";
 import { timeout } from "promise-timeout";
+import { ConnectionOptions } from "tls";
 import { AcknowledgeMessage, Command, CommandWithGuid, KillCommand } from "./mockServer/commands.js";
 
 const debug = debugModule(`mockServerController:client`);
@@ -34,14 +35,18 @@ export class MockServerController {
 		return await Promise.resolve(mockServer);
 	}
 
-	static createMockServerConnect(): IConnection {
-		return new Connection("localhost", {
+	static getMockServerConnectionOptions(): ConnectionOptions {
+		return {
 			rejectUnauthorized: true,
 			requestCert: true,
 			ca: readFileSync(join(__dirname, "mockServer", "ca-crt.pem")),
 			key: readFileSync(join(__dirname, "mockServer", "client1-key.pem")),
 			cert: readFileSync(join(__dirname, "mockServer", "client1-crt.pem")),
-		});
+		};
+	}
+
+	static createMockServerConnect(): IConnection {
+		return new Connection("localhost", MockServerController.getMockServerConnectionOptions());
 	}
 
 	/**

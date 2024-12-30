@@ -54,5 +54,17 @@
     "on save adapter restarts with new config immediately": "ao salvar o adaptador reinicia imediatamente com a nova configuração",
     "optionstab": "Opções",
     "password": "senha",
-    "password-help": "A senha geralmente é a senha WiFi escrita na parte traseira do KLF-200. Experimente esse primeiro! Se você mesmo atualizou o firmware do KLF-200 e alterou a senha para o login na web, pode ser a senha para o login na web. Se ambos não estiverem funcionando, faça uma redefinição de fábrica e reconecte seus produtos ao KLF-200. Depois, tente novamente com a senha do WiFi."
+    "password-help": "A senha geralmente é a senha WiFi escrita na parte traseira do KLF-200. Experimente esse primeiro! Se você mesmo atualizou o firmware do KLF-200 e alterou a senha para o login na web, pode ser a senha para o login na web. Se ambos não estiverem funcionando, faça uma redefinição de fábrica e reconecte seus produtos ao KLF-200. Depois, tente novamente com a senha do WiFi.",
+    "connection-test-step-name-name-lookup": "Pesquisa de nome",
+    "connection-test-step-name-ping": "Pingar",
+    "connection-test-step-name-connection": "Conexão",
+    "connection-test-step-name-login": "Conecte-se",
+    "connection-test-message-name-lookup-success": "O nome do host {hostname} é resolvido para o endereço IP {ipaddress}.",
+    "connection-test-message-name-lookup-failure": "Não é possível resolver o nome do host {hostname} para um endereço IP.",
+    "connection-test-message-ping-success": "O ping foi bem-sucedido após {ms} milissegundos.",
+    "connection-test-message-ping-failure": "Falha no ping para {ipaddress}: {message}",
+    "connection-test-message-connection-success": "Conexão segura bem-sucedida.",
+    "connection-test-message-connection-failure": "Não é possível estabelecer uma conexão segura: {message}",
+    "connection-test-message-login-success": "Login bem-sucedido.",
+    "connection-test-message-login-failure": "Falha no login: {message}"
 }

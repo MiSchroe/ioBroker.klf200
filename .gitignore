@@ -3,6 +3,7 @@
 node_modules
 nbproject
 build/*
+src-admin/build/*
 # Include to help with ioBroker adapter checker
 !build/main.js
 

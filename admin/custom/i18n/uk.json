@@ -1,0 +1,8 @@
+{
+    "custom_klf200_test_connection_button": "Тестове підключення",
+    "custom_klf200_test_connection_not_alive_hint": "Щоб перевірити з’єднання, адаптер має бути запущено.",
+    "custom_klf200_test_connection_status_header": "Статус",
+    "custom_klf200_test_connection_step_name_header": "Назва кроку",
+    "custom_klf200_test_connection_result_header": "Результат",
+    "custom_klf200_test_connection_message_header": "повідомлення"
+}

@@ -54,5 +54,17 @@
     "on save adapter restarts with new config immediately": "при сохранении адаптер перезапускается с новым конфигом немедленно",
     "optionstab": "Опции",
     "password": "пароль",
-    "password-help": "Паролем обычно является пароль Wi-Fi, который написан на задней панели KLF-200. Попробуйте сначала это! Если вы самостоятельно обновили прошивку KLF-200 и изменили пароль для входа в Интернет, это может быть пароль для входа в Интернет. Если оба не работают, выполните сброс настроек и повторно подключите продукты к KLF-200. После этого повторите попытку, используя пароль Wi-Fi."
+    "password-help": "Паролем обычно является пароль Wi-Fi, который написан на задней панели KLF-200. Попробуйте сначала это! Если вы самостоятельно обновили прошивку KLF-200 и изменили пароль для входа в Интернет, это может быть пароль для входа в Интернет. Если оба не работают, выполните сброс настроек и повторно подключите продукты к KLF-200. После этого повторите попытку, используя пароль Wi-Fi.",
+    "connection-test-step-name-name-lookup": "Поиск имени",
+    "connection-test-step-name-ping": "Пинг",
+    "connection-test-step-name-connection": "Связь",
+    "connection-test-step-name-login": "Авторизоваться",
+    "connection-test-message-name-lookup-success": "Имя хоста {hostname} преобразуется в IP-адрес {ipaddress}.",
+    "connection-test-message-name-lookup-failure": "Невозможно преобразовать имя хоста {hostname} в IP-адрес.",
+    "connection-test-message-ping-success": "Пинг был успешным через {ms} миллисекунд.",
+    "connection-test-message-ping-failure": "Ошибка проверки связи с {ipaddress}: {message}",
+    "connection-test-message-connection-success": "Безопасное соединение установлено успешно.",
+    "connection-test-message-connection-failure": "Невозможно установить безопасное соединение: {message}",
+    "connection-test-message-login-success": "Вход успешен.",
+    "connection-test-message-login-failure": "Не удалось войти: {message}"
 }
