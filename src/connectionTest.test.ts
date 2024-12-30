@@ -330,4 +330,3 @@ describe("connectionTest", function () {
 		});
 	});
 });
-

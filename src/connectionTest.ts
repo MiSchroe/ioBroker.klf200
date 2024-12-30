@@ -243,4 +243,3 @@ export class ConnectionTest implements IConnectionTest {
 		return result;
 	}
 }
-
