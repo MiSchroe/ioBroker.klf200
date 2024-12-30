@@ -1,11 +1,14 @@
 import { expect } from "chai";
 import debugModule from "debug";
+import { env } from "process";
 import sinon from "sinon";
 import { MockServerController } from "../test/mocks/mockServerController.js";
 import { ConnectionTest } from "./connectionTest.js";
 import { Translate } from "./translate.js";
 
 const debug = debugModule("testing:connectionTest");
+
+const RunsInCITests = env.CI === "true";
 
 class TranslationMock implements Translate {
 	translateTo(language: ioBroker.Languages, textKey: string, _context?: Record<string, string>): Promise<string> {
@@ -62,24 +65,40 @@ describe("connectionTest", function () {
 	describe("Ping", function () {
 		this.timeout(30_000);
 		it(`ping to 192.0.2.0 should fail`, async function () {
-			this.slow(10_000);
-			const sut = new ConnectionTest(new TranslationMock());
-			await expect(sut.ping("192.0.2.0")).to.be.rejected;
+			if (RunsInCITests) {
+				this.skip();
+			} else {
+				this.slow(10_000);
+				const sut = new ConnectionTest(new TranslationMock());
+				await expect(sut.ping("192.0.2.0")).to.be.rejected;
+			}
 		});
 
 		it(`ping to 127.0.0.1 should pass`, async function () {
-			const sut = new ConnectionTest(new TranslationMock());
-			await expect(sut.ping("127.0.0.1")).to.be.fulfilled;
+			if (RunsInCITests) {
+				this.skip();
+			} else {
+				const sut = new ConnectionTest(new TranslationMock());
+				await expect(sut.ping("127.0.0.1")).to.be.fulfilled;
+			}
 		});
 
 		it(`ping to localhost should fail`, async function () {
-			const sut = new ConnectionTest(new TranslationMock());
-			await expect(sut.ping("localhost")).to.be.rejected;
+			if (RunsInCITests) {
+				this.skip();
+			} else {
+				const sut = new ConnectionTest(new TranslationMock());
+				await expect(sut.ping("localhost")).to.be.rejected;
+			}
 		});
 
 		it(`ping to 8.8.8.8 should pass`, async function () {
-			const sut = new ConnectionTest(new TranslationMock());
-			await expect(sut.ping("8.8.8.8")).to.be.fulfilled;
+			if (RunsInCITests) {
+				this.skip();
+			} else {
+				const sut = new ConnectionTest(new TranslationMock());
+				await expect(sut.ping("8.8.8.8")).to.be.fulfilled;
+			}
 		});
 	});
 
@@ -87,9 +106,13 @@ describe("connectionTest", function () {
 		this.timeout(30_000);
 
 		it(`shouldn't connect to 192.0.2.0`, async function () {
-			this.slow(25_000);
-			const sut = new ConnectionTest(new TranslationMock());
-			await expect(sut.connectTlsSocket("192.0.2.0", 51200)).to.be.rejected;
+			if (RunsInCITests) {
+				this.skip();
+			} else {
+				this.slow(25_000);
+				const sut = new ConnectionTest(new TranslationMock());
+				await expect(sut.connectTlsSocket("192.0.2.0", 51200)).to.be.rejected;
+			}
 		});
 
 		it(`should connect to localhost`, async function () {
@@ -330,3 +353,4 @@ describe("connectionTest", function () {
 		});
 	});
 });
+
