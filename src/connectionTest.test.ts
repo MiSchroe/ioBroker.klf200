@@ -42,7 +42,7 @@ class TranslationMock implements Translate {
 	}
 }
 
-describe("connectionTest", function () {
+describe.only("connectionTest", function () {
 	describe("Name resolution", function () {
 		it(`something.invalid should not be resolved`, async function () {
 			const sut = new ConnectionTest(new TranslationMock());
@@ -337,6 +337,54 @@ describe("connectionTest", function () {
 			expect(progressCallback).to.be.callCount(4);
 		});
 
+		it(`should succeed at step 1 against mock server`, async function () {
+			this.timeout(10_000);
+			this.slow(2_000);
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
+			await using mockServerController = await MockServerController.createMockServer();
+			const connectionOptions = MockServerController.getMockServerConnectionOptions();
+			const sut = new ConnectionTest(new TranslationMock());
+			sinon.stub(sut, "ping").resolves(12);
+			const result = await sut.runTests("localhost", "velux123", connectionOptions);
+			expect(result).to.have.lengthOf(4);
+			expect(result[0]).to.haveOwnProperty("run", true);
+			expect(result[0]).to.haveOwnProperty("stepOrder", 1);
+			expect(result[0]).to.haveOwnProperty("success", true);
+			expect(result[0]).to.haveOwnProperty("message");
+		});
+
+		it(`should succeed at step 2 against mock server`, async function () {
+			this.timeout(10_000);
+			this.slow(2_000);
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
+			await using mockServerController = await MockServerController.createMockServer();
+			const connectionOptions = MockServerController.getMockServerConnectionOptions();
+			const sut = new ConnectionTest(new TranslationMock());
+			sinon.stub(sut, "ping").resolves(12);
+			const result = await sut.runTests("localhost", "velux123", connectionOptions);
+			expect(result).to.have.lengthOf(4);
+			expect(result[1]).to.haveOwnProperty("run", true);
+			expect(result[1]).to.haveOwnProperty("stepOrder", 2);
+			expect(result[1]).to.haveOwnProperty("success", true);
+			expect(result[1]).to.haveOwnProperty("message");
+		});
+
+		it(`should succeed at step 3 against mock server`, async function () {
+			this.timeout(10_000);
+			this.slow(2_000);
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
+			await using mockServerController = await MockServerController.createMockServer();
+			const connectionOptions = MockServerController.getMockServerConnectionOptions();
+			const sut = new ConnectionTest(new TranslationMock());
+			sinon.stub(sut, "ping").resolves(12);
+			const result = await sut.runTests("localhost", "velux123", connectionOptions);
+			expect(result).to.have.lengthOf(4);
+			expect(result[2]).to.haveOwnProperty("run", true);
+			expect(result[2]).to.haveOwnProperty("stepOrder", 3);
+			expect(result[2]).to.haveOwnProperty("success", true);
+			expect(result[2]).to.haveOwnProperty("message");
+		});
+
 		it(`should succeed at step 4 against mock server`, async function () {
 			this.timeout(10_000);
 			this.slow(2_000);
@@ -344,6 +392,7 @@ describe("connectionTest", function () {
 			await using mockServerController = await MockServerController.createMockServer();
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
 			const sut = new ConnectionTest(new TranslationMock());
+			sinon.stub(sut, "ping").resolves(12);
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
 			expect(result).to.have.lengthOf(4);
 			expect(result[3]).to.haveOwnProperty("run", true);
@@ -353,4 +402,3 @@ describe("connectionTest", function () {
 		});
 	});
 });
-

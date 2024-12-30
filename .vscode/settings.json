@@ -3,6 +3,8 @@
 	"eslint.enable": true,
 	"editor.formatOnSave": true,
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"files.insertFinalNewline": false,
+	"files.trimFinalNewlines": true,
 	"[typescript]": {
 		"editor.codeActionsOnSave": {
 			"source.organizeImports": "explicit"
