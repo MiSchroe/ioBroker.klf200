@@ -814,7 +814,8 @@ export class SetupProducts {
 					product.getLimitationOriginator(parameter),
 				);
 				adapter.log.warn(
-					`The state products.${product.NodeID}.limitation${ParameterActive[parameter]}Originator will be removed in the next major release. Use products.${product.NodeID}.limitation${ParameterActive[parameter]}OriginatorMin and products.${product.NodeID}.limitation${ParameterActive[parameter]}OriginatorMax instead!`,
+					`The state products.${product.NodeID}.limitation${ParameterActive[parameter]}Originator will be removed in the next major release. Use products.${product.NodeID}.limitation${ParameterActive[parameter]}OriginatorMin and products.${product.NodeID}.limitation${ParameterActive[parameter]}OriginatorMax instead!` +
+						` If you don't use this state in your own scripts, aliases, visualizations or somewhere else you can safely ignore this message. Please don't open any issues regarding this informational message.`,
 				);
 
 				await StateHelper.createAndSetStateAsync(
@@ -893,7 +894,8 @@ export class SetupProducts {
 					product.getLimitationTimeRaw(parameter),
 				);
 				adapter.log.warn(
-					`The state products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRaw will be removed in the next major release. Use products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRawMin and products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRawMax instead!`,
+					`The state products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRaw will be removed in the next major release. Use products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRawMin and products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRawMax instead!` +
+						` If you don't use this state in your own scripts, aliases, visualizations or somewhere else you can safely ignore this message. Please don't open any issues regarding this informational message.`,
 				);
 
 				await StateHelper.createAndSetStateAsync(
@@ -956,7 +958,8 @@ export class SetupProducts {
 					limitationTime,
 				);
 				adapter.log.warn(
-					`The state products.${product.NodeID}.limitation${ParameterActive[parameter]}Time will be removed in the next major release. Use products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeMin and products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeMax instead!`,
+					`The state products.${product.NodeID}.limitation${ParameterActive[parameter]}Time will be removed in the next major release. Use products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeMin and products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeMax instead!` +
+						` If you don't use this state in your own scripts, aliases, visualizations or somewhere else you can safely ignore this message. Please don't open any issues regarding this informational message.`,
 				);
 
 				let limitationTimeMin = NaN;
