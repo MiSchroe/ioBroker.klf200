@@ -796,7 +796,7 @@ export class SetupProducts {
 						write: false,
 						min: 0,
 						max: 255,
-						desc: `Origin of the limitation for ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
+						desc: `DEPRECATED! Use the min/max version of this state: Origin of the limitation for ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
 						states: {
 							"1": "User remote control",
 							"2": "Rain sensor",
@@ -813,6 +813,67 @@ export class SetupProducts {
 					{},
 					product.getLimitationOriginator(parameter),
 				);
+				adapter.log.warn(
+					`The state products.${product.NodeID}.limitation${ParameterActive[parameter]}Originator will be removed in the next major release. Use products.${product.NodeID}.limitation${ParameterActive[parameter]}OriginatorMin and products.${product.NodeID}.limitation${ParameterActive[parameter]}OriginatorMax instead!`,
+				);
+
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}OriginatorMin`,
+					{
+						name: `limitation${ParameterActive[parameter]}OriginatorMin`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						max: 255,
+						desc: `Origin of the limitation for the min value of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
+						states: {
+							"1": "User remote control",
+							"2": "Rain sensor",
+							"3": "Timer controlled",
+							"5": "UPS unit",
+							"8": "Stand alone automatic controls (SAAC)",
+							"9": "Wind sensor",
+							"11": "Electric load shed",
+							"12": "Local light sensor",
+							"13": "Unspecified environment sensor",
+							"255": "Emergency controlled",
+						},
+					},
+					{},
+					product.getLimitationOriginatorMin(parameter),
+				);
+
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}OriginatorMax`,
+					{
+						name: `limitation${ParameterActive[parameter]}OriginatorMax`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						max: 255,
+						desc: `Origin of the limitation for the max value of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
+						states: {
+							"1": "User remote control",
+							"2": "Rain sensor",
+							"3": "Timer controlled",
+							"5": "UPS unit",
+							"8": "Stand alone automatic controls (SAAC)",
+							"9": "Wind sensor",
+							"11": "Electric load shed",
+							"12": "Local light sensor",
+							"13": "Unspecified environment sensor",
+							"255": "Emergency controlled",
+						},
+					},
+					{},
+					product.getLimitationOriginatorMax(parameter),
+				);
 
 				await StateHelper.createAndSetStateAsync(
 					adapter,
@@ -825,16 +886,55 @@ export class SetupProducts {
 						write: false,
 						min: 0,
 						max: 255,
-						desc: `Limitation time raw value of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
+						desc: `DEPRECATED! Use the min/max version of this state: Limitation time raw value of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
 						states: statesLimitationTimeRaw,
 					},
 					{},
 					product.getLimitationTimeRaw(parameter),
 				);
+				adapter.log.warn(
+					`The state products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRaw will be removed in the next major release. Use products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRawMin and products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRawMax instead!`,
+				);
+
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRawMin`,
+					{
+						name: `limitation${ParameterActive[parameter]}TimeRawMin`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						max: 255,
+						desc: `Limitation time raw value for the min value of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
+						states: statesLimitationTimeRaw,
+					},
+					{},
+					product.getLimitationTimeRawMin(parameter),
+				);
+
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRawMax`,
+					{
+						name: `limitation${ParameterActive[parameter]}TimeRawMax`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						max: 255,
+						desc: `Limitation time raw value for the max value of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
+						states: statesLimitationTimeRaw,
+					},
+					{},
+					product.getLimitationTimeRawMax(parameter),
+				);
 
 				let limitationTime = NaN;
 				try {
-					limitationTime = product.getLimitationTime(parameter);
+					limitationTime = product.getLimitationTime(parameter) || NaN;
 				} catch (error) {
 					if (error instanceof Error && error.message === "Lock time value out of range.") {
 						limitationTime = NaN;
@@ -850,10 +950,61 @@ export class SetupProducts {
 						read: true,
 						write: false,
 						min: 0,
-						desc: `Limitation time of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`} in seconds`,
+						desc: `DEPRECATED! Use the min/max version of this state: Limitation time of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`} in seconds`,
 					},
 					{},
 					limitationTime,
+				);
+				adapter.log.warn(
+					`The state products.${product.NodeID}.limitation${ParameterActive[parameter]}Time will be removed in the next major release. Use products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeMin and products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeMax instead!`,
+				);
+
+				let limitationTimeMin = NaN;
+				try {
+					limitationTimeMin = product.getLimitationTimeMin(parameter) || NaN;
+				} catch (error) {
+					if (error instanceof Error && error.message === "Lock time value out of range.") {
+						limitationTimeMin = NaN;
+					}
+				}
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeMin`,
+					{
+						name: `limitation${ParameterActive[parameter]}TimeMin`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						desc: `Limitation time for the min value of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`} in seconds`,
+					},
+					{},
+					limitationTimeMin,
+				);
+
+				let limitationTimeMax = NaN;
+				try {
+					limitationTimeMax = product.getLimitationTimeMax(parameter) || NaN;
+				} catch (error) {
+					if (error instanceof Error && error.message === "Lock time value out of range.") {
+						limitationTimeMax = NaN;
+					}
+				}
+				await StateHelper.createAndSetStateAsync(
+					adapter,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeMax`,
+					{
+						name: `limitation${ParameterActive[parameter]}TimeMax`,
+						role: "value",
+						type: "number",
+						read: true,
+						write: false,
+						min: 0,
+						desc: `Limitation time for the max value of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`} in seconds`,
+					},
+					{},
+					limitationTimeMax,
 				);
 			} else {
 				// Eventually remove objects:
@@ -863,8 +1014,14 @@ export class SetupProducts {
 					`products.${product.NodeID}.limitation${ParameterActive[parameter]}Min`,
 					`products.${product.NodeID}.limitation${ParameterActive[parameter]}Max`,
 					`products.${product.NodeID}.limitation${ParameterActive[parameter]}Originator`,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}OriginatorMin`,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}OriginatorMax`,
 					`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRaw`,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRawMin`,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRawMax`,
 					`products.${product.NodeID}.limitation${ParameterActive[parameter]}Time`,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeMin`,
+					`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeMax`,
 				]) {
 					await adapter.delObjectAsync(state);
 				}
@@ -1097,6 +1254,44 @@ export class SetupProducts {
 		);
 
 		disposalMap.set(
+			`products.${product.NodeID}.property.limitationOriginatorMin`,
+			new ComplexPropertyChangedHandler(adapter, "LimitationOriginatorMin", product, async (_newValue) => {
+				for (const parameter of [
+					ParameterActive.MP,
+					ParameterActive.FP1,
+					ParameterActive.FP2,
+					ParameterActive.FP3,
+					ParameterActive.FP4,
+				]) {
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}OriginatorMin`,
+						product.getLimitationOriginatorMin(parameter),
+						true,
+					);
+				}
+			}),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.limitationOriginatorMax`,
+			new ComplexPropertyChangedHandler(adapter, "LimitationOriginatorMax", product, async (_newValue) => {
+				for (const parameter of [
+					ParameterActive.MP,
+					ParameterActive.FP1,
+					ParameterActive.FP2,
+					ParameterActive.FP3,
+					ParameterActive.FP4,
+				]) {
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}OriginatorMax`,
+						product.getLimitationOriginatorMax(parameter),
+						true,
+					);
+				}
+			}),
+		);
+
+		disposalMap.set(
 			`products.${product.NodeID}.property.limitationTimeRaw`,
 			new ComplexPropertyChangedHandler(adapter, "LimitationTimeRaw", product, async (_newValue) => {
 				for (const parameter of [
@@ -1114,7 +1309,7 @@ export class SetupProducts {
 
 					let limitationTime = NaN;
 					try {
-						limitationTime = Math.round(product.getLimitationTime(parameter) * 100);
+						limitationTime = Math.round((product.getLimitationTime(parameter) || NaN) * 100);
 					} catch (error) {
 						if (error instanceof Error && error.message === "Lock time value out of range.") {
 							limitationTime = NaN;
@@ -1124,6 +1319,74 @@ export class SetupProducts {
 					await adapter.setStateChangedAsync(
 						`products.${product.NodeID}.limitation${ParameterActive[parameter]}Time`,
 						limitationTime,
+						true,
+					);
+				}
+			}),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.limitationTimeRawMin`,
+			new ComplexPropertyChangedHandler(adapter, "LimitationTimeRawMin", product, async (_newValue) => {
+				for (const parameter of [
+					ParameterActive.MP,
+					ParameterActive.FP1,
+					ParameterActive.FP2,
+					ParameterActive.FP3,
+					ParameterActive.FP4,
+				]) {
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRawMin`,
+						product.getLimitationTimeRawMin(parameter),
+						true,
+					);
+
+					let limitationTimeMin = NaN;
+					try {
+						limitationTimeMin = Math.round((product.getLimitationTimeMin(parameter) || NaN) * 100);
+					} catch (error) {
+						if (error instanceof Error && error.message === "Lock time value out of range.") {
+							limitationTimeMin = NaN;
+						}
+					}
+
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeMin`,
+						limitationTimeMin,
+						true,
+					);
+				}
+			}),
+		);
+
+		disposalMap.set(
+			`products.${product.NodeID}.property.limitationTimeRawMax`,
+			new ComplexPropertyChangedHandler(adapter, "LimitationTimeRawMax", product, async (_newValue) => {
+				for (const parameter of [
+					ParameterActive.MP,
+					ParameterActive.FP1,
+					ParameterActive.FP2,
+					ParameterActive.FP3,
+					ParameterActive.FP4,
+				]) {
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRawMax`,
+						product.getLimitationTimeRawMax(parameter),
+						true,
+					);
+
+					let limitationTimeMax = NaN;
+					try {
+						limitationTimeMax = Math.round((product.getLimitationTimeMax(parameter) || NaN) * 100);
+					} catch (error) {
+						if (error instanceof Error && error.message === "Lock time value out of range.") {
+							limitationTimeMax = NaN;
+						}
+					}
+
+					await adapter.setStateChangedAsync(
+						`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeMax`,
+						limitationTimeMax,
 						true,
 					);
 				}
