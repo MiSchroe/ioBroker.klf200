@@ -5,6 +5,7 @@ import {
 	Disposable,
 	GW_GET_ALL_NODES_INFORMATION_NTF,
 	IConnection,
+	KLF200SocketProtocol,
 	NodeOperatingState,
 	NodeVariation,
 	ParameterActive,
@@ -33,7 +34,7 @@ class MockConnect implements IConnection {
 	logoutAsync = sinon.stub();
 	sendFrameAsync = sinon.stub();
 	on = sinon.stub();
-	KLF200SocketProtocol = undefined;
+	KLF200SocketProtocol?: KLF200SocketProtocol = undefined;
 }
 
 const mockConnection = new MockConnect();
