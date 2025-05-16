@@ -1,13 +1,13 @@
-import { ChildProcess, fork } from "child_process";
+import { type ChildProcess, fork } from "child_process";
 import { randomUUID } from "crypto";
 import debugModule from "debug";
 import deepEqual from "deep-eql";
 import { readFileSync } from "fs";
-import { Connection, IConnection } from "klf-200-api";
+import { Connection, type IConnection } from "klf-200-api";
 import { join } from "path";
 import { timeout } from "promise-timeout";
-import { ConnectionOptions } from "tls";
-import { AcknowledgeMessage, Command, CommandWithGuid, KillCommand } from "./mockServer/commands.js";
+import type { ConnectionOptions } from "tls";
+import { type AcknowledgeMessage, type Command, type CommandWithGuid, KillCommand } from "./mockServer/commands.js";
 
 const debug = debugModule(`mockServerController:client`);
 
@@ -20,7 +20,7 @@ export class MockServerController {
 
 	static async createMockServer(): Promise<MockServerController> {
 		const mockServer = new MockServerController();
-		await new Promise<void>((resolve) => {
+		await new Promise<void>(resolve => {
 			const onMessage = function (message: string | number | bigint | boolean | object): void {
 				if (message === "ready") {
 					debug("Ready message received from child process.");
@@ -28,7 +28,7 @@ export class MockServerController {
 					resolve();
 				}
 			};
-			mockServer.serverProcess.on("message", (message) => {
+			mockServer.serverProcess.on("message", message => {
 				onMessage(message);
 			});
 		});
@@ -49,9 +49,6 @@ export class MockServerController {
 		return new Connection("localhost", MockServerController.getMockServerConnectionOptions());
 	}
 
-	/**
-	 * sendCommand
-	 */
 	public async sendCommand(command: Command): Promise<void> {
 		const commandWithGuid: CommandWithGuid = { ...command, CommandGuid: randomUUID() };
 		await timeout(
@@ -85,7 +82,7 @@ export class MockServerController {
 		debug(`In Symbol.asyncDispose, connected: ${this.serverProcess?.connected}.`);
 		if (this.serverProcess?.connected) {
 			try {
-				const waitOnClosePromise = new Promise<void>((resolve) => {
+				const waitOnClosePromise = new Promise<void>(resolve => {
 					this.serverProcess.on("close", () => {
 						debug("close event on server process");
 						resolve();

@@ -1,17 +1,20 @@
-import { MockAdapter, utils } from "@iobroker/testing";
+import { type MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
+import chaiAsPromised from "chai-as-promised";
 import {
-	Disposable,
+	type Disposable,
 	GW_GET_ALL_NODES_INFORMATION_NTF,
 	GW_GET_GROUP_INFORMATION_NTF,
 	Group,
 	GroupType,
-	IConnection,
+	type IConnection,
 	NodeVariation,
 	Product,
 	Velocity,
 } from "klf-200-api";
-import { EventEmitter } from "stream";
+import sinon from "sinon";
+import sinonChai from "sinon-chai";
+import type { EventEmitter } from "stream";
 import { promisify } from "util";
 import { DisposalMap } from "./disposalMap";
 import { SetupGroups } from "./setupGroups";
@@ -20,9 +23,6 @@ import {
 	ComplexPropertyChangedHandler,
 	SimplePropertyChangedHandler,
 } from "./util/propertyLink";
-import sinon = require("sinon");
-import sinonChai = require("sinon-chai");
-import chaiAsPromised = require("chai-as-promised");
 
 use(sinonChai);
 use(chaiAsPromised);
@@ -75,7 +75,6 @@ const mockProducts = [mockProduct, mockProduct];
 describe("setupGroups", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
-	// eslint-disable-next-line @typescript-eslint/unbound-method
 	const { assertObjectExists, assertStateExists, assertStateHasValue, assertStateIsAcked, assertObjectCommon } =
 		utils.unit.createAsserts(database, adapter);
 
@@ -126,7 +125,6 @@ describe("setupGroups", function () {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
 			value: promisify(adapter[method as keyof MockAdapter]),
 			writable: true,
 		});
@@ -376,35 +374,33 @@ describe("setupGroups", function () {
 					endkey: `${adapter.namespace}.groups.${mockGroup.GroupID}.\u9999`,
 				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const disposables: Disposable[] = [];
-				disposalMap.forEach((value) => {
+				disposalMap.forEach(value => {
 					disposables.push(value);
 				});
 				const unmappedWritableStates = objectList.rows
-					.map((value) => {
+					.map(value => {
 						// Find state in disposables (only for writable states)
 						if (
 							value.doc.type !== "state" ||
 							value.doc.common.write === false ||
-							disposables.some((disposable) => {
+							disposables.some(disposable => {
 								if (disposable instanceof BaseStateChangeHandler) {
 									return (
 										`${(adapter as unknown as ioBroker.Adapter).namespace}.${
 											disposable.StateId
 										}` === value.id
 									);
-								} else {
-									return false;
 								}
+								return false;
 							})
 						) {
 							// State found -> state is mapped
 							return undefined;
-						} else {
-							// State not mapped -> add to unmapped writable states list
-							return value.id;
 						}
+						// State not mapped -> add to unmapped writable states list
+						return value.id;
 					})
-					.filter((value) => value !== undefined);
+					.filter(value => value !== undefined);
 
 				expect(
 					unmappedWritableStates,
@@ -449,16 +445,16 @@ describe("setupGroups", function () {
 					endkey: `${adapter.namespace}.groups.${mockGroup.GroupID}.\u9999`,
 				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const disposables: Disposable[] = [];
-				disposalMap.forEach((value) => {
+				disposalMap.forEach(value => {
 					disposables.push(value);
 				});
 				const unmappedWritableStates = objectList.rows
-					.map((value) => {
+					.map(value => {
 						// Find state in disposables (only for writable states)
 						if (
 							value.doc.type !== "state" ||
 							value.doc.common.read === false ||
-							disposables.some((disposable) => {
+							disposables.some(disposable => {
 								if (disposable instanceof SimplePropertyChangedHandler) {
 									return (
 										`${(adapter as unknown as ioBroker.Adapter).namespace}.${
@@ -469,19 +465,17 @@ describe("setupGroups", function () {
 									return complexStatesMapping[disposable.Property as string]?.includes(value.id);
 								} else if (allowedUnmappedStates.includes(value.id)) {
 									return true;
-								} else {
-									return false;
 								}
+								return false;
 							})
 						) {
 							// State found -> state is mapped
 							return undefined;
-						} else {
-							// State not mapped -> add to unmapped writable states list
-							return value.id;
 						}
+						// State not mapped -> add to unmapped writable states list
+						return value.id;
 					})
-					.filter((value) => value !== undefined);
+					.filter(value => value !== undefined);
 
 				expect(
 					unmappedWritableStates,
@@ -537,13 +531,13 @@ describe("setupGroups", function () {
 			});
 			const states: string[] = ["groupType", "targetPosition"];
 			database.publishStateObjects(
-				...states.map((state) => {
+				...states.map(state => {
 					return { _id: `${adapter.namespace}.groups.42.${state}` } as ioBroker.PartialObject;
 				}),
 			);
 
 			// Check, that old states exist
-			states.forEach((state) => assertObjectExists(`${adapter.namespace}.groups.42.${state}`));
+			states.forEach(state => assertObjectExists(`${adapter.namespace}.groups.42.${state}`));
 
 			adapter.getChannelsOf.callsFake(
 				(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
@@ -567,7 +561,7 @@ describe("setupGroups", function () {
 				disposalMap,
 			);
 			try {
-				states.forEach((state) =>
+				states.forEach(state =>
 					expect(
 						() => assertObjectExists(`${adapter.namespace}.groups.42.${state}`),
 						`Object ${adapter.namespace}.groups.42.${state} shouldn't exist anymore.`,

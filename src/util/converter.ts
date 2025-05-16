@@ -6,9 +6,23 @@ export type EnumConversionInfo = {
 	[value: number]: string;
 };
 
+/**
+ * Converts an enum value to a string.
+ */
 export class EnumConverter<T extends number> {
+	/**
+	 * Creates a new EnumConverter instance.
+	 *
+	 * @param Mapping The mapping of enum values to strings.
+	 */
 	constructor(readonly Mapping: EnumConversionInfo) {}
 
+	/**
+	 * Converts an enum value to a string.
+	 *
+	 * @param value The value to convert.
+	 * @returns The string representation of the value.
+	 */
 	public convert(value: T): string {
 		return this.Mapping[value];
 	}

@@ -4,7 +4,7 @@
 
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
-import * as utils from "@iobroker/adapter-core";
+import type * as utils from "@iobroker/adapter-core";
 import { Klf200 } from "./klf200Adapter";
 
 if (require.main !== module) {

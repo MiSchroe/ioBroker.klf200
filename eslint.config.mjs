@@ -26,10 +26,20 @@ export default [
 		// you may disable some 'jsdoc' warnings - but using jsdoc is highly recommended
 		// as this improves maintainability. jsdoc warnings will not block buiuld process.
 		rules: {
+			"brace-style": "off",
 			// 'jsdoc/require-jsdoc': 'off',
 			// 'jsdoc/require-param-description': 'off',
 			// 'jsdoc/require-returns-description': 'off',
 			// 'jsdoc/require-returns-check': 'off',
+		},
+	},
+	{
+		files: ["test/**/*.ts"],
+		rules: {
+			"jsdoc/require-jsdoc": "off",
+			"jsdoc/require-param-description": "off",
+			"jsdoc/require-returns-description": "off",
+			"jsdoc/require-returns-check": "off",
 		},
 	},
 ];

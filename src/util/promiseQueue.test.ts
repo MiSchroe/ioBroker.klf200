@@ -1,6 +1,6 @@
 import { expect } from "chai";
+import sinon from "sinon";
 import { PromiseQueue } from "./promiseQueue";
-import sinon = require("sinon");
 
 describe("PromiseQueue", function () {
 	describe("push", function () {

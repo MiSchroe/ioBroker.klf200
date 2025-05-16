@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Disposable } from "klf-200-api";
+import type { Disposable } from "klf-200-api";
 import Sinon from "sinon";
 import { DisposalMap } from "./disposalMap";
 

@@ -1,7 +1,7 @@
 "use strict";
 
-import { MockAdapter } from "@iobroker/testing";
-import { DisposalMap } from "../src/disposalMap";
+import type { MockAdapter } from "@iobroker/testing";
+import type { DisposalMap } from "../src/disposalMap";
 import { BaseStateChangeHandler } from "../src/util/propertyLink";
 
 // Function to simulate the event handling
@@ -32,7 +32,7 @@ export async function setState(
 	id: string,
 	state: ioBroker.State | ioBroker.StateValue | ioBroker.SettableState,
 	disposalMap: DisposalMap,
-	ackOrOptions: boolean | unknown | undefined,
+	ackOrOptions: unknown,
 	options?: unknown,
 ): ioBroker.SetStatePromise {
 	const ack = typeof ackOrOptions === "boolean" ? ackOrOptions : false;
@@ -71,7 +71,7 @@ export async function setState(
 		await disposable.onStateChange(stateChange);
 	}
 	/* Let it run */
-	await new Promise((resolve) => {
+	await new Promise(resolve => {
 		setTimeout(resolve, 0);
 	});
 

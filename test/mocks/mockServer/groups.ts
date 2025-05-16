@@ -1,4 +1,4 @@
-import { GroupType, NodeVariation, Velocity } from "klf-200-api";
+import type { GroupType, NodeVariation, Velocity } from "klf-200-api";
 
 export interface Group {
 	GroupID: number;

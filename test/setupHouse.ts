@@ -14,11 +14,17 @@ import {
 	StatusReply,
 	Velocity,
 } from "klf-200-api";
-import { Group } from "./mocks/mockServer/groups.js";
-import { Product } from "./mocks/mockServer/products.js";
-import { Scene } from "./mocks/mockServer/scenes.js";
-import { MockServerController } from "./mocks/mockServerController.js";
+import type { Group } from "./mocks/mockServer/groups.js";
+import type { Product } from "./mocks/mockServer/products.js";
+import type { Scene } from "./mocks/mockServer/scenes.js";
+import type { MockServerController } from "./mocks/mockServerController.js";
 
+/**
+ * Sets up a mock house with 4 products, 4 groups and 2 scenes.
+ *
+ * @param mockServerController - The mock server controller to use.
+ * @returns - A promise that resolves when the setup is complete.
+ */
 export async function setupHouseMockup(mockServerController: MockServerController): Promise<void> {
 	// Setup products
 	const products: Product[] = [
@@ -270,6 +276,15 @@ export async function setupHouseMockup(mockServerController: MockServerControlle
 	});
 }
 
+/**
+ * Setup a mockup house with two products, but with non-consecutive product numbers.
+ * The products are:
+ * - Window 1 with NodeID 2
+ * - Window 2 with NodeID 4
+ *
+ * @param mockServerController - The mock server controller
+ * @returns - A promise that resolves when the setup is complete.
+ */
 export async function setupHouseMockupNonConsecutiveProductNumbers(
 	mockServerController: MockServerController,
 ): Promise<void> {

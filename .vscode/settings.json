@@ -20,6 +20,5 @@
 	"mochaExplorer.files": "build/{**/*,*}.test.js",
 	"mochaExplorer.require": ["test/mocha.setup.js", "source-map-support/register"],
 	"mochaExplorer.watch": "build/{**/*,*}.js",
-	"prettier.configPath": "./.prettierrc.js"
+	"prettier.configPath": "./prettier.config.mjs"
 }
-

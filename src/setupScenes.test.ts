@@ -1,7 +1,10 @@
-import { MockAdapter, utils } from "@iobroker/testing";
+import { type MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
-import { Disposable, IConnection, ParameterActive, Scene, Scenes, Velocity } from "klf-200-api";
-import { EventEmitter } from "stream";
+import chaiAsPromised from "chai-as-promised";
+import { type Disposable, type IConnection, ParameterActive, Scene, Scenes, Velocity } from "klf-200-api";
+import sinon from "sinon";
+import sinonChai from "sinon-chai";
+import type { EventEmitter } from "stream";
 import { promisify } from "util";
 import { setState } from "../test/mockHelper";
 import { DisposalMap } from "./disposalMap";
@@ -11,9 +14,6 @@ import {
 	ComplexPropertyChangedHandler,
 	SimplePropertyChangedHandler,
 } from "./util/propertyLink";
-import sinon = require("sinon");
-import sinonChai = require("sinon-chai");
-import chaiAsPromised = require("chai-as-promised");
 
 use(sinonChai);
 use(chaiAsPromised);
@@ -55,7 +55,6 @@ let mockScenes: Scenes;
 describe("setupScenes", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
-	// eslint-disable-next-line @typescript-eslint/unbound-method
 	const { assertObjectExists, assertStateExists, assertStateHasValue, assertStateIsAcked, assertObjectCommon } =
 		utils.unit.createAsserts(database, adapter);
 
@@ -118,7 +117,6 @@ describe("setupScenes", function () {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
 			value: promisify(adapter[method as keyof MockAdapter]),
 			writable: true,
 		});
@@ -328,35 +326,33 @@ describe("setupScenes", function () {
 					endkey: `${adapter.namespace}.scenes.${mockScene.SceneID}.\u9999`,
 				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const disposables: Disposable[] = [];
-				disposalMap.forEach((value) => {
+				disposalMap.forEach(value => {
 					disposables.push(value);
 				});
 				const unmappedWritableStates = objectList.rows
-					.map((value) => {
+					.map(value => {
 						// Find state in disposables (only for writable states)
 						if (
 							value.doc.type !== "state" ||
 							value.doc.common.write === false ||
-							disposables.some((disposable) => {
+							disposables.some(disposable => {
 								if (disposable instanceof BaseStateChangeHandler) {
 									return (
 										`${(adapter as unknown as ioBroker.Adapter).namespace}.${
 											disposable.StateId
 										}` === value.id
 									);
-								} else {
-									return false;
 								}
+								return false;
 							})
 						) {
 							// State found -> state is mapped
 							return undefined;
-						} else {
-							// State not mapped -> add to unmapped writable states list
-							return value.id;
 						}
+						// State not mapped -> add to unmapped writable states list
+						return value.id;
 					})
-					.filter((value) => value !== undefined);
+					.filter(value => value !== undefined);
 
 				expect(
 					unmappedWritableStates,
@@ -383,16 +379,16 @@ describe("setupScenes", function () {
 					endkey: `${adapter.namespace}.scenes.${mockScene.SceneID}.\u9999`,
 				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const disposables: Disposable[] = [];
-				disposalMap.forEach((value) => {
+				disposalMap.forEach(value => {
 					disposables.push(value);
 				});
 				const unmappedWritableStates = objectList.rows
-					.map((value) => {
+					.map(value => {
 						// Find state in disposables (only for writable states)
 						if (
 							value.doc.type !== "state" ||
 							value.doc.common.read === false ||
-							disposables.some((disposable) => {
+							disposables.some(disposable => {
 								if (disposable instanceof SimplePropertyChangedHandler) {
 									return (
 										`${(adapter as unknown as ioBroker.Adapter).namespace}.${
@@ -403,19 +399,17 @@ describe("setupScenes", function () {
 									return complexStatesMapping[disposable.Property as string]?.includes(value.id);
 								} else if (allowedUnmappedStates.includes(value.id)) {
 									return true;
-								} else {
-									return false;
 								}
+								return false;
 							})
 						) {
 							// State found -> state is mapped
 							return undefined;
-						} else {
-							// State not mapped -> add to unmapped writable states list
-							return value.id;
 						}
+						// State not mapped -> add to unmapped writable states list
+						return value.id;
 					})
-					.filter((value) => value !== undefined);
+					.filter(value => value !== undefined);
 
 				expect(
 					unmappedWritableStates,
@@ -455,7 +449,7 @@ describe("setupScenes", function () {
 						}
 					}
 					/* Let it run */
-					await new Promise((resolve) => {
+					await new Promise(resolve => {
 						setTimeout(resolve, 0);
 					});
 
@@ -508,7 +502,7 @@ describe("setupScenes", function () {
 			});
 			const states: string[] = ["productsCount", "run", "stop"];
 			database.publishStateObjects(
-				...states.map((state) => {
+				...states.map(state => {
 					return { _id: `${adapter.namespace}.scenes.42.${state}` } as ioBroker.PartialObject;
 				}),
 			);
@@ -528,12 +522,12 @@ describe("setupScenes", function () {
 			);
 
 			// Check, that old states exist
-			states.forEach((state) => assertObjectExists(`${adapter.namespace}.scenes.42.${state}`));
+			states.forEach(state => assertObjectExists(`${adapter.namespace}.scenes.42.${state}`));
 
 			const disposalMap = new DisposalMap();
 			await SetupScenes.createScenesAsync(adapter as unknown as ioBroker.Adapter, mockScenes, disposalMap);
 			try {
-				states.forEach((state) =>
+				states.forEach(state =>
 					expect(
 						() => assertObjectExists(`${adapter.namespace}.scenes.42.${state}`),
 						`Object ${adapter.namespace}.scenes.42.${state} shouldn't exist anymore.`,

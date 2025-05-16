@@ -4,7 +4,7 @@ import { env } from "process";
 import sinon from "sinon";
 import { MockServerController } from "../test/mocks/mockServerController.js";
 import { ConnectionTest } from "./connectionTest.js";
-import { Translate } from "./translate.js";
+import type { Translate } from "./translate.js";
 
 const debug = debugModule("testing:connectionTest");
 

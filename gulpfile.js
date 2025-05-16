@@ -8,7 +8,7 @@ function deleteFoldersRecursive(path, exceptions) {
 		const files = fs.readdirSync(path);
 		for (const file of files) {
 			const curPath = `${path}/${file}`;
-			if (exceptions && exceptions.find((e) => curPath.endsWith(e))) {
+			if (exceptions && exceptions.find(e => curPath.endsWith(e))) {
 				continue;
 			}
 
@@ -39,7 +39,7 @@ function npmInstall() {
 		child.stderr.pipe(process.stderr);
 		child.stdout.pipe(process.stdout);
 
-		child.on("exit", (code) => {
+		child.on("exit", code => {
 			// code 1 is a strange error that cannot be explained. Everything is installed but error :(
 			if (code && code !== 1) {
 				reject(`Cannot install: ${code}`);
@@ -77,9 +77,9 @@ function build() {
 			reject(`Cannot find execution file: ${script}`);
 		} else {
 			const child = cp.fork(script, ["build"], options);
-			child.stdout.on("data", (data) => console.log(data.toString()));
-			child.stderr.on("data", (data) => console.log(data.toString()));
-			child.on("close", (code) => {
+			child.stdout.on("data", data => console.log(data.toString()));
+			child.stderr.on("data", data => console.log(data.toString()));
+			child.on("close", code => {
 				console.log(`child process exited with code ${code}`);
 				code ? reject(`Exit code: ${code}`) : resolve();
 			});
@@ -87,7 +87,7 @@ function build() {
 	});
 }
 
-gulp.task("0-clean", (done) => {
+gulp.task("0-clean", done => {
 	deleteFoldersRecursive(`${__dirname}/admin/custom`);
 	deleteFoldersRecursive(`${__dirname}/src-admin/build`);
 	done();

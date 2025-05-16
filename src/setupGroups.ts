@@ -1,7 +1,7 @@
 "use strict";
 
-import { Group, GroupType, Product } from "klf-200-api";
-import { DisposalMap } from "./disposalMap";
+import { type Group, GroupType, type Product } from "klf-200-api";
+import type { DisposalMap } from "./disposalMap";
 import { levelConverter, roleGroupTypeConverter } from "./util/converter";
 import {
 	ComplexPropertyChangedHandler,
@@ -13,7 +13,20 @@ import {
 import { StateHelper } from "./util/stateHelper";
 import { ArrayCount } from "./util/utils";
 
+/**
+ * Class to setup groups
+ */
 export class SetupGroups {
+	/**
+	 * Create all groups with their properties and states.
+	 *
+	 * The function also removes all groups that are no longer present in the `groups` array.
+	 *
+	 * @param adapter - The ioBroker adapter instance.
+	 * @param groups - The list of groups to create.
+	 * @param products - The list of products to link to the groups.
+	 * @param disposalMap - A map of disposables to clean up.
+	 */
 	public static async createGroupsAsync(
 		adapter: ioBroker.Adapter,
 		groups: Group[],
@@ -25,8 +38,8 @@ export class SetupGroups {
 		adapter.log.debug(`Current Groups List: ${JSON.stringify(currentGroupsList)}`);
 		// Filter current channels to contain only those, that are not present in the provided groups list
 		const channelsToRemove = currentGroupsList.filter(
-			(channel) =>
-				!groups.some((group) => {
+			channel =>
+				!groups.some(group => {
 					return group && group.GroupID === Number.parseInt(channel._id.split(".").reverse()[0]);
 				}),
 		);
@@ -66,6 +79,14 @@ export class SetupGroups {
 		);
 	}
 
+	/**
+	 * Creates all objects and states for a single group.
+	 *
+	 * @param adapter - The ioBroker adapter instance.
+	 * @param group - The group to create objects and states for.
+	 * @param products - The list of products to link to the group.
+	 * @param disposalMap - A map of disposables to clean up.
+	 */
 	public static async createGroupAsync(
 		adapter: ioBroker.Adapter,
 		group: Group,
@@ -94,10 +115,10 @@ export class SetupGroups {
 				write: false,
 				desc: `Type of the registered group (${GroupType.House} = house, ${GroupType.Room} = room or ${GroupType.UserGroup} = user defined group)`,
 				states: {
-					"0": "UserGroup",
-					"1": "Room",
-					"2": "House",
-					"3": "All",
+					0: "UserGroup",
+					1: "Room",
+					2: "House",
+					3: "All",
 				},
 			},
 			{},
@@ -132,11 +153,11 @@ export class SetupGroups {
 				max: 0xff,
 				desc: `Variation of the group.`,
 				states: {
-					"0": "NotSet",
-					"1": "TopHung",
-					"2": "Kip",
-					"3": "FlatRoof",
-					"4": "SkyLight",
+					0: "NotSet",
+					1: "TopHung",
+					2: "Kip",
+					3: "FlatRoof",
+					4: "SkyLight",
 				},
 			},
 			{},
@@ -190,10 +211,10 @@ export class SetupGroups {
 				max: 0xff,
 				desc: "Velocity of the group",
 				states: {
-					"0": "Default",
-					"1": "Silent",
-					"2": "Fast",
-					"255": "NotAvailable",
+					0: "Default",
+					1: "Silent",
+					2: "Fast",
+					255: "NotAvailable",
 				},
 			},
 			{},
@@ -261,7 +282,7 @@ export class SetupGroups {
 		);
 		disposalMap.set(
 			`groups.${group.GroupID}.property.Nodes`,
-			new ComplexPropertyChangedHandler(adapter, "Nodes", group, async (newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "Nodes", group, async newValue => {
 				await adapter.setStateChangedAsync(`groups.${group.GroupID}.productsCount`, ArrayCount(newValue), true);
 			}),
 		);

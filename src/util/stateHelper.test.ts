@@ -1,8 +1,8 @@
 import { utils } from "@iobroker/testing";
 import { use } from "chai";
+import chaiAsPromised from "chai-as-promised";
+import sinonChai from "sinon-chai";
 import { StateHelper } from "./stateHelper";
-import sinonChai = require("sinon-chai");
-import chaiAsPromised = require("chai-as-promised");
 
 use(sinonChai);
 use(chaiAsPromised);
@@ -10,7 +10,7 @@ use(chaiAsPromised);
 describe("StateHelper", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
-	// eslint-disable-next-line @typescript-eslint/unbound-method
+
 	const { assertObjectExists, assertStateHasValue, assertStateIsAcked } = utils.unit.createAsserts(database, adapter);
 
 	afterEach(() => {

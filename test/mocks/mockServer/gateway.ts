@@ -1,4 +1,4 @@
-import { GatewayState, GatewaySubState, SoftwareVersion } from "klf-200-api";
+import type { GatewayState, GatewaySubState, SoftwareVersion } from "klf-200-api";
 
 export interface Gateway {
 	SoftwareVersion: SoftwareVersion;

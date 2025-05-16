@@ -7,165 +7,165 @@ import {
 	CommandStatus,
 	Connection,
 	DiscoverStatus,
-	Disposable,
+	type Disposable,
 	Gateway,
 	GatewayCommand,
-	Group,
+	type Group,
 	Groups,
 	GroupType,
-	GW_ACTIVATE_PRODUCTGROUP_CFM,
-	GW_ACTIVATE_PRODUCTGROUP_REQ,
-	GW_ACTIVATE_SCENE_CFM,
-	GW_ACTIVATE_SCENE_REQ,
-	GW_CLEAR_ACTIVATION_LOG_CFM,
-	GW_CLEAR_ACTIVATION_LOG_REQ,
-	GW_COMMAND_SEND_CFM,
-	GW_COMMAND_SEND_REQ,
+	type GW_ACTIVATE_PRODUCTGROUP_CFM,
+	type GW_ACTIVATE_PRODUCTGROUP_REQ,
+	type GW_ACTIVATE_SCENE_CFM,
+	type GW_ACTIVATE_SCENE_REQ,
+	type GW_CLEAR_ACTIVATION_LOG_CFM,
+	type GW_CLEAR_ACTIVATION_LOG_REQ,
+	type GW_COMMAND_SEND_CFM,
+	type GW_COMMAND_SEND_REQ,
 	GW_COMMON_STATUS,
-	GW_CS_ACTIVATE_CONFIGURATION_MODE_CFM,
-	GW_CS_ACTIVATE_CONFIGURATION_MODE_REQ,
-	GW_CS_CONTROLLER_COPY_CFM,
-	GW_CS_CONTROLLER_COPY_REQ,
-	GW_CS_DISCOVER_NODES_CFM,
-	GW_CS_DISCOVER_NODES_NTF,
+	type GW_CS_ACTIVATE_CONFIGURATION_MODE_CFM,
+	type GW_CS_ACTIVATE_CONFIGURATION_MODE_REQ,
+	type GW_CS_CONTROLLER_COPY_CFM,
+	type GW_CS_CONTROLLER_COPY_REQ,
+	type GW_CS_DISCOVER_NODES_CFM,
+	type GW_CS_DISCOVER_NODES_NTF,
 	GW_CS_DISCOVER_NODES_REQ,
-	GW_CS_GENERATE_NEW_KEY_CFM,
-	GW_CS_GENERATE_NEW_KEY_REQ,
-	GW_CS_GET_SYSTEMTABLE_DATA_CFM,
-	GW_CS_GET_SYSTEMTABLE_DATA_REQ,
-	GW_CS_RECEIVE_KEY_CFM,
-	GW_CS_RECEIVE_KEY_REQ,
-	GW_CS_REMOVE_NODES_CFM,
+	type GW_CS_GENERATE_NEW_KEY_CFM,
+	type GW_CS_GENERATE_NEW_KEY_REQ,
+	type GW_CS_GET_SYSTEMTABLE_DATA_CFM,
+	type GW_CS_GET_SYSTEMTABLE_DATA_REQ,
+	type GW_CS_RECEIVE_KEY_CFM,
+	type GW_CS_RECEIVE_KEY_REQ,
+	type GW_CS_REMOVE_NODES_CFM,
 	GW_CS_REMOVE_NODES_REQ,
-	GW_CS_REPAIR_KEY_CFM,
-	GW_CS_REPAIR_KEY_REQ,
-	GW_CS_VIRGIN_STATE_CFM,
-	GW_CS_VIRGIN_STATE_REQ,
-	GW_DELETE_GROUP_CFM,
+	type GW_CS_REPAIR_KEY_CFM,
+	type GW_CS_REPAIR_KEY_REQ,
+	type GW_CS_VIRGIN_STATE_CFM,
+	type GW_CS_VIRGIN_STATE_REQ,
+	type GW_DELETE_GROUP_CFM,
 	GW_DELETE_GROUP_REQ,
-	GW_DELETE_SCENE_CFM,
+	type GW_DELETE_SCENE_CFM,
 	GW_DELETE_SCENE_REQ,
-	GW_GET_ACTIVATION_LOG_HEADER_CFM,
-	GW_GET_ACTIVATION_LOG_HEADER_REQ,
-	GW_GET_ACTIVATION_LOG_LINE_CFM,
-	GW_GET_ACTIVATION_LOG_LINE_REQ,
-	GW_GET_ALL_GROUPS_INFORMATION_CFM,
-	GW_GET_ALL_GROUPS_INFORMATION_REQ,
-	GW_GET_ALL_NODES_INFORMATION_CFM,
-	GW_GET_ALL_NODES_INFORMATION_REQ,
-	GW_GET_CONTACT_INPUT_LINK_LIST_CFM,
-	GW_GET_CONTACT_INPUT_LINK_LIST_REQ,
-	GW_GET_GROUP_INFORMATION_CFM,
-	GW_GET_GROUP_INFORMATION_REQ,
-	GW_GET_LIMITATION_STATUS_CFM,
-	GW_GET_LIMITATION_STATUS_REQ,
-	GW_GET_LOCAL_TIME_CFM,
-	GW_GET_LOCAL_TIME_REQ,
-	GW_GET_MULTIPLE_ACTIVATION_LOG_LINES_CFM,
-	GW_GET_MULTIPLE_ACTIVATION_LOG_LINES_REQ,
-	GW_GET_NETWORK_SETUP_CFM,
-	GW_GET_NETWORK_SETUP_REQ,
-	GW_GET_NODE_INFORMATION_CFM,
-	GW_GET_NODE_INFORMATION_REQ,
-	GW_GET_PROTOCOL_VERSION_CFM,
-	GW_GET_PROTOCOL_VERSION_REQ,
-	GW_GET_SCENE_INFORMATION_CFM,
-	GW_GET_SCENE_INFORMATION_REQ,
-	GW_GET_SCENE_LIST_CFM,
-	GW_GET_SCENE_LIST_REQ,
+	type GW_GET_ACTIVATION_LOG_HEADER_CFM,
+	type GW_GET_ACTIVATION_LOG_HEADER_REQ,
+	type GW_GET_ACTIVATION_LOG_LINE_CFM,
+	type GW_GET_ACTIVATION_LOG_LINE_REQ,
+	type GW_GET_ALL_GROUPS_INFORMATION_CFM,
+	type GW_GET_ALL_GROUPS_INFORMATION_REQ,
+	type GW_GET_ALL_NODES_INFORMATION_CFM,
+	type GW_GET_ALL_NODES_INFORMATION_REQ,
+	type GW_GET_CONTACT_INPUT_LINK_LIST_CFM,
+	type GW_GET_CONTACT_INPUT_LINK_LIST_REQ,
+	type GW_GET_GROUP_INFORMATION_CFM,
+	type GW_GET_GROUP_INFORMATION_REQ,
+	type GW_GET_LIMITATION_STATUS_CFM,
+	type GW_GET_LIMITATION_STATUS_REQ,
+	type GW_GET_LOCAL_TIME_CFM,
+	type GW_GET_LOCAL_TIME_REQ,
+	type GW_GET_MULTIPLE_ACTIVATION_LOG_LINES_CFM,
+	type GW_GET_MULTIPLE_ACTIVATION_LOG_LINES_REQ,
+	type GW_GET_NETWORK_SETUP_CFM,
+	type GW_GET_NETWORK_SETUP_REQ,
+	type GW_GET_NODE_INFORMATION_CFM,
+	type GW_GET_NODE_INFORMATION_REQ,
+	type GW_GET_PROTOCOL_VERSION_CFM,
+	type GW_GET_PROTOCOL_VERSION_REQ,
+	type GW_GET_SCENE_INFORMATION_CFM,
+	type GW_GET_SCENE_INFORMATION_REQ,
+	type GW_GET_SCENE_LIST_CFM,
+	type GW_GET_SCENE_LIST_REQ,
 	GW_GET_STATE_CFM,
-	GW_GET_STATE_REQ,
-	GW_GET_VERSION_CFM,
-	GW_GET_VERSION_REQ,
-	GW_HOUSE_STATUS_MONITOR_DISABLE_CFM,
-	GW_HOUSE_STATUS_MONITOR_DISABLE_REQ,
-	GW_HOUSE_STATUS_MONITOR_ENABLE_CFM,
-	GW_HOUSE_STATUS_MONITOR_ENABLE_REQ,
-	GW_INITIALIZE_SCENE_CANCEL_CFM,
+	type GW_GET_STATE_REQ,
+	type GW_GET_VERSION_CFM,
+	type GW_GET_VERSION_REQ,
+	type GW_HOUSE_STATUS_MONITOR_DISABLE_CFM,
+	type GW_HOUSE_STATUS_MONITOR_DISABLE_REQ,
+	type GW_HOUSE_STATUS_MONITOR_ENABLE_CFM,
+	type GW_HOUSE_STATUS_MONITOR_ENABLE_REQ,
+	type GW_INITIALIZE_SCENE_CANCEL_CFM,
 	GW_INITIALIZE_SCENE_CANCEL_REQ,
-	GW_INITIALIZE_SCENE_CFM,
-	GW_INITIALIZE_SCENE_NTF,
+	type GW_INITIALIZE_SCENE_CFM,
+	type GW_INITIALIZE_SCENE_NTF,
 	GW_INITIALIZE_SCENE_REQ,
-	GW_LEAVE_LEARN_STATE_CFM,
-	GW_LEAVE_LEARN_STATE_REQ,
-	GW_MODE_SEND_CFM,
-	GW_MODE_SEND_REQ,
-	GW_NEW_GROUP_CFM,
+	type GW_LEAVE_LEARN_STATE_CFM,
+	type GW_LEAVE_LEARN_STATE_REQ,
+	type GW_MODE_SEND_CFM,
+	type GW_MODE_SEND_REQ,
+	type GW_NEW_GROUP_CFM,
 	GW_NEW_GROUP_REQ,
-	GW_PASSWORD_CHANGE_CFM,
-	GW_PASSWORD_CHANGE_REQ,
-	GW_PASSWORD_ENTER_CFM,
-	GW_PASSWORD_ENTER_REQ,
+	type GW_PASSWORD_CHANGE_CFM,
+	type GW_PASSWORD_CHANGE_REQ,
+	type GW_PASSWORD_ENTER_CFM,
+	type GW_PASSWORD_ENTER_REQ,
 	GW_REBOOT_CFM,
-	GW_REBOOT_REQ,
-	GW_RECORD_SCENE_CFM,
-	GW_RECORD_SCENE_NTF,
+	type GW_REBOOT_REQ,
+	type GW_RECORD_SCENE_CFM,
+	type GW_RECORD_SCENE_NTF,
 	GW_RECORD_SCENE_REQ,
-	GW_REMOVE_CONTACT_INPUT_LINK_CFM,
-	GW_REMOVE_CONTACT_INPUT_LINK_REQ,
-	GW_RENAME_SCENE_CFM,
+	type GW_REMOVE_CONTACT_INPUT_LINK_CFM,
+	type GW_REMOVE_CONTACT_INPUT_LINK_REQ,
+	type GW_RENAME_SCENE_CFM,
 	GW_RENAME_SCENE_REQ,
-	GW_RTC_SET_TIME_ZONE_CFM,
-	GW_RTC_SET_TIME_ZONE_REQ,
+	type GW_RTC_SET_TIME_ZONE_CFM,
+	type GW_RTC_SET_TIME_ZONE_REQ,
 	GW_SESSION_FINISHED_NTF,
-	GW_SET_CONTACT_INPUT_LINK_CFM,
-	GW_SET_CONTACT_INPUT_LINK_REQ,
-	GW_SET_FACTORY_DEFAULT_CFM,
-	GW_SET_FACTORY_DEFAULT_REQ,
-	GW_SET_GROUP_INFORMATION_CFM,
-	GW_SET_GROUP_INFORMATION_REQ,
-	GW_SET_LIMITATION_CFM,
-	GW_SET_LIMITATION_REQ,
-	GW_SET_NETWORK_SETUP_CFM,
-	GW_SET_NETWORK_SETUP_REQ,
-	GW_SET_NODE_NAME_CFM,
-	GW_SET_NODE_NAME_REQ,
-	GW_SET_NODE_ORDER_AND_PLACEMENT_CFM,
-	GW_SET_NODE_ORDER_AND_PLACEMENT_REQ,
-	GW_SET_NODE_VARIATION_CFM,
-	GW_SET_NODE_VARIATION_REQ,
-	GW_SET_UTC_CFM,
-	GW_SET_UTC_REQ,
-	GW_STATUS_REQUEST_CFM,
+	type GW_SET_CONTACT_INPUT_LINK_CFM,
+	type GW_SET_CONTACT_INPUT_LINK_REQ,
+	type GW_SET_FACTORY_DEFAULT_CFM,
+	type GW_SET_FACTORY_DEFAULT_REQ,
+	type GW_SET_GROUP_INFORMATION_CFM,
+	type GW_SET_GROUP_INFORMATION_REQ,
+	type GW_SET_LIMITATION_CFM,
+	type GW_SET_LIMITATION_REQ,
+	type GW_SET_NETWORK_SETUP_CFM,
+	type GW_SET_NETWORK_SETUP_REQ,
+	type GW_SET_NODE_NAME_CFM,
+	type GW_SET_NODE_NAME_REQ,
+	type GW_SET_NODE_ORDER_AND_PLACEMENT_CFM,
+	type GW_SET_NODE_ORDER_AND_PLACEMENT_REQ,
+	type GW_SET_NODE_VARIATION_CFM,
+	type GW_SET_NODE_VARIATION_REQ,
+	type GW_SET_UTC_CFM,
+	type GW_SET_UTC_REQ,
+	type GW_STATUS_REQUEST_CFM,
 	GW_STATUS_REQUEST_NTF,
 	GW_STATUS_REQUEST_REQ,
-	GW_STOP_SCENE_CFM,
-	GW_STOP_SCENE_REQ,
-	GW_WINK_SEND_CFM,
-	GW_WINK_SEND_REQ,
-	IConnection,
-	IGW_FRAME,
-	IGW_FRAME_RCV,
-	IGW_FRAME_REQ,
+	type GW_STOP_SCENE_CFM,
+	type GW_STOP_SCENE_REQ,
+	type GW_WINK_SEND_CFM,
+	type GW_WINK_SEND_REQ,
+	type IConnection,
+	type IGW_FRAME,
+	type IGW_FRAME_RCV,
+	type IGW_FRAME_REQ,
 	InitializeSceneConfirmationStatus,
 	InitializeSceneNotificationStatus,
 	LimitationType,
-	NodeVariation,
+	type NodeVariation,
 	ParameterActive,
-	Product,
+	type Product,
 	Products,
 	RecordSceneStatus,
 	RenameSceneStatus,
-	Scene,
+	type Scene,
 	Scenes,
 	StatusType,
-	Velocity,
+	type Velocity,
 } from "klf-200-api";
-import { Job, scheduleJob } from "node-schedule";
+import { type Job, scheduleJob } from "node-schedule";
 import path from "path";
 import { env } from "process";
 import { timeout } from "promise-timeout";
-import { checkServerIdentity as checkServerIdentityOriginal, ConnectionOptions } from "tls";
+import { checkServerIdentity as checkServerIdentityOriginal, type ConnectionOptions } from "tls";
 import { ConnectionTest, ConnectionTestResult } from "./connectionTest.js";
 import { KLF200DeviceManagement } from "./deviceManagement/klf200DeviceManagement.js";
 import { DisposalMap } from "./disposalMap.js";
-import { HasConnectionInterface, HasProductsInterface } from "./interfaces.js";
-import { ConnectionTestMessage } from "./messages/connectionTestMessage.js";
+import type { HasConnectionInterface, HasProductsInterface } from "./interfaces.js";
+import type { ConnectionTestMessage } from "./messages/connectionTestMessage.js";
 import { Setup } from "./setup.js";
 import { SetupGroups } from "./setupGroups.js";
 import { SetupProducts } from "./setupProducts.js";
 import { SetupScenes } from "./setupScenes.js";
-import { Translate } from "./translate.js";
+import type { Translate } from "./translate.js";
 import { StateHelper } from "./util/stateHelper.js";
 import { ArrayCount, convertErrorToString, waitForSessionFinishedNtfAsync } from "./util/utils.js";
 
@@ -202,25 +202,43 @@ type ResponsiveProductResult = {
 	FPs: number[];
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+/**
+ * The adapter instance.
+ */
 export declare interface Klf200 {
+	/** The existing events of the adapter.*/
 	on(event: string, listener: (...args: any[]) => void): this;
+	/** This event is fired when a new product is added.*/
 	on(event: "productAdded", listener: (product: Product) => void): this;
+	/** This event is fired when a product is removed.*/
 	on(event: "productRemoved", listener: (productId: number) => void): this;
+	/** This event is fired when a new scene is added.*/
 	on(event: "sceneAdded", listener: (scene: Scene) => void): this;
+	/** This event is fired when a scene is removed.*/
 	on(event: "sceneRemoved", listener: (sceneId: number) => void): this;
+	/** This event is fired when a new group is added.*/
 	on(event: "groupAdded", listener: (group: Group) => void): this;
+	/** This event is fired when a group is removed.*/
 	on(event: "groupRemoved", listener: (groupId: number) => void): this;
+	/** The existing events of the adapter.*/
 	off(event: string, listener: (...args: any[]) => void): this;
+	/** Removes the listener for the "productAdded" event.*/
 	off(event: "productAdded", listener: (product: Product) => void): this;
+	/** Removes the listener for the "productRemoved" event.*/
 	off(event: "productRemoved", listener: (productId: number) => void): this;
+	/** Removes the listener for the "sceneAdded" event.*/
 	off(event: "sceneAdded", listener: (scene: Scene) => void): this;
+	/** Removes the listener for the "sceneRemoved" event.*/
 	off(event: "sceneRemoved", listener: (sceneId: number) => void): this;
+	/** Removes the listener for the "groupAdded" event.*/
 	off(event: "groupAdded", listener: (group: Group) => void): this;
+	/** Removes the listener for the "groupRemoved" event.*/
 	off(event: "groupRemoved", listener: (groupId: number) => void): this;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+/**
+ * The adapter class.
+ */
 export class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProductsInterface, Translate {
 	private disposables: Disposable[] = [];
 	private connectionWatchDogHandler: ConnectionWatchDogHandler;
@@ -229,37 +247,75 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	private deviceManagement: KLF200DeviceManagement | undefined;
 
 	private _Connection?: IConnection;
+	/**
+	 * Returns the current connection instance or undefined if the connection is not yet established.
+	 *
+	 * This property is only available if the connection is established.
+	 */
 	public get Connection(): IConnection | undefined {
 		return this._Connection;
 	}
 
 	private _Gateway?: Gateway;
+	/**
+	 * Retrieves the current Gateway instance.
+	 *
+	 * @returns The current Gateway instance if available; otherwise, undefined.
+	 */
 	public get Gateway(): Gateway | undefined {
 		return this._Gateway;
 	}
 
 	private _Groups?: Groups;
+	/**
+	 * Retrieves the current Groups instance.
+	 *
+	 * @returns The current Groups instance if available; otherwise, undefined.
+	 */
 	public get Groups(): Groups | undefined {
 		return this._Groups;
 	}
 
 	private _Scenes?: Scenes;
+	/**
+	 * Retrieves the current Scenes instance.
+	 *
+	 * @returns The current Scenes instance if available; otherwise, undefined.
+	 */
 	public get Scenes(): Scenes | undefined {
 		return this._Scenes;
 	}
 
 	private _Products?: Products;
+	/**
+	 * Retrieves the current Products instance.
+	 *
+	 * @returns The current Products instance if available; otherwise, undefined.
+	 */
 	public get Products(): Products | undefined {
 		return this._Products;
 	}
 
 	private _Setup?: Setup;
+	/**
+	 * Retrieves the current Setup instance.
+	 *
+	 * @returns The current Setup instance if available; otherwise, undefined.
+	 */
 	public get Setup(): Setup | undefined {
 		return this._Setup;
 	}
 
 	private _RebootJob?: Job;
 
+	/**
+	 * The constructor of the adapter.
+	 *
+	 * @param options - The options for the adapter.
+	 *
+	 * The constructor is called when the adapter is started.
+	 * It sets up the event handlers for the adapter.
+	 */
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
 			...options,
@@ -270,12 +326,11 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		process.on("unhandledRejection", this.onUnhandledRejection.bind(this));
 		process.on("uncaughtException", this.onUnhandledError.bind(this));
 
-		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		this.on("ready", this.onReady.bind(this));
 		// this.on("objectChange", this.onObjectChange.bind(this));
 		this.on("stateChange", this.onStateChange.bind(this));
 		this.on("message", this.onMessage.bind(this));
-		// eslint-disable-next-line @typescript-eslint/no-misused-promises
+
 		this.on("unload", this.onUnload.bind(this));
 
 		// Setup connection watchdog handler
@@ -344,8 +399,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 *
 	 * @param language Target language into which the text should be translated.
 	 * @param textKey Key of the text in the i18n json files that should be translated.
-	 * @param Context Context object that should be used for substitutions in the translation.
-	 *
+	 * @param context Context object that should be used for substitutions in the translation.
 	 * @example
 	 * // ./admin/i18n/de/translations.json:
 	 * // {
@@ -353,7 +407,6 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * // }
 	 * // returns 'Hallo Welt!'
 	 * await translateTo('de', 'helloworld');
-	 *
 	 * @example
 	 * // ./admin/i18n/de/translations.json:
 	 * // {
@@ -389,9 +442,8 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		const text = this.languageFiles[language][textKey];
 		if (context) {
 			return this.replaceContext(text, context);
-		} else {
-			return text;
 		}
+		return text;
 	}
 
 	/**
@@ -399,7 +451,6 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 *
 	 * @param textKey Key of the text in the i18n json files that should be translated.
 	 * @param context Context object that should be used for substitutions in the translation.
-	 *
 	 * @example
 	 * // ./admin/i18n/de/translations.json:
 	 * // {
@@ -407,7 +458,6 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * // }
 	 * // returns 'Hallo Welt!'
 	 * await translate('helloworld');
-	 *
 	 * @example
 	 * // ./admin/i18n/de/translations.json:
 	 * // {
@@ -417,7 +467,6 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * await translate('helloworld-parameter', { who: 'Welt' });
 	 */
 	public async translate(textKey: string, context?: Record<string, string>): Promise<string> {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		return this.translateTo(this.systemConfig?.language || "en", textKey, context);
 	}
 
@@ -428,7 +477,6 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 *
 	 * @param textKey Key of the text in the i18n json files that should be translated.
 	 * @param context Context object that should be used for substitutions in the translation.
-	 *
 	 * @example
 	 * // ./admin/i18n/en/translations.json:
 	 * // {
@@ -443,7 +491,6 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * //     de: 'Hallo Welt!'
 	 * // }
 	 * await getTranslatedObject('helloworld');
-	 *
 	 * @example
 	 * // ./admin/i18n/en/translations.json:
 	 * // {
@@ -902,12 +949,12 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		this.log.info(`Checking for unresponsive products...`);
 		const productLimitationError = new Set<string>();
 		const responsiveProducts = await this.checkResponsiveProducts(
-			this._Products.Products.filter((product) => product).map((product) => product.NodeID),
+			this._Products.Products.filter(product => product).map(product => product.NodeID),
 		);
 		for (const product of this._Products.Products) {
 			if (product) {
 				const responsiveProduct = responsiveProducts.find(
-					(responsiveProduct) => responsiveProduct.NodeID === product.NodeID,
+					responsiveProduct => responsiveProduct.NodeID === product.NodeID,
 				);
 				if (responsiveProduct === undefined) {
 					this.log.warn(`Product ${product.NodeID} is not responding.`);
@@ -1051,7 +1098,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 				new Promise<ResponsiveProductResult[]>((resolve, reject) => {
 					try {
 						handler = this._Connection?.on(
-							(event) => {
+							event => {
 								if (event instanceof GW_SESSION_FINISHED_NTF && event.SessionID === sessionId) {
 									handler?.dispose();
 									handler = undefined;
@@ -1059,14 +1106,14 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 								} else if (event instanceof GW_STATUS_REQUEST_NTF && event.SessionID === sessionId) {
 									responsiveProducts.push({
 										NodeID: event.NodeID,
-										FPs: event.ParameterData?.map((parameter) => parameter.ID) || [],
+										FPs: event.ParameterData?.map(parameter => parameter.ID) || [],
 									});
 								}
 							},
 							[GatewayCommand.GW_SESSION_FINISHED_NTF, GatewayCommand.GW_STATUS_REQUEST_NTF],
 						);
 					} catch (error) {
-						reject(error);
+						reject(error as Error);
 					}
 				}),
 				30_000,
@@ -1094,7 +1141,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 		// Disconnect all event handlers
 		this.log.info(`Shutting down event handlers...`);
-		this.disposables.forEach((disposable) => {
+		this.disposables.forEach(disposable => {
 			disposable.dispose();
 		});
 		await this.disposalMap.disposeAll();
@@ -1245,10 +1292,9 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		return JSON.stringify(frame, (key: string, value: any) => {
 			if (key.match(/password/i)) {
 				return "**********";
-			} else {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-				return value;
 			}
+
+			return value;
 		});
 	}
 
@@ -1260,6 +1306,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 	/**
 	 * Discover new Products
+	 *
 	 * @returns <c>true</c> if changes occured.
 	 */
 	public async onDiscover(): Promise<boolean> {
@@ -1333,7 +1380,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 			try {
 				onNotificationHandler = this.Connection?.on(
-					(frame) => {
+					frame => {
 						const notificationFrame = frame as GW_CS_DISCOVER_NODES_NTF;
 						try {
 							switch (notificationFrame.DiscoverStatus) {
@@ -1412,7 +1459,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 				// Wait for the adapter to setup new products or remove deleted products
 				await Promise.all(
-					[...addedProductPromiseMap.values(), ...removedProductPromiseMap.values()].map((pm) => pm.promise),
+					[...addedProductPromiseMap.values(), ...removedProductPromiseMap.values()].map(pm => pm.promise),
 				);
 
 				return result;
@@ -1425,9 +1472,16 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		}
 	}
 
+	/**
+	 * Remove a product from the adapter.
+	 * This function will remove the product from the adapter and notify the user when the removal is finished.
+	 *
+	 * @param productId The product ID to remove.
+	 * @returns A promise that resolves when the product has been successfully removed.
+	 */
 	public async onRemoveProduct(productId: number): Promise<void> {
 		let resolve: (value: void | PromiseLike<void>) => void;
-		const removedProductHandlerPromise = new Promise<void>((res) => {
+		const removedProductHandlerPromise = new Promise<void>(res => {
 			resolve = res;
 		});
 		const onRemovedProductHandler = function (productIdInner: number): void {
@@ -1445,11 +1499,24 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		}
 	}
 
+	/**
+	 * Winks a product. This is used to identify a product, e.g. a window will move its handle, a roller shutter will move up and down a little bit.
+	 *
+	 * @param productId The ID of the product to wink.
+	 * @throws Error if the product is not found in the adapter.
+	 */
 	public async onWinkProduct(productId: number): Promise<void> {
 		const winkStateId = `products.${productId}.wink`;
 		await this.setState(winkStateId, true);
 	}
 
+	/**
+	 * Renames a product to a new name.
+	 *
+	 * @param productId The ID of the product to rename.
+	 * @param newName The new name for the product.
+	 * @throws Error if the product is not found in the adapter.
+	 */
 	public async onRenameProduct(productId: number, newName: string): Promise<void> {
 		const product = this.Products?.Products[productId];
 
@@ -1460,6 +1527,17 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		await product?.setNameAsync(newName);
 	}
 
+	/**
+	 * Adds a new group with the given name, products, and settings. Returns the ID of the newly created group.
+	 *
+	 * @param groupName - The name of the group to create.
+	 * @param products - The IDs of the products to add to the group.
+	 * @param order - The custom sort order of the group. Optional.
+	 * @param placement - The placement of the group. Optional.
+	 * @param velocity - The velocity of the group. Optional.
+	 * @param nodeVariation - The node variation of the group. Optional.
+	 * @returns The ID of the newly created group.
+	 */
 	public async onAddGroup(
 		groupName: string,
 		products: number[],
@@ -1469,7 +1547,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		nodeVariation?: NodeVariation,
 	): Promise<number> {
 		let resolve: (value: void | PromiseLike<void>) => void;
-		const addGroupHandlerPromise = new Promise<void>((res) => {
+		const addGroupHandlerPromise = new Promise<void>(res => {
 			resolve = res;
 		});
 		const onAddedGroupHandler = function (group: Group): void {
@@ -1512,6 +1590,21 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		}
 	}
 
+	/**
+	 * Changes a group.
+	 *
+	 * @param groupId The ID of the group to change.
+	 * @param groupName The new name of the group.
+	 * @param products The new list of products in the group.
+	 * @param order The new order for sorting the groups. If not provided, the current order is used.
+	 * @param placement The new placement for the group. If not provided, the current placement is used.
+	 * @param velocity The new velocity for the group. If not provided, the current velocity is used.
+	 * @param nodeVariation The new node variation for the group. If not provided, the current node variation is used.
+	 * @returns A promise that resolves when the group has been changed successfully.
+	 * @throws {Error} If the group ID is invalid.
+	 * @throws {Error} If the request failed.
+	 * @throws {Error} If the response contains an unknown status code.
+	 */
 	public async onChangeGroup(
 		groupId: number,
 		groupName: string,
@@ -1533,9 +1626,18 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		);
 	}
 
+	/**
+	 * Removes a group.
+	 *
+	 * @param groupId The ID of the group to remove.
+	 * @returns A promise that resolves when the group has been removed successfully.
+	 * @throws {Error} If the group ID is invalid.
+	 * @throws {Error} If the request failed.
+	 * @throws {Error} If the response contains an unknown status code.
+	 */
 	public async onRemoveGroup(groupId: number): Promise<void> {
 		let resolve: (value: void | PromiseLike<void>) => void;
-		const removedGroupHandlerPromise = new Promise<void>((res) => {
+		const removedGroupHandlerPromise = new Promise<void>(res => {
 			resolve = res;
 		});
 		const onRemovedGroupHandler = function (groupIdInner: number): void {
@@ -1568,9 +1670,15 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		}
 	}
 
+	/**
+	 * Deletes a scene from the gateway.
+	 *
+	 * @param sceneId The ID of the scene to delete.
+	 * @throws {Error} If the scene ID is invalid.
+	 */
 	public async onRemoveScene(sceneId: number): Promise<void> {
 		let resolve: (value: void | PromiseLike<void>) => void;
-		const removedSceneHandlerPromise = new Promise<void>((res) => {
+		const removedSceneHandlerPromise = new Promise<void>(res => {
 			resolve = res;
 		});
 		const onRemovedSceneHandler = function (sceneIdInner: number): void {
@@ -1602,6 +1710,13 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		}
 	}
 
+	/**
+	 * Renames a scene to a new name.
+	 *
+	 * @param sceneId The scene ID to rename.
+	 * @param newName The new name to use for the scene.
+	 * @throws Error If the scene ID is invalid or if the new name is already in use.
+	 */
 	public async onRenameScene(sceneId: number, newName: string): Promise<void> {
 		const scene = this.Scenes?.Scenes[sceneId];
 
@@ -1627,12 +1742,22 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		}
 	}
 
+	/**
+	 * Initializes a new scene on the gateway.
+	 * After calling this function, the gateway will send a GW_INITIALIZE_SCENE_NTF
+	 * frame as soon as the scene has been initialized. The frame will contain the
+	 * IDs of all products that could not be initialized.
+	 *
+	 * @returns A promise that resolves with an array of IDs of products that could not be initialized.
+	 * @throws If the system table is empty, or if the gateway is out of storage.
+	 * @throws If the initialization of the scene fails for any other reason.
+	 */
 	public async onNewSceneInitialize(): Promise<number[]> {
 		let disposable: Disposable | undefined;
 		try {
 			const sceneInitializationNotificationPromise = new Promise<number[]>((resolve, reject) => {
 				disposable = this.Connection?.on(
-					(frame) => {
+					frame => {
 						try {
 							const notificationFrame = frame as GW_INITIALIZE_SCENE_NTF;
 							switch (notificationFrame.Status) {
@@ -1680,6 +1805,15 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		}
 	}
 
+	/**
+	 * Cancels the current new scene recording.
+	 *
+	 * This will cancel the current scene recording and leave the scene in its
+	 * previous state.
+	 *
+	 * @returns A promise that resolves once the cancellation has been confirmed by
+	 * the gateway.
+	 */
 	public async onNewSceneCancel(): Promise<void> {
 		const cancelSceneInitializationCfm = <GW_INITIALIZE_SCENE_CANCEL_CFM>(
 			await this.Connection?.sendFrameAsync(new GW_INITIALIZE_SCENE_CANCEL_REQ())
@@ -1696,12 +1830,21 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		}
 	}
 
+	/**
+	 * Save a new scene with the given name.
+	 *
+	 * This will trigger the recording of a new scene. The scene will be saved
+	 * once the recording is finished.
+	 *
+	 * @param sceneName The name of the scene to save.
+	 * @returns The ID of the new scene.
+	 */
 	public async onNewSceneSave(sceneName: string): Promise<number> {
 		let disposable: Disposable | undefined;
 		try {
 			const sceneNotificationReceivedPromise = new Promise<number>((resolve, reject) => {
 				disposable = this.Connection?.on(
-					(frame) => {
+					frame => {
 						try {
 							switch ((frame as GW_RECORD_SCENE_NTF).Status) {
 								case RecordSceneStatus.OK:
@@ -1745,7 +1888,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 						this.off("sceneAdded", onNewSceneHandler);
 						resolve();
 					} catch (error) {
-						reject(error);
+						reject(error as Error);
 					}
 				}).bind(this);
 				this.on("sceneAdded", onNewSceneHandler);
@@ -1776,7 +1919,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	/**
 	 * Retrieves the version of the klf-200-api module.
 	 *
-	 * @return {string} The version of the klf-200-api module.
+	 * @returns The version of the klf-200-api module.
 	 */
 	private async getKlfApiVersion(): Promise<string> {
 		let klf200ModulePath = require.resolve("klf-200-api");
@@ -1789,7 +1932,9 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 		const klf200PackageJsonPath = path.join(klf200ModulePath, "package.json");
 
-		const moduleInfo = JSON.parse(await fs.readFile(klf200PackageJsonPath, "utf8")) as { version: string };
+		const moduleInfo = JSON.parse(await fs.readFile(klf200PackageJsonPath, "utf8")) as {
+			version: string;
+		};
 
 		return moduleInfo.version;
 	}
@@ -1806,6 +1951,8 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 	/**
 	 * Is called when adapter shuts down - callback has to be called under any circumstances!
+	 *
+	 * @param callback callback to be called under any circumstances
 	 */
 	private async onUnload(callback: () => void): Promise<void> {
 		try {
@@ -1844,6 +1991,9 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 	/**
 	 * Is called if a subscribed state changes
+	 *
+	 * @param id The state ID
+	 * @param state The new state
 	 */
 	private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
 		if (state) {
@@ -1859,7 +2009,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		this.log.silly(
 			`Logging the last run step of the connection test of the progress: ${JSON.stringify(this.convertProgressErrors(progress))}`,
 		);
-		const lastResultRun = progress.findLast((progress) => progress.run);
+		const lastResultRun = progress.findLast(progress => progress.run);
 		if (lastResultRun !== undefined) {
 			this.log.info(
 				`Connection test step ${lastResultRun.stepOrder}: ${lastResultRun.stepName} - ${lastResultRun.success ? "✅" : "❌"}.${lastResultRun.result !== undefined ? ` Result: ${String(lastResultRun.result)}` : ""} Message: ${lastResultRun.message}.`,
@@ -1868,7 +2018,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	}
 
 	private convertProgressErrors(progress: ConnectionTestResult[]): ConnectionTestResult[] {
-		return progress.map((result) => {
+		return progress.map(result => {
 			return new ConnectionTestResult(
 				result.stepOrder,
 				result.stepName,
@@ -1892,8 +2042,10 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			rejectUnauthorized: true,
 			ca: klf200Connection.CA,
 			checkServerIdentity: (host, cert) => {
-				if (cert.fingerprint === klf200Connection.fingerprint) return undefined;
-				else return checkServerIdentityOriginal(host, cert);
+				if (cert.fingerprint === klf200Connection.fingerprint) {
+					return undefined;
+				}
+				return checkServerIdentityOriginal(host, cert);
 			},
 		};
 	}
@@ -1901,13 +2053,15 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	/**
 	 * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
 	 * Using this method requires "common.message" property to be set to true in io-package.json
+	 *
+	 * @param obj The received message
 	 */
 	private onMessage(obj: ioBroker.Message): void {
 		this.log.debug(`Message received: ${JSON.stringify(obj)}`);
 
 		if (typeof obj === "object" && obj.message) {
 			if (obj.command === "ConnectionTest") {
-				this.handleMessageConnectionTest(obj).catch((error) => this.log.error((error as Error).message));
+				this.handleMessageConnectionTest(obj).catch(error => this.log.error((error as Error).message));
 			}
 		}
 	}
@@ -1945,15 +2099,38 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		}
 	}
 
+	/**
+	 * Returns a string representation of the given error.
+	 * If the error is a string, it is returned as-is.
+	 * If the error is an Error, its message is returned if available, otherwise its name is returned if available, otherwise toString() is used.
+	 * If the error is null or undefined, "undefined" is returned.
+	 *
+	 * @param err The error to convert to a string.
+	 */
 	getErrorMessage(err: Error | string): string {
 		// Irgendwo gibt es wohl einen Fehler ohne Message
-		if (err == null) return "undefined";
-		if (typeof err === "string") return err;
-		if (err.message != null) return err.message;
-		if (err.name != null) return err.name;
+		if (err == null) {
+			return "undefined";
+		}
+		if (typeof err === "string") {
+			return err;
+		}
+		if (err.message != null) {
+			return err.message;
+		}
+		if (err.name != null) {
+			return err.name;
+		}
 		return err.toString();
 	}
 
+	/**
+	 * This function is called when an unhandled promise rejection occurs. It logs the
+	 * error and causes the adapter to terminate.
+	 *
+	 * @param reason - The reason for the promise rejection.
+	 * @param promise - The promise that was rejected.
+	 */
 	onUnhandledRejection(reason: object | null | undefined, promise: Promise<any>): void {
 		((this && this.log) || console).error(
 			`Unhandled promise rejection detected. reason: ${JSON.stringify(reason)}, promise: ${JSON.stringify(
@@ -1963,6 +2140,11 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		this.terminate("unhandled promise rejection", 1);
 	}
 
+	/**
+	 * This function is called when an unhandled error occurs. It logs the error and causes the adapter to terminate.
+	 *
+	 * @param error - The error that occurred.
+	 */
 	onUnhandledError(error: Error): void {
 		((this && this.log) || console).error(`Unhandled exception occured: ${JSON.stringify(error)}`);
 		this.terminate("unhandled exception", 1);
