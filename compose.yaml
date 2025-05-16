@@ -13,5 +13,20 @@ services:
         volumes:
             - iobrokerdata:/opt/iobroker
 
+    sqlserver:
+        restart: always
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        container_name: sqlserver
+        hostname: sqlserver
+        ports:
+            - "1433:1433"
+        environment:
+            MSSQL_SA_PASSWORD: "io!Broker123"
+            ACCEPT_EULA: "Y"
+            MSSQL_PID: "Express"
+        volumes:
+            - sqldata:/var/opt/mssql
+
 volumes:
     iobrokerdata:
+    sqldata:

@@ -263,6 +263,7 @@ The values of the state provide multiple manipulation modes:
 ### __WORK IN PROGRESS__
 
 -   (Michael Schroeder) [#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Added a connection test button to help identify connection problems.
+-   (Michael Schroeder) [#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Split the limitation originator state for min and max into separate ones.
 
 ### 1.3.5 (2024-11-20)
 
@@ -362,7 +363,7 @@ npm run release major|minor|patch|... [-- --dry]
 
 The MIT License (MIT)
 
-Copyright (c) 2018-2024 Michael Schroeder <klf200@gmx.de>
+Copyright (c) 2018-2025 Michael Schroeder <klf200@gmx.de>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -385,4 +386,3 @@ THE SOFTWARE.
 ---
 
 VELUX and the VELUX logo are registered trademarks of VKR Holding A/S.
-

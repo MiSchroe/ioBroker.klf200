@@ -5,6 +5,7 @@ import {
 	Disposable,
 	GW_GET_ALL_NODES_INFORMATION_NTF,
 	IConnection,
+	KLF200SocketProtocol,
 	NodeOperatingState,
 	NodeVariation,
 	ParameterActive,
@@ -33,7 +34,7 @@ class MockConnect implements IConnection {
 	logoutAsync = sinon.stub();
 	sendFrameAsync = sinon.stub();
 	on = sinon.stub();
-	KLF200SocketProtocol = undefined;
+	KLF200SocketProtocol?: KLF200SocketProtocol = undefined;
 }
 
 const mockConnection = new MockConnect();
@@ -314,11 +315,35 @@ describe("setupProducts", function () {
 				value: 1,
 			},
 			{
+				state: "limitationMPOriginatorMin",
+				value: 1,
+			},
+			{
+				state: "limitationMPOriginatorMax",
+				value: 1,
+			},
+			{
 				state: "limitationMPTimeRaw",
 				value: 253,
 			},
 			{
+				state: "limitationMPTimeRawMin",
+				value: 253,
+			},
+			{
+				state: "limitationMPTimeRawMax",
+				value: 253,
+			},
+			{
 				state: "limitationMPTime",
+				value: Infinity,
+			},
+			{
+				state: "limitationMPTimeMin",
+				value: Infinity,
+			},
+			{
+				state: "limitationMPTimeMax",
 				value: Infinity,
 			},
 			{
@@ -342,11 +367,35 @@ describe("setupProducts", function () {
 				value: 1,
 			},
 			{
+				state: "limitationFP1OriginatorMin",
+				value: 1,
+			},
+			{
+				state: "limitationFP1OriginatorMax",
+				value: 1,
+			},
+			{
 				state: "limitationFP1TimeRaw",
 				value: 253,
 			},
 			{
+				state: "limitationFP1TimeRawMin",
+				value: 253,
+			},
+			{
+				state: "limitationFP1TimeRawMax",
+				value: 253,
+			},
+			{
 				state: "limitationFP1Time",
+				value: Infinity,
+			},
+			{
+				state: "limitationFP1TimeMin",
+				value: Infinity,
+			},
+			{
+				state: "limitationFP1TimeMax",
 				value: Infinity,
 			},
 			{
@@ -370,11 +419,35 @@ describe("setupProducts", function () {
 				value: 1,
 			},
 			{
+				state: "limitationFP2OriginatorMin",
+				value: 1,
+			},
+			{
+				state: "limitationFP2OriginatorMax",
+				value: 1,
+			},
+			{
 				state: "limitationFP2TimeRaw",
 				value: 253,
 			},
 			{
+				state: "limitationFP2TimeRawMin",
+				value: 253,
+			},
+			{
+				state: "limitationFP2TimeRawMax",
+				value: 253,
+			},
+			{
 				state: "limitationFP2Time",
+				value: Infinity,
+			},
+			{
+				state: "limitationFP2TimeMin",
+				value: Infinity,
+			},
+			{
+				state: "limitationFP2TimeMax",
 				value: Infinity,
 			},
 			{
@@ -398,11 +471,35 @@ describe("setupProducts", function () {
 				value: 1,
 			},
 			{
+				state: "limitationFP3OriginatorMin",
+				value: 1,
+			},
+			{
+				state: "limitationFP3OriginatorMax",
+				value: 1,
+			},
+			{
 				state: "limitationFP3TimeRaw",
 				value: 253,
 			},
 			{
+				state: "limitationFP3TimeRawMin",
+				value: 253,
+			},
+			{
+				state: "limitationFP3TimeRawMax",
+				value: 253,
+			},
+			{
 				state: "limitationFP3Time",
+				value: Infinity,
+			},
+			{
+				state: "limitationFP3TimeMin",
+				value: Infinity,
+			},
+			{
+				state: "limitationFP3TimeMax",
 				value: Infinity,
 			},
 			{
@@ -426,11 +523,35 @@ describe("setupProducts", function () {
 				value: 1,
 			},
 			{
+				state: "limitationFP4OriginatorMin",
+				value: 1,
+			},
+			{
+				state: "limitationFP4OriginatorMax",
+				value: 1,
+			},
+			{
 				state: "limitationFP4TimeRaw",
 				value: 253,
 			},
 			{
+				state: "limitationFP4TimeRawMin",
+				value: 253,
+			},
+			{
+				state: "limitationFP4TimeRawMax",
+				value: 253,
+			},
+			{
 				state: "limitationFP4Time",
+				value: Infinity,
+			},
+			{
+				state: "limitationFP4TimeMin",
+				value: Infinity,
+			},
+			{
+				state: "limitationFP4TimeMax",
 				value: Infinity,
 			},
 			{
@@ -693,36 +814,66 @@ describe("setupProducts", function () {
 					"test.0.products.0.limitationMPMin",
 					"test.0.products.0.limitationMPMax",
 					"test.0.products.0.limitationMPOriginator",
+					"test.0.products.0.limitationMPOriginatorMin",
+					"test.0.products.0.limitationMPOriginatorMax",
 					"test.0.products.0.limitationMPTimeRaw",
+					"test.0.products.0.limitationMPTimeRawMin",
+					"test.0.products.0.limitationMPTimeRawMax",
 					"test.0.products.0.limitationMPTime",
+					"test.0.products.0.limitationMPTimeMin",
+					"test.0.products.0.limitationMPTimeMax",
 					"test.0.products.0.limitationFP1MinRaw",
 					"test.0.products.0.limitationFP1MaxRaw",
 					"test.0.products.0.limitationFP1Min",
 					"test.0.products.0.limitationFP1Max",
 					"test.0.products.0.limitationFP1Originator",
+					"test.0.products.0.limitationFP1OriginatorMin",
+					"test.0.products.0.limitationFP1OriginatorMax",
 					"test.0.products.0.limitationFP1TimeRaw",
+					"test.0.products.0.limitationFP1TimeRawMin",
+					"test.0.products.0.limitationFP1TimeRawMax",
 					"test.0.products.0.limitationFP1Time",
+					"test.0.products.0.limitationFP1TimeMin",
+					"test.0.products.0.limitationFP1TimeMax",
 					"test.0.products.0.limitationFP2MinRaw",
 					"test.0.products.0.limitationFP2MaxRaw",
 					"test.0.products.0.limitationFP2Min",
 					"test.0.products.0.limitationFP2Max",
 					"test.0.products.0.limitationFP2Originator",
+					"test.0.products.0.limitationFP2OriginatorMin",
+					"test.0.products.0.limitationFP2OriginatorMax",
 					"test.0.products.0.limitationFP2TimeRaw",
+					"test.0.products.0.limitationFP2TimeRawMin",
+					"test.0.products.0.limitationFP2TimeRawMax",
 					"test.0.products.0.limitationFP2Time",
+					"test.0.products.0.limitationFP2TimeMin",
+					"test.0.products.0.limitationFP2TimeMax",
 					"test.0.products.0.limitationFP3MinRaw",
 					"test.0.products.0.limitationFP3MaxRaw",
 					"test.0.products.0.limitationFP3Min",
 					"test.0.products.0.limitationFP3Max",
 					"test.0.products.0.limitationFP3Originator",
+					"test.0.products.0.limitationFP3OriginatorMin",
+					"test.0.products.0.limitationFP3OriginatorMax",
 					"test.0.products.0.limitationFP3TimeRaw",
+					"test.0.products.0.limitationFP3TimeRawMin",
+					"test.0.products.0.limitationFP3TimeRawMax",
 					"test.0.products.0.limitationFP3Time",
+					"test.0.products.0.limitationFP3TimeMin",
+					"test.0.products.0.limitationFP3TimeMax",
 					"test.0.products.0.limitationFP4MinRaw",
 					"test.0.products.0.limitationFP4MaxRaw",
 					"test.0.products.0.limitationFP4Min",
 					"test.0.products.0.limitationFP4Max",
 					"test.0.products.0.limitationFP4Originator",
+					"test.0.products.0.limitationFP4OriginatorMin",
+					"test.0.products.0.limitationFP4OriginatorMax",
 					"test.0.products.0.limitationFP4TimeRaw",
+					"test.0.products.0.limitationFP4TimeRawMin",
+					"test.0.products.0.limitationFP4TimeRawMax",
 					"test.0.products.0.limitationFP4Time",
+					"test.0.products.0.limitationFP4TimeMin",
+					"test.0.products.0.limitationFP4TimeMax",
 				];
 				const objectList: ioBroker.NonNullCallbackReturnTypeOf<
 					ioBroker.GetObjectListCallback<ioBroker.Object>
@@ -900,8 +1051,14 @@ describe("setupProducts", function () {
 			"limitationFP1Min",
 			"limitationFP1Max",
 			"limitationFP1Originator",
+			"limitationFP1OriginatorMin",
+			"limitationFP1OriginatorMax",
 			"limitationFP1TimeRaw",
+			"limitationFP1TimeRawMin",
+			"limitationFP1TimeRawMax",
 			"limitationFP1Time",
+			"limitationFP1TimeMin",
+			"limitationFP1TimeMax",
 		]) {
 			it(`shouldn't create a state for ${expectedState} of FP1`, async function () {
 				const disposalMap = new DisposalMap();
