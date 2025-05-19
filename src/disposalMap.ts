@@ -1,15 +1,20 @@
-import { Disposable } from "klf-200-api";
+import type { Disposable } from "klf-200-api";
 
+/** A map of disposables. */
 export class DisposalMap extends Map<string, Disposable> {
 	/**
-	 * disposeId
+	 * Disposes all Disposables that start with the given id.
+	 *
+	 * @param id The id to dispose
 	 */
 	public async disposeId(id: string): Promise<void> {
 		const idList: string[] = [];
 
 		// Get a list of matching ids.
 		for (const key of this.keys()) {
-			if (key.startsWith(id)) idList.push(key);
+			if (key.startsWith(id)) {
+				idList.push(key);
+			}
 		}
 
 		// Call the Dispose method of the Disposables and remove the id from the map.
@@ -19,6 +24,7 @@ export class DisposalMap extends Map<string, Disposable> {
 		}
 	}
 
+	/** Disposes all Disposables in the map. */
 	public async disposeAll(): Promise<void> {
 		for (const disposable of this.values()) {
 			await Promise.resolve(disposable.dispose());

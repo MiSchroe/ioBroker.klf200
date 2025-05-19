@@ -14,23 +14,23 @@ import {
 	KLF200_PORT,
 	NodeVariation,
 	SLIPProtocol,
-	SceneInformationEntry,
 	StatusType,
 	Velocity,
 	readZString,
+	type SceneInformationEntry,
 } from "klf-200-api";
 import path from "path";
 import { exit } from "process";
 import { TimeoutError, timeout } from "promise-timeout";
-import { Server, TLSSocket, TlsOptions } from "tls";
+import { Server, type TLSSocket, type TlsOptions } from "tls";
 import { ArrayBuilder } from "./ArrayBuilder.js";
 import { bitArrayToArray } from "./BitArray.js";
-import { AcknowledgeMessage, CommandWithGuid } from "./commands.js";
-import { Gateway } from "./gateway.js";
-import { Group } from "./groups.js";
-import { Limitation } from "./limitations.js";
-import { Product } from "./products.js";
-import { Scene } from "./scenes.js";
+import type { AcknowledgeMessage, CommandWithGuid } from "./commands.js";
+import type { Gateway } from "./gateway.js";
+import type { Group } from "./groups.js";
+import type { Limitation } from "./limitations.js";
+import type { Product } from "./products.js";
+import type { Scene } from "./scenes.js";
 
 const debug = debugModule(`${path.parse(__filename).name}:server`);
 
@@ -105,7 +105,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 
 	let tlsSocket: TLSSocket | undefined = undefined;
 
-	const server = new Server(options, (socket) => {
+	const server = new Server(options, socket => {
 		const handler = async function (socket: TLSSocket): Promise<void> {
 			debug(
 				`New connection. Current number of connections: ${await new Promise<number>((resolve, reject) => {
@@ -136,7 +136,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 					}
 				};
 
-				handler(data).catch((error) => {
+				handler(data).catch(error => {
 					debug(`Error in socket on data handler: ${error}`);
 				});
 			});
@@ -152,13 +152,13 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				tlsSocket = undefined;
 			});
 
-			socket.on("error", (err) => {
+			socket.on("error", err => {
 				debug(`error event received: ${JSON.stringify(err)}`);
 				tlsSocket = undefined;
 			});
 		};
 
-		handler(socket).catch((error) => {
+		handler(socket).catch(error => {
 			debug(`Error in New server handler: ${error}`);
 		});
 	});
@@ -238,7 +238,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 					acknowledgeMessageACK(message);
 					break;
 
-				case "SendData":
+				case "SendData": {
 					const data_SendData = Buffer.from(message.data, "base64");
 					tlsSocket?.write(
 						SLIPProtocol.Encode(
@@ -247,6 +247,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 					);
 					acknowledgeMessageACK(message);
 					break;
+				}
 
 				case "Reset":
 					gateway = structuredClone(DefaultGateway);
@@ -273,7 +274,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 							});
 						})}`,
 					);
-					server.close((err) => {
+					server.close(err => {
 						debug(`Close event in kill command received. err: ${JSON.stringify(err)}`);
 						if (err) {
 							acknowledgeMessageERR(message, `${err.message}`);
@@ -298,7 +299,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				case "SetFunction":
 					functions.set(
 						message.gatewayCommand,
-						// eslint-disable-next-line @typescript-eslint/no-implied-eval
+
 						Function("frameBuffer", `"use strict";\n${message.func}`) as functionData,
 					);
 					acknowledgeMessageACK(message);
@@ -309,7 +310,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 						try {
 							await timeout(
 								// Try to end the "good" way:
-								new Promise<void>((resolve) => {
+								new Promise<void>(resolve => {
 									tlsSocket?.end(() => {
 										acknowledgeMessageACK(message);
 									});
@@ -338,7 +339,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 					break;
 			}
 		};
-		handler(message).catch((error) => {
+		handler(message).catch(error => {
 			console.error(error);
 		});
 	});
@@ -396,11 +397,8 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 					return [
 						addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_ENTER_CFM, [GW_COMMON_STATUS.SUCCESS]),
 					];
-				} else {
-					return [
-						addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_ENTER_CFM, [GW_COMMON_STATUS.ERROR]),
-					];
 				}
+				return [addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_ENTER_CFM, [GW_COMMON_STATUS.ERROR])];
 			}
 
 			case GatewayCommand.GW_PASSWORD_CHANGE_REQ: {
@@ -411,8 +409,8 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 					return [
 						addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_CHANGE_CFM, [GW_COMMON_STATUS.ERROR]),
 					];
-				} else {
 				}
+				break;
 			}
 
 			case GatewayCommand.GW_GET_VERSION_REQ:
@@ -557,49 +555,48 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 							nodeID,
 						]),
 					];
-				} else {
-					const numberOfAliases = product.ProductAlias.length;
-					const ab = new ArrayBuilder()
-						.addBytes(product.NodeID)
-						.addInts(product.Order)
-						.addBytes(product.Placement)
-						.addString(product.Name, 64)
-						.addBytes(product.Velocity)
-						.addInts((product.TypeID << 6) | product.SubType)
-						.addBytes(
-							product.ProductGroup,
-							product.ProductType,
-							product.NodeVariation,
-							product.PowerSaveMode,
-							0,
-							...Buffer.from(product.SerialNumber, "base64"),
-							product.State,
-						)
-						.addInts(
-							product.CurrentPositionRaw,
-							product.TargetPositionRaw,
-							product.FP1CurrentPositionRaw,
-							product.FP2CurrentPositionRaw,
-							product.FP3CurrentPositionRaw,
-							product.FP4CurrentPositionRaw,
-							product.RemainingTime,
-						)
-						.addLongs(Date.parse(product.TimeStamp) / 1000)
-						.addBytes(numberOfAliases);
-					for (const ProductAlias of product.ProductAlias) {
-						ab.addInts(ProductAlias.AliasType, ProductAlias.AliasValue);
-					}
-					if (numberOfAliases < 5) {
-						ab.fill((5 - numberOfAliases) * 4);
-					}
-					return [
-						addCommandAndLengthToBuffer(GatewayCommand.GW_GET_NODE_INFORMATION_CFM, [
-							GW_COMMON_STATUS.SUCCESS,
-							nodeID,
-						]),
-						addCommandAndLengthToBuffer(GatewayCommand.GW_GET_NODE_INFORMATION_NTF, ab.toBuffer()),
-					];
 				}
+				const numberOfAliases = product.ProductAlias.length;
+				const ab = new ArrayBuilder()
+					.addBytes(product.NodeID)
+					.addInts(product.Order)
+					.addBytes(product.Placement)
+					.addString(product.Name, 64)
+					.addBytes(product.Velocity)
+					.addInts((product.TypeID << 6) | product.SubType)
+					.addBytes(
+						product.ProductGroup,
+						product.ProductType,
+						product.NodeVariation,
+						product.PowerSaveMode,
+						0,
+						...Buffer.from(product.SerialNumber, "base64"),
+						product.State,
+					)
+					.addInts(
+						product.CurrentPositionRaw,
+						product.TargetPositionRaw,
+						product.FP1CurrentPositionRaw,
+						product.FP2CurrentPositionRaw,
+						product.FP3CurrentPositionRaw,
+						product.FP4CurrentPositionRaw,
+						product.RemainingTime,
+					)
+					.addLongs(Date.parse(product.TimeStamp) / 1000)
+					.addBytes(numberOfAliases);
+				for (const ProductAlias of product.ProductAlias) {
+					ab.addInts(ProductAlias.AliasType, ProductAlias.AliasValue);
+				}
+				if (numberOfAliases < 5) {
+					ab.fill((5 - numberOfAliases) * 4);
+				}
+				return [
+					addCommandAndLengthToBuffer(GatewayCommand.GW_GET_NODE_INFORMATION_CFM, [
+						GW_COMMON_STATUS.SUCCESS,
+						nodeID,
+					]),
+					addCommandAndLengthToBuffer(GatewayCommand.GW_GET_NODE_INFORMATION_NTF, ab.toBuffer()),
+				];
 			}
 
 			case GatewayCommand.GW_SET_NODE_NAME_REQ: {
@@ -608,20 +605,19 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				const product = products.get(nodeId);
 				if (product === undefined) {
 					return [addCommandAndLengthToBuffer(GatewayCommand.GW_SET_NODE_NAME_CFM, [2, nodeId])];
-				} else {
-					return [
-						addCommandAndLengthToBuffer(GatewayCommand.GW_SET_NODE_NAME_CFM, [0, nodeId]),
-						addCommandAndLengthToBuffer(
-							GatewayCommand.GW_NODE_INFORMATION_CHANGED_NTF,
-							new ArrayBuilder()
-								.addBytes(nodeId)
-								.addString(name, 64)
-								.addInts(product.Order)
-								.addBytes(product.Placement, product.NodeVariation)
-								.toBuffer(),
-						),
-					];
 				}
+				return [
+					addCommandAndLengthToBuffer(GatewayCommand.GW_SET_NODE_NAME_CFM, [0, nodeId]),
+					addCommandAndLengthToBuffer(
+						GatewayCommand.GW_NODE_INFORMATION_CHANGED_NTF,
+						new ArrayBuilder()
+							.addBytes(nodeId)
+							.addString(name, 64)
+							.addInts(product.Order)
+							.addBytes(product.Placement, product.NodeVariation)
+							.toBuffer(),
+					),
+				];
 			}
 
 			case GatewayCommand.GW_SET_NODE_VARIATION_REQ: {
@@ -630,20 +626,19 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				const product = products.get(nodeId);
 				if (product === undefined) {
 					return [addCommandAndLengthToBuffer(GatewayCommand.GW_SET_NODE_VARIATION_CFM, [2, nodeId])];
-				} else {
-					return [
-						addCommandAndLengthToBuffer(GatewayCommand.GW_SET_NODE_VARIATION_CFM, [0, nodeId]),
-						addCommandAndLengthToBuffer(
-							GatewayCommand.GW_NODE_INFORMATION_CHANGED_NTF,
-							new ArrayBuilder()
-								.addBytes(nodeId)
-								.addString(product.Name, 64)
-								.addInts(product.Order)
-								.addBytes(product.Placement, nodeVariation)
-								.toBuffer(),
-						),
-					];
 				}
+				return [
+					addCommandAndLengthToBuffer(GatewayCommand.GW_SET_NODE_VARIATION_CFM, [0, nodeId]),
+					addCommandAndLengthToBuffer(
+						GatewayCommand.GW_NODE_INFORMATION_CHANGED_NTF,
+						new ArrayBuilder()
+							.addBytes(nodeId)
+							.addString(product.Name, 64)
+							.addInts(product.Order)
+							.addBytes(product.Placement, nodeVariation)
+							.toBuffer(),
+					),
+				];
 			}
 
 			case GatewayCommand.GW_SET_NODE_ORDER_AND_PLACEMENT_REQ: {
@@ -655,20 +650,19 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 					return [
 						addCommandAndLengthToBuffer(GatewayCommand.GW_SET_NODE_ORDER_AND_PLACEMENT_CFM, [2, nodeId]),
 					];
-				} else {
-					return [
-						addCommandAndLengthToBuffer(GatewayCommand.GW_SET_NODE_ORDER_AND_PLACEMENT_CFM, [0, nodeId]),
-						addCommandAndLengthToBuffer(
-							GatewayCommand.GW_NODE_INFORMATION_CHANGED_NTF,
-							new ArrayBuilder()
-								.addBytes(nodeId)
-								.addString(product.Name, 64)
-								.addInts(order)
-								.addBytes(placement, product.NodeVariation)
-								.toBuffer(),
-						),
-					];
 				}
+				return [
+					addCommandAndLengthToBuffer(GatewayCommand.GW_SET_NODE_ORDER_AND_PLACEMENT_CFM, [0, nodeId]),
+					addCommandAndLengthToBuffer(
+						GatewayCommand.GW_NODE_INFORMATION_CHANGED_NTF,
+						new ArrayBuilder()
+							.addBytes(nodeId)
+							.addString(product.Name, 64)
+							.addInts(order)
+							.addBytes(placement, product.NodeVariation)
+							.toBuffer(),
+					),
+				];
 			}
 
 			case GatewayCommand.GW_STATUS_REQUEST_REQ: {
@@ -680,7 +674,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				const resultBuffers: Buffer[] = [];
 
 				// Check that referenced nodes exist, otherwise return an error frame.
-				if (nodes.some((nodeId) => !products.has(nodeId))) {
+				if (nodes.some(nodeId => !products.has(nodeId))) {
 					resultBuffers.push(
 						addCommandAndLengthToBuffer(
 							GatewayCommand.GW_ERROR_NTF,
@@ -809,7 +803,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				const nodes = Array.from(frameBuffer.subarray(6, 6 + numberOfNodes));
 				const parameterId = frameBuffer.readUInt8(26);
 				const limitationType = frameBuffer.readUInt8(27);
-				if (nodes.some((node) => !products.has(node))) {
+				if (nodes.some(node => !products.has(node))) {
 					return [
 						addCommandAndLengthToBuffer(
 							GatewayCommand.GW_GET_LIMITATION_STATUS_CFM,
@@ -889,7 +883,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				const limitationValueMin = frameBuffer.readUInt16BE(29);
 				const limitationValueMax = frameBuffer.readUInt16BE(31);
 				const limitationTime = frameBuffer.readUInt8(33);
-				if (nodes.some((node) => !products.has(node))) {
+				if (nodes.some(node => !products.has(node))) {
 					return [
 						addCommandAndLengthToBuffer(
 							GatewayCommand.GW_SET_LIMITATION_CFM,
@@ -971,7 +965,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 
 							return resultArray;
 						}, [] as Scene[][])
-						.forEach((chunk) => {
+						.forEach(chunk => {
 							// Build GW_GET_SCENE_LIST_NTF frame
 							remainingScenes -= chunk.length;
 							const ab = new ArrayBuilder().addBytes(chunk.length);
@@ -998,46 +992,42 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 							sceneID,
 						]),
 					];
-				} else {
-					const returnBuffers: Buffer[] = [
-						addCommandAndLengthToBuffer(GatewayCommand.GW_GET_SCENE_INFORMATION_CFM, [
-							GW_COMMON_STATUS.SUCCESS,
-							sceneID,
-						]),
-					];
-
-					let remainingNodes = scene.Nodes.length;
-
-					scene.Nodes.reduce((resultArray, item, index) => {
-						// Convert the scenes into chunks of 45:
-						const chunkIndex = Math.floor(index / 45);
-
-						if (!resultArray[chunkIndex]) {
-							resultArray[chunkIndex] = []; // start a new chunk
-						}
-
-						resultArray[chunkIndex].push(item);
-
-						return resultArray;
-					}, [] as SceneInformationEntry[][]).forEach((chunk) => {
-						// Build GW_GET_SCENE_INFORMATION_NTF frame
-						remainingNodes -= chunk.length;
-						const ab = new ArrayBuilder()
-							.addBytes(sceneID)
-							.addString(scene.Name, 64)
-							.addBytes(chunk.length);
-						for (const sceneInformationEntry of chunk) {
-							ab.addBytes(sceneInformationEntry.NodeID, sceneInformationEntry.ParameterID).addInts(
-								sceneInformationEntry.ParameterValue,
-							);
-						}
-						ab.addBytes(remainingNodes);
-						returnBuffers.push(
-							addCommandAndLengthToBuffer(GatewayCommand.GW_GET_SCENE_INFORMATION_NTF, ab.toBuffer()),
-						);
-					});
-					return returnBuffers;
 				}
+				const returnBuffers: Buffer[] = [
+					addCommandAndLengthToBuffer(GatewayCommand.GW_GET_SCENE_INFORMATION_CFM, [
+						GW_COMMON_STATUS.SUCCESS,
+						sceneID,
+					]),
+				];
+
+				let remainingNodes = scene.Nodes.length;
+
+				scene.Nodes.reduce((resultArray, item, index) => {
+					// Convert the scenes into chunks of 45:
+					const chunkIndex = Math.floor(index / 45);
+
+					if (!resultArray[chunkIndex]) {
+						resultArray[chunkIndex] = []; // start a new chunk
+					}
+
+					resultArray[chunkIndex].push(item);
+
+					return resultArray;
+				}, [] as SceneInformationEntry[][]).forEach(chunk => {
+					// Build GW_GET_SCENE_INFORMATION_NTF frame
+					remainingNodes -= chunk.length;
+					const ab = new ArrayBuilder().addBytes(sceneID).addString(scene.Name, 64).addBytes(chunk.length);
+					for (const sceneInformationEntry of chunk) {
+						ab.addBytes(sceneInformationEntry.NodeID, sceneInformationEntry.ParameterID).addInts(
+							sceneInformationEntry.ParameterValue,
+						);
+					}
+					ab.addBytes(remainingNodes);
+					returnBuffers.push(
+						addCommandAndLengthToBuffer(GatewayCommand.GW_GET_SCENE_INFORMATION_NTF, ab.toBuffer()),
+					);
+				});
+				return returnBuffers;
 			}
 
 			case GatewayCommand.GW_ACTIVATE_SCENE_REQ: {
@@ -1154,7 +1144,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 			}
 
 			// Groups
-			case GatewayCommand.GW_GET_ALL_GROUPS_INFORMATION_REQ:
+			case GatewayCommand.GW_GET_ALL_GROUPS_INFORMATION_REQ: {
 				const returnBuffers_GW_GET_ALL_GROUPS_INFORMATION_REQ: Buffer[] = [
 					addCommandAndLengthToBuffer(GatewayCommand.GW_GET_ALL_GROUPS_INFORMATION_CFM, [
 						groups.size === 0 ? GW_COMMON_STATUS.INVALID_NODE_ID : GW_COMMON_STATUS.SUCCESS,
@@ -1163,7 +1153,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				];
 				const useFilter: boolean = frameBuffer.readUInt8(3) !== 0;
 				const groupType: GroupType = frameBuffer.readUInt8(4);
-				let groupNtfSent: boolean = false;
+				let groupNtfSent = false;
 				for (const group of groups.values()) {
 					if (!useFilter || groupType === group.GroupType) {
 						groupNtfSent = true;
@@ -1223,6 +1213,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 					);
 				}
 				return returnBuffers_GW_GET_ALL_GROUPS_INFORMATION_REQ;
+			}
 
 			case GatewayCommand.GW_SET_GROUP_INFORMATION_REQ: {
 				const groupId = frameBuffer.readUInt8(3);
@@ -1246,34 +1237,33 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 					revision !== group.Revision
 				) {
 					return [addCommandAndLengthToBuffer(GatewayCommand.GW_SET_GROUP_INFORMATION_CFM, [1, groupId])];
-				} else {
-					group.Order = frameBuffer.readUInt16BE(4);
-					group.Placement = frameBuffer.readUInt8(6);
-					group.Name = readZString(frameBuffer.subarray(7, 71));
-					group.Velocity = frameBuffer.readUInt8(71);
-					group.NodeVariation = frameBuffer.readUInt8(72);
-					group.Nodes = bitArrayToArray(frameBuffer.subarray(75, 100));
-					return [
-						addCommandAndLengthToBuffer(GatewayCommand.GW_SET_GROUP_INFORMATION_CFM, [0, groupId]),
-						addCommandAndLengthToBuffer(
-							GatewayCommand.GW_GROUP_INFORMATION_CHANGED_NTF,
-							new ArrayBuilder()
-								.addBytes(1, groupId)
-								.addInts(group.Order)
-								.addBytes(group.Placement)
-								.addString(group.Name, 64)
-								.addBytes(
-									group.Velocity as number,
-									group.NodeVariation as number,
-									group.GroupType,
-									group.Nodes.length,
-								)
-								.addBitArray(25, group.Nodes)
-								.addInts(group.Revision)
-								.toBuffer(),
-						),
-					];
 				}
+				group.Order = frameBuffer.readUInt16BE(4);
+				group.Placement = frameBuffer.readUInt8(6);
+				group.Name = readZString(frameBuffer.subarray(7, 71));
+				group.Velocity = frameBuffer.readUInt8(71);
+				group.NodeVariation = frameBuffer.readUInt8(72);
+				group.Nodes = bitArrayToArray(frameBuffer.subarray(75, 100));
+				return [
+					addCommandAndLengthToBuffer(GatewayCommand.GW_SET_GROUP_INFORMATION_CFM, [0, groupId]),
+					addCommandAndLengthToBuffer(
+						GatewayCommand.GW_GROUP_INFORMATION_CHANGED_NTF,
+						new ArrayBuilder()
+							.addBytes(1, groupId)
+							.addInts(group.Order)
+							.addBytes(group.Placement)
+							.addString(group.Name, 64)
+							.addBytes(
+								group.Velocity as number,
+								group.NodeVariation as number,
+								group.GroupType,
+								group.Nodes.length,
+							)
+							.addBitArray(25, group.Nodes)
+							.addInts(group.Revision)
+							.toBuffer(),
+					),
+				];
 			}
 
 			case GatewayCommand.GW_GET_GROUP_INFORMATION_REQ: {
@@ -1406,75 +1396,74 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				// const PL = frameBuffer.readUInt16BE(66);
 				// const lockTime = frameBuffer.readUInt8(68);
 
-				if (nodes.some((nodeId) => !products.has(nodeId))) {
+				if (nodes.some(nodeId => !products.has(nodeId))) {
 					return [
 						addCommandAndLengthToBuffer(
 							GatewayCommand.GW_COMMAND_SEND_CFM,
 							new ArrayBuilder().addInts(sessionId).addBytes(0).toBuffer(),
 						),
 					];
-				} else {
-					const returnBuffers: Buffer[] = [];
-					returnBuffers.push(
-						addCommandAndLengthToBuffer(
-							GatewayCommand.GW_COMMAND_SEND_CFM,
-							new ArrayBuilder().addInts(sessionId).addBytes(1).toBuffer(),
-						),
-					);
-					// One GW_COMMAND_RUN_STATUS_NTF for each product in group
-					for (const productId of nodes) {
-						const product = products.get(productId);
-						returnBuffers.push(
-							addCommandAndLengthToBuffer(
-								GatewayCommand.GW_COMMAND_RUN_STATUS_NTF,
-								new ArrayBuilder()
-									.addInts(sessionId)
-									.addBytes(commandOriginator, productId, parameterId)
-									.addInts(getProductCurrentParameter(product!, parameterId))
-									.addBytes(2, 1, 0, 0, 0, 0)
-									.toBuffer(),
-							),
-						);
-					}
-
-					// One set of GW_COMMAND_REMAINING_TIME_NTF and GW_COMMAND_RUN_STATUS_NTF
-					for (const productId of nodes) {
-						const product = products.get(productId);
-						setProductCurrentParameter(product!, 0, functionalParamtersValues[0]);
-						for (const fp of functionalParameters) {
-							setProductCurrentParameter(product!, fp, functionalParamtersValues[fp]);
-						}
-						returnBuffers.push(
-							addCommandAndLengthToBuffer(
-								GatewayCommand.GW_COMMAND_REMAINING_TIME_NTF,
-								new ArrayBuilder()
-									.addInts(sessionId)
-									.addBytes(productId, parameterId)
-									.addInts(42)
-									.toBuffer(),
-							),
-							addCommandAndLengthToBuffer(
-								GatewayCommand.GW_COMMAND_RUN_STATUS_NTF,
-								new ArrayBuilder()
-									.addInts(sessionId)
-									.addBytes(commandOriginator, productId, parameterId)
-									.addInts(getProductCurrentParameter(product!, parameterId))
-									.addBytes(0, 1, 0, 0, 0, 0)
-									.toBuffer(),
-							),
-						);
-					}
-
-					// Add GW_SESSION_FINISHED_NTF
-					returnBuffers.push(
-						addCommandAndLengthToBuffer(
-							GatewayCommand.GW_SESSION_FINISHED_NTF,
-							new ArrayBuilder().addInts(sessionId).toBuffer(),
-						),
-					);
-
-					return returnBuffers;
 				}
+				const returnBuffers: Buffer[] = [];
+				returnBuffers.push(
+					addCommandAndLengthToBuffer(
+						GatewayCommand.GW_COMMAND_SEND_CFM,
+						new ArrayBuilder().addInts(sessionId).addBytes(1).toBuffer(),
+					),
+				);
+				// One GW_COMMAND_RUN_STATUS_NTF for each product in group
+				for (const productId of nodes) {
+					const product = products.get(productId);
+					returnBuffers.push(
+						addCommandAndLengthToBuffer(
+							GatewayCommand.GW_COMMAND_RUN_STATUS_NTF,
+							new ArrayBuilder()
+								.addInts(sessionId)
+								.addBytes(commandOriginator, productId, parameterId)
+								.addInts(getProductCurrentParameter(product!, parameterId))
+								.addBytes(2, 1, 0, 0, 0, 0)
+								.toBuffer(),
+						),
+					);
+				}
+
+				// One set of GW_COMMAND_REMAINING_TIME_NTF and GW_COMMAND_RUN_STATUS_NTF
+				for (const productId of nodes) {
+					const product = products.get(productId);
+					setProductCurrentParameter(product!, 0, functionalParamtersValues[0]);
+					for (const fp of functionalParameters) {
+						setProductCurrentParameter(product!, fp, functionalParamtersValues[fp]);
+					}
+					returnBuffers.push(
+						addCommandAndLengthToBuffer(
+							GatewayCommand.GW_COMMAND_REMAINING_TIME_NTF,
+							new ArrayBuilder()
+								.addInts(sessionId)
+								.addBytes(productId, parameterId)
+								.addInts(42)
+								.toBuffer(),
+						),
+						addCommandAndLengthToBuffer(
+							GatewayCommand.GW_COMMAND_RUN_STATUS_NTF,
+							new ArrayBuilder()
+								.addInts(sessionId)
+								.addBytes(commandOriginator, productId, parameterId)
+								.addInts(getProductCurrentParameter(product!, parameterId))
+								.addBytes(0, 1, 0, 0, 0, 0)
+								.toBuffer(),
+						),
+					);
+				}
+
+				// Add GW_SESSION_FINISHED_NTF
+				returnBuffers.push(
+					addCommandAndLengthToBuffer(
+						GatewayCommand.GW_SESSION_FINISHED_NTF,
+						new ArrayBuilder().addInts(sessionId).toBuffer(),
+					),
+				);
+
+				return returnBuffers;
 			}
 
 			case GatewayCommand.GW_WINK_SEND_REQ: {
@@ -1486,47 +1475,46 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				const nodeCount = frameBuffer.readUInt8(9);
 				const nodes = Array.from(frameBuffer.subarray(10, 10 + nodeCount));
 
-				if (nodes.some((nodeId) => !products.has(nodeId))) {
+				if (nodes.some(nodeId => !products.has(nodeId))) {
 					return [
 						addCommandAndLengthToBuffer(
 							GatewayCommand.GW_WINK_SEND_CFM,
 							new ArrayBuilder().addInts(sessionId).addBytes(0).toBuffer(),
 						),
 					];
-				} else {
-					const returnBuffers: Buffer[] = [];
-					returnBuffers.push(
-						addCommandAndLengthToBuffer(
-							GatewayCommand.GW_WINK_SEND_CFM,
-							new ArrayBuilder().addInts(sessionId).addBytes(1).toBuffer(),
-						),
-					);
-					// One GW_COMMAND_RUN_STATUS_NTF for each product in group
-					for (const productId of nodes) {
-						const product = products.get(productId);
-						returnBuffers.push(
-							addCommandAndLengthToBuffer(
-								GatewayCommand.GW_COMMAND_RUN_STATUS_NTF,
-								new ArrayBuilder()
-									.addInts(sessionId)
-									.addBytes(commandOriginator, productId, 0)
-									.addInts(getProductCurrentParameter(product!, 0))
-									.addBytes(2, 1, 0, 0, 0, 0)
-									.toBuffer(),
-							),
-						);
-					}
-
-					// Add GW_WINK_SEND_NTF
-					returnBuffers.push(
-						addCommandAndLengthToBuffer(
-							GatewayCommand.GW_WINK_SEND_NTF,
-							new ArrayBuilder().addInts(sessionId).toBuffer(),
-						),
-					);
-
-					return returnBuffers;
 				}
+				const returnBuffers: Buffer[] = [];
+				returnBuffers.push(
+					addCommandAndLengthToBuffer(
+						GatewayCommand.GW_WINK_SEND_CFM,
+						new ArrayBuilder().addInts(sessionId).addBytes(1).toBuffer(),
+					),
+				);
+				// One GW_COMMAND_RUN_STATUS_NTF for each product in group
+				for (const productId of nodes) {
+					const product = products.get(productId);
+					returnBuffers.push(
+						addCommandAndLengthToBuffer(
+							GatewayCommand.GW_COMMAND_RUN_STATUS_NTF,
+							new ArrayBuilder()
+								.addInts(sessionId)
+								.addBytes(commandOriginator, productId, 0)
+								.addInts(getProductCurrentParameter(product!, 0))
+								.addBytes(2, 1, 0, 0, 0, 0)
+								.toBuffer(),
+						),
+					);
+				}
+
+				// Add GW_WINK_SEND_NTF
+				returnBuffers.push(
+					addCommandAndLengthToBuffer(
+						GatewayCommand.GW_WINK_SEND_NTF,
+						new ArrayBuilder().addInts(sessionId).toBuffer(),
+					),
+				);
+
+				return returnBuffers;
 			}
 
 			default:
@@ -1598,12 +1586,15 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 	function getFunctionalParamters(FPI1: number, FPI2: number): number[] {
 		const result: number[] = [];
 		for (let index = 0; index < 8; index++) {
-			if (FPI1 & (0x80 >>> index)) result.push(index + 1);
+			if (FPI1 & (0x80 >>> index)) {
+				result.push(index + 1);
+			}
 		}
 		for (let index = 0; index < 8; index++) {
-			if (FPI2 & (0x80 >>> index)) result.push(index + 9);
+			if (FPI2 & (0x80 >>> index)) {
+				result.push(index + 9);
+			}
 		}
 		return result;
 	}
 })();
-

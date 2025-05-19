@@ -1,4 +1,4 @@
-import {
+import type {
 	ActuatorAlias,
 	ActuatorType,
 	NodeOperatingState,
@@ -9,6 +9,9 @@ import {
 	Velocity,
 } from "klf-200-api";
 
+/**
+ * Represents a product in the interface.
+ */
 export interface Product {
 	NodeID: number;
 	Name: string;

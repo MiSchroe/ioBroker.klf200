@@ -1,5 +1,5 @@
 import { tests } from "@iobroker/testing";
-import { TestHarness } from "@iobroker/testing/build/tests/integration/lib/harness";
+import type { TestHarness } from "@iobroker/testing/build/tests/integration/lib/harness";
 import { expect } from "chai";
 import crypto from "crypto";
 import { readFileSync } from "fs";
@@ -23,7 +23,7 @@ tests.integration(path.join(__dirname, ".."), {
 	// allowedExitCodes: [11],
 
 	defineAdditionalTests({ suite }) {
-		suite("Regular test without mock server", (getHarness) => {
+		suite("Regular test without mock server", getHarness => {
 			let harness: TestHarness;
 
 			before(function () {
@@ -36,7 +36,7 @@ tests.integration(path.join(__dirname, ".."), {
 			});
 		});
 
-		suite("Regular test with mock server no products", (getHarness) => {
+		suite("Regular test with mock server no products", getHarness => {
 			let harness: TestHarness;
 			let mockServerController: MockServerController;
 
@@ -49,9 +49,9 @@ tests.integration(path.join(__dirname, ".."), {
 				console.log(`Setup configuration for ${harness.adapterName}`);
 
 				// Setup adapter configuration
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
 				const data = await harness.objects.getObjectAsync(`system.config`);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+
 				const systemSecret: string = data?.native?.secret;
 				await harness.changeAdapterConfig(harness.adapterName, {
 					native: {
@@ -179,9 +179,9 @@ tests.integration(path.join(__dirname, ".."), {
 				console.log(`Setup configuration for ${harness.adapterName}`);
 
 				// Setup adapter configuration
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
 				const data = await harness.objects.getObjectAsync(`system.config`);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+
 				const systemSecret: string = data?.native?.secret;
 				await harness.changeAdapterConfig(harness.adapterName, {
 					native: {
@@ -274,9 +274,9 @@ tests.integration(path.join(__dirname, ".."), {
 					console.log(`Setup configuration for ${harness.adapterName}`);
 
 					// Setup adapter configuration
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
 					const data = await harness.objects.getObjectAsync(`system.config`);
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+
 					const systemSecret: string = data?.native?.secret;
 					await harness.changeAdapterConfig(harness.adapterName, {
 						native: {
@@ -411,9 +411,9 @@ tests.integration(path.join(__dirname, ".."), {
 					console.log(`Setup configuration for ${harness.adapterName}`);
 
 					// Setup adapter configuration
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
 					const data = await harness.objects.getObjectAsync(`system.config`);
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+
 					const systemSecret: string = data?.native?.secret;
 					await harness.changeAdapterConfig(harness.adapterName, {
 						native: {
@@ -545,9 +545,9 @@ tests.integration(path.join(__dirname, ".."), {
 					console.log(`Setup configuration for ${harness.adapterName}`);
 
 					// Setup adapter configuration
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
 					const data = await harness.objects.getObjectAsync(`system.config`);
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+
 					const systemSecret: string = data?.native?.secret;
 					await harness.changeAdapterConfig(harness.adapterName, {
 						native: {
@@ -635,7 +635,6 @@ tests.integration(path.join(__dirname, ".."), {
 
 /* Helper functions */
 async function getState(harness: TestHarness, stateName: string): Promise<ioBroker.State> {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 	return (await Promise.resolve(harness.states.getStateAsync(stateName))) as ioBroker.State;
 }
 
@@ -647,4 +646,3 @@ function encrypt(key: string, value: string): string {
 
 	return `$/aes-192-cbc:${iv.toString("hex")}:${encrypted.toString("hex")}`;
 }
-

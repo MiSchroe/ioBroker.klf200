@@ -1,9 +1,9 @@
-import { GatewayCommand } from "klf-200-api";
-import { Gateway } from "./gateway.js";
-import { Group } from "./groups.js";
-import { Limitation } from "./limitations.js";
-import { Product } from "./products.js";
-import { Scene } from "./scenes.js";
+import type { GatewayCommand } from "klf-200-api";
+import type { Gateway } from "./gateway.js";
+import type { Group } from "./groups.js";
+import type { Limitation } from "./limitations.js";
+import type { Product } from "./products.js";
+import type { Scene } from "./scenes.js";
 
 export type CommandSetProduct = {
 	command: "SetProduct";

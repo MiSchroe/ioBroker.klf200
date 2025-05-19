@@ -1,16 +1,16 @@
 import {
-	ActionContext,
-	DeviceInfo,
+	type ActionContext,
+	type DeviceInfo,
+	type InstanceDetails,
+	type JsonFormData,
+	type JsonFormSchema,
+	type RefreshResponse,
 	DeviceManagement,
-	InstanceDetails,
-	JsonFormData,
-	JsonFormSchema,
-	RefreshResponse,
 } from "@iobroker/dm-utils";
-import { ProgressDialog } from "@iobroker/dm-utils/build/ProgressDialog";
+import type { ProgressDialog } from "@iobroker/dm-utils/build/ProgressDialog";
 import assert from "assert";
 import { ActuatorType } from "klf-200-api";
-import { Klf200 } from "../klf200Adapter";
+import type { Klf200 } from "../klf200Adapter";
 
 type instanceActionType = "discover" | "addGroup" | "addScene" | "sendToRemote" | "receiveFromRemote";
 type productActionType = "deleteProduct" | "renameProduct" | "winkProduct";
@@ -27,6 +27,9 @@ type GroupEditDialogData = {
 
 type GroupEditResultData = Omit<GroupEditDialogData, "dialogTitle">;
 
+/**
+ * KLF200 Device Management
+ */
 export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 	protected override async listDevices(): Promise<DeviceInfo[]> {
 		this.adapter.log.debug(`KLF200DeviceManagement: listDevices called.`);
@@ -298,9 +301,8 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				);
 			}
 			return Promise.resolve({ refresh: true });
-		} else {
-			return Promise.resolve({ refresh: false });
 		}
+		return Promise.resolve({ refresh: false });
 	}
 
 	private async handleProductRename(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
@@ -328,9 +330,8 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				);
 			}
 			return { refresh: true };
-		} else {
-			return { refresh: false };
 		}
+		return { refresh: false };
 	}
 
 	private async handleProductWink(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
@@ -392,11 +393,13 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			// Group the products by actuator type ID.
 			// Only products with the same type can be in the same group.
 			const productsByTypeMap = new Map<ActuatorType, string[]>();
-			for (const product of this.adapter.Products?.Products) {
-				if (!productsByTypeMap.has(product.TypeID)) {
-					productsByTypeMap.set(product.TypeID, []);
+			if (this.adapter.Products && this.adapter.Products.Products) {
+				for (const product of this.adapter.Products.Products) {
+					if (!productsByTypeMap.has(product.TypeID)) {
+						productsByTypeMap.set(product.TypeID, []);
+					}
+					productsByTypeMap.get(product.TypeID)?.push(`data.cb_${product.NodeID} === true`);
 				}
-				productsByTypeMap.get(product.TypeID)?.push(`data.cb_${product.NodeID} === true`);
 			}
 
 			// Create the disabled conditions
@@ -404,7 +407,9 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			for (const actuatorType of productsByTypeMap.keys()) {
 				let condition = "";
 				for (const otherActuatorType of productsByTypeMap.keys()) {
-					if (otherActuatorType === actuatorType) continue; // Skip if it's the same type
+					if (otherActuatorType === actuatorType) {
+						continue;
+					} // Skip if it's the same type
 					const addCondition = productsByTypeMap.get(otherActuatorType)?.join(" || ");
 					if (addCondition !== undefined && addCondition !== "") {
 						condition = condition === "" ? addCondition : [condition, addCondition].join(" || ");
@@ -416,30 +421,32 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			}
 
 			// Create list
-			for (const product of this.adapter.Products?.Products) {
-				if (product) {
-					const cbName = `cb_${product.NodeID}`;
-					form.items[cbName] = {
-						type: "checkbox",
-						xs: 2,
-						newLine: true,
-						label: `${product.NodeID}`,
-						disabled: conditionsMap.get(product.TypeID),
-					};
-					form.items[`${product.NodeID}_name`] = {
-						type: "staticText",
-						text: product.Name,
-						tooltip: ActuatorType[product.TypeID],
-						data: product.TypeID,
-						disabled: conditionsMap.get(product.TypeID),
-						controlStyle: {},
-					};
-					formData[cbName] = groupEditDialogData.products.includes(product.NodeID);
+			if (this.adapter.Products && this.adapter.Products.Products) {
+				for (const product of this.adapter.Products.Products) {
+					if (product) {
+						const cbName = `cb_${product.NodeID}`;
+						form.items[cbName] = {
+							type: "checkbox",
+							xs: 2,
+							newLine: true,
+							label: `${product.NodeID}`,
+							disabled: conditionsMap.get(product.TypeID),
+						};
+						form.items[`${product.NodeID}_name`] = {
+							type: "staticText",
+							text: product.Name,
+							tooltip: ActuatorType[product.TypeID],
+							data: product.TypeID,
+							disabled: conditionsMap.get(product.TypeID),
+							controlStyle: {},
+						};
+						formData[cbName] = groupEditDialogData.products.includes(product.NodeID);
 
-					if (!productsByTypeMap.has(product.TypeID)) {
-						productsByTypeMap.set(product.TypeID, []);
+						if (!productsByTypeMap.has(product.TypeID)) {
+							productsByTypeMap.set(product.TypeID, []);
+						}
+						productsByTypeMap.get(product.TypeID)?.push(cbName);
 					}
-					productsByTypeMap.get(product.TypeID)?.push(cbName);
 				}
 			}
 		}
@@ -447,7 +454,9 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			data: formData,
 			title: groupEditDialogData.dialogTitle,
 		});
-		if (resultFormData === undefined) return undefined;
+		if (resultFormData === undefined) {
+			return undefined;
+		}
 
 		const result: GroupEditResultData = {
 			groupId: groupEditDialogData.groupId,
@@ -455,7 +464,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			products: [],
 		};
 		if (this.adapter.Products) {
-			for (const product of this.adapter.Products?.Products) {
+			for (const product of this.adapter.Products.Products) {
 				if (product) {
 					const cbName = `cb_${product.NodeID}`;
 					if (resultFormData[cbName]) {
@@ -475,16 +484,15 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		});
 		if (newGroup === undefined) {
 			return { refresh: false };
-		} else {
-			try {
-				await this.adapter.onAddGroup(newGroup.groupName || "", newGroup.products);
-			} catch (error) {
-				await context?.showMessage(
-					`${await this.adapter.translate("dm-instance-creategroup-error")}\n${this.getErrorMessage(error)}.`,
-				);
-			}
-			return { refresh: true };
 		}
+		try {
+			await this.adapter.onAddGroup(newGroup.groupName || "", newGroup.products);
+		} catch (error) {
+			await context?.showMessage(
+				`${await this.adapter.translate("dm-instance-creategroup-error")}\n${this.getErrorMessage(error)}.`,
+			);
+		}
+		return { refresh: true };
 	}
 
 	private async handleEditGroup(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
@@ -505,22 +513,21 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		});
 		if (editGroup === undefined) {
 			return { refresh: false };
-		} else {
-			try {
-				await this.adapter.onChangeGroup(groupId, editGroup.groupName || "", editGroup.products);
-			} catch (error) {
-				await context?.showMessage(
-					`${await this.adapter.translate("dm-device-group-edit-error")}\n${this.getErrorMessage(error)}.`,
-				);
-			}
-			return { refresh: true };
 		}
+		try {
+			await this.adapter.onChangeGroup(groupId, editGroup.groupName || "", editGroup.products);
+		} catch (error) {
+			await context?.showMessage(
+				`${await this.adapter.translate("dm-device-group-edit-error")}\n${this.getErrorMessage(error)}.`,
+			);
+		}
+		return { refresh: true };
 	}
 
 	private async handleAddScene(context?: ActionContext): Promise<RefreshResponse> {
 		assert(context, "handleAddScene: Action context shouldn't be null or undefined.");
-		const differentNameCondition = `[${this.adapter.Scenes?.Scenes.filter((scene) => scene !== undefined)
-			.map((scene) => {
+		const differentNameCondition = `[${this.adapter.Scenes?.Scenes.filter(scene => scene !== undefined)
+			.map(scene => {
 				return `"${scene.SceneName.replace(/(\\|")/g, "\\$1")}"`;
 			})
 			.join(",")}]`;
@@ -588,9 +595,8 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				);
 			}
 			return Promise.resolve({ refresh: true });
-		} else {
-			return Promise.resolve({ refresh: false });
 		}
+		return Promise.resolve({ refresh: false });
 	}
 
 	private async handleSceneDelete(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
@@ -607,9 +613,8 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				);
 			}
 			return Promise.resolve({ refresh: true });
-		} else {
-			return Promise.resolve({ refresh: false });
 		}
+		return Promise.resolve({ refresh: false });
 	}
 
 	private async handleSceneRename(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
@@ -637,9 +642,8 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				);
 			}
 			return { refresh: true };
-		} else {
-			return { refresh: false };
 		}
+		return { refresh: false };
 	}
 
 	private async showRenameForm(
@@ -667,7 +671,9 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		const resultForm = (await context.showForm(formSchema, {
 			data: formData,
 			title: title,
-		})) as { name: string };
+		})) as {
+			name: string;
+		};
 		return resultForm?.name;
 	}
 

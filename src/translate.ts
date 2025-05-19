@@ -7,8 +7,7 @@ export interface Translate {
 	 *
 	 * @param language Target language into which the text should be translated.
 	 * @param textKey Key of the text in the i18n json files that should be translated.
-	 * @param Context Context object that should be used for substitutions in the translation.
-	 *
+	 * @param context Context object that should be used for substitutions in the translation.
 	 * @example
 	 * // ./admin/i18n/de/translations.json:
 	 * // {
@@ -16,7 +15,6 @@ export interface Translate {
 	 * // }
 	 * // returns 'Hallo Welt!'
 	 * await translateTo('de', 'helloworld');
-	 *
 	 * @example
 	 * // ./admin/i18n/de/translations.json:
 	 * // {
@@ -32,7 +30,6 @@ export interface Translate {
 	 *
 	 * @param textKey Key of the text in the i18n json files that should be translated.
 	 * @param context Context object that should be used for substitutions in the translation.
-	 *
 	 * @example
 	 * // ./admin/i18n/de/translations.json:
 	 * // {
@@ -40,7 +37,6 @@ export interface Translate {
 	 * // }
 	 * // returns 'Hallo Welt!'
 	 * await translate('helloworld');
-	 *
 	 * @example
 	 * // ./admin/i18n/de/translations.json:
 	 * // {
@@ -56,7 +52,6 @@ export interface Translate {
 	 *
 	 * @param textKey Key of the text in the i18n json files that should be translated.
 	 * @param context Context object that should be used for substitutions in the translation.
-	 *
 	 * @example
 	 * // ./admin/i18n/en/translations.json:
 	 * // {
@@ -71,7 +66,6 @@ export interface Translate {
 	 * //     de: 'Hallo Welt!'
 	 * // }
 	 * await getTranslatedObject('helloworld');
-	 *
 	 * @example
 	 * // ./admin/i18n/en/translations.json:
 	 * // {

@@ -1,7 +1,7 @@
 "use strict";
 
-import { Scene, Scenes, Velocity } from "klf-200-api";
-import { DisposalMap } from "./disposalMap";
+import type { Scene, Scenes, Velocity } from "klf-200-api";
+import type { DisposalMap } from "./disposalMap";
 import {
 	ComplexPropertyChangedHandler,
 	ComplexStateChangeHandler,
@@ -11,7 +11,19 @@ import {
 import { StateHelper } from "./util/stateHelper";
 import { ArrayCount } from "./util/utils";
 
+/**
+ * Class to setup scenes
+ */
 export class SetupScenes {
+	/**
+	 * Create all scenes known by the KLF 200 interface as channels in ioBroker.
+	 * The function will remove all channels that are not present in the provided scenes list.
+	 *
+	 * @param adapter The adapter instance.
+	 * @param scenes The list of scenes provided by the KLF 200 interface.
+	 * @param disposalMap The map of objects to dispose of.
+	 * @returns A promise that resolves when the scenes have been created.
+	 */
 	public static async createScenesAsync(
 		adapter: ioBroker.Adapter,
 		scenes: Scenes,
@@ -22,8 +34,8 @@ export class SetupScenes {
 		adapter.log.debug(`Current Scenes List: ${JSON.stringify(currentScenesList)}`);
 		// Filter current channels to contain only those, that are not present in the provided scenes list
 		const channelsToRemove = currentScenesList.filter(
-			(channel) =>
-				!scenes.Scenes.some((scene) => {
+			channel =>
+				!scenes.Scenes.some(scene => {
 					return scene && scene.SceneID === Number.parseInt(channel._id.split(".").reverse()[0]);
 				}),
 		);
@@ -85,6 +97,14 @@ export class SetupScenes {
 		disposalMap.set("scenes.refreshScenes", refreshScenesChangeHandler);
 	}
 
+	/**
+	 * Creates all objects necessary for a scene in ioBroker.
+	 *
+	 * @param adapter The adapter instance.
+	 * @param scene The scene to create objects for.
+	 * @param disposalMap The map of objects to dispose of.
+	 * @returns A promise that resolves when the objects have been created.
+	 */
 	public static async createSceneAsync(
 		adapter: ioBroker.Adapter,
 		scene: Scene,
@@ -175,10 +195,10 @@ export class SetupScenes {
 				max: 0xff,
 				desc: "Velocity of the scene.",
 				states: {
-					"0": "Default",
-					"1": "Silent",
-					"2": "Fast",
-					"255": "NotAvailable",
+					0: "Default",
+					1: "Silent",
+					2: "Fast",
+					255: "NotAvailable",
 				},
 				def: 0,
 			},
@@ -188,7 +208,7 @@ export class SetupScenes {
 		// Setup scene listeners
 		disposalMap.set(
 			`scenes.${scene.SceneID}.property.IsRunning`,
-			new ComplexPropertyChangedHandler(adapter, "IsRunning", scene, async (newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "IsRunning", scene, async newValue => {
 				await adapter.setState(`scenes.${scene.SceneID}.run`, newValue, true);
 				if (newValue === false) {
 					/*
@@ -201,7 +221,7 @@ export class SetupScenes {
 		);
 		disposalMap.set(
 			`scenes.${scene.SceneID}.property.Products`,
-			new ComplexPropertyChangedHandler(adapter, "Products", scene, async (newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "Products", scene, async newValue => {
 				await adapter.setStateChangedAsync(
 					`scenes.${scene.SceneID}.products`,
 					{
@@ -215,7 +235,7 @@ export class SetupScenes {
 
 		// Setup state listeners
 		const runStateId = `scenes.${scene.SceneID}.run`;
-		const runListener = new ComplexStateChangeHandler(adapter, runStateId, async (state) => {
+		const runListener = new ComplexStateChangeHandler(adapter, runStateId, async state => {
 			if (state !== undefined) {
 				if (state?.val === true) {
 					// Acknowledge running state
@@ -236,7 +256,7 @@ export class SetupScenes {
 		disposalMap.set(runStateId, runListener);
 
 		const stopStateId = `scenes.${scene.SceneID}.stop`;
-		const stopListener = new ComplexStateChangeHandler(adapter, stopStateId, async (state) => {
+		const stopListener = new ComplexStateChangeHandler(adapter, stopStateId, async state => {
 			if (state !== undefined) {
 				if (state?.val === true) {
 					// If the scene is running, acknowledge the stop state and stop the scene.

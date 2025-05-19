@@ -1,11 +1,12 @@
-import { MockAdapter, utils } from "@iobroker/testing";
+import { type MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
+import chaiAsPromised from "chai-as-promised";
 import {
 	ActuatorType,
-	Disposable,
+	type Disposable,
 	GW_GET_ALL_NODES_INFORMATION_NTF,
-	IConnection,
-	KLF200SocketProtocol,
+	type IConnection,
+	type KLF200SocketProtocol,
 	NodeOperatingState,
 	NodeVariation,
 	ParameterActive,
@@ -15,15 +16,14 @@ import {
 	StatusReply,
 	Velocity,
 } from "klf-200-api";
-import { EventEmitter } from "stream";
+import sinon from "sinon";
+import sinonChai from "sinon-chai";
+import type { EventEmitter } from "stream";
 import { promisify } from "util";
 import { DisposalMap } from "./disposalMap";
 import { SetupProducts } from "./setupProducts";
 import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink";
 import { StateHelper } from "./util/stateHelper";
-import sinon = require("sinon");
-import sinonChai = require("sinon-chai");
-import chaiAsPromised = require("chai-as-promised");
 
 use(sinonChai);
 use(chaiAsPromised);
@@ -60,7 +60,7 @@ const mockProducts = [mockProduct];
 describe("setupProducts", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
-	// eslint-disable-next-line @typescript-eslint/unbound-method
+
 	const { assertObjectExists, assertStateExists, assertStateHasValue, assertStateIsAcked, assertObjectCommon } =
 		utils.unit.createAsserts(database, adapter);
 
@@ -111,7 +111,7 @@ describe("setupProducts", function () {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
+
 			value: promisify(adapter[method as keyof MockAdapter]),
 			writable: true,
 		});
@@ -753,35 +753,33 @@ describe("setupProducts", function () {
 					endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
 				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const disposables: Disposable[] = [];
-				disposalMap.forEach((value) => {
+				disposalMap.forEach(value => {
 					disposables.push(value);
 				});
 				const unmappedWritableStates = objectList.rows
-					.map((value) => {
+					.map(value => {
 						// Find state in disposables (only for writable states)
 						if (
 							value.doc.type !== "state" ||
 							value.doc.common.write === false ||
-							disposables.some((disposable) => {
+							disposables.some(disposable => {
 								if (disposable instanceof BaseStateChangeHandler) {
 									return (
 										`${(adapter as unknown as ioBroker.Adapter).namespace}.${
 											disposable.StateId
 										}` === value.id
 									);
-								} else {
-									return false;
 								}
+								return false;
 							})
 						) {
 							// State found -> state is mapped
 							return undefined;
-						} else {
-							// State not mapped -> add to unmapped writable states list
-							return value.id;
 						}
+						// State not mapped -> add to unmapped writable states list
+						return value.id;
 					})
-					.filter((value) => value !== undefined);
+					.filter(value => value !== undefined);
 
 				expect(
 					unmappedWritableStates,
@@ -882,16 +880,16 @@ describe("setupProducts", function () {
 					endkey: `${adapter.namespace}.products.${mockProduct.NodeID}.\u9999`,
 				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const disposables: Disposable[] = [];
-				disposalMap.forEach((value) => {
+				disposalMap.forEach(value => {
 					disposables.push(value);
 				});
 				const unmappedWritableStates = objectList.rows
-					.map((value) => {
+					.map(value => {
 						// Find state in disposables (only for writable states)
 						if (
 							value.doc.type !== "state" ||
 							value.doc.common.read === false ||
-							disposables.some((disposable) => {
+							disposables.some(disposable => {
 								if (disposable instanceof SimplePropertyChangedHandler) {
 									return (
 										`${(adapter as unknown as ioBroker.Adapter).namespace}.${
@@ -900,19 +898,17 @@ describe("setupProducts", function () {
 									);
 								} else if (allowedUnmappedStates.includes(value.id)) {
 									return true;
-								} else {
-									return false;
 								}
+								return false;
 							})
 						) {
 							// State found -> state is mapped
 							return undefined;
-						} else {
-							// State not mapped -> add to unmapped writable states list
-							return value.id;
 						}
+						// State not mapped -> add to unmapped writable states list
+						return value.id;
 					})
-					.filter((value) => value !== undefined);
+					.filter(value => value !== undefined);
 
 				expect(
 					unmappedWritableStates,
@@ -951,7 +947,7 @@ describe("setupProducts", function () {
 				});
 
 				// Just let the asynchronous stuff run before our checks
-				await new Promise((resolve) => {
+				await new Promise(resolve => {
 					setTimeout(resolve, 0);
 				});
 
@@ -995,7 +991,7 @@ describe("setupProducts", function () {
 				});
 
 				// Just let the asynchronous stuff run before our checks
-				await new Promise((resolve) => {
+				await new Promise(resolve => {
 					setTimeout(resolve, 0);
 				});
 
@@ -1139,13 +1135,13 @@ describe("setupProducts", function () {
 			});
 			const states: string[] = ["currentPosition", "targetPosition"];
 			database.publishStateObjects(
-				...states.map((state) => {
+				...states.map(state => {
 					return { _id: `${adapter.namespace}.products.42.${state}` } as ioBroker.PartialObject;
 				}),
 			);
 
 			// Check, that old states exist
-			states.forEach((state) => assertObjectExists(`${adapter.namespace}.products.42.${state}`));
+			states.forEach(state => assertObjectExists(`${adapter.namespace}.products.42.${state}`));
 
 			adapter.getChannelsOf.callsFake(
 				(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
@@ -1169,7 +1165,7 @@ describe("setupProducts", function () {
 				new Set<string>(),
 			);
 			try {
-				states.forEach((state) =>
+				states.forEach(state =>
 					expect(
 						() => assertObjectExists(`${adapter.namespace}.products.42.${state}`),
 						`Object ${adapter.namespace}.products.42.${state} shouldn't exist anymore.`,

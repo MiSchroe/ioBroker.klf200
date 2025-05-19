@@ -2,17 +2,17 @@
 
 import {
 	ActuatorType,
-	FunctionalParameter,
-	IConnection,
+	type FunctionalParameter,
+	type IConnection,
 	LimitationType,
 	LockTime,
 	ParameterActive,
-	Product,
-	Products,
+	type Product,
+	type Products,
 	StatusType,
 } from "klf-200-api";
-import { DisposalMap } from "./disposalMap";
-import { HasConnectionInterface, HasProductsInterface } from "./interfaces";
+import type { DisposalMap } from "./disposalMap";
+import type { HasConnectionInterface, HasProductsInterface } from "./interfaces";
 import { levelConverter, roleConverter } from "./util/converter";
 import {
 	ComplexPropertyChangedHandler,
@@ -25,7 +25,20 @@ import {
 import { StateHelper } from "./util/stateHelper";
 import { ArrayCount, waitForSessionFinishedNtfAsync } from "./util/utils";
 
+/**
+ * Class to setup products
+ */
 export class SetupProducts {
+	/**
+	 * Create all products known by the KLF 200 interface as channels in ioBroker.
+	 * The function will remove all channels that are not present in the provided products list.
+	 *
+	 * @param adapter The adapter instance.
+	 * @param products The list of products provided by the KLF 200 interface.
+	 * @param disposalMap The map of objects to dispose of.
+	 * @param productLimitationError A set of product IDs which have a limitation error.
+	 * @returns A promise that resolves when the products have been created.
+	 */
 	public static async createProductsAsync(
 		adapter: ioBroker.Adapter,
 		products: Product[],
@@ -37,8 +50,8 @@ export class SetupProducts {
 		adapter.log.debug(`Current Product List: ${JSON.stringify(currentProductsList)}`);
 		// Filter current channels to contain only those, that are not present in the provided products list
 		const channelsToRemove = currentProductsList.filter(
-			(channel) =>
-				!products.some((product) => {
+			channel =>
+				!products.some(product => {
 					return product && product.NodeID === Number.parseInt(channel._id.split(".").reverse()[0]);
 				}),
 		);
@@ -78,6 +91,15 @@ export class SetupProducts {
 		);
 	}
 
+	/**
+	 * Create a single product as channel in ioBroker.
+	 *
+	 * @param adapter The adapter instance.
+	 * @param product The product to create.
+	 * @param disposalMap The map of objects to dispose of.
+	 * @param productLimitationError A set of product IDs which have a limitation error.
+	 * @returns A promise that resolves when the product has been created.
+	 */
 	public static async createProductAsync(
 		adapter: ioBroker.Adapter,
 		product: Product,
@@ -271,11 +293,11 @@ export class SetupProducts {
 				max: 0xff,
 				desc: "Node Variation",
 				states: {
-					"0": "NotSet",
-					"1": "TopHung",
-					"2": "Kip",
-					"3": "FlatRoof",
-					"4": "SkyLight",
+					0: "NotSet",
+					1: "TopHung",
+					2: "Kip",
+					3: "FlatRoof",
+					4: "SkyLight",
 				},
 			},
 			{},
@@ -329,8 +351,8 @@ export class SetupProducts {
 				max: 0xff,
 				desc: "Power save mode",
 				states: {
-					"0": "AlwaysAlive",
-					"1": "LowPowerMode",
+					0: "AlwaysAlive",
+					1: "LowPowerMode",
 				},
 			},
 			{},
@@ -385,9 +407,9 @@ export class SetupProducts {
 				max: 0xff,
 				desc: "Current run status",
 				states: {
-					"0": "ExecutionCompleted",
-					"1": "ExecutionFailed",
-					"2": "ExecutionActive",
+					0: "ExecutionCompleted",
+					1: "ExecutionFailed",
+					2: "ExecutionActive",
 				},
 			},
 			{},
@@ -422,13 +444,13 @@ export class SetupProducts {
 				max: 0xff,
 				desc: "Operating state",
 				states: {
-					"0": "NonExecuting",
-					"1": "Error",
-					"2": "NotUsed",
-					"3": "WaitingForPower",
-					"4": "Executing",
-					"5": "Done",
-					"255": "Unknown",
+					0: "NonExecuting",
+					1: "Error",
+					2: "NotUsed",
+					3: "WaitingForPower",
+					4: "Executing",
+					5: "Done",
+					255: "Unknown",
 				},
 			},
 			{},
@@ -448,50 +470,50 @@ export class SetupProducts {
 				max: 0xff,
 				desc: "Status reply",
 				states: {
-					"0": "Unknown",
-					"1": "Ok",
-					"2": "NoContact",
-					"3": "ManuallyOperated",
-					"4": "Blocked",
-					"5": "WrongSystemKey",
-					"6": "PriorityLevelLocked",
-					"7": "ReachedWrongPosition",
-					"8": "ErrorDuringExecution",
-					"9": "NoExecution",
-					"10": "Calibrating",
-					"11": "PowerConsumptionTooHigh",
-					"12": "PowerConsumptionTooLow",
-					"13": "LockPositionOpen",
-					"14": "MotionTimeTooLongCommunicationEnded",
-					"15": "ThermalProtection",
-					"16": "ProductNotOperational",
-					"17": "FilterMaintenanceNeeded",
-					"18": "BatteryLevel",
-					"19": "TargetModified",
-					"20": "ModeNotImplemented",
-					"21": "CommandIncompatibleToMovement",
-					"22": "UserAction",
-					"23": "DeadBoltError",
-					"24": "AutomaticCycleEngaged",
-					"25": "WrongLoadConnected",
-					"26": "ColourNotReachable",
-					"27": "TargetNotReachable",
-					"28": "BadIndexReceived",
-					"29": "CommandOverruled",
-					"30": "NodeWaitingForPower",
-					"223": "InformationCode",
-					"224": "ParameterLimited",
-					"225": "LimitationByLocalUser",
-					"226": "LimitationByUser",
-					"227": "LimitationByRain",
-					"228": "LimitationByTimer",
-					"230": "LimitationByUps",
-					"231": "LimitationByUnknownDevice",
-					"234": "LimitationBySAAC",
-					"235": "LimitationByWind",
-					"236": "LimitationByMyself",
-					"237": "LimitationByAutomaticCycle",
-					"238": "LimitationByEmergency",
+					0: "Unknown",
+					1: "Ok",
+					2: "NoContact",
+					3: "ManuallyOperated",
+					4: "Blocked",
+					5: "WrongSystemKey",
+					6: "PriorityLevelLocked",
+					7: "ReachedWrongPosition",
+					8: "ErrorDuringExecution",
+					9: "NoExecution",
+					10: "Calibrating",
+					11: "PowerConsumptionTooHigh",
+					12: "PowerConsumptionTooLow",
+					13: "LockPositionOpen",
+					14: "MotionTimeTooLongCommunicationEnded",
+					15: "ThermalProtection",
+					16: "ProductNotOperational",
+					17: "FilterMaintenanceNeeded",
+					18: "BatteryLevel",
+					19: "TargetModified",
+					20: "ModeNotImplemented",
+					21: "CommandIncompatibleToMovement",
+					22: "UserAction",
+					23: "DeadBoltError",
+					24: "AutomaticCycleEngaged",
+					25: "WrongLoadConnected",
+					26: "ColourNotReachable",
+					27: "TargetNotReachable",
+					28: "BadIndexReceived",
+					29: "CommandOverruled",
+					30: "NodeWaitingForPower",
+					223: "InformationCode",
+					224: "ParameterLimited",
+					225: "LimitationByLocalUser",
+					226: "LimitationByUser",
+					227: "LimitationByRain",
+					228: "LimitationByTimer",
+					230: "LimitationByUps",
+					231: "LimitationByUnknownDevice",
+					234: "LimitationBySAAC",
+					235: "LimitationByWind",
+					236: "LimitationByMyself",
+					237: "LimitationByAutomaticCycle",
+					238: "LimitationByEmergency",
 				},
 			},
 			{},
@@ -579,30 +601,30 @@ export class SetupProducts {
 				max: 0b0000001111111111,
 				desc: "Product type",
 				states: {
-					"0": "NO_TYPE",
-					"1": "VenetianBlind",
-					"2": "RollerShutter",
-					"3": "Awning",
-					"4": "WindowOpener",
-					"5": "GarageOpener",
-					"6": "Light",
-					"7": "GateOpener",
-					"8": "RollingDoorOpener",
-					"9": "Lock",
-					"10": "Blind",
-					"12": "Beacon",
-					"13": "DualShutter",
-					"14": "HeatingTemperatureInterface",
-					"15": "OnOffSwitch",
-					"16": "HorizontalAwning",
-					"17": "ExternalVentianBlind",
-					"18": "LouvreBlind",
-					"19": "CurtainTrack",
-					"20": "VentilationPoint",
-					"21": "ExteriorHeating",
-					"22": "HeatPump",
-					"23": "IntrusionAlarm",
-					"24": "SwingingShutter",
+					0: "NO_TYPE",
+					1: "VenetianBlind",
+					2: "RollerShutter",
+					3: "Awning",
+					4: "WindowOpener",
+					5: "GarageOpener",
+					6: "Light",
+					7: "GateOpener",
+					8: "RollingDoorOpener",
+					9: "Lock",
+					10: "Blind",
+					12: "Beacon",
+					13: "DualShutter",
+					14: "HeatingTemperatureInterface",
+					15: "OnOffSwitch",
+					16: "HorizontalAwning",
+					17: "ExternalVentianBlind",
+					18: "LouvreBlind",
+					19: "CurtainTrack",
+					20: "VentilationPoint",
+					21: "ExteriorHeating",
+					22: "HeatPump",
+					23: "IntrusionAlarm",
+					24: "SwingingShutter",
 				},
 			},
 			{},
@@ -622,10 +644,10 @@ export class SetupProducts {
 				max: 0xff,
 				desc: "Velocity of the product",
 				states: {
-					"0": "Default",
-					"1": "Silent",
-					"2": "Fast",
-					"255": "NotAvailable",
+					0: "Default",
+					1: "Silent",
+					2: "Fast",
+					255: "NotAvailable",
 				},
 			},
 			{},
@@ -798,20 +820,19 @@ export class SetupProducts {
 						max: 255,
 						desc: `DEPRECATED! Use the min/max version of this state: Origin of the limitation for ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
 						states: {
-							"1": "User remote control",
-							"2": "Rain sensor",
-							"3": "Timer controlled",
-							"5": "UPS unit",
-							"8": "Stand alone automatic controls (SAAC)",
-							"9": "Wind sensor",
-							"11": "Electric load shed",
-							"12": "Local light sensor",
-							"13": "Unspecified environment sensor",
-							"255": "Emergency controlled",
+							1: "User remote control",
+							2: "Rain sensor",
+							3: "Timer controlled",
+							5: "UPS unit",
+							8: "Stand alone automatic controls (SAAC)",
+							9: "Wind sensor",
+							11: "Electric load shed",
+							12: "Local light sensor",
+							13: "Unspecified environment sensor",
+							255: "Emergency controlled",
 						},
 					},
 					{},
-					// eslint-disable-next-line deprecation/deprecation
 					product.getLimitationOriginator(parameter),
 				);
 				adapter.log.warn(
@@ -832,16 +853,16 @@ export class SetupProducts {
 						max: 255,
 						desc: `Origin of the limitation for the min value of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
 						states: {
-							"1": "User remote control",
-							"2": "Rain sensor",
-							"3": "Timer controlled",
-							"5": "UPS unit",
-							"8": "Stand alone automatic controls (SAAC)",
-							"9": "Wind sensor",
-							"11": "Electric load shed",
-							"12": "Local light sensor",
-							"13": "Unspecified environment sensor",
-							"255": "Emergency controlled",
+							1: "User remote control",
+							2: "Rain sensor",
+							3: "Timer controlled",
+							5: "UPS unit",
+							8: "Stand alone automatic controls (SAAC)",
+							9: "Wind sensor",
+							11: "Electric load shed",
+							12: "Local light sensor",
+							13: "Unspecified environment sensor",
+							255: "Emergency controlled",
 						},
 					},
 					{},
@@ -861,16 +882,16 @@ export class SetupProducts {
 						max: 255,
 						desc: `Origin of the limitation for the max value of ${parameter === ParameterActive.MP ? "main parameter" : `functional parameter ${parameter.valueOf()}`}`,
 						states: {
-							"1": "User remote control",
-							"2": "Rain sensor",
-							"3": "Timer controlled",
-							"5": "UPS unit",
-							"8": "Stand alone automatic controls (SAAC)",
-							"9": "Wind sensor",
-							"11": "Electric load shed",
-							"12": "Local light sensor",
-							"13": "Unspecified environment sensor",
-							"255": "Emergency controlled",
+							1: "User remote control",
+							2: "Rain sensor",
+							3: "Timer controlled",
+							5: "UPS unit",
+							8: "Stand alone automatic controls (SAAC)",
+							9: "Wind sensor",
+							11: "Electric load shed",
+							12: "Local light sensor",
+							13: "Unspecified environment sensor",
+							255: "Emergency controlled",
 						},
 					},
 					{},
@@ -892,7 +913,6 @@ export class SetupProducts {
 						states: statesLimitationTimeRaw,
 					},
 					{},
-					// eslint-disable-next-line deprecation/deprecation
 					product.getLimitationTimeRaw(parameter),
 				);
 				adapter.log.warn(
@@ -938,7 +958,6 @@ export class SetupProducts {
 
 				let limitationTime = NaN;
 				try {
-					// eslint-disable-next-line deprecation/deprecation
 					limitationTime = product.getLimitationTime(parameter) || NaN;
 				} catch (error) {
 					if (error instanceof Error && error.message === "Lock time value out of range.") {
@@ -1053,7 +1072,7 @@ export class SetupProducts {
 		adapter.log.debug(`Setup change event listeners for product ${product.Name}.`);
 		disposalMap.set(
 			`products.${product.NodeID}.property.name`,
-			new ComplexPropertyChangedHandler(adapter, "Name", product, async (newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "Name", product, async newValue => {
 				await adapter.extendObject(`products.${product.NodeID}`, {
 					common: {
 						name: newValue,
@@ -1194,7 +1213,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.limitationMinRaw`,
-			new ComplexPropertyChangedHandler(adapter, "LimitationMinRaw", product, async (_newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "LimitationMinRaw", product, async _newValue => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1218,7 +1237,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.limitationMaxRaw`,
-			new ComplexPropertyChangedHandler(adapter, "LimitationMaxRaw", product, async (_newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "LimitationMaxRaw", product, async _newValue => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1242,7 +1261,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.limitationOriginator`,
-			new ComplexPropertyChangedHandler(adapter, "LimitationOriginator", product, async (_newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "LimitationOriginator", product, async _newValue => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1252,7 +1271,6 @@ export class SetupProducts {
 				]) {
 					await adapter.setStateChangedAsync(
 						`products.${product.NodeID}.limitation${ParameterActive[parameter]}Originator`,
-						// eslint-disable-next-line deprecation/deprecation
 						product.getLimitationOriginator(parameter),
 						true,
 					);
@@ -1262,7 +1280,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.limitationOriginatorMin`,
-			new ComplexPropertyChangedHandler(adapter, "LimitationOriginatorMin", product, async (_newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "LimitationOriginatorMin", product, async _newValue => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1281,7 +1299,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.limitationOriginatorMax`,
-			new ComplexPropertyChangedHandler(adapter, "LimitationOriginatorMax", product, async (_newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "LimitationOriginatorMax", product, async _newValue => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1300,7 +1318,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.limitationTimeRaw`,
-			new ComplexPropertyChangedHandler(adapter, "LimitationTimeRaw", product, async (_newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "LimitationTimeRaw", product, async _newValue => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1310,14 +1328,12 @@ export class SetupProducts {
 				]) {
 					await adapter.setStateChangedAsync(
 						`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRaw`,
-						// eslint-disable-next-line deprecation/deprecation
 						product.getLimitationTimeRaw(parameter),
 						true,
 					);
 
 					let limitationTime = NaN;
 					try {
-						// eslint-disable-next-line deprecation/deprecation
 						limitationTime = Math.round((product.getLimitationTime(parameter) || NaN) * 100);
 					} catch (error) {
 						if (error instanceof Error && error.message === "Lock time value out of range.") {
@@ -1336,7 +1352,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.limitationTimeRawMin`,
-			new ComplexPropertyChangedHandler(adapter, "LimitationTimeRawMin", product, async (_newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "LimitationTimeRawMin", product, async _newValue => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1370,7 +1386,7 @@ export class SetupProducts {
 
 		disposalMap.set(
 			`products.${product.NodeID}.property.limitationTimeRawMax`,
-			new ComplexPropertyChangedHandler(adapter, "LimitationTimeRawMax", product, async (_newValue) => {
+			new ComplexPropertyChangedHandler(adapter, "LimitationTimeRawMax", product, async _newValue => {
 				for (const parameter of [
 					ParameterActive.MP,
 					ParameterActive.FP1,
@@ -1424,7 +1440,7 @@ export class SetupProducts {
 		disposalMap.set(placementStateId, placementHandler);
 
 		const targetPositionStateId = `products.${product.NodeID}.targetPosition`;
-		const targetPositionHandler = new ComplexStateChangeHandler(adapter, targetPositionStateId, async (state) => {
+		const targetPositionHandler = new ComplexStateChangeHandler(adapter, targetPositionStateId, async state => {
 			if (state !== undefined && state?.val !== undefined) {
 				/*
 						Read the states of targetFP1Raw - targetFP4Raw.
@@ -1460,7 +1476,7 @@ export class SetupProducts {
 		const targetPositionRawHandler = new ComplexStateChangeHandler(
 			adapter,
 			targetPositionRawStateId,
-			async (state) => {
+			async state => {
 				if (state !== undefined && state?.val !== undefined) {
 					/*
 						Read the states of targetFP1Raw - targetFP4Raw.
@@ -1494,7 +1510,7 @@ export class SetupProducts {
 		disposalMap.set(targetPositionRawStateId, targetPositionRawHandler);
 
 		const stopStateId = `products.${product.NodeID}.stop`;
-		const stopListener = new ComplexStateChangeHandler(adapter, stopStateId, async (state) => {
+		const stopListener = new ComplexStateChangeHandler(adapter, stopStateId, async state => {
 			if (state !== undefined) {
 				if (state?.val === true) {
 					// Acknowledge stop state first
@@ -1508,7 +1524,7 @@ export class SetupProducts {
 		disposalMap.set(stopStateId, stopListener);
 
 		const winkStateId = `products.${product.NodeID}.wink`;
-		const winkListener = new ComplexStateChangeHandler(adapter, winkStateId, async (state) => {
+		const winkListener = new ComplexStateChangeHandler(adapter, winkStateId, async state => {
 			if (state !== undefined) {
 				if (state?.val === true) {
 					// Acknowledge wink state first
@@ -1529,7 +1545,7 @@ export class SetupProducts {
 		}
 
 		const refreshProductStateId = `products.${product.NodeID}.refreshProduct`;
-		const refreshProductListener = new ComplexStateChangeHandler(adapter, refreshProductStateId, async (state) => {
+		const refreshProductListener = new ComplexStateChangeHandler(adapter, refreshProductStateId, async state => {
 			if (state !== undefined) {
 				if (state?.val === true) {
 					// Acknowledge refreshProduct state first
@@ -1561,7 +1577,7 @@ export class SetupProducts {
 		const refreshLimitationListener = new ComplexStateChangeHandler(
 			adapter,
 			refreshLimitationStateId,
-			async (state) => {
+			async state => {
 				if (state !== undefined) {
 					if (state?.val === true) {
 						// Acknowledge refreshLimitation state first
@@ -1582,8 +1598,8 @@ export class SetupProducts {
 							}
 						}
 
-						for await (const parameter of parameters) {
-							for await (const limitationType of [
+						for (const parameter of parameters) {
+							for (const limitationType of [
 								LimitationType.MinimumLimitation,
 								LimitationType.MaximumLimitation,
 							]) {

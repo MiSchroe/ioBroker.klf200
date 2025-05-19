@@ -1,6 +1,7 @@
-import { MockAdapter, utils } from "@iobroker/testing";
+import { type MockAdapter, utils } from "@iobroker/testing";
 import { expect } from "chai";
 import { Component } from "klf-200-api";
+import sinon from "sinon";
 import { promisify } from "util";
 import { setState } from "../../test/mockHelper";
 import { DisposalMap } from "../disposalMap";
@@ -12,8 +13,7 @@ import {
 	SimplePropertyChangedHandler,
 	SimpleStateChangeHandler,
 } from "./propertyLink";
-import { AsyncMethodParameters } from "./utils";
-import sinon = require("sinon");
+import type { AsyncMethodParameters } from "./utils";
 
 class TestComponent extends Component {
 	private _BooleanValue = false;
@@ -68,7 +68,6 @@ class TestComponent extends Component {
 describe("PropertyLink", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
-	// eslint-disable-next-line @typescript-eslint/unbound-method
 	const { assertStateHasValue, assertStateIsAcked } = utils.unit.createAsserts(database, adapter);
 
 	// Promisify additional methods
@@ -76,18 +75,17 @@ describe("PropertyLink", function () {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
 			value: promisify(adapter[method as keyof MockAdapter]),
 			writable: true,
 		});
 	}
 
 	// Stub additional methods
-	if (!adapter["getMaxListeners"]) {
-		adapter["getMaxListeners"] = sinon.stub().returns(100);
+	if (!adapter.getMaxListeners) {
+		adapter.getMaxListeners = sinon.stub().returns(100);
 	}
-	if (!adapter["setMaxListeners"]) {
-		adapter["setMaxListeners"] = sinon.stub();
+	if (!adapter.setMaxListeners) {
+		adapter.setMaxListeners = sinon.stub();
 	}
 
 	afterEach(() => {

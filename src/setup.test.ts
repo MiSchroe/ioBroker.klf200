@@ -1,12 +1,12 @@
-import { MockAdapter, utils } from "@iobroker/testing";
+import { type MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
-import { Gateway, GatewayState, GatewaySubState, IConnection, SoftwareVersion } from "klf-200-api";
-import { EventEmitter } from "stream";
+import chaiAsPromised from "chai-as-promised";
+import { Gateway, GatewayState, GatewaySubState, type IConnection, SoftwareVersion } from "klf-200-api";
+import sinon from "sinon";
+import sinonChai from "sinon-chai";
+import type { EventEmitter } from "stream";
 import { promisify } from "util";
 import { Setup } from "./setup";
-import sinon = require("sinon");
-import sinonChai = require("sinon-chai");
-import chaiAsPromised = require("chai-as-promised");
 
 use(sinonChai);
 use(chaiAsPromised);
@@ -25,7 +25,6 @@ const mockConnection = new MockConnect();
 describe("Setup", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
-	// eslint-disable-next-line @typescript-eslint/unbound-method
 	const { assertObjectExists } = utils.unit.createAsserts(database, adapter);
 
 	// Fake getChannelsOf
@@ -87,7 +86,6 @@ describe("Setup", function () {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
 			value: promisify(adapter[method as keyof MockAdapter]),
 			writable: true,
 		});
@@ -260,7 +258,7 @@ describe("Setup", function () {
 					endkey: `${adapter.namespace}.gateway.\u9999`,
 				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const unmappedWritableStates = objectList.rows
-					.map((value) => {
+					.map(value => {
 						// Find state in disposables (only for writable states)
 						if (
 							value.doc.type !== "state" ||
@@ -269,12 +267,11 @@ describe("Setup", function () {
 						) {
 							// State found -> state is mapped
 							return undefined;
-						} else {
-							// State not mapped -> add to unmapped writable states list
-							return value.id;
 						}
+						// State not mapped -> add to unmapped writable states list
+						return value.id;
 					})
-					.filter((value) => value !== undefined);
+					.filter(value => value !== undefined);
 
 				expect(
 					unmappedWritableStates,
@@ -306,7 +303,7 @@ describe("Setup", function () {
 					endkey: `${adapter.namespace}.gateway.\u9999`,
 				})) as ioBroker.NonNullCallbackReturnTypeOf<ioBroker.GetObjectListCallback<ioBroker.Object>>;
 				const unmappedWritableStates = objectList.rows
-					.map((value) => {
+					.map(value => {
 						// Find state in disposables (only for writable states)
 						if (
 							value.doc.type !== "state" ||
@@ -331,12 +328,11 @@ describe("Setup", function () {
 						) {
 							// State found -> state is mapped
 							return undefined;
-						} else {
-							// State not mapped -> add to unmapped writable states list
-							return value.id;
 						}
+						// State not mapped -> add to unmapped writable states list
+						return value.id;
 					})
-					.filter((value) => value !== undefined);
+					.filter(value => value !== undefined);
 
 				expect(
 					unmappedWritableStates,

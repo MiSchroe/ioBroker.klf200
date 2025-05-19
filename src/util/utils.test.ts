@@ -1,11 +1,18 @@
 // Don't delete this line otherwise on save some weird changes will be introduced!
 import { utils } from "@iobroker/testing";
 import { expect, use } from "chai";
-import { Disposable, GW_SESSION_FINISHED_NTF, GatewayCommand, IConnection, IGW_FRAME_RCV, Listener } from "klf-200-api";
+import chaiAsPromised from "chai-as-promised";
+import {
+	type Disposable,
+	GW_SESSION_FINISHED_NTF,
+	type GatewayCommand,
+	type IConnection,
+	type IGW_FRAME_RCV,
+	type Listener,
+} from "klf-200-api";
+import sinon from "sinon";
+import sinonChai from "sinon-chai";
 import { ArrayCount, convertErrorToString, waitForSessionFinishedNtfAsync } from "./utils";
-import sinon = require("sinon");
-import sinonChai = require("sinon-chai");
-import chaiAsPromised = require("chai-as-promised");
 
 use(sinonChai);
 use(chaiAsPromised);
@@ -20,7 +27,7 @@ class MockConnect implements IConnection {
 	loginAsync = sinon.stub();
 	logoutAsync = sinon.stub();
 	sendFrameAsync = sinon.stub();
-	public on(handler: Listener<IGW_FRAME_RCV>, _filter?: GatewayCommand[] | undefined): Disposable {
+	public on(handler: Listener<IGW_FRAME_RCV>, _filter?: GatewayCommand[]): Disposable {
 		this._onHandler = handler;
 		return new MockDisposable();
 	}
@@ -58,14 +65,14 @@ describe("utils", function () {
 
 	describe("convertErrorToString", function () {
 		it("should return the provided string on string input", function () {
-			const testData: string = "42";
-			const expectedResult: string = "42";
+			const testData = "42";
+			const expectedResult = "42";
 			expect(convertErrorToString(testData)).to.be.equal(expectedResult);
 		});
 
 		it("should return the provided message on Error input", function () {
 			const testData: Error = new Error("42");
-			const expectedResult: string = "Error: 42";
+			const expectedResult = "Error: 42";
 			expect(convertErrorToString(testData)).to.be.equal(expectedResult);
 		});
 	});

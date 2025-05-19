@@ -2,12 +2,25 @@ import debugModule from "debug";
 import { lookup } from "dns/promises";
 import { Connection } from "klf-200-api";
 import * as ping from "net-ping";
-import { connect, ConnectionOptions, TLSSocket } from "tls";
-import { Translate } from "./translate";
+import { type ConnectionOptions, type TLSSocket, connect } from "tls";
+import type { Translate } from "./translate";
 
 const debug = debugModule("connectionTest");
 
+/**
+ * Represents the result of a connection test step.
+ */
 export class ConnectionTestResult {
+	/**
+	 * Constructor for a ConnectionTestResult.
+	 *
+	 * @param stepOrder The step number of the test in the order of execution.
+	 * @param stepName A short description of the test step.
+	 * @param run A boolean indicating whether the test step was run.
+	 * @param success A boolean indicating whether the test step was successful.
+	 * @param message A string message giving more information about the test result.
+	 * @param result An optional result object that can be an Error, a string or a number.
+	 */
 	public constructor(
 		public readonly stepOrder: number,
 		public readonly stepName: string,
@@ -18,11 +31,52 @@ export class ConnectionTestResult {
 	) {}
 }
 
+/**
+ * Interface for connection test operations.
+ */
 export interface IConnectionTest {
+	/**
+	 * Resolves the given hostname to an IP address.
+	 *
+	 * @param hostname The hostname to resolve.
+	 * @returns A promise that resolves to the IP address as a string.
+	 */
 	resolveName(hostname: string): Promise<string>;
+
+	/**
+	 * Pings the given IP address and returns the latency in milliseconds.
+	 *
+	 * @param ipadress The IP address to ping.
+	 * @returns A promise that resolves to the latency in milliseconds.
+	 */
 	ping(ipadress: string): Promise<number>;
+	/**
+	 * Establishes a secure connection to the given hostname and port.
+	 *
+	 * @param hostname The hostname to connect to.
+	 * @param port The port to connect to.
+	 * @param connectionOptions Optional connection options.
+	 * @returns A promise that resolves when the connection is established.
+	 */
 	connectTlsSocket(hostname: string, port: number, connectionOptions?: ConnectionOptions): Promise<void>;
+	/**
+	 * Logs in to the given hostname with the given password.
+	 *
+	 * @param hostname The hostname to log in to.
+	 * @param password The password to use for logging in.
+	 * @param connectionOptions Optional connection options.
+	 * @returns A promise that resolves when the login is successful.
+	 */
 	login(hostname: string, password: string, connectionOptions?: ConnectionOptions): Promise<void>;
+	/**
+	 * Runs connection tests for the given hostname and password.
+	 *
+	 * @param hostname The hostname to test.
+	 * @param password The password to use for logging in.
+	 * @param connectionOptions Optional connection options.
+	 * @param progressCallback Optional callback to receive progress updates.
+	 * @returns A promise that resolves to an array of ConnectionTestResult objects.
+	 */
 	runTests(
 		hostname: string,
 		password: string,
@@ -31,9 +85,23 @@ export interface IConnectionTest {
 	): Promise<ConnectionTestResult[]>;
 }
 
+/**
+ * Implements connection test operations for KLF-200 devices.
+ */
 export class ConnectionTest implements IConnectionTest {
+	/**
+	 * Creates an instance of ConnectionTest.
+	 *
+	 * @param translation The translation service to use for messages.
+	 */
 	constructor(private readonly translation: Translate) {}
 
+	/**
+	 * Resolves the given hostname to an IP address.
+	 *
+	 * @param hostname The hostname to resolve.
+	 * @returns A promise that resolves to the IP address as a string.
+	 */
 	async resolveName(hostname: string): Promise<string> {
 		debug(`Resolving name for hostname: ${hostname}`);
 		const result = await lookup(hostname, { all: false, verbatim: false });
@@ -41,6 +109,12 @@ export class ConnectionTest implements IConnectionTest {
 		return result.address;
 	}
 
+	/**
+	 * Pings the given IP address and returns the latency in milliseconds.
+	 *
+	 * @param ipadress The IP address to ping.
+	 * @returns A promise that resolves to the latency in milliseconds.
+	 */
 	async ping(ipadress: string): Promise<number> {
 		debug(`Pinging IP address: ${ipadress}`);
 		const session = ping.createSession({ packetSize: 64 });
@@ -66,6 +140,14 @@ export class ConnectionTest implements IConnectionTest {
 		}
 	}
 
+	/**
+	 * Establishes a secure connection to the given hostname and port.
+	 *
+	 * @param hostname The hostname to connect to.
+	 * @param port The port to connect to.
+	 * @param connectionOptions Optional connection options.
+	 * @returns A promise that resolves when the connection is established.
+	 */
 	async connectTlsSocket(hostname: string, port: number, connectionOptions?: ConnectionOptions): Promise<void> {
 		debug(`Connecting to TLS socket at ${hostname}:${port}`);
 		return new Promise<void>((resolve, reject) => {
@@ -79,7 +161,7 @@ export class ConnectionTest implements IConnectionTest {
 						resolve();
 					} else {
 						debug(`TLS connection authorization error: ${sckt?.authorizationError.message}`);
-						reject(sckt?.authorizationError);
+						reject(sckt?.authorizationError as Error);
 						sckt = undefined;
 					}
 				});
@@ -92,11 +174,19 @@ export class ConnectionTest implements IConnectionTest {
 				if (sckt) {
 					sckt.destroy();
 				}
-				reject(error);
+				reject(error as Error);
 			}
 		});
 	}
 
+	/**
+	 * Logs in to the given hostname with the given password.
+	 *
+	 * @param hostname The hostname to log in to.
+	 * @param password The password to use for logging in.
+	 * @param connectionOptions Optional connection options.
+	 * @returns A promise that resolves when the login is successful.
+	 */
 	async login(hostname: string, password: string, connectionOptions?: ConnectionOptions): Promise<void> {
 		const connection = new Connection(hostname, connectionOptions!);
 		try {
@@ -106,6 +196,15 @@ export class ConnectionTest implements IConnectionTest {
 		}
 	}
 
+	/**
+	 * Runs connection tests for the given hostname and password.
+	 *
+	 * @param hostname The hostname to test.
+	 * @param password The password to use for logging in.
+	 * @param connectionOptions Optional connection options.
+	 * @param progressCallback Optional callback to report progress.
+	 * @returns A promise that resolves to an array of ConnectionTestResult objects.
+	 */
 	async runTests(
 		hostname: string,
 		password: string,
