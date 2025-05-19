@@ -44,8 +44,6 @@
 				"automaticRebootCronTime": {
 					"type": "cron",
 					"label": "Cron pattern for automatic reboot",
-					"complex": true,
-					"simple": true,
 					"hidden": "!data.enableAutomaticReboot",
 					"xs": 12,
 					"sm": 12,

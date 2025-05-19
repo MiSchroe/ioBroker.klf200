@@ -1,7 +1,7 @@
 services:
     iobroker:
         restart: always
-        image: buanet/iobroker:latest-v9
+        image: buanet/iobroker:latest-v10
         container_name: iobroker
         hostname: iobroker
         ports:
