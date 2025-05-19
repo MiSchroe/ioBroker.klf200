@@ -6,5 +6,5 @@ export default {
 	// uncomment next line if you prefer double quotes
 	singleQuote: false,
 	useTabs: true,
-	endOfLine: "crlf",
+	endOfLine: "auto",
 };
