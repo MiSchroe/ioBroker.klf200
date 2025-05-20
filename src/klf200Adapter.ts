@@ -156,6 +156,7 @@ import path from "path";
 import { env } from "process";
 import { timeout } from "promise-timeout";
 import { checkServerIdentity as checkServerIdentityOriginal, type ConnectionOptions } from "tls";
+import { fileURLToPath, pathToFileURL } from "url";
 import { ConnectionTest, ConnectionTestResult } from "./connectionTest.js";
 import { KLF200DeviceManagement } from "./deviceManagement/klf200DeviceManagement.js";
 import { DisposalMap } from "./disposalMap.js";
@@ -1922,20 +1923,46 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * @returns The version of the klf-200-api module.
 	 */
 	private async getKlfApiVersion(): Promise<string> {
-		let klf200ModulePath = require.resolve("klf-200-api");
-		this.log.debug(`klf-200-api found in path ${klf200ModulePath}`);
-
-		while (path.basename(klf200ModulePath) !== "klf-200-api") {
-			// Go up one step until we have found the root of the module:
-			klf200ModulePath = path.dirname(klf200ModulePath);
+		// Try to resolve klf-200-api/package.json using import.meta.resolve (Node.js 20+)
+		let klf200PackageJsonUrl: URL | undefined;
+		if (typeof (import.meta as any).resolve === "function") {
+			try {
+				const resolved = await (import.meta as any).resolve("klf-200-api/package.json", import.meta.url);
+				klf200PackageJsonUrl = new URL(resolved);
+			} catch {
+				// fallback below
+			}
 		}
 
-		const klf200PackageJsonPath = path.join(klf200ModulePath, "package.json");
+		// Fallback: try to find klf-200-api/package.json relative to this file
+		if (!klf200PackageJsonUrl) {
+			// __dirname equivalent in ESM
+			const __filename = fileURLToPath(import.meta.url);
+			const __dirname = path.dirname(__filename);
 
-		const moduleInfo = JSON.parse(await fs.readFile(klf200PackageJsonPath, "utf8")) as {
-			version: string;
-		};
+			// Look for klf-200-api in node_modules or parallel folder
+			const possiblePaths = [
+				path.join(__dirname, "node_modules", "klf-200-api", "package.json"),
+				path.join(__dirname, "..", "klf-200-api", "package.json"),
+				path.join(__dirname, "..", "node_modules", "klf-200-api", "package.json"),
+				path.join(__dirname, "..", "..", "klf-200-api", "package.json"),
+			];
+			for (const p of possiblePaths) {
+				try {
+					await fs.access(p, fs.constants.R_OK);
+					klf200PackageJsonUrl = pathToFileURL(p);
+					break;
+				} catch {
+					// try next
+				}
+			}
+		}
 
+		if (!klf200PackageJsonUrl) {
+			throw new Error("Could not locate klf-200-api/package.json");
+		}
+
+		const moduleInfo = JSON.parse(await fs.readFile(klf200PackageJsonUrl, "utf8")) as { version: string };
 		return moduleInfo.version;
 	}
 

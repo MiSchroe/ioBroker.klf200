@@ -3,7 +3,7 @@ import { lookup } from "dns/promises";
 import { Connection } from "klf-200-api";
 import * as ping from "net-ping";
 import { type ConnectionOptions, type TLSSocket, connect } from "tls";
-import type { Translate } from "./translate";
+import type { Translate } from "./translate.js";
 
 const debug = debugModule("connectionTest");
 

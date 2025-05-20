@@ -23,6 +23,7 @@ import path from "path";
 import { exit } from "process";
 import { TimeoutError, timeout } from "promise-timeout";
 import { Server, type TLSSocket, type TlsOptions } from "tls";
+import { fileURLToPath } from "url";
 import { ArrayBuilder } from "./ArrayBuilder.js";
 import { bitArrayToArray } from "./BitArray.js";
 import type { AcknowledgeMessage, CommandWithGuid } from "./commands.js";
@@ -31,6 +32,9 @@ import type { Group } from "./groups.js";
 import type { Limitation } from "./limitations.js";
 import type { Product } from "./products.js";
 import type { Scene } from "./scenes.js";
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 
 const debug = debugModule(`${path.parse(__filename).name}:server`);
 
@@ -407,10 +411,10 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				if (currentPassword === actualPassword) {
 					actualPassword = newPassword;
 					return [
-						addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_CHANGE_CFM, [GW_COMMON_STATUS.ERROR]),
+						addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_CHANGE_CFM, [GW_COMMON_STATUS.SUCCESS]),
 					];
 				}
-				break;
+				return [addCommandAndLengthToBuffer(GatewayCommand.GW_PASSWORD_CHANGE_CFM, [GW_COMMON_STATUS.ERROR])];
 			}
 
 			case GatewayCommand.GW_GET_VERSION_REQ:

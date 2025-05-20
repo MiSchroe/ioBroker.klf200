@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ActuatorType } from "klf-200-api";
-import { EnumConverter, levelConverter, roleConverter } from "./converter";
+import { EnumConverter, levelConverter, roleConverter } from "./converter.js";
 
 describe("converter => convert", function () {
 	it("should return window for ActuatorType.WindowOpener", function () {

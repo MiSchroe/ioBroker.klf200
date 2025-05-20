@@ -12,7 +12,7 @@ import {
 } from "klf-200-api";
 import sinon from "sinon";
 import sinonChai from "sinon-chai";
-import { ArrayCount, convertErrorToString, waitForSessionFinishedNtfAsync } from "./utils";
+import { ArrayCount, convertErrorToString, waitForSessionFinishedNtfAsync } from "./utils.js";
 
 use(sinonChai);
 use(chaiAsPromised);

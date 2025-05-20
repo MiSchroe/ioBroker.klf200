@@ -1,4 +1,4 @@
-import type { Klf200Message } from "./klf200Message";
+import type { Klf200Message } from "./klf200Message.js";
 
 /**
  * Interface for a connection test message.

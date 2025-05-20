@@ -20,10 +20,10 @@ import sinon from "sinon";
 import sinonChai from "sinon-chai";
 import type { EventEmitter } from "stream";
 import { promisify } from "util";
-import { DisposalMap } from "./disposalMap";
-import { SetupProducts } from "./setupProducts";
-import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink";
-import { StateHelper } from "./util/stateHelper";
+import { DisposalMap } from "./disposalMap.js";
+import { SetupProducts } from "./setupProducts.js";
+import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink.js";
+import { StateHelper } from "./util/stateHelper.js";
 
 use(sinonChai);
 use(chaiAsPromised);

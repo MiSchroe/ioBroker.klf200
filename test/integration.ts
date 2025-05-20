@@ -1,5 +1,5 @@
 import { tests } from "@iobroker/testing";
-import type { TestHarness } from "@iobroker/testing/build/tests/integration/lib/harness";
+import type { TestHarness } from "@iobroker/testing/build/tests/integration/lib/harness.js";
 import { expect } from "chai";
 import crypto from "crypto";
 import { readFileSync } from "fs";
@@ -15,8 +15,12 @@ import {
 	Velocity,
 } from "klf-200-api";
 import path from "path";
-import { MockServerController } from "./mocks/mockServerController";
-import { setupHouseMockup, setupHouseMockupNonConsecutiveProductNumbers } from "./setupHouse";
+import { fileURLToPath } from "url";
+import { MockServerController } from "./mocks/mockServerController.js";
+import { setupHouseMockup, setupHouseMockupNonConsecutiveProductNumbers } from "./setupHouse.js";
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 
 // Run integration tests - See https://github.com/ioBroker/testing for a detailed explanation and further options
 tests.integration(path.join(__dirname, ".."), {

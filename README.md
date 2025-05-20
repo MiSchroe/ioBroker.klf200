@@ -266,6 +266,7 @@ The values of the state provide multiple manipulation modes:
 - (Michael Schroeder) [#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Split the limitation originator state for min and max into separate ones.
 - (Michael Schroeder) [#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Migrated to ESLint v9.
 - (Michael Schroeder) [#248](https://github.com/MiSchroe/ioBroker.klf200/issues/248), [#294](https://github.com/MiSchroe/ioBroker.klf200/issues/294), [#297](https://github.com/MiSchroe/ioBroker.klf200/issues/297) Closed items regarding invalid jsonConfig.json. Fix must be provided by Admin adapter.
+- (Michael Schroeder) [#254](https://github.com/MiSchroe/ioBroker.klf200/issues/254) Future-proof development: Converted adapter to ESM.
 
 ### 1.3.5 (2024-11-20)
 

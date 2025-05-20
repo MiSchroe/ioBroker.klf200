@@ -2,8 +2,8 @@
 
 import type { EventEmitter } from "events";
 import type { Component, Disposable, PropertyChangedEvent } from "klf-200-api";
-import { PromiseQueue } from "./promiseQueue";
-import type { AsyncMethodName, AsyncMethodParameters, AsyncMethodType } from "./utils";
+import { PromiseQueue } from "./promiseQueue.js";
+import type { AsyncMethodName, AsyncMethodParameters, AsyncMethodType } from "./utils.js";
 
 /**
  * Maps any property value to a string, number, boolean or null.

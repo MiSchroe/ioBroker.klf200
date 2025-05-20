@@ -16,13 +16,13 @@ import sinon from "sinon";
 import sinonChai from "sinon-chai";
 import type { EventEmitter } from "stream";
 import { promisify } from "util";
-import { DisposalMap } from "./disposalMap";
-import { SetupGroups } from "./setupGroups";
+import { DisposalMap } from "./disposalMap.js";
+import { SetupGroups } from "./setupGroups.js";
 import {
 	BaseStateChangeHandler,
 	ComplexPropertyChangedHandler,
 	SimplePropertyChangedHandler,
-} from "./util/propertyLink";
+} from "./util/propertyLink.js";
 
 use(sinonChai);
 use(chaiAsPromised);
