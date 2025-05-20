@@ -7,10 +7,10 @@ import {
 	type RefreshResponse,
 	DeviceManagement,
 } from "@iobroker/dm-utils";
-import type { ProgressDialog } from "@iobroker/dm-utils/build/ProgressDialog";
+import type { ProgressDialog } from "@iobroker/dm-utils/build/ProgressDialog.js";
 import assert from "assert";
 import { ActuatorType } from "klf-200-api";
-import type { Klf200 } from "../klf200Adapter";
+import type { Klf200 } from "../klf200Adapter.js";
 
 type instanceActionType = "discover" | "addGroup" | "addScene" | "sendToRemote" | "receiveFromRemote";
 type productActionType = "deleteProduct" | "renameProduct" | "winkProduct";

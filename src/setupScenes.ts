@@ -1,15 +1,15 @@
 "use strict";
 
 import type { Scene, Scenes, Velocity } from "klf-200-api";
-import type { DisposalMap } from "./disposalMap";
+import type { DisposalMap } from "./disposalMap.js";
 import {
 	ComplexPropertyChangedHandler,
 	ComplexStateChangeHandler,
 	EchoStateChangeHandler,
 	MethodCallStateChangeHandler,
-} from "./util/propertyLink";
-import { StateHelper } from "./util/stateHelper";
-import { ArrayCount } from "./util/utils";
+} from "./util/propertyLink.js";
+import { StateHelper } from "./util/stateHelper.js";
+import { ArrayCount } from "./util/utils.js";
 
 /**
  * Class to setup scenes

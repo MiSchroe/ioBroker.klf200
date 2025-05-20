@@ -3,8 +3,8 @@ import { expect } from "chai";
 import { Component } from "klf-200-api";
 import sinon from "sinon";
 import { promisify } from "util";
-import { setState } from "../../test/mockHelper";
-import { DisposalMap } from "../disposalMap";
+import { setState } from "../../test/mockHelper.js";
+import { DisposalMap } from "../disposalMap.js";
 import {
 	ComplexPropertyChangedHandler,
 	ComplexStateChangeHandler,
@@ -12,8 +12,8 @@ import {
 	MethodCallStateChangeHandler,
 	SimplePropertyChangedHandler,
 	SimpleStateChangeHandler,
-} from "./propertyLink";
-import type { AsyncMethodParameters } from "./utils";
+} from "./propertyLink.js";
+import type { AsyncMethodParameters } from "./utils.js";
 
 class TestComponent extends Component {
 	private _BooleanValue = false;

@@ -6,7 +6,7 @@ import sinon from "sinon";
 import sinonChai from "sinon-chai";
 import type { EventEmitter } from "stream";
 import { promisify } from "util";
-import { Setup } from "./setup";
+import { Setup } from "./setup.js";
 
 use(sinonChai);
 use(chaiAsPromised);

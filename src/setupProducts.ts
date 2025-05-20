@@ -11,9 +11,9 @@ import {
 	type Products,
 	StatusType,
 } from "klf-200-api";
-import type { DisposalMap } from "./disposalMap";
-import type { HasConnectionInterface, HasProductsInterface } from "./interfaces";
-import { levelConverter, roleConverter } from "./util/converter";
+import type { DisposalMap } from "./disposalMap.js";
+import type { HasConnectionInterface, HasProductsInterface } from "./interfaces.js";
+import { levelConverter, roleConverter } from "./util/converter.js";
 import {
 	ComplexPropertyChangedHandler,
 	ComplexStateChangeHandler,
@@ -21,9 +21,9 @@ import {
 	PercentagePropertyChangedHandler,
 	SimplePropertyChangedHandler,
 	SimpleStateChangeHandler,
-} from "./util/propertyLink";
-import { StateHelper } from "./util/stateHelper";
-import { ArrayCount, waitForSessionFinishedNtfAsync } from "./util/utils";
+} from "./util/propertyLink.js";
+import { StateHelper } from "./util/stateHelper.js";
+import { ArrayCount, waitForSessionFinishedNtfAsync } from "./util/utils.js";
 
 /**
  * Class to setup products

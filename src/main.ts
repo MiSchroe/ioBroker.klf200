@@ -5,12 +5,19 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import type * as utils from "@iobroker/adapter-core";
-import { Klf200 } from "./klf200Adapter";
+import url from "node:url";
+import { Klf200 } from "./klf200Adapter.js";
 
-if (require.main !== module) {
-	// Export the constructor in compact mode
-	module.exports = (options: Partial<utils.AdapterOptions> | undefined) => new Klf200(options);
-} else {
-	// otherwise start the instance directly
-	(() => new Klf200())();
+const modulePath = url.fileURLToPath(import.meta.url);
+if (process.argv[1] === modulePath) {
+	new Klf200();
+}
+/**
+ * Starts the adapter instance.
+ *
+ * @param {Partial<utils.AdapterOptions> | undefined} [options] - Optional settings for the adapter.
+ * @returns {Klf200} The new adapter instance.
+ */
+export default function startAdapter(options: Partial<utils.AdapterOptions> | undefined): Klf200 {
+	return new Klf200(options);
 }

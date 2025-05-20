@@ -2,7 +2,7 @@ import { utils } from "@iobroker/testing";
 import { use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinonChai from "sinon-chai";
-import { StateHelper } from "./stateHelper";
+import { StateHelper } from "./stateHelper.js";
 
 use(sinonChai);
 use(chaiAsPromised);

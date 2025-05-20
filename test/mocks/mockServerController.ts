@@ -4,12 +4,16 @@ import debugModule from "debug";
 import deepEqual from "deep-eql";
 import { readFileSync } from "fs";
 import { Connection, type IConnection } from "klf-200-api";
-import { join } from "path";
+import path, { join } from "path";
 import { timeout } from "promise-timeout";
 import type { ConnectionOptions } from "tls";
+import { fileURLToPath } from "url";
 import { type AcknowledgeMessage, type Command, type CommandWithGuid, KillCommand } from "./mockServer/commands.js";
 
 const debug = debugModule(`mockServerController:client`);
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 
 export class MockServerController {
 	serverProcess: ChildProcess;

@@ -1,17 +1,17 @@
 "use strict";
 
 import { type Group, GroupType, type Product } from "klf-200-api";
-import type { DisposalMap } from "./disposalMap";
-import { levelConverter, roleGroupTypeConverter } from "./util/converter";
+import type { DisposalMap } from "./disposalMap.js";
+import { levelConverter, roleGroupTypeConverter } from "./util/converter.js";
 import {
 	ComplexPropertyChangedHandler,
 	PercentageStateChangeHandler,
 	SetterStateChangeHandler,
 	SimplePropertyChangedHandler,
 	SimpleStateChangeHandler,
-} from "./util/propertyLink";
-import { StateHelper } from "./util/stateHelper";
-import { ArrayCount } from "./util/utils";
+} from "./util/propertyLink.js";
+import { StateHelper } from "./util/stateHelper.js";
+import { ArrayCount } from "./util/utils.js";
 
 /**
  * Class to setup groups

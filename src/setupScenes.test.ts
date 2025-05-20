@@ -6,14 +6,14 @@ import sinon from "sinon";
 import sinonChai from "sinon-chai";
 import type { EventEmitter } from "stream";
 import { promisify } from "util";
-import { setState } from "../test/mockHelper";
-import { DisposalMap } from "./disposalMap";
-import { SetupScenes } from "./setupScenes";
+import { setState } from "../test/mockHelper.js";
+import { DisposalMap } from "./disposalMap.js";
+import { SetupScenes } from "./setupScenes.js";
 import {
 	BaseStateChangeHandler,
 	ComplexPropertyChangedHandler,
 	SimplePropertyChangedHandler,
-} from "./util/propertyLink";
+} from "./util/propertyLink.js";
 
 use(sinonChai);
 use(chaiAsPromised);

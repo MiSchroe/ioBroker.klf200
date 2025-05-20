@@ -8,5 +8,5 @@
 		"declaration": false
 	},
 	"include": ["src/**/*.ts", "./types/**/*.d.ts"],
-	"exclude": ["src/{**/*,*}.test.ts"]
+	"exclude": ["src/**/*.test.ts", "src/*.test.ts", "test/**/*.ts", "test/**/*.js"]
 }

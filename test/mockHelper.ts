@@ -1,8 +1,8 @@
 "use strict";
 
 import type { MockAdapter } from "@iobroker/testing";
-import type { DisposalMap } from "../src/disposalMap";
-import { BaseStateChangeHandler } from "../src/util/propertyLink";
+import type { DisposalMap } from "../src/disposalMap.js";
+import { BaseStateChangeHandler } from "../src/util/propertyLink.js";
 
 // Function to simulate the event handling
 export async function setState(

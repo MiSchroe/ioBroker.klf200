@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import type { Disposable } from "klf-200-api";
 import Sinon from "sinon";
-import { DisposalMap } from "./disposalMap";
+import { DisposalMap } from "./disposalMap.js";
 
 class DisposableSpy implements Disposable {
 	public DisposeSpy = Sinon.spy();

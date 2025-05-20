@@ -2,8 +2,8 @@
 
 import type { Disposable, Gateway } from "klf-200-api";
 import { TimeoutError } from "promise-timeout";
-import { ComplexStateChangeHandler } from "./util/propertyLink";
-import { StateHelper } from "./util/stateHelper";
+import { ComplexStateChangeHandler } from "./util/propertyLink.js";
+import { StateHelper } from "./util/stateHelper.js";
 
 /**
  * Class to setup the adapter

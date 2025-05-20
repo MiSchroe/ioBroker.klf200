@@ -1,23 +1,28 @@
-const gulp = require("gulp");
-const fs = require("node:fs");
-const cp = require("node:child_process");
+import { task, src as _src, dest, series } from "gulp";
+import { existsSync, readdirSync, statSync, rmdirSync, unlinkSync, readFileSync, writeFileSync } from "node:fs";
+import { exec as _exec, fork } from "node:child_process";
+import { fileURLToPath } from "url";
+import path from "node:path";
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 const src = `${__dirname}/src-admin/`;
 
 function deleteFoldersRecursive(path, exceptions) {
-	if (fs.existsSync(path)) {
-		const files = fs.readdirSync(path);
+	if (existsSync(path)) {
+		const files = readdirSync(path);
 		for (const file of files) {
 			const curPath = `${path}/${file}`;
 			if (exceptions && exceptions.find(e => curPath.endsWith(e))) {
 				continue;
 			}
 
-			const stat = fs.statSync(curPath);
+			const stat = statSync(curPath);
 			if (stat.isDirectory()) {
 				deleteFoldersRecursive(curPath);
-				fs.rmdirSync(curPath);
+				rmdirSync(curPath);
 			} else {
-				fs.unlinkSync(curPath);
+				unlinkSync(curPath);
 			}
 		}
 	}
@@ -33,7 +38,7 @@ function npmInstall() {
 
 		// System call used for update of js-controller itself,
 		// because during the installation npm packet will be deleted too, but some files must be loaded even during the installation process.
-		const exec = cp.exec;
+		const exec = _exec;
 		const child = exec(cmd, { cwd });
 
 		child.stderr.pipe(process.stderr);
@@ -53,12 +58,12 @@ function npmInstall() {
 }
 
 function build() {
-	const version = JSON.parse(fs.readFileSync(`${__dirname}/package.json`).toString("utf8")).version;
-	const data = JSON.parse(fs.readFileSync(`${src}package.json`).toString("utf8"));
+	const version = JSON.parse(readFileSync(`${__dirname}/package.json`).toString("utf8")).version;
+	const data = JSON.parse(readFileSync(`${src}package.json`).toString("utf8"));
 
 	data.version = version;
 
-	fs.writeFileSync(`${src}package.json`, JSON.stringify(data, null, 4));
+	writeFileSync(`${src}package.json`, JSON.stringify(data, null, 4));
 
 	return new Promise((resolve, reject) => {
 		const options = {
@@ -69,14 +74,14 @@ function build() {
 		console.log(options.cwd);
 
 		let script = `${src}node_modules/@craco/craco/dist/bin/craco.js`;
-		if (!fs.existsSync(script)) {
+		if (!existsSync(script)) {
 			script = `${__dirname}/node_modules/@craco/craco/dist/bin/craco.js`;
 		}
-		if (!fs.existsSync(script)) {
+		if (!existsSync(script)) {
 			console.error(`Cannot find execution file: ${script}`);
 			reject(`Cannot find execution file: ${script}`);
 		} else {
-			const child = cp.fork(script, ["build"], options);
+			const child = fork(script, ["build"], options);
 			child.stdout.on("data", data => console.log(data.toString()));
 			child.stderr.on("data", data => console.log(data.toString()));
 			child.on("close", code => {
@@ -87,29 +92,29 @@ function build() {
 	});
 }
 
-gulp.task("0-clean", done => {
+task("0-clean", done => {
 	deleteFoldersRecursive(`${__dirname}/admin/custom`);
 	deleteFoldersRecursive(`${__dirname}/src-admin/build`);
 	done();
 });
 
-gulp.task("1-npm", async () => npmInstall());
-gulp.task("2-compile", async () => build());
+task("1-npm", async () => npmInstall());
+task("2-compile", async () => build());
 
-gulp.task("3-copy", () =>
+task("3-copy", () =>
 	Promise.all([
-		gulp
-			.src(["src-admin/build/static/js/*.js", "!src-admin/build/static/js/vendors*.js"])
-			.pipe(gulp.dest("admin/custom/static/js")),
-		gulp
-			.src(["src-admin/build/static/js/*.map", "!src-admin/build/static/js/vendors*.map"])
-			.pipe(gulp.dest("admin/custom/static/js")),
-		gulp.src(["src-admin/build/customComponents.js"]).pipe(gulp.dest("admin/custom")),
-		gulp.src(["src-admin/build/customComponents.js.map"]).pipe(gulp.dest("admin/custom")),
-		gulp.src(["src-admin/src/i18n/*.json"]).pipe(gulp.dest("admin/custom/i18n")),
+		_src(["src-admin/build/static/js/*.js", "!src-admin/build/static/js/vendors*.js"]).pipe(
+			dest("admin/custom/static/js"),
+		),
+		_src(["src-admin/build/static/js/*.map", "!src-admin/build/static/js/vendors*.map"]).pipe(
+			dest("admin/custom/static/js"),
+		),
+		_src(["src-admin/build/customComponents.js"]).pipe(dest("admin/custom")),
+		_src(["src-admin/build/customComponents.js.map"]).pipe(dest("admin/custom")),
+		_src(["src-admin/src/i18n/*.json"]).pipe(dest("admin/custom/i18n")),
 	]),
 );
 
-gulp.task("build", gulp.series(["0-clean", "1-npm", "2-compile", "3-copy"]));
+task("build", series(["0-clean", "1-npm", "2-compile", "3-copy"]));
 
-gulp.task("default", gulp.series(["build"]));
+task("default", series(["build"]));
