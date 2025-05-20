@@ -21,7 +21,7 @@
 		"node": ">= 18"
 	},
 	"dependencies": {
-		"@iobroker/adapter-core": "^3.2.2",
+		"@iobroker/adapter-core": "^3.2.3",
 		"@iobroker/dm-utils": "^0.6.11",
 		"klf-200-api": "^6.0.0",
 		"net-ping": "^1.2.4",
