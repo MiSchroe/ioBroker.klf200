@@ -15,8 +15,8 @@ if (process.argv[1] === modulePath) {
 /**
  * Starts the adapter instance.
  *
- * @param {Partial<utils.AdapterOptions> | undefined} [options] - Optional settings for the adapter.
- * @returns {Klf200} The new adapter instance.
+ * @param [options] - Optional settings for the adapter.
+ * @returns The new adapter instance.
  */
 export default function startAdapter(options: Partial<utils.AdapterOptions> | undefined): Klf200 {
 	return new Klf200(options);
