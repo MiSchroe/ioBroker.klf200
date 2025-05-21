@@ -69,8 +69,7 @@
 		"typescript": "^5.5.4"
 	},
 	"type": "module",
-	"main": "./build/main.js",
-	"exports": "./build/main.js",
+	"main": "build/main.js",
 	"scripts": {
 		"prebuild:adapter": "rimraf ./build",
 		"build:ts": "tsc -p tsconfig.build.json",
