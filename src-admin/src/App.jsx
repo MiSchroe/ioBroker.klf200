@@ -2,13 +2,13 @@
 import React from "react";
 import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
 
-import { GenericApp, I18n, Loader, ConfigGeneric, AdminConnection } from "@iobroker/adapter-react-v5";
+import { GenericApp, I18n, Loader, AdminConnection } from "@iobroker/adapter-react-v5";
 import { Box, FormControlLabel, Switch } from "@mui/material";
 
 import ConnectionTestComponent from "./ConnectionTestComponent";
 
 const styles = {
-	app: (theme) => ({
+	app: theme => ({
 		backgroundColor: theme.palette.background.default,
 		color: theme.palette.text.primary,
 		height: "100%",
@@ -37,6 +37,8 @@ class App extends GenericApp {
 				SSLFingerprint: "",
 			},
 			alive: false,
+			ready: false,
+			// loaded: true,
 			testResults: [
 				{
 					stepOrder: 1,
@@ -62,18 +64,14 @@ class App extends GenericApp {
 					message: `Can't establish a secure connection: No matching protocol found.`,
 					result: new Error("No matching protocol found."),
 				},
-				{
-					stepOrder: 4,
-					stepName: "Login",
-					run: false,
-				},
+				{ stepOrder: 4, stepName: "Login", run: false },
 			],
 		};
 
 		I18n.setLanguage((navigator.language || navigator.userLanguage || "en").substring(0, 2).toLowerCase());
 	}
 
-	handleAliveChange = (event) => {
+	handleAliveChange = event => {
 		this.setState({ alive: event.target.checked });
 		this.socket.setState(`system.adapter.klf200.${this.props.instance}.alive`, {
 			val: event.target.checked,
@@ -108,7 +106,12 @@ class App extends GenericApp {
 						<div style={styles.item}>
 							<FormControlLabel
 								label="alive"
-								control={<Switch checked={this.state.alive} onChange={this.handleAliveChange} />}
+								control={
+									<Switch
+										checked={this.state.alive}
+										onChange={this.handleAliveChange}
+									/>
+								}
 							/>
 						</div>
 						<div style={styles.item}>

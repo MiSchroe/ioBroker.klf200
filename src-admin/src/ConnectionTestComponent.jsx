@@ -17,7 +17,7 @@ const ConnectionTestComponent = ({ adapterName, instance, socket, data }) => {
 	const [testRunning, setTestRunning] = useState(false);
 	const [testResults, setTestResults] = useState([]);
 
-	useEffect(() => {
+	useEffect(async () => {
 		const onAliveChanged = (id, state) => {
 			const alive = state ? state.val : false;
 			setAlive(alive);
@@ -34,7 +34,7 @@ const ConnectionTestComponent = ({ adapterName, instance, socket, data }) => {
 
 			await socket.subscribeState(`system.adapter.${adapterName}.${instance}.alive`, onAliveChanged);
 		};
-		getAliveState();
+		getAliveState().catch(console.error);
 
 		// Return a cleanup function to unsubscribe from events
 		return () => {
@@ -73,7 +73,7 @@ const ConnectionTestComponent = ({ adapterName, instance, socket, data }) => {
 
 			await socket.subscribeState(`${adapterName}.${instance}.TestConnection.*`, onChangedState);
 		};
-		getRunningState();
+		getRunningState().catch(console.error);
 
 		// Return a cleanup function to unsubscribe from events
 		return () => {
@@ -125,4 +125,3 @@ const ConnectionTestComponent = ({ adapterName, instance, socket, data }) => {
 };
 
 export default ConnectionTestComponent;
-
