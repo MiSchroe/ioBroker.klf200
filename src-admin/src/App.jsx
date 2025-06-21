@@ -109,7 +109,7 @@ class App extends GenericApp {
 								control={
 									<Switch
 										checked={this.state.alive}
-										onChange={this.handleAliveChange}
+										onChange={event => this.handleAliveChange(event)}
 									/>
 								}
 							/>
@@ -125,6 +125,7 @@ class App extends GenericApp {
 									name: "ConfigCustomKlf200Set/Components/ConnectionTestComponent",
 									type: "custom",
 								}}
+								onChange={data => this.setState({ data: data })}
 							/>
 						</div>
 					</Box>

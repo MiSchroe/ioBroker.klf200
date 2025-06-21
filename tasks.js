@@ -25,9 +25,11 @@ function copy() {
 if (process.argv.find(arg => arg === "--0-clean")) {
 	clean();
 } else if (process.argv.find(arg => arg === "--1-npm")) {
-	npmInstall(srcAdmin);
+	npmInstall(srcAdmin).catch(e => console.error(`Cannot install packages: ${e.toString()}`));
 } else if (process.argv.find(arg => arg === "--2-compile")) {
-	buildReact(srcAdmin, { rootDir: srcAdmin, vite: true });
+	buildReact(srcAdmin, { rootDir: srcAdmin, vite: true }).catch(e =>
+		console.error(`Cannot install packages: ${e.toString()}`),
+	);
 } else if (process.argv.find(arg => arg === "--3-copy")) {
 	copy();
 } else if (process.argv.includes("--default")) {

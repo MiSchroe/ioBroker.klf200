@@ -17,7 +17,7 @@ const ConnectionTestComponent = ({ adapterName, instance, socket, data }) => {
 	const [testRunning, setTestRunning] = useState(false);
 	const [testResults, setTestResults] = useState([]);
 
-	useEffect(async () => {
+	useEffect(() => {
 		const onAliveChanged = (id, state) => {
 			const alive = state ? state.val : false;
 			setAlive(alive);
