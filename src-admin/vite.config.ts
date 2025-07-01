@@ -1,8 +1,9 @@
-import react from "@vitejs/plugin-react";
-import commonjs from "vite-plugin-commonjs";
 import { moduleFederationShared } from "@iobroker/adapter-react-v5/modulefederation.admin.config";
 import { federation } from "@module-federation/vite";
-import pack from "./package.json";
+import react from "@vitejs/plugin-react";
+import commonjs from "vite-plugin-commonjs";
+import vitetsConfigPaths from "vite-tsconfig-paths";
+import pack from "./package.json" assert { type: "json" };
 
 const config = {
 	plugins: [
@@ -10,11 +11,12 @@ const config = {
 			manifest: true,
 			name: "ConfigCustomKlf200Set",
 			filename: "customComponents.js",
-			exposes: { "./Components": "./src/Components.jsx" },
+			exposes: { "./Components": "./src/Components.tsx" },
 			remotes: {},
 			shared: moduleFederationShared(pack),
 		}),
 		react(),
+		vitetsConfigPaths(),
 		commonjs(),
 	],
 	server: {
@@ -32,7 +34,7 @@ const config = {
 		target: "chrome89",
 		outDir: "./build",
 		rollupOptions: {
-			onwarn(warning, warn) {
+			onwarn(warning: { code: string }, warn: (warning: { code: string }) => void): void {
 				// Suppress "Module level directives cause errors when bundled" warnings
 				if (warning.code === "MODULE_LEVEL_DIRECTIVE") {
 					return;
