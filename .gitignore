@@ -4,6 +4,9 @@ node_modules
 nbproject
 build/*
 src-admin/build/*
+/src/.__mf__temp
+/src-admin/.__mf__temp
+/src/.__mf__temp/
 # Include to help with ioBroker adapter checker
 !build/main.js
 
