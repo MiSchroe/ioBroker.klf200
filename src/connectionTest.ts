@@ -1,8 +1,8 @@
 import debugModule from "debug";
 import { lookup } from "dns/promises";
 import { Connection } from "klf-200-api";
-import * as ping from "net-ping";
-import { type ConnectionOptions, type TLSSocket, connect } from "tls";
+import ping from "ping";
+import { connect, type ConnectionOptions, type TLSSocket } from "tls";
 import type { Translate } from "./translate.js";
 
 const debug = debugModule("connectionTest");
@@ -117,25 +117,19 @@ export class ConnectionTest implements IConnectionTest {
 	 */
 	async ping(ipadress: string): Promise<number> {
 		debug(`Pinging IP address: ${ipadress}`);
-		const session = ping.createSession({ packetSize: 64 });
+		const pingConfig: ping.PingConfig = {
+			packetSize: 64,
+		};
 		try {
-			return new Promise<number>((resolve, reject) => {
-				session.pingHost(ipadress, (err, _target, sent, rcvd) => {
-					if (err) {
-						debug(`Ping error: ${err.message}`);
-						session.close();
-						reject(err);
-					} else {
-						const latency = rcvd.valueOf() - sent.valueOf();
-						debug(`Ping successful, latency: ${latency}ms`);
-						session.close();
-						resolve(latency);
-					}
-				});
-			});
+			const result = await ping.promise.probe(ipadress, pingConfig);
+			if (!result.alive) {
+				debug(`Ping failed`);
+				throw new Error(`Ping failed. ${result.output}`);
+			}
+			debug(`Ping successful, latency: ${result.time}ms`);
+			return result.time === "unknown" ? 0 : result.time;
 		} catch (error) {
 			debug(`Ping exception: ${(error as Error).message}`);
-			session.close();
 			throw error;
 		}
 	}

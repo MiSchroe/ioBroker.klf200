@@ -83,12 +83,12 @@ describe("connectionTest", function () {
 			}
 		});
 
-		it(`ping to localhost should fail`, async function () {
+		it(`ping to localhost should pass`, async function () {
 			if (RunsInCITests) {
 				this.skip();
 			} else {
 				const sut = new ConnectionTest(new TranslationMock());
-				await expect(sut.ping("localhost")).to.be.rejected;
+				await expect(sut.ping("localhost")).to.be.fulfilled;
 			}
 		});
 
