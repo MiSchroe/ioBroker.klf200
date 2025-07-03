@@ -1,0 +1,1 @@
+import{C as e,i as t}from"./ConfigCustomKlf200Set__mf_v__runtimeInit__mf_v__-DQsZ6hgT.js";const{loadShare:o}=t,{initPromise:i}=e,r=i.then(_=>o("@mui/material",{customShareInfo:{shareConfig:{singleton:!0,strictVersion:!1,requiredVersion:"*"}}})),a=await r.then(_=>_());var n=a;export{n as C};
