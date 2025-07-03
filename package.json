@@ -59,7 +59,7 @@
 		"deep-eql": "^5.0.2",
 		"mocha": "^11.7.1",
 		"mocha-junit-reporter": "^2.2.1",
-		"sinon": "^20.0.0",
+		"sinon": "^21.0.0",
 		"sinon-chai": "^4.0.0",
 		"source-map-support": "^0.5.21",
 		"tsx": "^4.19.4",
