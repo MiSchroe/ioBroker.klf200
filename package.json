@@ -74,7 +74,7 @@
 		"prebuild:adapter": "clean-dir ./build",
 		"build:ts": "tsc -p tsconfig.build.json",
 		"build:test": "tsc -p tsconfig.build.json --showConfig",
-		"build:admin": "tsx tasks --default",
+		"build:admin": "node tasks --default",
 		"build:adapter": "tsc -p tsconfig.build.json",
 		"build": "npm run build:adapter && npm run build:admin",
 		"watch:ts": "tsc -p tsconfig.build.json --watch",
