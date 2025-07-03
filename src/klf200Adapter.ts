@@ -468,7 +468,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * await translate('helloworld-parameter', { who: 'Welt' });
 	 */
 	public async translate(textKey: string, context?: Record<string, string>): Promise<string> {
-		return this.translateTo(this.systemConfig?.language || "en", textKey, context);
+		return this.translateTo(this.language || "en", textKey, context);
 	}
 
 	private allLanguagesLoaded = false;

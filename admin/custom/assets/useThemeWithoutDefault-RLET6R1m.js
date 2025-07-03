@@ -1,0 +1,1 @@
+import{C as o}from"./ConfigCustomKlf200Set__loadShare__react__loadShare__-DI7P7JuQ.js";import{Z as n}from"./createTheme-79NF-9PC.js";function r(e){return Object.keys(e).length===0}function u(e=null){const t=o.useContext(n);return!t||r(t)?e:t}export{u};

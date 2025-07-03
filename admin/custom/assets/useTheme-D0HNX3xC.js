@@ -1,0 +1,1 @@
+import"./ConfigCustomKlf200Set__loadShare__react__loadShare__-DI7P7JuQ.js";import{d as t}from"./defaultTheme-BAsLUdyL.js";import{a as m,T as r}from"./createTheme-79NF-9PC.js";import{u as s}from"./useThemeWithoutDefault-RLET6R1m.js";const o=m();function a(e=o){return s(e)}function h(){const e=a(t);return e[r]||e}export{h as a,a as u};
