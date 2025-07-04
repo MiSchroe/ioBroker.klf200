@@ -270,6 +270,7 @@ The values of the state provide multiple manipulation modes:
 - (Michael Schroeder) [#292](https://github.com/MiSchroe/ioBroker.klf200/issues/292) Fixed findings from Adapter Checker.
 - (Michael Schroeder) [#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Upgrade dependencies.
 - (Michael Schroeder) [#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Switch using ping instead of net-ping for compatibility with Node v24.
+- (Michael Schroeder) [#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Support Node V24.
 
 ### 1.3.5 (2024-11-20)
 
