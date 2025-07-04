@@ -41,8 +41,7 @@
 			"remoteRoot": "/opt/iobroker/node_modules/iobroker.klf200",
 			"outFiles": ["${workspaceFolder}/build/**/*.js"],
 			"sourceMaps": true,
-			"skipFiles": ["<node_internals>/**"],
-			"trace": true
+			"skipFiles": ["<node_internals>/**"]
 		}
 	]
 }
