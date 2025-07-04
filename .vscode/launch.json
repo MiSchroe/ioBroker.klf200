@@ -24,11 +24,25 @@
 			"outFiles": ["${workspaceFolder}/build/**/*.js"]
 		},
 		{
-			"type": "pwa-chrome",
+			"type": "chrome",
 			"request": "launch",
 			"name": "Launch Connection Test Component",
 			"url": "http://localhost:4173",
 			"webRoot": "${workspaceFolder}/src-admin"
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Docker Adapter",
+			"port": 9229,
+			"address": "localhost",
+			"timeout": 10000,
+			"localRoot": "${workspaceFolder}",
+			"remoteRoot": "/opt/iobroker/node_modules/iobroker.klf200",
+			"outFiles": ["${workspaceFolder}/build/**/*.js"],
+			"sourceMaps": true,
+			"skipFiles": ["<node_internals>/**"],
+			"trace": true
 		}
 	]
 }

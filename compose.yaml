@@ -12,6 +12,7 @@ services:
             - "9192:9192"
         volumes:
             - iobrokerdata:/opt/iobroker
+            - .:/opt/iobroker/node_modules/iobroker.klf200
 
     sqlserver:
         restart: always
