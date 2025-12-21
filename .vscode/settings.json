@@ -1,24 +1,46 @@
 {
-	"typescript.tsdk": "node_modules/typescript/lib",
-	"eslint.enable": true,
-	"editor.formatOnSave": true,
-	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"files.insertFinalNewline": false,
-	"files.trimFinalNewlines": true,
-	"[typescript]": {
-		"editor.codeActionsOnSave": {
-			"source.organizeImports": "explicit"
-		}
-	},
-	"nodeTdd.reporter": "tap",
-	"json.schemas": [
-		{
-			"fileMatch": ["**/jsonConfig.json"],
-			"url": "https://github.com/ioBroker/ioBroker.admin/raw/refs/heads/master/packages/jsonConfig/schemas/jsonConfig.json"
-		}
-	],
-	"mochaExplorer.files": "build/{**/*,*}.test.js",
-	"mochaExplorer.require": ["test/mocha.setup.js", "source-map-support/register"],
-	"mochaExplorer.watch": "build/{**/*,*}.js",
-	"prettier.configPath": "./prettier.config.mjs"
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "eslint.enable": true,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "files.insertFinalNewline": false,
+    "files.trimFinalNewlines": true,
+    "[typescript]": {
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "nodeTdd.reporter": "tap",
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "**/jsonConfig.json"
+            ],
+            "url": "https://github.com/ioBroker/ioBroker.admin/raw/refs/heads/master/packages/jsonConfig/schemas/jsonConfig.json"
+        },
+        {
+            "fileMatch": [
+                "io-package.json"
+            ],
+            "url": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json"
+        },
+        {
+            "fileMatch": [
+                "admin/jsonConfig.json",
+                "admin/jsonCustom.json",
+                "admin/jsonTab.json",
+                "admin/jsonConfig.json5",
+                "admin/jsonCustom.json5",
+                "admin/jsonTab.json5"
+            ],
+            "url": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/jsonConfig/schemas/jsonConfig.json"
+        }
+    ],
+    "mochaExplorer.files": "build/{**/*,*}.test.js",
+    "mochaExplorer.require": [
+        "test/mocha.setup.js",
+        "source-map-support/register"
+    ],
+    "mochaExplorer.watch": "build/{**/*,*}.js",
+    "prettier.configPath": "./prettier.config.mjs"
 }
