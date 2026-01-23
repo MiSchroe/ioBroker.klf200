@@ -62,6 +62,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 	*/
 
 	const HOST = "localhost";
+	// deepcode ignore NoHardcodedPasswords/test: <please specify a reason of ignoring this>
 	let actualPassword = "velux123";
 
 	const options: TlsOptions = {

@@ -20,5 +20,6 @@
 	"mochaExplorer.files": "build/{**/*,*}.test.js",
 	"mochaExplorer.require": ["test/mocha.setup.js", "source-map-support/register"],
 	"mochaExplorer.watch": "build/{**/*,*}.js",
-	"prettier.configPath": "./prettier.config.mjs"
+	"prettier.configPath": "./prettier.config.mjs",
+	"snyk.advanced.autoSelectOrganization": true
 }
