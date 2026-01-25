@@ -35,7 +35,7 @@
 		"@iobroker/adapter-dev": "^1.4.0",
 		"@iobroker/build-tools": "^2.0.15",
 		"@iobroker/eslint-config": "^2.0.2",
-		"@iobroker/testing": "^5.0.4",
+		"@iobroker/testing": "^5.2.2",
 		"@istanbuljs/nyc-config-typescript": "^1.0.2",
 		"@tsconfig/node20": "^20.1.8",
 		"@types/chai": "^5.2.2",
