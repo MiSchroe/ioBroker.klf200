@@ -38,7 +38,7 @@
 		"@iobroker/testing": "^5.2.2",
 		"@istanbuljs/nyc-config-typescript": "^1.0.2",
 		"@tsconfig/node20": "^20.1.9",
-		"@types/chai": "^5.2.2",
+		"@types/chai": "^5.2.3",
 		"@types/chai-as-promised": "^8.0.2",
 		"@types/debug": "^4.1.12",
 		"@types/deep-eql": "^4.0.2",
