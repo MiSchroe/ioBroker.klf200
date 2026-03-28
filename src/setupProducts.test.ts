@@ -18,8 +18,8 @@ import {
 } from "klf-200-api";
 import sinon from "sinon";
 import sinonChai from "sinon-chai";
-import type { EventEmitter } from "stream";
-import { promisify } from "util";
+import type { EventEmitter } from "node:stream";
+import { promisify } from "node:util";
 import { DisposalMap } from "./disposalMap.js";
 import { SetupProducts } from "./setupProducts.js";
 import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink.js";

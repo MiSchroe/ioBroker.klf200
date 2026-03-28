@@ -1,7 +1,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from "@iobroker/adapter-core";
-import assert from "assert";
+import assert from "node:assert";
 import * as fs from "fs/promises";
 import {
 	CommandStatus,
@@ -152,11 +152,11 @@ import {
 	type Velocity,
 } from "klf-200-api";
 import { type Job, scheduleJob } from "node-schedule";
-import path from "path";
-import { env } from "process";
+import path from "node:path";
+import { env } from "node:process";
 import { timeout } from "promise-timeout";
-import { checkServerIdentity as checkServerIdentityOriginal, type ConnectionOptions } from "tls";
-import { fileURLToPath, pathToFileURL } from "url";
+import { checkServerIdentity as checkServerIdentityOriginal, type ConnectionOptions } from "node:tls";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { ConnectionTest, ConnectionTestResult } from "./connectionTest.js";
 import { KLF200DeviceManagement } from "./deviceManagement/klf200DeviceManagement.js";
 import { DisposalMap } from "./disposalMap.js";
@@ -171,7 +171,7 @@ import { StateHelper } from "./util/stateHelper.js";
 import { ArrayCount, convertErrorToString, waitForSessionFinishedNtfAsync } from "./util/utils.js";
 
 // Load your modules here, e.g.:
-// import * as fs from "fs";
+// import * as fs from "node:fs";
 
 // Augment the adapter.config object with the actual types
 // TODO: delete this in the next version

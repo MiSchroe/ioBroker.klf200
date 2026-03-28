@@ -2,7 +2,7 @@ import { type MockAdapter, utils } from "@iobroker/testing";
 import { expect } from "chai";
 import { Component } from "klf-200-api";
 import sinon from "sinon";
-import { promisify } from "util";
+import { promisify } from "node:util";
 import { setState } from "../../test/mockHelper.js";
 import { DisposalMap } from "../disposalMap.js";
 import {

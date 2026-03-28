@@ -4,8 +4,8 @@ import chaiAsPromised from "chai-as-promised";
 import { Gateway, GatewayState, GatewaySubState, type IConnection, SoftwareVersion } from "klf-200-api";
 import sinon from "sinon";
 import sinonChai from "sinon-chai";
-import type { EventEmitter } from "stream";
-import { promisify } from "util";
+import type { EventEmitter } from "node:stream";
+import { promisify } from "node:util";
 import { Setup } from "./setup.js";
 
 use(sinonChai);

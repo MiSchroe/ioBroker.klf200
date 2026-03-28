@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import debugModule from "debug";
-import { env } from "process";
+import { env } from "node:process";
 import sinon from "sinon";
 import { MockServerController } from "../test/mocks/mockServerController.js";
 import { ConnectionTest } from "./connectionTest.js";
