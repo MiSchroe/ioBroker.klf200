@@ -1,6 +1,6 @@
 "use strict";
 
-import type { EventEmitter } from "events";
+import type { EventEmitter } from "node:events";
 import type { Component, Disposable, PropertyChangedEvent } from "klf-200-api";
 import { PromiseQueue } from "./promiseQueue.js";
 import type { AsyncMethodName, AsyncMethodParameters, AsyncMethodType } from "./utils.js";

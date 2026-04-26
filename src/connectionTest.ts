@@ -2,7 +2,7 @@ import debugModule from "debug";
 import { lookup } from "dns/promises";
 import { Connection } from "klf-200-api";
 import ping from "ping";
-import { connect, type ConnectionOptions, type TLSSocket } from "tls";
+import { connect, type ConnectionOptions, type TLSSocket } from "node:tls";
 import type { Translate } from "./translate.js";
 
 const debug = debugModule("connectionTest");
