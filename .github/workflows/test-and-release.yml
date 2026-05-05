@@ -28,7 +28,7 @@ jobs:
         steps:
             - uses: ioBroker/testing-action-check@v1
               with:
-                  node-version: '24.x'
+                  node-version: "24.x"
                   # Uncomment the following line if your adapter cannot be installed using 'npm ci'
                   # install-command: 'npm install'
                   type-checking: true
@@ -36,15 +36,15 @@ jobs:
 
     # Runs adapter tests on all supported node versions and OSes
     adapter-tests:
-        needs: [check-and-lint]
+        needs: [ check-and-lint ]
         if: contains(github.event.head_commit.message, '[skip ci]') == false
 
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: false
             matrix:
-                node-version: [20.x, 22.x, 24.x]
-                os: [ubuntu-latest, windows-latest, macos-latest]
+                node-version: [ 22.x, 24.x ]
+                os: [ ubuntu-latest, windows-latest, macos-latest ]
 
         steps:
             - uses: ioBroker/testing-action-adapter@v1
@@ -61,7 +61,7 @@ jobs:
 
     # Deploys the final package to NPM
     deploy:
-        needs: [check-and-lint, adapter-tests]
+        needs: [ check-and-lint, adapter-tests ]
 
         # Trigger this step only when a commit on any branch is tagged with a version number
         if: |
@@ -79,12 +79,13 @@ jobs:
         steps:
             - uses: ioBroker/testing-action-deploy@v1
               with:
-                  node-version: '24.x'
+                  node-version: "24.x"
                   # Uncomment the following line if your adapter cannot be installed using 'npm ci'
                   # install-command: 'npm install'
                   build: true
                   # npm-token: ${{ secrets.NPM_TOKEN }}  # Commented out for migration to Trusted Publishing
                   github-token: ${{ secrets.GITHUB_TOKEN }}
+
 #          # When using Sentry for error reporting, Sentry can be informed about new releases
 #          # To enable create a API-Token in Sentry (User settings, API keys)
 #          # Enter this token as a GitHub secret (with name SENTRY_AUTH_TOKEN) in the repository options
