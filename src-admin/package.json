@@ -10,7 +10,7 @@
 		"lint": "eslint -c eslint.config.mjs"
 	},
 	"devDependencies": {
-		"@iobroker/adapter-react-v5": "^7.7.1",
+		"@iobroker/adapter-react-v5": "^8.2.2",
 		"@iobroker/json-config": "^7.7.0",
 		"@module-federation/runtime": "^0.23.0",
 		"@module-federation/vite": "^1.14.5",
