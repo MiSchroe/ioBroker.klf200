@@ -1,8 +1,8 @@
 import debugModule from "debug";
 import { lookup } from "dns/promises";
 import { Connection } from "klf-200-api";
-import ping from "ping";
 import { connect, type ConnectionOptions, type TLSSocket } from "node:tls";
+import ping from "ping";
 import type { Translate } from "./translate.js";
 
 const debug = debugModule("connectionTest");
@@ -122,12 +122,21 @@ export class ConnectionTest implements IConnectionTest {
 		};
 		try {
 			const result = await ping.promise.probe(ipadress, pingConfig);
+
 			if (!result.alive) {
 				debug(`Ping failed`);
 				throw new Error(`Ping failed. ${result.output}`);
 			}
-			debug(`Ping successful, latency: ${result.time}ms`);
-			return result.time === "unknown" ? 0 : result.time;
+
+			const latency =
+				typeof result.time === "string"
+					? result.time === "unknown"
+						? 0
+						: parseFloat(result.time)
+					: result.time;
+
+			debug(`Ping successful, latency: ${latency}ms`);
+			return latency;
 		} catch (error) {
 			debug(`Ping exception: ${(error as Error).message}`);
 			throw error;
