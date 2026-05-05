@@ -8,7 +8,7 @@ import {
 	DeviceManagement,
 } from "@iobroker/dm-utils";
 import type { ProgressDialog } from "@iobroker/dm-utils/build/ProgressDialog.js";
-import assert from "assert";
+import assert from "node:assert";
 import { ActuatorType } from "klf-200-api";
 import type { Klf200 } from "../klf200Adapter.js";
 
