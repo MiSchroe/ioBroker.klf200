@@ -130,5 +130,12 @@
     "docs",
     "img",
     "io-package.json"
-  ]
+  ],
+  "allowScripts": {
+    "protobufjs@7.3.2": true,
+    "protobufjs@7.2.4": true,
+    "esbuild@0.20.2": true,
+    "esbuild@0.23.1": true,
+    "fsevents@2.3.3": true
+  }
 }
