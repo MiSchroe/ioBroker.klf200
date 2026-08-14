@@ -1835,4 +1835,3 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		this.terminate("unhandled exception", 1);
 	}
 }
-
