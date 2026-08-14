@@ -260,7 +260,7 @@ The values of the state provide multiple manipulation modes:
 	### __WORK IN PROGRESS__
 -->
 <!-- prettier-ignore -->
-### __WORK IN PROGRESS__
+### 1.3.7 (2026-08-14)
 
 -   (Michael Schroeder) Fix findings by adapter checker.
 
@@ -389,4 +389,3 @@ THE SOFTWARE.
 ---
 
 VELUX and the VELUX logo are registered trademarks of VKR Holding A/S.
-
