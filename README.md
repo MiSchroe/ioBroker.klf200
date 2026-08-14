@@ -260,7 +260,7 @@ The values of the state provide multiple manipulation modes:
 	### __WORK IN PROGRESS__
 -->
 <!-- prettier-ignore -->
-### __WORK IN PROGRESS__
+### 1.3.6 (2026-08-14)
 
 -   (Michael Schroeder) [#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) The outdated certificate of the KLF-200 will be accepted if its fingerprint matches.
 
@@ -385,4 +385,3 @@ THE SOFTWARE.
 ---
 
 VELUX and the VELUX logo are registered trademarks of VKR Holding A/S.
-
