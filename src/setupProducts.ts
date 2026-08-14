@@ -811,6 +811,7 @@ export class SetupProducts {
 						},
 					},
 					{},
+					// eslint-disable-next-line deprecation/deprecation
 					product.getLimitationOriginator(parameter),
 				);
 
@@ -829,11 +830,13 @@ export class SetupProducts {
 						states: statesLimitationTimeRaw,
 					},
 					{},
+					// eslint-disable-next-line deprecation/deprecation
 					product.getLimitationTimeRaw(parameter),
 				);
 
 				let limitationTime = NaN;
 				try {
+					// eslint-disable-next-line deprecation/deprecation
 					limitationTime = product.getLimitationTime(parameter) ?? NaN;
 				} catch (error) {
 					if (error instanceof Error && error.message === "Lock time value out of range.") {
@@ -1089,6 +1092,7 @@ export class SetupProducts {
 				]) {
 					await adapter.setStateChangedAsync(
 						`products.${product.NodeID}.limitation${ParameterActive[parameter]}Originator`,
+						// eslint-disable-next-line deprecation/deprecation
 						product.getLimitationOriginator(parameter),
 						true,
 					);
@@ -1108,12 +1112,14 @@ export class SetupProducts {
 				]) {
 					await adapter.setStateChangedAsync(
 						`products.${product.NodeID}.limitation${ParameterActive[parameter]}TimeRaw`,
+						// eslint-disable-next-line deprecation/deprecation
 						product.getLimitationTimeRaw(parameter),
 						true,
 					);
 
 					let limitationTime = NaN;
 					try {
+						// eslint-disable-next-line deprecation/deprecation
 						limitationTime = Math.round((product.getLimitationTime(parameter) ?? NaN) * 100);
 					} catch (error) {
 						if (error instanceof Error && error.message === "Lock time value out of range.") {
@@ -1327,4 +1333,3 @@ export class SetupProducts {
 		disposalMap.set(refreshLimitationStateId, refreshLimitationListener);
 	}
 }
-
