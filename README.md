@@ -260,7 +260,7 @@ The values of the state provide multiple manipulation modes:
 	### __WORK IN PROGRESS__
 -->
 <!-- prettier-ignore -->
-# __WORK IN PROGRESS__
+### __WORK IN PROGRESS__
 
 -   (Michael Schroeder) Fix findings by adapter checker.
 
