@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import assert from "node:assert/strict";
 import sinon from "sinon";
 import { PromiseQueue } from "./promiseQueue.js";
 
@@ -27,9 +27,9 @@ describe("PromiseQueue", function () {
 
 			await result;
 
-			expect(callSpy.calledThrice).to.be.true;
+			assert.strictEqual(callSpy.calledThrice, true);
 
-			return expect(result).to.eventually.be.fulfilled;
+			return assert.doesNotReject(result);
 		});
 
 		it("should be able to run subsequent calls with a rejected promise in the middle.", async function () {
@@ -55,9 +55,9 @@ describe("PromiseQueue", function () {
 
 			await result;
 
-			expect(callSpy.calledThrice).to.be.true;
+			assert.strictEqual(callSpy.calledThrice, true);
 
-			return expect(result).to.eventually.be.fulfilled;
+			return assert.doesNotReject(result);
 		});
 
 		it("should be rejected with a rejected promise at the end.", async function () {
@@ -81,7 +81,7 @@ describe("PromiseQueue", function () {
 
 			const result = SUT.waitAsync();
 
-			return expect(result).to.eventually.be.rejected;
+			return assert.rejects(result);
 		});
 	});
 });

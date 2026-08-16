@@ -1,5 +1,6 @@
+import assert from "node:assert/strict";
 import { type MockAdapter, utils } from "@iobroker/testing";
-import { expect } from "chai";
+import { createAsserts } from "../../test/asserts.js";
 import { Component } from "klf-200-api";
 import sinon from "sinon";
 import { promisify } from "node:util";
@@ -68,7 +69,7 @@ class TestComponent extends Component {
 describe("PropertyLink", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
-	const { assertStateHasValue, assertStateIsAcked } = utils.unit.createAsserts(database, adapter);
+	const { assertStateHasValue, assertStateIsAcked } = createAsserts(database, adapter);
 
 	// Promisify additional methods
 	for (const method of ["unsubscribeStates"]) {
@@ -120,7 +121,7 @@ describe("PropertyLink", function () {
 				const testComponent = new TestComponent();
 				const expectedResult = testCase.ExpectedTypeName;
 				const result = typeof MapAnyPropertyToState(testComponent[testCase.TestPropertyName]);
-				expect(result).to.be.equal(expectedResult);
+				assert.strictEqual(result, expectedResult);
 			});
 		});
 	}
@@ -196,7 +197,7 @@ describe("PropertyLink", function () {
 			try {
 				await testComponent.setNumberValueAsync(expectedResult);
 
-				expect(handler.calledOnceWithExactly(expectedResult)).to.be.true;
+				assert.strictEqual(handler.calledOnceWithExactly(expectedResult), true);
 			} finally {
 				SUT.dispose();
 			}
@@ -241,7 +242,7 @@ describe("PropertyLink", function () {
 
 				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
-				expect(testComponent.NumberValue).to.be.equal(expectedResult);
+				assert.strictEqual(testComponent.NumberValue, expectedResult);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -264,7 +265,7 @@ describe("PropertyLink", function () {
 
 				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
-				expect(testComponent.NumberValue).to.be.equal(expectedResult);
+				assert.strictEqual(testComponent.NumberValue, expectedResult);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -305,7 +306,7 @@ describe("PropertyLink", function () {
 
 				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
-				expect(handler.calledOnce).to.be.true;
+				assert.strictEqual(handler.calledOnce, true);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -355,7 +356,7 @@ describe("PropertyLink", function () {
 						lc: 0,
 						from: stateID,
 					});
-					expect(methodSpy).to.be.calledOnceWithExactly(1, 2, "3");
+					assert.ok(methodSpy.calledOnceWithExactly(1, 2, "3"));
 				} finally {
 					await SUT.dispose();
 				}

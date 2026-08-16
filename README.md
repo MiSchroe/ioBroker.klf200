@@ -231,14 +231,15 @@ To use the functional parameters you have to set the values according to your ne
 you change the targetPosition state.
 
 The values of the state provide multiple manipulation modes:
-| Access method | Description | Range (Decimal) | Range (Hex) | Notes |
-|-|-|-|-|-|
-| Relative | 0% - 100% | 0 - 51200 | 0x0000 - 0xC800 | Each percent step equals 512. The product moves to that relative value, e.g. 50% open. |
-| +/- | -100% - +100% | 51456 - 53456 | ß0xC900 - 0xD0D0 | Each percent step equals 10. The product advances its position by the provided value, e.g. open the window for additional 10%. Not every product supports this method. |
-| Target | The target value for the parameter. | 53504 | 0xD100 | In case of an already running command the target value could be different to the current value. |
-| Current | The current value of the parameter. | 53760 | 0xD200 | You can use this value to stop a movement if applicable. |
-| Default | The default value for the parameter. | 54016 | 0xD300 | Sets the parameter to its default value. |
-| Ignore | The parameter won't be provided. | 54272 | 0xD400 | The parameter won't be set for the command. |
+
+| Access method | Description                          | Range (Decimal) | Range (Hex)      | Notes                                                                                                                                                                  |
+| ------------- | ------------------------------------ | --------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Relative      | 0% - 100%                            | 0 - 51200       | 0x0000 - 0xC800  | Each percent step equals 512. The product moves to that relative value, e.g. 50% open.                                                                                 |
+| +/-           | -100% - +100%                        | 51456 - 53456   | ß0xC900 - 0xD0D0 | Each percent step equals 10. The product advances its position by the provided value, e.g. open the window for additional 10%. Not every product supports this method. |
+| Target        | The target value for the parameter.  | 53504           | 0xD100           | In case of an already running command the target value could be different to the current value.                                                                        |
+| Current       | The current value of the parameter.  | 53760           | 0xD200           | You can use this value to stop a movement if applicable.                                                                                                               |
+| Default       | The default value for the parameter. | 54016           | 0xD300           | Sets the parameter to its default value.                                                                                                                               |
+| Ignore        | The parameter won't be provided.     | 54272           | 0xD400           | The parameter won't be set for the command.                                                                                                                            |
 
 > **Note:** This tables is valid for the targetPositionRaw, too.
 
@@ -271,6 +272,10 @@ The values of the state provide multiple manipulation modes:
 - (Michael Schroeder) [#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Upgrade dependencies.
 - (Michael Schroeder) [#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Switch using ping instead of net-ping for compatibility with Node v24.
 - (Michael Schroeder) [#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Support Node V24.
+- (@GermanBluefox) Migrated the admin configuration UI to React 19: replaced @iobroker/adapter-react-v5 by @iobroker/gui-components and upgraded to MUI 9 and Vite 8, so that the connection test component matches the current GUI API generation of the Admin adapter.
+- (@GermanBluefox) Migrated the device management to @iobroker/dm-utils v3.
+- (@GermanBluefox) Switched the unit tests from chai to node:assert.
+- (@GermanBluefox) Raised the timeout of the setupProducts test suite, which could abort the test run under load.
 
 ### 1.3.5 (2024-11-20)
 
