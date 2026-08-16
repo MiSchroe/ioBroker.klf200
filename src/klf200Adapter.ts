@@ -1114,7 +1114,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 							[GatewayCommand.GW_SESSION_FINISHED_NTF, GatewayCommand.GW_STATUS_REQUEST_NTF],
 						);
 					} catch (error) {
-						reject(error as Error);
+						reject(error instanceof Error ? error : new Error(convertErrorToString(error)));
 					}
 				}),
 				30_000,
@@ -1504,7 +1504,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * Winks a product. This is used to identify a product, e.g. a window will move its handle, a roller shutter will move up and down a little bit.
 	 *
 	 * @param productId The ID of the product to wink.
-	 * @throws Error if the product is not found in the adapter.
+	 * @throws {Error} If the product is not found in the adapter.
 	 */
 	public async onWinkProduct(productId: number): Promise<void> {
 		const winkStateId = `products.${productId}.wink`;
@@ -1516,7 +1516,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 *
 	 * @param productId The ID of the product to rename.
 	 * @param newName The new name for the product.
-	 * @throws Error if the product is not found in the adapter.
+	 * @throws {Error} If the product is not found in the adapter.
 	 */
 	public async onRenameProduct(productId: number, newName: string): Promise<void> {
 		const product = this.Products?.Products[productId];
@@ -1702,7 +1702,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 					break;
 
 				default:
-					throw new Error(`Unknown status code: ${deleteSceneCfm.Status as number}.`);
+					throw new Error(`Unknown status code: ${deleteSceneCfm.Status}.`);
 			}
 			// Wait for product being removed from adapter
 			await removedSceneHandlerPromise;
@@ -1716,7 +1716,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 *
 	 * @param sceneId The scene ID to rename.
 	 * @param newName The new name to use for the scene.
-	 * @throws Error If the scene ID is invalid or if the new name is already in use.
+	 * @throws {Error} If the scene ID is invalid or if the new name is already in use.
 	 */
 	public async onRenameScene(sceneId: number, newName: string): Promise<void> {
 		const scene = this.Scenes?.Scenes[sceneId];
@@ -1750,8 +1750,8 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * IDs of all products that could not be initialized.
 	 *
 	 * @returns A promise that resolves with an array of IDs of products that could not be initialized.
-	 * @throws If the system table is empty, or if the gateway is out of storage.
-	 * @throws If the initialization of the scene fails for any other reason.
+	 * @throws {Error} If the system table is empty, or if the gateway is out of storage.
+	 * @throws {Error} If the initialization of the scene fails for any other reason.
 	 */
 	public async onNewSceneInitialize(): Promise<number[]> {
 		let disposable: Disposable | undefined;
@@ -1827,7 +1827,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 				throw new Error("Not in scene recoding status.");
 
 			default:
-				throw new Error(`Unknown status code: ${cancelSceneInitializationCfm.Status as number}.`);
+				throw new Error(`Unknown status code: ${cancelSceneInitializationCfm.Status}.`);
 		}
 	}
 
@@ -1866,12 +1866,9 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 								default:
 									reject(
-										new Error(
-											`Unknown status code: ${(frame as GW_RECORD_SCENE_NTF).Status as number}.`,
-											{
-												cause: frame,
-											},
-										),
+										new Error(`Unknown status code: ${(frame as GW_RECORD_SCENE_NTF).Status}.`, {
+											cause: frame,
+										}),
 									);
 									break;
 							}
@@ -1889,7 +1886,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 						this.off("sceneAdded", onNewSceneHandler);
 						resolve();
 					} catch (error) {
-						reject(error as Error);
+						reject(error instanceof Error ? error : new Error(convertErrorToString(error)));
 					}
 				}).bind(this);
 				this.on("sceneAdded", onNewSceneHandler);
@@ -1905,7 +1902,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 					throw new Error("Not in scene recoding status.");
 
 				default:
-					throw new Error(`Unknown status code: ${recordSceneCfm.Status as number}.`);
+					throw new Error(`Unknown status code: ${recordSceneCfm.Status}.`);
 			}
 			const sceneId = await timeout(sceneNotificationReceivedPromise, 120_000);
 			await this.Scenes?.refreshScenesAsync();

@@ -1,23 +1,23 @@
 {
+	// Base configuration, used by the editor and by ESLint's type-aware rules.
+	// It covers every TypeScript source in the repository. Emitting is configured
+	// in tsconfig.build.json, which narrows this down to the adapter sources.
 	"extends": "@tsconfig/node22/tsconfig.json",
-	"compileOnSave": true,
 	"compilerOptions": {
 		"noEmit": true,
 		"allowJs": false,
 		"checkJs": false,
 		"noEmitOnError": true,
-		"outDir": "./build/",
-		"rootDir": "./src",
 		"removeComments": false,
 		"resolveJsonModule": true,
 		"strictNullChecks": true,
 		"noImplicitAny": true,
 		"sourceMap": true,
 		"inlineSourceMap": false,
-		"typeRoots": ["./node_modules/@types", "./types"],
-		"jsx": "react-jsx"
+		// @tsconfig/node22 sets "types": ["node"], which switches off the automatic
+		// inclusion of global type packages, so every one of them has to be listed here.
+		"types": ["node", "mocha", "@iobroker/types"]
 	},
-	// "include": ["**/*.ts", "test/mocha.setup.js", "test/unit.js", "./types/**/*.d.ts"],
-	"include": ["src/**/*.ts", "./types/**/*.d.ts"],
-	"exclude": ["build/**", "node_modules/**", "admin/**"]
+	"include": ["src/**/*.ts", "test/**/*.ts", "types/**/*.d.ts"],
+	"exclude": ["build/**", "node_modules/**", "admin/**", "src-admin/**"]
 }

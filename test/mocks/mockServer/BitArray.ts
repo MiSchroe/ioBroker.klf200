@@ -53,7 +53,7 @@ export function arrayToBitArray(numberArray: number[], bufferLength: number, des
 		}
 
 		// Set bit
-		returnBuffer[Math.floor(numberToWrite / 8)] |= 1 << numberToWrite % 8; // numberToWrite / 8 = byte position (0-bufferLength), numberToWrite % 8 = bit position (0-7)
+		returnBuffer[Math.floor(numberToWrite / 8)] |= 1 << (numberToWrite % 8); // numberToWrite / 8 = byte position (0-bufferLength), numberToWrite % 8 = bit position (0-7)
 	}
 
 	return returnBuffer;

@@ -1138,7 +1138,7 @@ describe("setupProducts", function () {
 			const states: string[] = ["currentPosition", "targetPosition"];
 			database.publishStateObjects(
 				...states.map(state => {
-					return { _id: `${adapter.namespace}.products.42.${state}` } as ioBroker.PartialObject;
+					return { _id: `${adapter.namespace}.products.42.${state}` };
 				}),
 			);
 

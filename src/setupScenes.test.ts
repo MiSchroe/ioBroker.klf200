@@ -501,7 +501,7 @@ describe("setupScenes", function () {
 			const states: string[] = ["productsCount", "run", "stop"];
 			database.publishStateObjects(
 				...states.map(state => {
-					return { _id: `${adapter.namespace}.scenes.42.${state}` } as ioBroker.PartialObject;
+					return { _id: `${adapter.namespace}.scenes.42.${state}` };
 				}),
 			);
 

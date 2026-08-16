@@ -530,7 +530,7 @@ describe("setupGroups", function () {
 			const states: string[] = ["groupType", "targetPosition"];
 			database.publishStateObjects(
 				...states.map(state => {
-					return { _id: `${adapter.namespace}.groups.42.${state}` } as ioBroker.PartialObject;
+					return { _id: `${adapter.namespace}.groups.42.${state}` };
 				}),
 			);
 

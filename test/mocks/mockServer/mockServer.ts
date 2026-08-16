@@ -673,7 +673,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 				const sessionId = frameBuffer.readUInt16BE(3);
 				const numberOfNodes = frameBuffer.readUInt8(5);
 				const nodes = Array.from(frameBuffer.subarray(6, 6 + numberOfNodes));
-				const statusType = frameBuffer.readUInt8(26) as StatusType;
+				const statusType = frameBuffer.readUInt8(26);
 				const fp = getFunctionalParamters(frameBuffer.readUInt8(27), frameBuffer.readUInt8(28));
 				const resultBuffers: Buffer[] = [];
 
@@ -1231,7 +1231,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 
 				// Check Group Type and revision
 				const revision = frameBuffer.readUInt16BE(100);
-				const groupType = frameBuffer.readUInt8(73) as GroupType;
+				const groupType = frameBuffer.readUInt8(73);
 				if (
 					groupId === 0 ||
 					groupId === 1 ||
@@ -1257,12 +1257,7 @@ const debug = debugModule(`${path.parse(__filename).name}:server`);
 							.addInts(group.Order)
 							.addBytes(group.Placement)
 							.addString(group.Name, 64)
-							.addBytes(
-								group.Velocity as number,
-								group.NodeVariation as number,
-								group.GroupType,
-								group.Nodes.length,
-							)
+							.addBytes(group.Velocity, group.NodeVariation, group.GroupType, group.Nodes.length)
 							.addBitArray(25, group.Nodes)
 							.addInts(group.Revision)
 							.toBuffer(),
