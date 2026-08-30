@@ -26,6 +26,80 @@ const styles: Record<string, any> = {
 	},
 };
 
+// Beispielhafter Mock-Socket in App.tsx
+const mockStateSubscribers: Record<string, ((id: string, state: any) => void)[]> = {};
+
+const mockSocket: any = {
+	getState: async (id: string) => {
+		if (id.endsWith(".alive")) {
+			return { val: true }; // Simuliert: Adapter läuft
+		}
+		if (id.endsWith(".running")) {
+			return { val: false };
+		}
+		if (id.endsWith(".testResults")) {
+			return { val: "[]" };
+		}
+		return null;
+	},
+	setState: async (id: string, val: any) => {
+		console.log(`[MockSocket] setState: ${id} =`, val);
+	},
+	subscribeState: async (pattern: string, cb: (id: string, state: any) => void) => {
+		mockStateSubscribers[pattern] = mockStateSubscribers[pattern] || [];
+		mockStateSubscribers[pattern].push(cb);
+	},
+	unsubscribeState: async (pattern: string, cb: (id: string, state: any) => void) => {
+		if (mockStateSubscribers[pattern]) {
+			mockStateSubscribers[pattern] = mockStateSubscribers[pattern].filter(fn => fn !== cb);
+		}
+	},
+	encrypt: async (val: string) => `encrypted_${val}`,
+	sendTo: async (target: string, command: string, message: any) => {
+		console.log(`[MockSocket] sendTo: ${target} -> ${command}`, message);
+
+		if (command === "ConnectionTest") {
+			// Simulierte Testergebnisse nach 1 Sekunde Verzögerung
+			await new Promise(resolve => setTimeout(resolve, 1000));
+			return [
+				{
+					stepOrder: 1,
+					stepName: "Name lookup",
+					run: true,
+					success: true,
+					message: "Hostname resolves to 192.168.1.100",
+					result: "192.168.1.100",
+				},
+				{
+					stepOrder: 2,
+					stepName: "Ping",
+					run: true,
+					success: true,
+					message: "Ping successful (12ms)",
+					result: 12,
+				},
+				{
+					stepOrder: 3,
+					stepName: "Connection",
+					run: true,
+					success: true,
+					message: "Connected via SSL",
+					result: true,
+				},
+				{
+					stepOrder: 4,
+					stepName: "Login",
+					run: true,
+					success: true,
+					message: "Login successful",
+					result: true,
+				},
+			];
+		}
+		return null;
+	},
+};
+
 interface AppState extends GenericAppState {
 	native: ConfigurationData;
 	testResults: Record<string, any>[];
@@ -107,7 +181,7 @@ class App extends GenericApp<GenericAppProps, AppState> {
 							<ConnectionTestComponent
 								oContext={{
 									adapterName: "klf200",
-									socket: this.socket,
+									socket: mockSocket,
 									instance: 0,
 									themeType: this.state.theme.palette.mode,
 									isFloatComma: true,
