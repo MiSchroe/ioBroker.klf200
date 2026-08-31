@@ -1,6 +1,6 @@
 .git
 .idea
-.code-workspace
+*.code-workspace
 node_modules
 nbproject
 build/*
