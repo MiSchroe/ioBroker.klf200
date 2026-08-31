@@ -1,0 +1,1 @@
+import"./__mfe_internal__ConfigCustomKlf200Set__loadShare__react__loadShare__.js-COUGyKA-.js";import{d as t}from"./defaultTheme-DLwLgtq-.js";import{e as m,T as r}from"./createTheme-JkxfhsJ5.js";import{u as s}from"./useThemeWithoutDefault-C-ut0aM-.js";const o=m();function u(e=o){return s(e)}function h(){const e=u(t);return e[r]||e}export{u as a,h as u};

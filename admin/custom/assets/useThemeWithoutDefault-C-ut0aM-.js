@@ -1,0 +1,1 @@
+import{n}from"./__mfe_internal__ConfigCustomKlf200Set__loadShare__react__loadShare__.js-COUGyKA-.js";import{Y as o}from"./createTheme-JkxfhsJ5.js";function m(e){return Object.keys(e).length===0}function u(e=null){const t=n(o);return!t||m(t)?e:t}export{u};

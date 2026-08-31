@@ -117,9 +117,7 @@ export class ConnectionTest implements IConnectionTest {
 	 */
 	async ping(ipadress: string): Promise<number> {
 		debug(`Pinging IP address: ${ipadress}`);
-		const pingConfig: ping.PingConfig = {
-			packetSize: 64,
-		};
+		const pingConfig: ping.PingConfig = { packetSize: 64 };
 		try {
 			const result = await ping.promise.probe(ipadress, pingConfig);
 
@@ -151,13 +149,30 @@ export class ConnectionTest implements IConnectionTest {
 	 * @param connectionOptions Optional connection options.
 	 * @returns A promise that resolves when the connection is established.
 	 */
-	async connectTlsSocket(hostname: string, port: number, connectionOptions?: ConnectionOptions): Promise<void> {
+	async connectTlsSocket(
+		hostname: string,
+		port: number,
+		connectionOptions?: ConnectionOptions,
+		fingerprint?: string,
+	): Promise<void> {
 		debug(`Connecting to TLS socket at ${hostname}:${port}`);
+		if (!fingerprint) {
+			fingerprint = "02:8C:23:A0:89:2B:62:98:C4:99:00:5B:D2:E7:2E:0A:70:3D:71:6A";
+		}
 		return new Promise<void>((resolve, reject) => {
 			let sckt: TLSSocket | undefined;
 			try {
 				sckt = connect(port, hostname, connectionOptions, () => {
+					const authorizationError = sckt?.authorizationError as unknown as string | undefined;
 					if (sckt?.authorized) {
+						debug("TLS connection authorized");
+						sckt?.destroy();
+						sckt = undefined;
+						resolve();
+					} else if (
+						authorizationError === "CERT_HAS_EXPIRED" &&
+						sckt?.getPeerCertificate()?.fingerprint === fingerprint
+					) {
 						debug("TLS connection authorized");
 						sckt?.destroy();
 						sckt = undefined;
@@ -220,21 +235,13 @@ export class ConnectionTest implements IConnectionTest {
 				stepName: await this.translation.translate("connection-test-step-name-name-lookup"),
 				run: false,
 			},
-			{
-				stepOrder: 2,
-				stepName: await this.translation.translate("connection-test-step-name-ping"),
-				run: false,
-			},
+			{ stepOrder: 2, stepName: await this.translation.translate("connection-test-step-name-ping"), run: false },
 			{
 				stepOrder: 3,
 				stepName: await this.translation.translate("connection-test-step-name-connection"),
 				run: false,
 			},
-			{
-				stepOrder: 4,
-				stepName: await this.translation.translate("connection-test-step-name-login"),
-				run: false,
-			},
+			{ stepOrder: 4, stepName: await this.translation.translate("connection-test-step-name-login"), run: false },
 		];
 
 		const callProgressCallback = async function (): Promise<void> {

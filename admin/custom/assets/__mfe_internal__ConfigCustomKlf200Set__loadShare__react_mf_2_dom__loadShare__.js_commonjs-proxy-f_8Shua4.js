@@ -1,0 +1,1 @@
+import{g as _}from"./__mfe_internal__ConfigCustomKlf200Set__loadShare__react__loadShare__.js_commonjs-proxy-DEaX3GUr.js";import{_ as e}from"./__mfe_internal__ConfigCustomKlf200Set__loadShare__react_mf_2_dom__loadShare__.js-DtVbe5-Z.js";const o=_(e);export{o as r};
