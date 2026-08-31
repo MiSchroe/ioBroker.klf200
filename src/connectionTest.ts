@@ -147,6 +147,7 @@ export class ConnectionTest implements IConnectionTest {
 	 * @param hostname The hostname to connect to.
 	 * @param port The port to connect to.
 	 * @param connectionOptions Optional connection options.
+	 * @param fingerprint Optional fingerprint for certificate validation.
 	 * @returns A promise that resolves when the connection is established.
 	 */
 	async connectTlsSocket(
