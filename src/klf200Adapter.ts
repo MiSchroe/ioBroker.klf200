@@ -900,7 +900,10 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			if (e instanceof Error && e.stack) {
 				this.log.debug(e.stack);
 			}
-			this.terminate ? this.terminate(result) : process.exit(1);
+			if (this.terminate) {
+				this.terminate(result);
+			}
+			throw new Error(result);
 		}
 	}
 

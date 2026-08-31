@@ -273,6 +273,14 @@ The values of the state provide multiple manipulation modes:
 - (Michael Schroeder) [#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Switch using ping instead of net-ping for compatibility with Node v24.
 - (Michael Schroeder) [#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Support Node V24.
 
+### 1.3.7 (2026-08-14)
+
+- (Michael Schroeder) Fix findings by adapter checker.
+
+### 1.3.6 (2026-08-14)
+
+- (Michael Schroeder) [#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) The outdated certificate of the KLF-200 will be accepted if its fingerprint matches.
+
 ### 1.3.5 (2024-11-20)
 
 - (Michael Schroeder) [#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Fixed an issue during startup of the adapter if more than 20 nodes are present.
