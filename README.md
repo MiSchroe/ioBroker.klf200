@@ -262,6 +262,7 @@ The values of the state provide multiple manipulation modes:
 <!-- prettier-ignore -->
 ### __WORK IN PROGRESS__
 
+- (Michael Schroeder) [#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Handle the outdated certificate in the connection test button.
 - (Michael Schroeder) [#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Added a connection test button to help identify connection problems.
 - (Michael Schroeder) [#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Split the limitation originator state for min and max into separate ones.
 - (Michael Schroeder) [#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Migrated to ESLint v9.
