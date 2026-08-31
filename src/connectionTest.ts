@@ -167,21 +167,21 @@ export class ConnectionTest implements IConnectionTest {
 					const authorizationError = sckt?.authorizationError as unknown as string | undefined;
 					if (sckt?.authorized) {
 						debug("TLS connection authorized");
-						sckt?.destroy();
-						sckt = undefined;
-						resolve();
+						sckt.once("close", resolve);
+						sckt.destroy();
 					} else if (
 						authorizationError === "CERT_HAS_EXPIRED" &&
 						sckt?.getPeerCertificate()?.fingerprint === fingerprint
 					) {
 						debug("TLS connection authorized");
-						sckt?.destroy();
-						sckt = undefined;
-						resolve();
+						sckt.once("close", resolve);
+						sckt.destroy();
 					} else {
 						debug(`TLS connection authorization error: ${sckt?.authorizationError.message}`);
-						reject(sckt?.authorizationError as Error);
+						const error = sckt?.authorizationError as Error;
+						sckt?.destroy();
 						sckt = undefined;
+						reject(error);
 					}
 				});
 				sckt.on("error", (error: Error) => {
