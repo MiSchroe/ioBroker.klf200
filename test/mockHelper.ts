@@ -1,3 +1,4 @@
+/// <reference types="@iobroker/types" />
 "use strict";
 
 import type { MockAdapter } from "@iobroker/testing";

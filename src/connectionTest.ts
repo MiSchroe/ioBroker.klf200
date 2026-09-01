@@ -189,11 +189,12 @@ export class ConnectionTest implements IConnectionTest {
 					reject(error);
 				});
 			} catch (error) {
-				debug(`TLS connection exception: ${(error as Error).message}`);
+				const exception = error instanceof Error ? error : new Error(String(error));
+				debug(`TLS connection exception: ${exception.message}`);
 				if (sckt) {
 					sckt.destroy();
 				}
-				reject(error as Error);
+				reject(exception);
 			}
 		});
 	}

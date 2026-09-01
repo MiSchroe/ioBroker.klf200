@@ -2,10 +2,10 @@ import { type MockAdapter, utils } from "@iobroker/testing";
 import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { type Disposable, type IConnection, ParameterActive, Scene, Scenes, Velocity } from "klf-200-api";
-import sinon from "sinon";
-import sinonChai from "sinon-chai";
 import type { EventEmitter } from "node:stream";
 import { promisify } from "node:util";
+import sinon from "sinon";
+import sinonChai from "sinon-chai";
 import { setState } from "../test/mockHelper.js";
 import { DisposalMap } from "./disposalMap.js";
 import { SetupScenes } from "./setupScenes.js";
@@ -503,7 +503,7 @@ describe("setupScenes", function () {
 			const states: string[] = ["productsCount", "run", "stop"];
 			database.publishStateObjects(
 				...states.map(state => {
-					return { _id: `${adapter.namespace}.scenes.42.${state}` } as ioBroker.PartialObject;
+					return { _id: `${adapter.namespace}.scenes.42.${state}` };
 				}),
 			);
 

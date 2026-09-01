@@ -1,5 +1,5 @@
 {
-	"extends": "@tsconfig/node20/tsconfig.json",
+	"extends": "@tsconfig/node22/tsconfig.json",
 	"compileOnSave": true,
 	"compilerOptions": {
 		// do not compile anything, this file is just to configure type checking
@@ -28,10 +28,20 @@
 		// "target": "es2017",
 		"sourceMap": true,
 		"inlineSourceMap": false,
-		"typeRoots": ["./node_modules/@types", "./types"],
+		"typeRoots": [
+			"./node_modules/@types",
+			"./types"
+		],
 		"jsx": "react-jsx"
 	},
 	// "include": ["**/*.ts", "test/mocha.setup.js", "test/unit.js", "./types/**/*.d.ts"],
-	"include": ["src/**/*.ts", "./types/**/*.d.ts"],
-	"exclude": ["build/**", "node_modules/**", "admin/**"]
+	"include": [
+		"src/**/*.ts",
+		"./types/**/*.d.ts"
+	],
+	"exclude": [
+		"build/**",
+		"node_modules/**",
+		"admin/**"
+	]
 }
