@@ -1,7 +1,6 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from "@iobroker/adapter-core";
-import assert from "node:assert";
 import * as fs from "fs/promises";
 import {
 	CommandStatus,
@@ -152,11 +151,12 @@ import {
 	type Velocity,
 } from "klf-200-api";
 import { type Job, scheduleJob } from "node-schedule";
+import assert from "node:assert";
 import path from "node:path";
 import { env } from "node:process";
-import { timeout } from "promise-timeout";
 import { checkServerIdentity as checkServerIdentityOriginal, type ConnectionOptions } from "node:tls";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { timeout } from "promise-timeout";
 import { ConnectionTest, ConnectionTestResult } from "./connectionTest.js";
 import { KLF200DeviceManagement } from "./deviceManagement/klf200DeviceManagement.js";
 import { DisposalMap } from "./disposalMap.js";
@@ -198,10 +198,7 @@ type ConnectionWatchDogHandler = (hadError: boolean) => void;
 
 const refreshTimeoutMS = 120_000; // Wait max. 2 minutes for the notification.
 
-type ResponsiveProductResult = {
-	NodeID: number;
-	FPs: number[];
-};
+type ResponsiveProductResult = { NodeID: number; FPs: number[] };
 
 /**
  * The adapter instance.
@@ -318,10 +315,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * It sets up the event handlers for the adapter.
 	 */
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
-		super({
-			...options,
-			name: "klf200",
-		});
+		super({ ...options, name: "klf200" });
 
 		// Trace unhandled errors
 		process.on("unhandledRejection", this.onUnhandledRejection.bind(this));
@@ -370,9 +364,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		try {
 			await fs.access(filePath, fs.constants.R_OK);
 		} catch (error) {
-			throw new Error(`Could not load language file ${filePath}.`, {
-				cause: error,
-			});
+			throw new Error(`Could not load language file ${filePath}.`, { cause: error });
 		}
 		const translations = JSON.parse(await fs.readFile(filePath, { encoding: "utf8", flag: "r" })) as Record<
 			string,
@@ -540,10 +532,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 		await this.setObjectNotExistsAsync("TestConnection", {
 			type: "channel",
-			common: {
-				name: "TestConnection",
-				expert: true,
-			},
+			common: { name: "TestConnection", expert: true },
 			native: {},
 		});
 
@@ -911,7 +900,10 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			if (e instanceof Error && e.stack) {
 				this.log.debug(e.stack);
 			}
-			this.terminate ? this.terminate(result) : process.exit(1);
+			if (this.terminate) {
+				this.terminate(result);
+			}
+			throw new Error(result);
 		}
 	}
 
@@ -1868,9 +1860,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 									reject(
 										new Error(
 											`Unknown status code: ${(frame as GW_RECORD_SCENE_NTF).Status as number}.`,
-											{
-												cause: frame,
-											},
+											{ cause: frame },
 										),
 									);
 									break;
@@ -2066,7 +2056,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			data.advancedSSLConfiguration?.sslFingerprint,
 		);
 		return {
-			rejectUnauthorized: true,
+			rejectUnauthorized: false,
 			ca: klf200Connection.CA,
 			checkServerIdentity: (host, cert) => {
 				if (cert.fingerprint === klf200Connection.fingerprint) {

@@ -262,6 +262,7 @@ The values of the state provide multiple manipulation modes:
 <!-- prettier-ignore -->
 ### __WORK IN PROGRESS__
 
+- (Michael Schroeder) [#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Handle the outdated certificate in the connection test button.
 - (Michael Schroeder) [#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Added a connection test button to help identify connection problems.
 - (Michael Schroeder) [#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Split the limitation originator state for min and max into separate ones.
 - (Michael Schroeder) [#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Migrated to ESLint v9.
@@ -271,6 +272,14 @@ The values of the state provide multiple manipulation modes:
 - (Michael Schroeder) [#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Upgrade dependencies.
 - (Michael Schroeder) [#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Switch using ping instead of net-ping for compatibility with Node v24.
 - (Michael Schroeder) [#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Support Node V24.
+
+### 1.3.7 (2026-08-14)
+
+- (Michael Schroeder) Fix findings by adapter checker.
+
+### 1.3.6 (2026-08-14)
+
+- (Michael Schroeder) [#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) The outdated certificate of the KLF-200 will be accepted if its fingerprint matches.
 
 ### 1.3.5 (2024-11-20)
 
