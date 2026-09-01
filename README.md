@@ -263,6 +263,7 @@ The values of the state provide multiple manipulation modes:
 <!-- prettier-ignore -->
 ### __WORK IN PROGRESS__
 
+- (Michael Schroeder) [#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Handle the outdated certificate in the connection test button.
 - (Michael Schroeder) [#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Added a connection test button to help identify connection problems.
 - (Michael Schroeder) [#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Split the limitation originator state for min and max into separate ones.
 - (Michael Schroeder) [#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Migrated to ESLint v9.
@@ -276,6 +277,15 @@ The values of the state provide multiple manipulation modes:
 - (@GermanBluefox) Migrated the device management to @iobroker/dm-utils v3.
 - (@GermanBluefox) Switched the unit tests from chai to node:assert.
 - (@GermanBluefox) Raised the timeout of the setupProducts test suite, which could abort the test run under load.
+- (Michael Schroeder) [#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) Fixed findings from Adapter Checker and lint errors.
+
+### 1.3.7 (2026-08-14)
+
+- (Michael Schroeder) Fix findings by adapter checker.
+
+### 1.3.6 (2026-08-14)
+
+- (Michael Schroeder) [#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) The outdated certificate of the KLF-200 will be accepted if its fingerprint matches.
 
 ### 1.3.5 (2024-11-20)
 

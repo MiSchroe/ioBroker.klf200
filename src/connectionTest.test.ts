@@ -1,5 +1,5 @@
-import assert from "node:assert/strict";
 import debugModule from "debug";
+import assert from "node:assert/strict";
 import { env } from "node:process";
 import sinon from "sinon";
 import { MockServerController } from "../test/mocks/mockServerController.js";
@@ -131,6 +131,51 @@ describe("connectionTest", function () {
 				sut.connectTlsSocket("localhost", 51200, MockServerController.getMockServerConnectionOptions()),
 			);
 			debug("Connected to localhost");
+		});
+
+		it(`should succeed on an expired certificate`, async function () {
+			this.slow(2_000);
+			debug("Starting mock server");
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
+			await using mockServerController = await MockServerController.createMockServer(true);
+			debug("Mock server started");
+			const connectionOptions = MockServerController.getMockServerConnectionOptions(true);
+			const sut = new ConnectionTest(new TranslationMock());
+			debug("Connecting with correct fingerprint on expired certificate");
+			// When a certificate is expired but the fingerprint matches the pinned fingerprint,
+			// the connection should be accepted (this simulates the VELUX gateway scenario)
+			await assert.doesNotReject(
+				sut.connectTlsSocket(
+					"localhost",
+					51200,
+					connectionOptions,
+					"78:0E:43:3D:ED:C7:59:17:0C:CF:14:9A:DB:D5:5C:1C:BC:7D:17:BB",
+				),
+			);
+			debug("Connection succeeded with correct fingerprint");
+		});
+
+		it(`should fail on an expired certificate with wrong fingerprint`, async function () {
+			this.slow(2_000);
+			debug("Starting mock server");
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
+			await using mockServerController = await MockServerController.createMockServer(true);
+			debug("Mock server started");
+			const connectionOptions = MockServerController.getMockServerConnectionOptions(true);
+			const sut = new ConnectionTest(new TranslationMock());
+			debug("Connecting with correct fingerprint on expired certificate");
+			// When a certificate is expired but the fingerprint matches the pinned fingerprint,
+			// the connection should be accepted (this simulates the VELUX gateway scenario)
+			await assert.rejects(
+				sut.connectTlsSocket(
+					"localhost",
+					51200,
+					connectionOptions,
+					"00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00",
+				),
+				/CERT_HAS_EXPIRED/,
+			);
+			debug("Connection failed with wrong fingerprint");
 		});
 	});
 

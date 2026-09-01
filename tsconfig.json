@@ -3,6 +3,7 @@
 	// It covers every TypeScript source in the repository. Emitting is configured
 	// in tsconfig.build.json, which narrows this down to the adapter sources.
 	"extends": "@tsconfig/node22/tsconfig.json",
+	"compileOnSave": true,
 	"compilerOptions": {
 		"noEmit": true,
 		"allowJs": false,
@@ -16,8 +17,21 @@
 		"inlineSourceMap": false,
 		// @tsconfig/node22 sets "types": ["node"], which switches off the automatic
 		// inclusion of global type packages, so every one of them has to be listed here.
-		"types": ["node", "mocha", "@iobroker/types"]
+		"types": [
+			"node",
+			"mocha",
+			"@iobroker/types"
+		]
 	},
-	"include": ["src/**/*.ts", "test/**/*.ts", "types/**/*.d.ts"],
-	"exclude": ["build/**", "node_modules/**", "admin/**", "src-admin/**"]
+	"include": [
+		"src/**/*.ts",
+		"test/**/*.ts",
+		"types/**/*.d.ts"
+	],
+	"exclude": [
+		"build/**",
+		"node_modules/**",
+		"admin/**",
+		"src-admin/**"
+	]
 }

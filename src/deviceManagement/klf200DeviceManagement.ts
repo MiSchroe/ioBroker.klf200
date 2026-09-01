@@ -37,6 +37,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					devices.push({
 						id: `products.${product.NodeID}`,
 						name: product.Name,
+						icon: "window",
 						actions: [
 							{
 								id: "deleteProduct",
@@ -69,6 +70,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					devices.push({
 						id: `groups.${group.GroupID}`,
 						name: group.Name,
+						icon: "location",
 						actions: [
 							{
 								id: "deleteGroup",
@@ -95,6 +97,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					devices.push({
 						id: `scenes.${scene.SceneID}`,
 						name: scene.SceneName,
+						icon: "media",
 						actions: [
 							{
 								id: "deleteScene",

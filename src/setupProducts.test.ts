@@ -1,6 +1,4 @@
-import assert from "node:assert/strict";
 import { type MockAdapter, utils } from "@iobroker/testing";
-import { createAsserts } from "../test/asserts.js";
 import {
 	ActuatorType,
 	type Disposable,
@@ -16,9 +14,11 @@ import {
 	StatusReply,
 	Velocity,
 } from "klf-200-api";
-import sinon from "sinon";
+import assert from "node:assert/strict";
 import type { EventEmitter } from "node:stream";
 import { promisify } from "node:util";
+import sinon from "sinon";
+import { createAsserts } from "../test/asserts.js";
 import { DisposalMap } from "./disposalMap.js";
 import { SetupProducts } from "./setupProducts.js";
 import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink.js";
