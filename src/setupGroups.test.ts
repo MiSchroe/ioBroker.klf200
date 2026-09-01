@@ -12,10 +12,10 @@ import {
 	Product,
 	Velocity,
 } from "klf-200-api";
-import sinon from "sinon";
-import sinonChai from "sinon-chai";
 import type { EventEmitter } from "node:stream";
 import { promisify } from "node:util";
+import sinon from "sinon";
+import sinonChai from "sinon-chai";
 import { DisposalMap } from "./disposalMap.js";
 import { SetupGroups } from "./setupGroups.js";
 import {
@@ -532,7 +532,7 @@ describe("setupGroups", function () {
 			const states: string[] = ["groupType", "targetPosition"];
 			database.publishStateObjects(
 				...states.map(state => {
-					return { _id: `${adapter.namespace}.groups.42.${state}` } as ioBroker.PartialObject;
+					return { _id: `${adapter.namespace}.groups.42.${state}` };
 				}),
 			);
 

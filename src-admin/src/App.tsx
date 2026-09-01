@@ -32,29 +32,32 @@ const mockStateSubscribers: Record<string, ((id: string, state: any) => void)[]>
 const mockSocket: any = {
 	getState: async (id: string) => {
 		if (id.endsWith(".alive")) {
-			return { val: true }; // Simuliert: Adapter läuft
+			return await Promise.resolve({ val: true }); // Simuliert: Adapter läuft
 		}
 		if (id.endsWith(".running")) {
-			return { val: false };
+			return await Promise.resolve({ val: false });
 		}
 		if (id.endsWith(".testResults")) {
-			return { val: "[]" };
+			return await Promise.resolve({ val: "[]" });
 		}
-		return null;
+		return await Promise.resolve(null);
 	},
 	setState: async (id: string, val: any) => {
 		console.log(`[MockSocket] setState: ${id} =`, val);
+		return await Promise.resolve();
 	},
 	subscribeState: async (pattern: string, cb: (id: string, state: any) => void) => {
 		mockStateSubscribers[pattern] = mockStateSubscribers[pattern] || [];
 		mockStateSubscribers[pattern].push(cb);
+		return await Promise.resolve();
 	},
 	unsubscribeState: async (pattern: string, cb: (id: string, state: any) => void) => {
 		if (mockStateSubscribers[pattern]) {
 			mockStateSubscribers[pattern] = mockStateSubscribers[pattern].filter(fn => fn !== cb);
 		}
+		return await Promise.resolve();
 	},
-	encrypt: async (val: string) => `encrypted_${val}`,
+	encrypt: async (val: string) => await Promise.resolve(`encrypted_${val}`),
 	sendTo: async (target: string, command: string, message: any) => {
 		console.log(`[MockSocket] sendTo: ${target} -> ${command}`, message);
 

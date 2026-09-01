@@ -16,10 +16,10 @@ import {
 	StatusReply,
 	Velocity,
 } from "klf-200-api";
-import sinon from "sinon";
-import sinonChai from "sinon-chai";
 import type { EventEmitter } from "node:stream";
 import { promisify } from "node:util";
+import sinon from "sinon";
+import sinonChai from "sinon-chai";
 import { DisposalMap } from "./disposalMap.js";
 import { SetupProducts } from "./setupProducts.js";
 import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink.js";
@@ -1136,7 +1136,7 @@ describe("setupProducts", function () {
 			const states: string[] = ["currentPosition", "targetPosition"];
 			database.publishStateObjects(
 				...states.map(state => {
-					return { _id: `${adapter.namespace}.products.42.${state}` } as ioBroker.PartialObject;
+					return { _id: `${adapter.namespace}.products.42.${state}` };
 				}),
 			);
 
