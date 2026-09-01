@@ -1,11 +1,10 @@
 import { type MockAdapter, utils } from "@iobroker/testing";
-import { expect, use } from "chai";
-import chaiAsPromised from "chai-as-promised";
 import { type Disposable, type IConnection, ParameterActive, Scene, Scenes, Velocity } from "klf-200-api";
+import assert from "node:assert/strict";
 import type { EventEmitter } from "node:stream";
 import { promisify } from "node:util";
 import sinon from "sinon";
-import sinonChai from "sinon-chai";
+import { createAsserts } from "../test/asserts.js";
 import { setState } from "../test/mockHelper.js";
 import { DisposalMap } from "./disposalMap.js";
 import { SetupScenes } from "./setupScenes.js";
@@ -14,9 +13,6 @@ import {
 	ComplexPropertyChangedHandler,
 	SimplePropertyChangedHandler,
 } from "./util/propertyLink.js";
-
-use(sinonChai);
-use(chaiAsPromised);
 
 class MockConnect implements IConnection {
 	onFrameSent = sinon.stub();
@@ -56,7 +52,7 @@ describe("setupScenes", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
 	const { assertObjectExists, assertStateExists, assertStateHasValue, assertStateIsAcked, assertObjectCommon } =
-		utils.unit.createAsserts(database, adapter);
+		createAsserts(database, adapter);
 
 	// Fake getChannelsOf
 	adapter.getChannelsOf = sinon.stub();
@@ -253,8 +249,8 @@ describe("setupScenes", function () {
 				try {
 					const state = (await adapter.getObjectAsync(
 						`test.0.scenes.0.${expectedState}`,
-					)) as ioBroker.GetObjectPromise;
-					expect(state).to.have.nested.property("common.def", expectedDefaultValue);
+					)) as ioBroker.StateObject;
+					assert.strictEqual(state.common.def, expectedDefaultValue);
 				} finally {
 					await disposalMap.disposeAll();
 				}
@@ -354,10 +350,11 @@ describe("setupScenes", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped writable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -411,10 +408,11 @@ describe("setupScenes", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -453,8 +451,8 @@ describe("setupScenes", function () {
 						setTimeout(resolve, 0);
 					});
 
-					expect(runAsyncStub).to.be.calledOnce;
-					expect(runAsyncStub).to.be.calledOnceWith(expectedVelocity);
+					assert.ok(runAsyncStub.calledOnce);
+					assert.ok(runAsyncStub.calledOnceWith(expectedVelocity));
 				} finally {
 					await disposalMap.disposeAll();
 				}
@@ -528,10 +526,10 @@ describe("setupScenes", function () {
 			await SetupScenes.createScenesAsync(adapter as unknown as ioBroker.Adapter, mockScenes, disposalMap);
 			try {
 				states.forEach(state =>
-					expect(
+					assert.throws(
 						() => assertObjectExists(`${adapter.namespace}.scenes.42.${state}`),
 						`Object ${adapter.namespace}.scenes.42.${state} shouldn't exist anymore.`,
-					).to.throw(),
+					),
 				);
 			} finally {
 				await disposalMap.disposeAll();
@@ -570,7 +568,7 @@ describe("setupScenes", function () {
 				// 	setTimeout(resolve, 0);
 				// });
 				const callsAfterSetState = (mockScenes.refreshScenesAsync as unknown as sinon.SinonStub).callCount;
-				expect(callsAfterSetState - currentCalls).to.be.equal(1);
+				assert.strictEqual(callsAfterSetState - currentCalls, 1);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -580,7 +578,7 @@ describe("setupScenes", function () {
 			const disposalMap = new DisposalMap();
 			await SetupScenes.createScenesAsync(adapter as unknown as ioBroker.Adapter, mockScenes, disposalMap);
 			try {
-				expect(disposalMap.size).to.be.not.equal(0);
+				assert.notStrictEqual(disposalMap.size, 0);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -612,10 +610,11 @@ describe("setupScenes", function () {
 						remainingEntries.push(key);
 					}
 				}
-				expect(
+				assert.strictEqual(
 					remainingEntries.length,
+					0,
 					`disposalMap should be empty for scenes.0, but has the following entries: ${JSON.stringify(Array.from(disposalMap.keys()))}`,
-				).to.be.equal(0);
+				);
 			} finally {
 				await disposalMap.disposeAll();
 			}

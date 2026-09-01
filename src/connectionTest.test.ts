@@ -1,5 +1,5 @@
-import { expect } from "chai";
 import debugModule from "debug";
+import assert from "node:assert/strict";
 import { env } from "node:process";
 import sinon from "sinon";
 import { MockServerController } from "../test/mocks/mockServerController.js";
@@ -46,19 +46,22 @@ describe("connectionTest", function () {
 	describe("Name resolution", function () {
 		it(`something.invalid should not be resolved`, async function () {
 			const sut = new ConnectionTest(new TranslationMock());
-			await expect(sut.resolveName("something.invalid")).to.be.rejectedWith(Error);
+			await assert.rejects(sut.resolveName("something.invalid"), Error);
 		});
 
 		it(`127.0.0.1 should be resolved to 127.0.0.1`, async function () {
 			const sut = new ConnectionTest(new TranslationMock());
 			const result = await sut.resolveName("127.0.0.1");
-			expect(result).to.be.equal("127.0.0.1");
+			assert.strictEqual(result, "127.0.0.1");
 		});
 
 		it(`localhost should be resolved to 127.0.0.1 (or ::1)`, async function () {
 			const sut = new ConnectionTest(new TranslationMock());
 			const result = await sut.resolveName("localhost");
-			expect(result).to.be.oneOf(["127.0.0.1", "::1"]);
+			assert.ok(
+				["127.0.0.1", "::1"].includes(result),
+				`Expected "127.0.0.1" or "::1", but got ${JSON.stringify(result)}!`,
+			);
 		});
 	});
 
@@ -70,7 +73,7 @@ describe("connectionTest", function () {
 			} else {
 				this.slow(10_000);
 				const sut = new ConnectionTest(new TranslationMock());
-				await expect(sut.ping("192.0.2.0")).to.be.rejected;
+				await assert.rejects(sut.ping("192.0.2.0"));
 			}
 		});
 
@@ -79,7 +82,7 @@ describe("connectionTest", function () {
 				this.skip();
 			} else {
 				const sut = new ConnectionTest(new TranslationMock());
-				await expect(sut.ping("127.0.0.1")).to.be.fulfilled;
+				await assert.doesNotReject(sut.ping("127.0.0.1"));
 			}
 		});
 
@@ -88,7 +91,7 @@ describe("connectionTest", function () {
 				this.skip();
 			} else {
 				const sut = new ConnectionTest(new TranslationMock());
-				await expect(sut.ping("localhost")).to.be.fulfilled;
+				await assert.doesNotReject(sut.ping("localhost"));
 			}
 		});
 
@@ -97,7 +100,7 @@ describe("connectionTest", function () {
 				this.skip();
 			} else {
 				const sut = new ConnectionTest(new TranslationMock());
-				await expect(sut.ping("8.8.8.8")).to.be.fulfilled;
+				await assert.doesNotReject(sut.ping("8.8.8.8"));
 			}
 		});
 	});
@@ -111,7 +114,7 @@ describe("connectionTest", function () {
 			} else {
 				this.slow(25_000);
 				const sut = new ConnectionTest(new TranslationMock());
-				await expect(sut.connectTlsSocket("192.0.2.0", 51200)).to.be.rejected;
+				await assert.rejects(sut.connectTlsSocket("192.0.2.0", 51200));
 			}
 		});
 
@@ -124,9 +127,9 @@ describe("connectionTest", function () {
 			debug("Creating connection options");
 			const sut = new ConnectionTest(new TranslationMock());
 			debug("Connecting to localhost");
-			await expect(
+			await assert.doesNotReject(
 				sut.connectTlsSocket("localhost", 51200, MockServerController.getMockServerConnectionOptions()),
-			).to.be.fulfilled;
+			);
 			debug("Connected to localhost");
 		});
 
@@ -141,14 +144,14 @@ describe("connectionTest", function () {
 			debug("Connecting with correct fingerprint on expired certificate");
 			// When a certificate is expired but the fingerprint matches the pinned fingerprint,
 			// the connection should be accepted (this simulates the VELUX gateway scenario)
-			await expect(
+			await assert.doesNotReject(
 				sut.connectTlsSocket(
 					"localhost",
 					51200,
 					connectionOptions,
 					"78:0E:43:3D:ED:C7:59:17:0C:CF:14:9A:DB:D5:5C:1C:BC:7D:17:BB",
 				),
-			).to.be.fulfilled;
+			);
 			debug("Connection succeeded with correct fingerprint");
 		});
 
@@ -163,14 +166,15 @@ describe("connectionTest", function () {
 			debug("Connecting with correct fingerprint on expired certificate");
 			// When a certificate is expired but the fingerprint matches the pinned fingerprint,
 			// the connection should be accepted (this simulates the VELUX gateway scenario)
-			await expect(
+			await assert.rejects(
 				sut.connectTlsSocket(
 					"localhost",
 					51200,
 					connectionOptions,
 					"00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00",
 				),
-			).to.be.rejectedWith("CERT_HAS_EXPIRED");
+				/CERT_HAS_EXPIRED/,
+			);
 			debug("Connection failed with wrong fingerprint");
 		});
 	});
@@ -184,7 +188,7 @@ describe("connectionTest", function () {
 			await using mockServerController = await MockServerController.createMockServer();
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
 			const sut = new ConnectionTest(new TranslationMock());
-			await expect(sut.login("localhost", "wrongpwd", connectionOptions)).to.be.rejectedWith(Error);
+			await assert.rejects(sut.login("localhost", "wrongpwd", connectionOptions), Error);
 		});
 
 		it(`should login with the correct password`, async function () {
@@ -192,7 +196,7 @@ describe("connectionTest", function () {
 			await using mockServerController = await MockServerController.createMockServer();
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
 			const sut = new ConnectionTest(new TranslationMock());
-			await expect(sut.login("localhost", "velux123", connectionOptions)).to.be.fulfilled;
+			await assert.doesNotReject(sut.login("localhost", "velux123", connectionOptions));
 		});
 	});
 
@@ -204,7 +208,7 @@ describe("connectionTest", function () {
 			await using mockServerController = await MockServerController.createMockServer();
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
 			const sut = new ConnectionTest(new TranslationMock());
-			await expect(sut.runTests("localhost", "velux123", connectionOptions)).to.be.fulfilled;
+			await assert.doesNotReject(sut.runTests("localhost", "velux123", connectionOptions));
 		});
 
 		it(`should return 4 steps`, async function () {
@@ -215,7 +219,7 @@ describe("connectionTest", function () {
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
 			const sut = new ConnectionTest(new TranslationMock());
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
+			assert.strictEqual(result.length, 4);
 		});
 
 		it(`should fail at step 1`, async function () {
@@ -226,15 +230,15 @@ describe("connectionTest", function () {
 			const step3stub = sinon.stub(sut, "connectTlsSocket").rejects();
 			const step4stub = sinon.stub(sut, "login").rejects();
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
-			expect(step1stub, "Step 1").to.be.calledOnce;
-			expect(step2stub, "Step 2").not.to.be.called;
-			expect(step3stub, "Step 3").not.to.be.called;
-			expect(step4stub, "Step 4").not.to.be.called;
-			expect(result[0]).to.haveOwnProperty("run", true);
-			expect(result[0]).to.haveOwnProperty("stepOrder", 1);
-			expect(result[0]).to.haveOwnProperty("success", false);
-			expect(result[0]).to.haveOwnProperty("message");
+			assert.strictEqual(result.length, 4);
+			assert.ok(step1stub.calledOnce, "Step 1");
+			assert.ok(step2stub.notCalled, "Step 2");
+			assert.ok(step3stub.notCalled, "Step 3");
+			assert.ok(step4stub.notCalled, "Step 4");
+			assert.strictEqual(result[0].run, true);
+			assert.strictEqual(result[0].stepOrder, 1);
+			assert.strictEqual(result[0].success, false);
+			assert.ok(Object.hasOwn(result[0], "message"));
 		});
 
 		it(`should succeed at step 1`, async function () {
@@ -245,15 +249,15 @@ describe("connectionTest", function () {
 			const step3stub = sinon.stub(sut, "connectTlsSocket").rejects();
 			const step4stub = sinon.stub(sut, "login").rejects();
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
-			expect(step1stub, "Step 1").to.be.calledOnce;
-			expect(step2stub, "Step 2").to.be.calledOnce;
-			expect(step3stub, "Step 3").not.to.be.called;
-			expect(step4stub, "Step 4").not.to.be.called;
-			expect(result[0]).to.haveOwnProperty("run", true);
-			expect(result[0]).to.haveOwnProperty("stepOrder", 1);
-			expect(result[0]).to.haveOwnProperty("success", true);
-			expect(result[0]).to.haveOwnProperty("result", "127.0.0.1");
+			assert.strictEqual(result.length, 4);
+			assert.ok(step1stub.calledOnce, "Step 1");
+			assert.ok(step2stub.calledOnce, "Step 2");
+			assert.ok(step3stub.notCalled, "Step 3");
+			assert.ok(step4stub.notCalled, "Step 4");
+			assert.strictEqual(result[0].run, true);
+			assert.strictEqual(result[0].stepOrder, 1);
+			assert.strictEqual(result[0].success, true);
+			assert.strictEqual(result[0].result, "127.0.0.1");
 		});
 
 		it(`should fail at step 2`, async function () {
@@ -264,15 +268,15 @@ describe("connectionTest", function () {
 			const step3stub = sinon.stub(sut, "connectTlsSocket").rejects();
 			const step4stub = sinon.stub(sut, "login").rejects();
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
-			expect(step1stub, "Step 1").to.be.calledOnce;
-			expect(step2stub, "Step 2").to.be.calledOnce;
-			expect(step3stub, "Step 3").not.to.be.called;
-			expect(step4stub, "Step 4").not.to.be.called;
-			expect(result[1]).to.haveOwnProperty("run", true);
-			expect(result[1]).to.haveOwnProperty("stepOrder", 2);
-			expect(result[1]).to.haveOwnProperty("success", false);
-			expect(result[1]).to.haveOwnProperty("message");
+			assert.strictEqual(result.length, 4);
+			assert.ok(step1stub.calledOnce, "Step 1");
+			assert.ok(step2stub.calledOnce, "Step 2");
+			assert.ok(step3stub.notCalled, "Step 3");
+			assert.ok(step4stub.notCalled, "Step 4");
+			assert.strictEqual(result[1].run, true);
+			assert.strictEqual(result[1].stepOrder, 2);
+			assert.strictEqual(result[1].success, false);
+			assert.ok(Object.hasOwn(result[1], "message"));
 		});
 
 		it(`should succeed at step 2`, async function () {
@@ -283,15 +287,15 @@ describe("connectionTest", function () {
 			const step3stub = sinon.stub(sut, "connectTlsSocket").rejects();
 			const step4stub = sinon.stub(sut, "login").rejects();
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
-			expect(step1stub, "Step 1").to.be.calledOnce;
-			expect(step2stub, "Step 2").to.be.calledOnce;
-			expect(step3stub, "Step 3").to.be.calledOnce;
-			expect(step4stub, "Step 4").not.to.be.called;
-			expect(result[1]).to.haveOwnProperty("run", true);
-			expect(result[1]).to.haveOwnProperty("stepOrder", 2);
-			expect(result[1]).to.haveOwnProperty("success", true);
-			expect(result[1]).to.haveOwnProperty("result", 12);
+			assert.strictEqual(result.length, 4);
+			assert.ok(step1stub.calledOnce, "Step 1");
+			assert.ok(step2stub.calledOnce, "Step 2");
+			assert.ok(step3stub.calledOnce, "Step 3");
+			assert.ok(step4stub.notCalled, "Step 4");
+			assert.strictEqual(result[1].run, true);
+			assert.strictEqual(result[1].stepOrder, 2);
+			assert.strictEqual(result[1].success, true);
+			assert.strictEqual(result[1].result, 12);
 		});
 
 		it(`should fail at step 3`, async function () {
@@ -302,15 +306,15 @@ describe("connectionTest", function () {
 			const step3stub = sinon.stub(sut, "connectTlsSocket").rejects();
 			const step4stub = sinon.stub(sut, "login").rejects();
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
-			expect(step1stub, "Step 1").to.be.calledOnce;
-			expect(step2stub, "Step 2").to.be.calledOnce;
-			expect(step3stub, "Step 3").to.be.calledOnce;
-			expect(step4stub, "Step 4").not.to.be.called;
-			expect(result[2]).to.haveOwnProperty("run", true);
-			expect(result[2]).to.haveOwnProperty("stepOrder", 3);
-			expect(result[2]).to.haveOwnProperty("success", false);
-			expect(result[2]).to.haveOwnProperty("message");
+			assert.strictEqual(result.length, 4);
+			assert.ok(step1stub.calledOnce, "Step 1");
+			assert.ok(step2stub.calledOnce, "Step 2");
+			assert.ok(step3stub.calledOnce, "Step 3");
+			assert.ok(step4stub.notCalled, "Step 4");
+			assert.strictEqual(result[2].run, true);
+			assert.strictEqual(result[2].stepOrder, 3);
+			assert.strictEqual(result[2].success, false);
+			assert.ok(Object.hasOwn(result[2], "message"));
 		});
 
 		it(`should succeed at step 3`, async function () {
@@ -321,15 +325,15 @@ describe("connectionTest", function () {
 			const step3stub = sinon.stub(sut, "connectTlsSocket").resolves();
 			const step4stub = sinon.stub(sut, "login").rejects();
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
-			expect(step1stub, "Step 1").to.be.calledOnce;
-			expect(step2stub, "Step 2").to.be.calledOnce;
-			expect(step3stub, "Step 3").to.be.calledOnce;
-			expect(step4stub, "Step 4").to.be.calledOnce;
-			expect(result[2]).to.haveOwnProperty("run", true);
-			expect(result[2]).to.haveOwnProperty("stepOrder", 3);
-			expect(result[2]).to.haveOwnProperty("success", true);
-			expect(result[2]).to.haveOwnProperty("message");
+			assert.strictEqual(result.length, 4);
+			assert.ok(step1stub.calledOnce, "Step 1");
+			assert.ok(step2stub.calledOnce, "Step 2");
+			assert.ok(step3stub.calledOnce, "Step 3");
+			assert.ok(step4stub.calledOnce, "Step 4");
+			assert.strictEqual(result[2].run, true);
+			assert.strictEqual(result[2].stepOrder, 3);
+			assert.strictEqual(result[2].success, true);
+			assert.ok(Object.hasOwn(result[2], "message"));
 		});
 
 		it(`should fail at step 4`, async function () {
@@ -340,14 +344,14 @@ describe("connectionTest", function () {
 			const step3stub = sinon.stub(sut, "connectTlsSocket").resolves();
 			const step4stub = sinon.stub(sut, "login").rejects();
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
-			expect(step1stub, "Step 1").to.be.calledOnce;
-			expect(step2stub, "Step 2").to.be.calledOnce;
-			expect(step3stub, "Step 3").to.be.calledOnce;
-			expect(step4stub, "Step 4").to.be.calledOnce;
-			expect(result[3]).to.haveOwnProperty("run", true);
-			expect(result[3]).to.haveOwnProperty("stepOrder", 4);
-			expect(result[3]).to.haveOwnProperty("success", false);
+			assert.strictEqual(result.length, 4);
+			assert.ok(step1stub.calledOnce, "Step 1");
+			assert.ok(step2stub.calledOnce, "Step 2");
+			assert.ok(step3stub.calledOnce, "Step 3");
+			assert.ok(step4stub.calledOnce, "Step 4");
+			assert.strictEqual(result[3].run, true);
+			assert.strictEqual(result[3].stepOrder, 4);
+			assert.strictEqual(result[3].success, false);
 		});
 
 		it(`should succeed at step 4`, async function () {
@@ -358,15 +362,15 @@ describe("connectionTest", function () {
 			const step3stub = sinon.stub(sut, "connectTlsSocket").resolves();
 			const step4stub = sinon.stub(sut, "login").resolves();
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
-			expect(step1stub, "Step 1").to.be.calledOnce;
-			expect(step2stub, "Step 2").to.be.calledOnce;
-			expect(step3stub, "Step 3").to.be.calledOnce;
-			expect(step4stub, "Step 4").to.be.calledOnce;
-			expect(result[3]).to.haveOwnProperty("run", true);
-			expect(result[3]).to.haveOwnProperty("stepOrder", 4);
-			expect(result[3]).to.haveOwnProperty("success", true);
-			expect(result[3]).to.haveOwnProperty("message");
+			assert.strictEqual(result.length, 4);
+			assert.ok(step1stub.calledOnce, "Step 1");
+			assert.ok(step2stub.calledOnce, "Step 2");
+			assert.ok(step3stub.calledOnce, "Step 3");
+			assert.ok(step4stub.calledOnce, "Step 4");
+			assert.strictEqual(result[3].run, true);
+			assert.strictEqual(result[3].stepOrder, 4);
+			assert.strictEqual(result[3].success, true);
+			assert.ok(Object.hasOwn(result[3], "message"));
 		});
 
 		it(`should call the progress callback 4 times`, async function () {
@@ -378,7 +382,7 @@ describe("connectionTest", function () {
 			sinon.stub(sut, "login").resolves();
 			const progressCallback = sinon.spy();
 			await sut.runTests("localhost", "velux123", connectionOptions, progressCallback);
-			expect(progressCallback).to.be.callCount(4);
+			assert.strictEqual(progressCallback.callCount, 4);
 		});
 
 		it(`should succeed at step 1 against mock server`, async function () {
@@ -390,11 +394,11 @@ describe("connectionTest", function () {
 			const sut = new ConnectionTest(new TranslationMock());
 			sinon.stub(sut, "ping").resolves(12);
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
-			expect(result[0]).to.haveOwnProperty("run", true);
-			expect(result[0]).to.haveOwnProperty("stepOrder", 1);
-			expect(result[0]).to.haveOwnProperty("success", true);
-			expect(result[0]).to.haveOwnProperty("message");
+			assert.strictEqual(result.length, 4);
+			assert.strictEqual(result[0].run, true);
+			assert.strictEqual(result[0].stepOrder, 1);
+			assert.strictEqual(result[0].success, true);
+			assert.ok(Object.hasOwn(result[0], "message"));
 		});
 
 		it(`should succeed at step 2 against mock server`, async function () {
@@ -406,11 +410,11 @@ describe("connectionTest", function () {
 			const sut = new ConnectionTest(new TranslationMock());
 			sinon.stub(sut, "ping").resolves(12);
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
-			expect(result[1]).to.haveOwnProperty("run", true);
-			expect(result[1]).to.haveOwnProperty("stepOrder", 2);
-			expect(result[1]).to.haveOwnProperty("success", true);
-			expect(result[1]).to.haveOwnProperty("message");
+			assert.strictEqual(result.length, 4);
+			assert.strictEqual(result[1].run, true);
+			assert.strictEqual(result[1].stepOrder, 2);
+			assert.strictEqual(result[1].success, true);
+			assert.ok(Object.hasOwn(result[1], "message"));
 		});
 
 		it(`should succeed at step 3 against mock server`, async function () {
@@ -422,11 +426,11 @@ describe("connectionTest", function () {
 			const sut = new ConnectionTest(new TranslationMock());
 			sinon.stub(sut, "ping").resolves(12);
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
-			expect(result[2]).to.haveOwnProperty("run", true);
-			expect(result[2]).to.haveOwnProperty("stepOrder", 3);
-			expect(result[2]).to.haveOwnProperty("success", true);
-			expect(result[2]).to.haveOwnProperty("message");
+			assert.strictEqual(result.length, 4);
+			assert.strictEqual(result[2].run, true);
+			assert.strictEqual(result[2].stepOrder, 3);
+			assert.strictEqual(result[2].success, true);
+			assert.ok(Object.hasOwn(result[2], "message"));
 		});
 
 		it(`should succeed at step 4 against mock server`, async function () {
@@ -438,11 +442,11 @@ describe("connectionTest", function () {
 			const sut = new ConnectionTest(new TranslationMock());
 			sinon.stub(sut, "ping").resolves(12);
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			expect(result).to.have.lengthOf(4);
-			expect(result[3]).to.haveOwnProperty("run", true);
-			expect(result[3]).to.haveOwnProperty("stepOrder", 4);
-			expect(result[3]).to.haveOwnProperty("success", true);
-			expect(result[3]).to.haveOwnProperty("message");
+			assert.strictEqual(result.length, 4);
+			assert.strictEqual(result[3].run, true);
+			assert.strictEqual(result[3].stepOrder, 4);
+			assert.strictEqual(result[3].success, true);
+			assert.ok(Object.hasOwn(result[3], "message"));
 		});
 	});
 });

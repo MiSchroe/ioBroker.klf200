@@ -273,6 +273,10 @@ The values of the state provide multiple manipulation modes:
 - (Michael Schroeder) [#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Upgrade dependencies.
 - (Michael Schroeder) [#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Switch using ping instead of net-ping for compatibility with Node v24.
 - (Michael Schroeder) [#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Support Node V24.
+- (@GermanBluefox) Migrated the admin configuration UI to React 19: replaced @iobroker/adapter-react-v5 by @iobroker/gui-components and upgraded to MUI 9 and Vite 8, so that the connection test component matches the current GUI API generation of the Admin adapter.
+- (@GermanBluefox) Migrated the device management to @iobroker/dm-utils v3.
+- (@GermanBluefox) Switched the unit tests from chai to node:assert.
+- (@GermanBluefox) Raised the timeout of the setupProducts test suite, which could abort the test run under load.
 - (Michael Schroeder) [#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) Fixed findings from Adapter Checker and lint errors.
 
 ### 1.3.7 (2026-08-14)

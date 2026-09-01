@@ -1,22 +1,17 @@
 import {
 	type ActionContext,
 	type DeviceInfo,
+	type DeviceLoadContext,
+	type DeviceRefreshResponse,
 	type InstanceDetails,
+	type InstanceRefreshResponse,
 	type JsonFormData,
 	type JsonFormSchema,
-	type RefreshResponse,
 	DeviceManagement,
 } from "@iobroker/dm-utils";
 import type { ProgressDialog } from "@iobroker/dm-utils/build/ProgressDialog.js";
-import assert from "node:assert";
 import { ActuatorType } from "klf-200-api";
 import type { Klf200 } from "../klf200Adapter.js";
-
-type instanceActionType = "discover" | "addGroup" | "addScene" | "sendToRemote" | "receiveFromRemote";
-type productActionType = "deleteProduct" | "renameProduct" | "winkProduct";
-type groupActionType = "deleteGroup" | "editGroup";
-type sceneActionType = "deleteScene" | "renameScene";
-type deviceActionType = productActionType | groupActionType | sceneActionType;
 
 type GroupEditDialogData = {
 	dialogTitle: ioBroker.StringOrTranslated;
@@ -31,9 +26,9 @@ type GroupEditResultData = Omit<GroupEditDialogData, "dialogTitle">;
  * KLF200 Device Management
  */
 export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
-	protected override async listDevices(): Promise<DeviceInfo[]> {
-		this.adapter.log.debug(`KLF200DeviceManagement: listDevices called.`);
-		const devices: DeviceInfo[] = [];
+	protected override async loadDevices(context: DeviceLoadContext<string>): Promise<void> {
+		this.adapter.log.debug(`KLF200DeviceManagement: loadDevices called.`);
+		const devices: DeviceInfo<string>[] = [];
 
 		// Setup products
 		if (this.adapter.Products) {
@@ -42,30 +37,25 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					devices.push({
 						id: `products.${product.NodeID}`,
 						name: product.Name,
+						icon: "window",
 						actions: [
 							{
 								id: "deleteProduct",
-								icon: "fa-solid fa-trash-can",
+								icon: "delete",
 								description: await this.adapter.getTranslatedObject("dm-device-product-delete"),
-								handler: () => {
-									return { refresh: false };
-								},
+								handler: (deviceId, actionContext) => this.handleProductDelete(deviceId, actionContext),
 							},
 							{
 								id: "renameProduct",
-								icon: "fa-solid fa-pen",
+								icon: "rename",
 								description: await this.adapter.getTranslatedObject("dm-device-product-rename"),
-								handler: () => {
-									return { refresh: false };
-								},
+								handler: (deviceId, actionContext) => this.handleProductRename(deviceId, actionContext),
 							},
 							{
 								id: "winkProduct",
-								icon: "fa-solid fa-eye",
+								icon: "identify",
 								description: await this.adapter.getTranslatedObject("dm-device-product-wink"),
-								handler: () => {
-									return { refresh: false };
-								},
+								handler: (deviceId, actionContext) => this.handleProductWink(deviceId, actionContext),
 							},
 						],
 					});
@@ -80,22 +70,19 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					devices.push({
 						id: `groups.${group.GroupID}`,
 						name: group.Name,
+						icon: "location",
 						actions: [
 							{
 								id: "deleteGroup",
-								icon: "fa-solid fa-trash-can",
+								icon: "delete",
 								description: await this.adapter.getTranslatedObject("dm-device-group-delete"),
-								handler: () => {
-									return { refresh: false };
-								},
+								handler: (deviceId, actionContext) => this.handleGroupDelete(deviceId, actionContext),
 							},
 							{
 								id: "editGroup",
-								icon: "fa-solid fa-pen",
+								icon: "edit",
 								description: await this.adapter.getTranslatedObject("dm-device-group-edit"),
-								handler: () => {
-									return { refresh: false };
-								},
+								handler: (deviceId, actionContext) => this.handleEditGroup(deviceId, actionContext),
 							},
 						],
 					});
@@ -110,81 +97,66 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					devices.push({
 						id: `scenes.${scene.SceneID}`,
 						name: scene.SceneName,
+						icon: "media",
 						actions: [
 							{
 								id: "deleteScene",
-								icon: "fa-solid fa-trash-can",
+								icon: "delete",
 								description: await this.adapter.getTranslatedObject("dm-device-scene-delete"),
-								handler: () => {
-									return { refresh: false };
-								},
+								handler: (deviceId, actionContext) => this.handleSceneDelete(deviceId, actionContext),
 							},
 							{
 								id: "renameScene",
-								icon: "fa-solid fa-pen",
+								icon: "rename",
 								description: await this.adapter.getTranslatedObject("dm-device-scene-rename"),
-								handler: () => {
-									return { refresh: false };
-								},
+								handler: (deviceId, actionContext) => this.handleSceneRename(deviceId, actionContext),
 							},
 						],
 					});
 				}
 			}
 		}
-		this.adapter.log.debug(`KLF200DeviceManagement: listDevices: Returning ${JSON.stringify(devices)}.`);
-		return Promise.resolve(devices);
+		this.adapter.log.debug(`KLF200DeviceManagement: loadDevices: Reporting ${JSON.stringify(devices)}.`);
+		context.setTotalDevices(devices.length);
+		for (const device of devices) {
+			context.addDevice(device);
+		}
 	}
 	protected override async getInstanceInfo(): Promise<InstanceDetails> {
 		this.adapter.log.debug(`KLF200DeviceManagement: getInstanceInfo called.`);
 		const instanceDetails: InstanceDetails = {
 			...(await Promise.resolve(super.getInstanceInfo())),
-			apiVersion: "v1",
+			apiVersion: "v3",
 			actions: [
 				{
 					id: "discover",
-					icon: "fas fa-search",
-					title: "",
+					icon: "discover",
 					description: await this.adapter.getTranslatedObject("dm-instance-discover"),
-					handler: () => {
-						return { refresh: false };
-					},
+					handler: actionContext => this.handleInstanceDiscover(actionContext),
 				},
 				{
 					id: "addGroup",
-					icon: "fas fa-link",
-					title: "",
+					icon: "group",
 					description: await this.adapter.getTranslatedObject("dm-instance-creategroup"),
-					handler: () => {
-						return { refresh: false };
-					},
+					handler: actionContext => this.handleAddGroup(actionContext),
 				},
 				{
 					id: "addScene",
-					icon: "fas fa-play",
-					title: "",
+					icon: "play",
 					description: await this.adapter.getTranslatedObject("dm-instance-createscene"),
-					handler: () => {
-						return { refresh: false };
-					},
+					handler: actionContext => this.handleAddScene(actionContext),
 				},
 				// {
 				// 	id: "sendToRemote",
 				// 	icon: "fas fa-upload",
-				// 	title: "",
 				// 	description: await this.adapter.getTranslatedObject("dm-instance-sendtoremote"),
-				// 	handler: () => {
-				// 		return { refresh: false };
-				// 	},
+				// 	handler: actionContext => this.handleSendToRemote(actionContext),
 				// },
 				// {
 				// 	id: "receiveFromRemote",
 				// 	icon: "fas fa-download",
-				// 	title: "",
 				// 	description: await this.adapter.getTranslatedObject("dm-instance-receivefromremote"),
-				// 	handler: () => {
-				// 		return { refresh: false };
-				// 	},
+				// 	handler: actionContext => this.handleReceiveFromRemote(actionContext),
 				// },
 			],
 		};
@@ -194,67 +166,11 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		return Promise.resolve(instanceDetails);
 	}
 
-	// protected override getDeviceDetails(id: string): RetVal<DeviceDetails | null | { error: string }> {}
+	// protected override getDeviceDetails(id: string): RetVal<DeviceDetails<string> | null | { error: string }> {}
 
-	protected override async handleInstanceAction(
-		actionId: instanceActionType,
-		context?: ActionContext,
-	): Promise<RefreshResponse> {
-		switch (actionId) {
-			case "discover":
-				return this.handleInstanceDiscover(context);
-
-			case "addGroup":
-				return this.handleAddGroup(context);
-
-			case "addScene":
-				return this.handleAddScene(context);
-
-			case "sendToRemote":
-				return this.handleSendToRemote(context);
-
-			case "receiveFromRemote":
-				return this.handleReceiveFromRemote(context);
-
-			default:
-				throw new Error(`Instance action ${actionId as string} is unknown.`);
-		}
-	}
-	protected override async handleDeviceAction(
-		deviceId: string,
-		actionId: deviceActionType,
-		context?: ActionContext,
-	): Promise<RefreshResponse> {
-		switch (actionId) {
-			case "deleteProduct":
-				return this.handleProductDelete(deviceId, context);
-
-			case "renameProduct":
-				return this.handleProductRename(deviceId, context);
-
-			case "winkProduct":
-				return this.handleProductWink(deviceId, context);
-
-			case "deleteGroup":
-				return this.handleGroupDelete(deviceId, context);
-
-			case "editGroup":
-				return this.handleEditGroup(deviceId, context);
-
-			case "deleteScene":
-				return this.handleSceneDelete(deviceId, context);
-
-			case "renameScene":
-				return this.handleSceneRename(deviceId, context);
-
-			default:
-				throw new Error(`Device action ${actionId as string} is unknown.`);
-		}
-	}
-
-	private async handleInstanceDiscover(context?: ActionContext): Promise<RefreshResponse> {
+	private async handleInstanceDiscover(context: ActionContext): Promise<InstanceRefreshResponse> {
 		// Start discovery
-		const progressDialog = await context?.openProgress(
+		const progressDialog = await context.openProgress(
 			await this.adapter.translate("dm-instance-discover-progress-title"),
 			{ indeterminate: true },
 		);
@@ -264,48 +180,52 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				// Return the result
 				return { refresh: refresh };
 			} catch (error) {
-				await context?.showMessage(
+				await context.showMessage(
 					`${await this.adapter.translate("dm-instance-discover-progress-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			// Return the result
 			return { refresh: true };
 		} finally {
-			await progressDialog?.close();
+			await progressDialog.close();
 		}
 	}
 
-	private async handleSendToRemote(context?: ActionContext): Promise<RefreshResponse> {
-		assert(context, "handleSendToRemote: Action context shouldn't be null or undefined.");
+	private async handleSendToRemote(context: ActionContext): Promise<InstanceRefreshResponse> {
 		await context.showMessage("Not implemented.");
 		return { refresh: false };
 	}
 
-	private async handleReceiveFromRemote(context?: ActionContext): Promise<RefreshResponse> {
-		assert(context, "handleReceiveFromRemote: Action context shouldn't be null or undefined.");
+	private async handleReceiveFromRemote(context: ActionContext): Promise<InstanceRefreshResponse> {
 		await context.showMessage("Not implemented.");
 		return { refresh: false };
 	}
 
-	private async handleProductDelete(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
+	private async handleProductDelete(
+		deviceId: string,
+		context: ActionContext,
+	): Promise<DeviceRefreshResponse<string>> {
 		const productId = parseInt(deviceId.split(".").reverse()[0]);
-		const confirmationDialog = await context?.showConfirmation(
+		const confirmationDialog = await context.showConfirmation(
 			await this.adapter.translate("dm-device-product-delete-confirm", { productId: productId.toString() }),
 		);
 		if (confirmationDialog) {
 			try {
 				await this.adapter.onRemoveProduct(productId);
 			} catch (error) {
-				await context?.showMessage(
+				await context.showMessage(
 					`${await this.adapter.translate("dm-device-product-delete-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
-			return Promise.resolve({ refresh: true });
+			return { refresh: "devices" };
 		}
-		return Promise.resolve({ refresh: false });
+		return { refresh: "none" };
 	}
 
-	private async handleProductRename(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
+	private async handleProductRename(
+		deviceId: string,
+		context: ActionContext,
+	): Promise<DeviceRefreshResponse<string>> {
 		const productId = parseInt(deviceId.split(".").reverse()[0]);
 		const product = this.adapter.Products?.Products[productId];
 
@@ -314,7 +234,6 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		}
 
 		const oldName = product.Name;
-		assert(context, "handleProductRename: Action context shouldn't be null or undefined.");
 		const newName = await this.showRenameForm(
 			context,
 			await this.adapter.getTranslatedObject("dm-device-product-rename-form-title"),
@@ -325,25 +244,25 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			try {
 				await this.adapter.onRenameProduct(productId, newName);
 			} catch (error) {
-				await context?.showMessage(
+				await context.showMessage(
 					`${await this.adapter.translate("dm-device-product-rename-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
-			return { refresh: true };
+			return { refresh: "devices" };
 		}
-		return { refresh: false };
+		return { refresh: "none" };
 	}
 
-	private async handleProductWink(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
+	private async handleProductWink(deviceId: string, context: ActionContext): Promise<DeviceRefreshResponse<string>> {
 		const productId = parseInt(deviceId.split(".").reverse()[0]);
 		try {
 			await this.adapter.onWinkProduct(productId);
 		} catch (error) {
-			await context?.showMessage(
+			await context.showMessage(
 				`${await this.adapter.translate("dm-device-product-wink-error")}\n${this.getErrorMessage(error)}.`,
 			);
 		}
-		return Promise.resolve({ refresh: false });
+		return { refresh: "none" };
 	}
 
 	private async showGroupEditDialog(
@@ -476,8 +395,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		return result;
 	}
 
-	private async handleAddGroup(context?: ActionContext): Promise<RefreshResponse> {
-		assert(context, "handleAddGroup: Action context shouldn't be null or undefined.");
+	private async handleAddGroup(context: ActionContext): Promise<InstanceRefreshResponse> {
 		const newGroup = await this.showGroupEditDialog(context, {
 			dialogTitle: await this.adapter.getTranslatedObject("dm-instance-creategroup-form-title"),
 			products: [],
@@ -488,22 +406,20 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		try {
 			await this.adapter.onAddGroup(newGroup.groupName || "", newGroup.products);
 		} catch (error) {
-			await context?.showMessage(
+			await context.showMessage(
 				`${await this.adapter.translate("dm-instance-creategroup-error")}\n${this.getErrorMessage(error)}.`,
 			);
 		}
 		return { refresh: true };
 	}
 
-	private async handleEditGroup(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
+	private async handleEditGroup(deviceId: string, context: ActionContext): Promise<DeviceRefreshResponse<string>> {
 		const groupId = parseInt(deviceId.split(".").reverse()[0]);
 		const group = this.adapter.Groups?.Groups[groupId];
 
 		if (!group) {
 			throw new Error(`Group with ID ${groupId} not found in adapter.`);
 		}
-
-		assert(context, "handleAddGroup: Action context shouldn't be null or undefined.");
 
 		const editGroup = await this.showGroupEditDialog(context, {
 			dialogTitle: await this.adapter.getTranslatedObject("dm-device-group-edit-form-title"),
@@ -512,20 +428,19 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			products: group.Nodes,
 		});
 		if (editGroup === undefined) {
-			return { refresh: false };
+			return { refresh: "none" };
 		}
 		try {
 			await this.adapter.onChangeGroup(groupId, editGroup.groupName || "", editGroup.products);
 		} catch (error) {
-			await context?.showMessage(
+			await context.showMessage(
 				`${await this.adapter.translate("dm-device-group-edit-error")}\n${this.getErrorMessage(error)}.`,
 			);
 		}
-		return { refresh: true };
+		return { refresh: "devices" };
 	}
 
-	private async handleAddScene(context?: ActionContext): Promise<RefreshResponse> {
-		assert(context, "handleAddScene: Action context shouldn't be null or undefined.");
+	private async handleAddScene(context: ActionContext): Promise<InstanceRefreshResponse> {
 		const differentNameCondition = `[${this.adapter.Scenes?.Scenes.filter(scene => scene !== undefined)
 			.map(scene => {
 				return `"${scene.SceneName.replace(/(\\|")/g, "\\$1")}"`;
@@ -572,7 +487,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				await dlg?.close();
 				dlg = undefined;
 
-				await context?.showMessage(
+				await context.showMessage(
 					`${await this.adapter.translate("dm-instance-createscene-error")}\n${this.getErrorMessage(error)}.`,
 				);
 				return { refresh: true };
@@ -581,43 +496,43 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		return { refresh: false };
 	}
 
-	private async handleGroupDelete(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
+	private async handleGroupDelete(deviceId: string, context: ActionContext): Promise<DeviceRefreshResponse<string>> {
 		const groupId = parseInt(deviceId.split(".").reverse()[0]);
-		const confirmationDialog = await context?.showConfirmation(
+		const confirmationDialog = await context.showConfirmation(
 			await this.adapter.getTranslatedObject("dm-device-group-delete-confirm", { groupId: groupId.toString() }),
 		);
 		if (confirmationDialog) {
 			try {
 				await this.adapter.onRemoveGroup(groupId);
 			} catch (error) {
-				await context?.showMessage(
+				await context.showMessage(
 					`${await this.adapter.translate("dm-device-group-delete-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
-			return Promise.resolve({ refresh: true });
+			return { refresh: "devices" };
 		}
-		return Promise.resolve({ refresh: false });
+		return { refresh: "none" };
 	}
 
-	private async handleSceneDelete(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
+	private async handleSceneDelete(deviceId: string, context: ActionContext): Promise<DeviceRefreshResponse<string>> {
 		const sceneId = parseInt(deviceId.split(".").reverse()[0]);
-		const confirmationDialog = await context?.showConfirmation(
+		const confirmationDialog = await context.showConfirmation(
 			await this.adapter.getTranslatedObject("dm-device-scene-delete-confirm", { sceneId: sceneId.toString() }),
 		);
 		if (confirmationDialog) {
 			try {
 				await this.adapter.onRemoveScene(sceneId);
 			} catch (error) {
-				await context?.showMessage(
+				await context.showMessage(
 					`${await this.adapter.translate("dm-device-scene-delete-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
-			return Promise.resolve({ refresh: true });
+			return { refresh: "devices" };
 		}
-		return Promise.resolve({ refresh: false });
+		return { refresh: "none" };
 	}
 
-	private async handleSceneRename(deviceId: string, context?: ActionContext): Promise<RefreshResponse> {
+	private async handleSceneRename(deviceId: string, context: ActionContext): Promise<DeviceRefreshResponse<string>> {
 		const sceneId = parseInt(deviceId.split(".").reverse()[0]);
 		const scene = this.adapter.Scenes?.Scenes[sceneId];
 
@@ -626,7 +541,6 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		}
 
 		const oldName = scene.SceneName;
-		assert(context, "handleSceneRename: Action context shouldn't be null or undefined.");
 		const newName = await this.showRenameForm(
 			context,
 			await this.adapter.getTranslatedObject("dm-device-scene-rename-form-title"),
@@ -637,13 +551,13 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			try {
 				await this.adapter.onRenameScene(sceneId, newName);
 			} catch (error) {
-				await context?.showMessage(
+				await context.showMessage(
 					`${await this.adapter.translate("dm-device-scene-rename-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
-			return { refresh: true };
+			return { refresh: "devices" };
 		}
-		return { refresh: false };
+		return { refresh: "none" };
 	}
 
 	private async showRenameForm(

@@ -1,6 +1,4 @@
 import { type MockAdapter, utils } from "@iobroker/testing";
-import { expect, use } from "chai";
-import chaiAsPromised from "chai-as-promised";
 import {
 	type Disposable,
 	GW_GET_ALL_NODES_INFORMATION_NTF,
@@ -12,10 +10,11 @@ import {
 	Product,
 	Velocity,
 } from "klf-200-api";
+import assert from "node:assert/strict";
 import type { EventEmitter } from "node:stream";
 import { promisify } from "node:util";
 import sinon from "sinon";
-import sinonChai from "sinon-chai";
+import { createAsserts } from "../test/asserts.js";
 import { DisposalMap } from "./disposalMap.js";
 import { SetupGroups } from "./setupGroups.js";
 import {
@@ -23,9 +22,6 @@ import {
 	ComplexPropertyChangedHandler,
 	SimplePropertyChangedHandler,
 } from "./util/propertyLink.js";
-
-use(sinonChai);
-use(chaiAsPromised);
 
 class MockConnect implements IConnection {
 	onFrameSent = sinon.stub();
@@ -76,7 +72,7 @@ describe("setupGroups", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
 	const { assertObjectExists, assertStateExists, assertStateHasValue, assertStateIsAcked, assertObjectCommon } =
-		utils.unit.createAsserts(database, adapter);
+		createAsserts(database, adapter);
 
 	// Fake getChannelsOf
 	adapter.getChannelsOf = sinon.stub();
@@ -402,10 +398,11 @@ describe("setupGroups", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped writable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -477,10 +474,11 @@ describe("setupGroups", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -562,10 +560,10 @@ describe("setupGroups", function () {
 			);
 			try {
 				states.forEach(state =>
-					expect(
+					assert.throws(
 						() => assertObjectExists(`${adapter.namespace}.groups.42.${state}`),
 						`Object ${adapter.namespace}.groups.42.${state} shouldn't exist anymore.`,
-					).to.throw(),
+					),
 				);
 			} finally {
 				await disposalMap.disposeAll();

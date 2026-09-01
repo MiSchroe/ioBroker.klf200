@@ -1,6 +1,4 @@
 import { type MockAdapter, utils } from "@iobroker/testing";
-import { expect, use } from "chai";
-import chaiAsPromised from "chai-as-promised";
 import {
 	ActuatorType,
 	type Disposable,
@@ -16,17 +14,15 @@ import {
 	StatusReply,
 	Velocity,
 } from "klf-200-api";
+import assert from "node:assert/strict";
 import type { EventEmitter } from "node:stream";
 import { promisify } from "node:util";
 import sinon from "sinon";
-import sinonChai from "sinon-chai";
+import { createAsserts } from "../test/asserts.js";
 import { DisposalMap } from "./disposalMap.js";
 import { SetupProducts } from "./setupProducts.js";
 import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink.js";
 import { StateHelper } from "./util/stateHelper.js";
-
-use(sinonChai);
-use(chaiAsPromised);
 
 class MockConnect implements IConnection {
 	onFrameSent = sinon.stub();
@@ -58,11 +54,15 @@ const mockProduct = new Product(
 const mockProducts = [mockProduct];
 
 describe("setupProducts", function () {
+	// Creating a product sets up a lot of states. That takes only a few milliseconds when the machine
+	// is idle, but under load it can exceed mocha's default of 2 seconds and make the whole run abort.
+	this.timeout(10_000);
+
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
 
 	const { assertObjectExists, assertStateExists, assertStateHasValue, assertStateIsAcked, assertObjectCommon } =
-		utils.unit.createAsserts(database, adapter);
+		createAsserts(database, adapter);
 
 	// Fake getChannelsOf
 	adapter.getChannelsOf = sinon.stub();
@@ -781,10 +781,11 @@ describe("setupProducts", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped writable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -910,10 +911,11 @@ describe("setupProducts", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -1065,7 +1067,7 @@ describe("setupProducts", function () {
 					new Set<string>([JSON.stringify([0, ParameterActive.FP1])]),
 				);
 				try {
-					expect(database.hasObject(`test.0.products.0.${expectedState}`)).to.be.false;
+					assert.strictEqual(database.hasObject(`test.0.products.0.${expectedState}`), false);
 				} finally {
 					await disposalMap.disposeAll();
 				}
@@ -1083,7 +1085,7 @@ describe("setupProducts", function () {
 					new Set<string>([JSON.stringify([0, ParameterActive.FP1])]),
 				);
 				try {
-					expect(database.hasObject(`test.0.products.0.${expectedState}`)).to.be.false;
+					assert.strictEqual(database.hasObject(`test.0.products.0.${expectedState}`), false);
 				} finally {
 					await disposalMap.disposeAll();
 				}
@@ -1166,10 +1168,10 @@ describe("setupProducts", function () {
 			);
 			try {
 				states.forEach(state =>
-					expect(
+					assert.throws(
 						() => assertObjectExists(`${adapter.namespace}.products.42.${state}`),
 						`Object ${adapter.namespace}.products.42.${state} shouldn't exist anymore.`,
-					).to.throw(),
+					),
 				);
 			} finally {
 				await disposalMap.disposeAll();

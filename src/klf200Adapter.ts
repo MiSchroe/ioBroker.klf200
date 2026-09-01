@@ -1106,8 +1106,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 							[GatewayCommand.GW_SESSION_FINISHED_NTF, GatewayCommand.GW_STATUS_REQUEST_NTF],
 						);
 					} catch (error) {
-						const exception = error instanceof Error ? error : new Error(String(error));
-						reject(exception);
+						reject(error instanceof Error ? error : new Error(convertErrorToString(error)));
 					}
 				}),
 				30_000,
@@ -1497,7 +1496,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * Winks a product. This is used to identify a product, e.g. a window will move its handle, a roller shutter will move up and down a little bit.
 	 *
 	 * @param productId The ID of the product to wink.
-	 * @throws {Error} if the product is not found in the adapter.
+	 * @throws {Error} If the product is not found in the adapter.
 	 */
 	public async onWinkProduct(productId: number): Promise<void> {
 		const winkStateId = `products.${productId}.wink`;
@@ -1509,7 +1508,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 *
 	 * @param productId The ID of the product to rename.
 	 * @param newName The new name for the product.
-	 * @throws {Error} if the product is not found in the adapter.
+	 * @throws {Error} If the product is not found in the adapter.
 	 */
 	public async onRenameProduct(productId: number, newName: string): Promise<void> {
 		const product = this.Products?.Products[productId];
@@ -1879,8 +1878,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 						this.off("sceneAdded", onNewSceneHandler);
 						resolve();
 					} catch (error) {
-						const exception = error instanceof Error ? error : new Error(String(error));
-						reject(exception);
+						reject(error instanceof Error ? error : new Error(convertErrorToString(error)));
 					}
 				}).bind(this);
 				this.on("sceneAdded", onNewSceneHandler);

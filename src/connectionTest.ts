@@ -4,6 +4,7 @@ import { Connection } from "klf-200-api";
 import { connect, type ConnectionOptions, type TLSSocket } from "node:tls";
 import ping from "ping";
 import type { Translate } from "./translate.js";
+import { convertErrorToString } from "./util/utils.js";
 
 const debug = debugModule("connectionTest");
 
@@ -177,11 +178,11 @@ export class ConnectionTest implements IConnectionTest {
 						sckt.once("close", resolve);
 						sckt.destroy();
 					} else {
-						debug(`TLS connection authorization error: ${sckt?.authorizationError.message}`);
-						const error = sckt?.authorizationError as Error;
-						sckt?.destroy();
+						const authorizationError =
+							sckt?.authorizationError ?? new Error("TLS connection is not authorized");
+						debug(`TLS connection authorization error: ${authorizationError.message}`);
 						sckt = undefined;
-						reject(error);
+						reject(authorizationError);
 					}
 				});
 				sckt.on("error", (error: Error) => {
@@ -194,7 +195,7 @@ export class ConnectionTest implements IConnectionTest {
 				if (sckt) {
 					sckt.destroy();
 				}
-				reject(exception);
+				reject(error instanceof Error ? error : new Error(convertErrorToString(error)));
 			}
 		});
 	}

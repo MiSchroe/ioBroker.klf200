@@ -9,7 +9,7 @@ import {
 	type IobTheme,
 	type GenericAppProps,
 	type GenericAppState,
-} from "@iobroker/adapter-react-v5";
+} from "@iobroker/gui-components";
 import { Box } from "@mui/material";
 
 import ConnectionTestComponent, { type ConfigurationData } from "./ConnectionTestComponent";

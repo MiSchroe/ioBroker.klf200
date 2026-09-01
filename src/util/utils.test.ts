@@ -1,7 +1,6 @@
+import assert from "node:assert/strict";
 // Don't delete this line otherwise on save some weird changes will be introduced!
 import { utils } from "@iobroker/testing";
-import { expect, use } from "chai";
-import chaiAsPromised from "chai-as-promised";
 import {
 	type Disposable,
 	GW_SESSION_FINISHED_NTF,
@@ -11,11 +10,7 @@ import {
 	type Listener,
 } from "klf-200-api";
 import sinon from "sinon";
-import sinonChai from "sinon-chai";
 import { ArrayCount, convertErrorToString, waitForSessionFinishedNtfAsync } from "./utils.js";
-
-use(sinonChai);
-use(chaiAsPromised);
 
 class MockDisposable implements Disposable {
 	dispose(): void {}
@@ -46,20 +41,20 @@ describe("utils", function () {
 			testData[10] = 42;
 			testData[20] = 43;
 
-			expect(ArrayCount(testData)).to.be.equal(2);
+			assert.strictEqual(ArrayCount(testData), 2);
 		});
 
 		it("should work on an empty array", function () {
 			const testData: number[] = [];
 
-			expect(ArrayCount(testData)).to.be.equal(0);
+			assert.strictEqual(ArrayCount(testData), 0);
 		});
 
 		it("should work on an empty array with a defined length", function () {
 			const testData: number[] = [];
 			testData.length = 10;
 
-			expect(ArrayCount(testData)).to.be.equal(0);
+			assert.strictEqual(ArrayCount(testData), 0);
 		});
 	});
 
@@ -67,13 +62,13 @@ describe("utils", function () {
 		it("should return the provided string on string input", function () {
 			const testData = "42";
 			const expectedResult = "42";
-			expect(convertErrorToString(testData)).to.be.equal(expectedResult);
+			assert.strictEqual(convertErrorToString(testData), expectedResult);
 		});
 
 		it("should return the provided message on Error input", function () {
 			const testData: Error = new Error("42");
 			const expectedResult = "Error: 42";
-			expect(convertErrorToString(testData)).to.be.equal(expectedResult);
+			assert.strictEqual(convertErrorToString(testData), expectedResult);
 		});
 	});
 
@@ -110,7 +105,7 @@ describe("utils", function () {
 			// Send notification
 			mockConnection.sendEvent(mockFrame);
 			clock.runAll();
-			return expect(testPromise).to.be.fulfilled;
+			return assert.doesNotReject(testPromise);
 		});
 
 		it("should be rejected when the notification is not sent", async function () {
@@ -123,7 +118,7 @@ describe("utils", function () {
 				10000,
 			);
 			clock.runAll();
-			return expect(testPromise).to.be.rejectedWith("Timeout error");
+			return assert.rejects(testPromise, { message: "Timeout error" });
 		});
 	});
 });
