@@ -1,3 +1,4 @@
+import { I18n } from "@iobroker/adapter-core";
 import {
 	type ActionContext,
 	type DeviceInfo,
@@ -42,19 +43,19 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 							{
 								id: "deleteProduct",
 								icon: "delete",
-								description: await this.adapter.getTranslatedObject("dm-device-product-delete"),
+								description: I18n.getTranslatedObject("dm-device-product-delete"),
 								handler: (deviceId, actionContext) => this.handleProductDelete(deviceId, actionContext),
 							},
 							{
 								id: "renameProduct",
 								icon: "rename",
-								description: await this.adapter.getTranslatedObject("dm-device-product-rename"),
+								description: I18n.getTranslatedObject("dm-device-product-rename"),
 								handler: (deviceId, actionContext) => this.handleProductRename(deviceId, actionContext),
 							},
 							{
 								id: "winkProduct",
 								icon: "identify",
-								description: await this.adapter.getTranslatedObject("dm-device-product-wink"),
+								description: I18n.getTranslatedObject("dm-device-product-wink"),
 								handler: (deviceId, actionContext) => this.handleProductWink(deviceId, actionContext),
 							},
 						],
@@ -75,13 +76,13 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 							{
 								id: "deleteGroup",
 								icon: "delete",
-								description: await this.adapter.getTranslatedObject("dm-device-group-delete"),
+								description: I18n.getTranslatedObject("dm-device-group-delete"),
 								handler: (deviceId, actionContext) => this.handleGroupDelete(deviceId, actionContext),
 							},
 							{
 								id: "editGroup",
 								icon: "edit",
-								description: await this.adapter.getTranslatedObject("dm-device-group-edit"),
+								description: I18n.getTranslatedObject("dm-device-group-edit"),
 								handler: (deviceId, actionContext) => this.handleEditGroup(deviceId, actionContext),
 							},
 						],
@@ -102,13 +103,13 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 							{
 								id: "deleteScene",
 								icon: "delete",
-								description: await this.adapter.getTranslatedObject("dm-device-scene-delete"),
+								description: I18n.getTranslatedObject("dm-device-scene-delete"),
 								handler: (deviceId, actionContext) => this.handleSceneDelete(deviceId, actionContext),
 							},
 							{
 								id: "renameScene",
 								icon: "rename",
-								description: await this.adapter.getTranslatedObject("dm-device-scene-rename"),
+								description: I18n.getTranslatedObject("dm-device-scene-rename"),
 								handler: (deviceId, actionContext) => this.handleSceneRename(deviceId, actionContext),
 							},
 						],
@@ -121,6 +122,8 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		for (const device of devices) {
 			context.addDevice(device);
 		}
+
+		await Promise.resolve();
 	}
 	protected override async getInstanceInfo(): Promise<InstanceDetails> {
 		this.adapter.log.debug(`KLF200DeviceManagement: getInstanceInfo called.`);
@@ -131,31 +134,31 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				{
 					id: "discover",
 					icon: "discover",
-					description: await this.adapter.getTranslatedObject("dm-instance-discover"),
+					description: I18n.getTranslatedObject("dm-instance-discover"),
 					handler: actionContext => this.handleInstanceDiscover(actionContext),
 				},
 				{
 					id: "addGroup",
 					icon: "group",
-					description: await this.adapter.getTranslatedObject("dm-instance-creategroup"),
+					description: I18n.getTranslatedObject("dm-instance-creategroup"),
 					handler: actionContext => this.handleAddGroup(actionContext),
 				},
 				{
 					id: "addScene",
 					icon: "play",
-					description: await this.adapter.getTranslatedObject("dm-instance-createscene"),
+					description: I18n.getTranslatedObject("dm-instance-createscene"),
 					handler: actionContext => this.handleAddScene(actionContext),
 				},
 				// {
 				// 	id: "sendToRemote",
 				// 	icon: "fas fa-upload",
-				// 	description: await this.adapter.getTranslatedObject("dm-instance-sendtoremote"),
+				// 	description: I18n.getTranslatedObject("dm-instance-sendtoremote"),
 				// 	handler: actionContext => this.handleSendToRemote(actionContext),
 				// },
 				// {
 				// 	id: "receiveFromRemote",
 				// 	icon: "fas fa-download",
-				// 	description: await this.adapter.getTranslatedObject("dm-instance-receivefromremote"),
+				// 	description: I18n.getTranslatedObject("dm-instance-receivefromremote"),
 				// 	handler: actionContext => this.handleReceiveFromRemote(actionContext),
 				// },
 			],
@@ -170,10 +173,9 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 
 	private async handleInstanceDiscover(context: ActionContext): Promise<InstanceRefreshResponse> {
 		// Start discovery
-		const progressDialog = await context.openProgress(
-			await this.adapter.translate("dm-instance-discover-progress-title"),
-			{ indeterminate: true },
-		);
+		const progressDialog = await context.openProgress(I18n.translate("dm-instance-discover-progress-title"), {
+			indeterminate: true,
+		});
 		try {
 			try {
 				const refresh = await this.adapter.onDiscover();
@@ -181,7 +183,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				return { refresh: refresh };
 			} catch (error) {
 				await context.showMessage(
-					`${await this.adapter.translate("dm-instance-discover-progress-error")}\n${this.getErrorMessage(error)}.`,
+					`${I18n.translate("dm-instance-discover-progress-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			// Return the result
@@ -207,14 +209,14 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 	): Promise<DeviceRefreshResponse<string>> {
 		const productId = parseInt(deviceId.split(".").reverse()[0]);
 		const confirmationDialog = await context.showConfirmation(
-			await this.adapter.translate("dm-device-product-delete-confirm", { productId: productId.toString() }),
+			I18n.translate("dm-device-product-delete-confirm", productId.toString()),
 		);
 		if (confirmationDialog) {
 			try {
 				await this.adapter.onRemoveProduct(productId);
 			} catch (error) {
 				await context.showMessage(
-					`${await this.adapter.translate("dm-device-product-delete-error")}\n${this.getErrorMessage(error)}.`,
+					`${I18n.translate("dm-device-product-delete-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			return { refresh: "devices" };
@@ -236,8 +238,8 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		const oldName = product.Name;
 		const newName = await this.showRenameForm(
 			context,
-			await this.adapter.getTranslatedObject("dm-device-product-rename-form-title"),
-			await this.adapter.getTranslatedObject("dm-device-product-rename-form-label"),
+			I18n.getTranslatedObject("dm-device-product-rename-form-title"),
+			I18n.getTranslatedObject("dm-device-product-rename-form-label"),
 			oldName,
 		);
 		if (newName !== undefined) {
@@ -245,7 +247,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				await this.adapter.onRenameProduct(productId, newName);
 			} catch (error) {
 				await context.showMessage(
-					`${await this.adapter.translate("dm-device-product-rename-error")}\n${this.getErrorMessage(error)}.`,
+					`${I18n.translate("dm-device-product-rename-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			return { refresh: "devices" };
@@ -259,7 +261,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			await this.adapter.onWinkProduct(productId);
 		} catch (error) {
 			await context.showMessage(
-				`${await this.adapter.translate("dm-device-product-wink-error")}\n${this.getErrorMessage(error)}.`,
+				`${I18n.translate("dm-device-product-wink-error")}\n${this.getErrorMessage(error)}.`,
 			);
 		}
 		return { refresh: "none" };
@@ -277,17 +279,13 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 					label: "Group ID",
 					disabled: "true",
 					hidden: "data.groupId === undefined",
-					placeholder: await this.adapter.getTranslatedObject(
-						"dm-device-group-edit-form-groupId-placeholder",
-					),
+					placeholder: I18n.getTranslatedObject("dm-device-group-edit-form-groupId-placeholder"),
 				},
 				groupName: {
 					type: "text",
 					label: "Group name",
 					validator: "data.groupName !== undefined && data.groupName !== ''",
-					validatorErrorText: await this.adapter.translate(
-						"dm-device-group-edit-form-groupName-validatorErrorText",
-					),
+					validatorErrorText: I18n.translate("dm-device-group-edit-form-groupName-validatorErrorText"),
 					validatorNoSaveOnError: true,
 				},
 				tableHeaderCB: {
@@ -299,7 +297,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				},
 				tableHeaderProductName: {
 					type: "staticText",
-					text: await this.adapter.translate("dm-device-group-edit-form-tableHeaderProductName-label"),
+					text: I18n.translate("dm-device-group-edit-form-tableHeaderProductName-label"),
 					controlStyle: {},
 				},
 			},
@@ -397,7 +395,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 
 	private async handleAddGroup(context: ActionContext): Promise<InstanceRefreshResponse> {
 		const newGroup = await this.showGroupEditDialog(context, {
-			dialogTitle: await this.adapter.getTranslatedObject("dm-instance-creategroup-form-title"),
+			dialogTitle: I18n.getTranslatedObject("dm-instance-creategroup-form-title"),
 			products: [],
 		});
 		if (newGroup === undefined) {
@@ -407,7 +405,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			await this.adapter.onAddGroup(newGroup.groupName || "", newGroup.products);
 		} catch (error) {
 			await context.showMessage(
-				`${await this.adapter.translate("dm-instance-creategroup-error")}\n${this.getErrorMessage(error)}.`,
+				`${I18n.translate("dm-instance-creategroup-error")}\n${this.getErrorMessage(error)}.`,
 			);
 		}
 		return { refresh: true };
@@ -422,7 +420,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		}
 
 		const editGroup = await this.showGroupEditDialog(context, {
-			dialogTitle: await this.adapter.getTranslatedObject("dm-device-group-edit-form-title"),
+			dialogTitle: I18n.getTranslatedObject("dm-device-group-edit-form-title"),
 			groupId: groupId,
 			groupName: group.Name,
 			products: group.Nodes,
@@ -434,7 +432,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			await this.adapter.onChangeGroup(groupId, editGroup.groupName || "", editGroup.products);
 		} catch (error) {
 			await context.showMessage(
-				`${await this.adapter.translate("dm-device-group-edit-error")}\n${this.getErrorMessage(error)}.`,
+				`${I18n.translate("dm-device-group-edit-error")}\n${this.getErrorMessage(error)}.`,
 			);
 		}
 		return { refresh: "devices" };
@@ -448,20 +446,20 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 			.join(",")}]`;
 		const newSceneName = await this.showRenameForm(
 			context,
-			await this.adapter.getTranslatedObject("dm-instance-createscene-form-title"),
-			await this.adapter.getTranslatedObject("dm-instance-createscene-form-label"),
+			I18n.getTranslatedObject("dm-instance-createscene-form-title"),
+			I18n.getTranslatedObject("dm-instance-createscene-form-label"),
 			"",
 			`data.name !== undefined && data.name.trim() !== ''${differentNameCondition === "" ? "" : ` && !${differentNameCondition}.includes(data.name)`}`,
 			differentNameCondition === ""
 				? undefined
-				: await this.adapter.translate("dm-instance-createscene-form-unique-name-condition"),
+				: I18n.translate("dm-instance-createscene-form-unique-name-condition"),
 		);
 		if (newSceneName !== undefined) {
 			let dlg: ProgressDialog | undefined;
 			try {
 				dlg = await context.openProgress("Add scene", {
 					indeterminate: true,
-					label: await this.adapter.getTranslatedObject("dm-instance-createscene-progress-initialization"),
+					label: I18n.getTranslatedObject("dm-instance-createscene-progress-initialization"),
 				});
 				const failedNodes = await this.adapter.onNewSceneInitialize();
 
@@ -471,10 +469,10 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 
 				const confirmationDialog = await context.showConfirmation(
 					failedNodes.length === 0
-						? await this.adapter.getTranslatedObject("dm-instance-createscene-progress-use-remote")
-						: await this.adapter.getTranslatedObject(
+						? I18n.getTranslatedObject("dm-instance-createscene-progress-use-remote")
+						: I18n.getTranslatedObject(
 								"dm-instance-createscene-progress-use-remote-with-failed-nodes",
-								{ failedNodes: failedNodes.join(", ") },
+								failedNodes.join(", "),
 							),
 				);
 				if (!confirmationDialog) {
@@ -488,7 +486,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				dlg = undefined;
 
 				await context.showMessage(
-					`${await this.adapter.translate("dm-instance-createscene-error")}\n${this.getErrorMessage(error)}.`,
+					`${I18n.translate("dm-instance-createscene-error")}\n${this.getErrorMessage(error)}.`,
 				);
 				return { refresh: true };
 			}
@@ -499,14 +497,14 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 	private async handleGroupDelete(deviceId: string, context: ActionContext): Promise<DeviceRefreshResponse<string>> {
 		const groupId = parseInt(deviceId.split(".").reverse()[0]);
 		const confirmationDialog = await context.showConfirmation(
-			await this.adapter.getTranslatedObject("dm-device-group-delete-confirm", { groupId: groupId.toString() }),
+			I18n.getTranslatedObject("dm-device-group-delete-confirm", groupId.toString()),
 		);
 		if (confirmationDialog) {
 			try {
 				await this.adapter.onRemoveGroup(groupId);
 			} catch (error) {
 				await context.showMessage(
-					`${await this.adapter.translate("dm-device-group-delete-error")}\n${this.getErrorMessage(error)}.`,
+					`${I18n.translate("dm-device-group-delete-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			return { refresh: "devices" };
@@ -517,14 +515,14 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 	private async handleSceneDelete(deviceId: string, context: ActionContext): Promise<DeviceRefreshResponse<string>> {
 		const sceneId = parseInt(deviceId.split(".").reverse()[0]);
 		const confirmationDialog = await context.showConfirmation(
-			await this.adapter.getTranslatedObject("dm-device-scene-delete-confirm", { sceneId: sceneId.toString() }),
+			I18n.getTranslatedObject("dm-device-scene-delete-confirm", sceneId.toString()),
 		);
 		if (confirmationDialog) {
 			try {
 				await this.adapter.onRemoveScene(sceneId);
 			} catch (error) {
 				await context.showMessage(
-					`${await this.adapter.translate("dm-device-scene-delete-error")}\n${this.getErrorMessage(error)}.`,
+					`${I18n.translate("dm-device-scene-delete-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			return { refresh: "devices" };
@@ -543,8 +541,8 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 		const oldName = scene.SceneName;
 		const newName = await this.showRenameForm(
 			context,
-			await this.adapter.getTranslatedObject("dm-device-scene-rename-form-title"),
-			await this.adapter.getTranslatedObject("dm-device-scene-rename-form-label"),
+			I18n.getTranslatedObject("dm-device-scene-rename-form-title"),
+			I18n.getTranslatedObject("dm-device-scene-rename-form-label"),
 			oldName,
 		);
 		if (newName !== undefined) {
@@ -552,7 +550,7 @@ export class KLF200DeviceManagement extends DeviceManagement<Klf200> {
 				await this.adapter.onRenameScene(sceneId, newName);
 			} catch (error) {
 				await context.showMessage(
-					`${await this.adapter.translate("dm-device-scene-rename-error")}\n${this.getErrorMessage(error)}.`,
+					`${I18n.translate("dm-device-scene-rename-error")}\n${this.getErrorMessage(error)}.`,
 				);
 			}
 			return { refresh: "devices" };

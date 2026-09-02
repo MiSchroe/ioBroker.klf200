@@ -1,62 +1,35 @@
+import * as I18n from "@iobroker/adapter-core/i18n";
 import debugModule from "debug";
 import assert from "node:assert/strict";
+import { join } from "node:path";
 import { env } from "node:process";
 import sinon from "sinon";
 import { MockServerController } from "../test/mocks/mockServerController.js";
 import { ConnectionTest } from "./connectionTest.js";
-import type { Translate } from "./translate.js";
 
 const debug = debugModule("testing:connectionTest");
 
 const RunsInCITests = env.CI === "true";
 
-class TranslationMock implements Translate {
-	translateTo(language: ioBroker.Languages, textKey: string, _context?: Record<string, string>): Promise<string> {
-		return Promise.resolve(textKey);
-	}
-	public async getTranslatedObject(
-		textKey: string,
-		_context?: Record<string, unknown>,
-	): Promise<ioBroker.Translated> {
-		return Promise.resolve({
-			de: textKey,
-			en: textKey,
-			es: textKey,
-			fr: textKey,
-			it: textKey,
-			nl: textKey,
-			pl: textKey,
-			pt: textKey,
-			ru: textKey,
-			uk: textKey,
-			"zh-cn": textKey,
-		});
-	}
-
-	public async translate(textKey: string, _context?: Record<string, unknown>): Promise<string> {
-		return Promise.resolve(textKey);
-	}
-
-	public async translateObject(textKey: string, _context?: Record<string, unknown>): Promise<string> {
-		return Promise.resolve(textKey);
-	}
-}
-
 describe("connectionTest", function () {
+	this.beforeAll(async function () {
+		await I18n.init(join(import.meta.dirname, "..", "admin"), "en");
+	});
+
 	describe("Name resolution", function () {
 		it(`something.invalid should not be resolved`, async function () {
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			await assert.rejects(sut.resolveName("something.invalid"), Error);
 		});
 
 		it(`127.0.0.1 should be resolved to 127.0.0.1`, async function () {
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			const result = await sut.resolveName("127.0.0.1");
 			assert.strictEqual(result, "127.0.0.1");
 		});
 
 		it(`localhost should be resolved to 127.0.0.1 (or ::1)`, async function () {
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			const result = await sut.resolveName("localhost");
 			assert.ok(
 				["127.0.0.1", "::1"].includes(result),
@@ -72,7 +45,7 @@ describe("connectionTest", function () {
 				this.skip();
 			} else {
 				this.slow(10_000);
-				const sut = new ConnectionTest(new TranslationMock());
+				const sut = new ConnectionTest();
 				await assert.rejects(sut.ping("192.0.2.0"));
 			}
 		});
@@ -81,7 +54,7 @@ describe("connectionTest", function () {
 			if (RunsInCITests) {
 				this.skip();
 			} else {
-				const sut = new ConnectionTest(new TranslationMock());
+				const sut = new ConnectionTest();
 				await assert.doesNotReject(sut.ping("127.0.0.1"));
 			}
 		});
@@ -90,7 +63,7 @@ describe("connectionTest", function () {
 			if (RunsInCITests) {
 				this.skip();
 			} else {
-				const sut = new ConnectionTest(new TranslationMock());
+				const sut = new ConnectionTest();
 				await assert.doesNotReject(sut.ping("localhost"));
 			}
 		});
@@ -99,7 +72,7 @@ describe("connectionTest", function () {
 			if (RunsInCITests) {
 				this.skip();
 			} else {
-				const sut = new ConnectionTest(new TranslationMock());
+				const sut = new ConnectionTest();
 				await assert.doesNotReject(sut.ping("8.8.8.8"));
 			}
 		});
@@ -113,7 +86,7 @@ describe("connectionTest", function () {
 				this.skip();
 			} else {
 				this.slow(25_000);
-				const sut = new ConnectionTest(new TranslationMock());
+				const sut = new ConnectionTest();
 				await assert.rejects(sut.connectTlsSocket("192.0.2.0", 51200));
 			}
 		});
@@ -125,7 +98,7 @@ describe("connectionTest", function () {
 			await using mockServerController = await MockServerController.createMockServer();
 			debug("Mock server started");
 			debug("Creating connection options");
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			debug("Connecting to localhost");
 			await assert.doesNotReject(
 				sut.connectTlsSocket("localhost", 51200, MockServerController.getMockServerConnectionOptions()),
@@ -140,7 +113,7 @@ describe("connectionTest", function () {
 			await using mockServerController = await MockServerController.createMockServer(true);
 			debug("Mock server started");
 			const connectionOptions = MockServerController.getMockServerConnectionOptions(true);
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			debug("Connecting with correct fingerprint on expired certificate");
 			// When a certificate is expired but the fingerprint matches the pinned fingerprint,
 			// the connection should be accepted (this simulates the VELUX gateway scenario)
@@ -162,7 +135,7 @@ describe("connectionTest", function () {
 			await using mockServerController = await MockServerController.createMockServer(true);
 			debug("Mock server started");
 			const connectionOptions = MockServerController.getMockServerConnectionOptions(true);
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			debug("Connecting with correct fingerprint on expired certificate");
 			// When a certificate is expired but the fingerprint matches the pinned fingerprint,
 			// the connection should be accepted (this simulates the VELUX gateway scenario)
@@ -187,7 +160,7 @@ describe("connectionTest", function () {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
 			await using mockServerController = await MockServerController.createMockServer();
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			await assert.rejects(sut.login("localhost", "wrongpwd", connectionOptions), Error);
 		});
 
@@ -195,7 +168,7 @@ describe("connectionTest", function () {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
 			await using mockServerController = await MockServerController.createMockServer();
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			await assert.doesNotReject(sut.login("localhost", "velux123", connectionOptions));
 		});
 	});
@@ -207,7 +180,7 @@ describe("connectionTest", function () {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
 			await using mockServerController = await MockServerController.createMockServer();
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			await assert.doesNotReject(sut.runTests("localhost", "velux123", connectionOptions));
 		});
 
@@ -217,14 +190,14 @@ describe("connectionTest", function () {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
 			await using mockServerController = await MockServerController.createMockServer();
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			const result = await sut.runTests("localhost", "velux123", connectionOptions);
 			assert.strictEqual(result.length, 4);
 		});
 
 		it(`should fail at step 1`, async function () {
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			const step1stub = sinon.stub(sut, "resolveName").rejects();
 			const step2stub = sinon.stub(sut, "ping").rejects();
 			const step3stub = sinon.stub(sut, "connectTlsSocket").rejects();
@@ -243,7 +216,7 @@ describe("connectionTest", function () {
 
 		it(`should succeed at step 1`, async function () {
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			const step1stub = sinon.stub(sut, "resolveName").resolves("127.0.0.1");
 			const step2stub = sinon.stub(sut, "ping").rejects();
 			const step3stub = sinon.stub(sut, "connectTlsSocket").rejects();
@@ -262,7 +235,7 @@ describe("connectionTest", function () {
 
 		it(`should fail at step 2`, async function () {
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			const step1stub = sinon.stub(sut, "resolveName").resolves("127.0.0.1");
 			const step2stub = sinon.stub(sut, "ping").rejects();
 			const step3stub = sinon.stub(sut, "connectTlsSocket").rejects();
@@ -281,7 +254,7 @@ describe("connectionTest", function () {
 
 		it(`should succeed at step 2`, async function () {
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			const step1stub = sinon.stub(sut, "resolveName").resolves("127.0.0.1");
 			const step2stub = sinon.stub(sut, "ping").resolves(12);
 			const step3stub = sinon.stub(sut, "connectTlsSocket").rejects();
@@ -300,7 +273,7 @@ describe("connectionTest", function () {
 
 		it(`should fail at step 3`, async function () {
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			const step1stub = sinon.stub(sut, "resolveName").resolves("127.0.0.1");
 			const step2stub = sinon.stub(sut, "ping").resolves(12);
 			const step3stub = sinon.stub(sut, "connectTlsSocket").rejects();
@@ -319,7 +292,7 @@ describe("connectionTest", function () {
 
 		it(`should succeed at step 3`, async function () {
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			const step1stub = sinon.stub(sut, "resolveName").resolves("127.0.0.1");
 			const step2stub = sinon.stub(sut, "ping").resolves(12);
 			const step3stub = sinon.stub(sut, "connectTlsSocket").resolves();
@@ -338,7 +311,7 @@ describe("connectionTest", function () {
 
 		it(`should fail at step 4`, async function () {
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			const step1stub = sinon.stub(sut, "resolveName").resolves("127.0.0.1");
 			const step2stub = sinon.stub(sut, "ping").resolves(12);
 			const step3stub = sinon.stub(sut, "connectTlsSocket").resolves();
@@ -356,7 +329,7 @@ describe("connectionTest", function () {
 
 		it(`should succeed at step 4`, async function () {
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			const step1stub = sinon.stub(sut, "resolveName").resolves("127.0.0.1");
 			const step2stub = sinon.stub(sut, "ping").resolves(12);
 			const step3stub = sinon.stub(sut, "connectTlsSocket").resolves();
@@ -375,7 +348,7 @@ describe("connectionTest", function () {
 
 		it(`should call the progress callback 4 times`, async function () {
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
+			const sut = new ConnectionTest();
 			sinon.stub(sut, "resolveName").resolves("127.0.0.1");
 			sinon.stub(sut, "ping").resolves(12);
 			sinon.stub(sut, "connectTlsSocket").resolves();
@@ -386,67 +359,83 @@ describe("connectionTest", function () {
 		});
 
 		it(`should succeed at step 1 against mock server`, async function () {
-			this.timeout(10_000);
-			this.slow(2_000);
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
-			await using mockServerController = await MockServerController.createMockServer();
-			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
-			sinon.stub(sut, "ping").resolves(12);
-			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			assert.strictEqual(result.length, 4);
-			assert.strictEqual(result[0].run, true);
-			assert.strictEqual(result[0].stepOrder, 1);
-			assert.strictEqual(result[0].success, true);
-			assert.ok(Object.hasOwn(result[0], "message"));
+			if (RunsInCITests) {
+				this.skip();
+			} else {
+				this.timeout(10_000);
+				this.slow(2_000);
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
+				await using mockServerController = await MockServerController.createMockServer();
+				const connectionOptions = MockServerController.getMockServerConnectionOptions();
+				const sut = new ConnectionTest();
+				sinon.stub(sut, "ping").resolves(12);
+				const result = await sut.runTests("localhost", "velux123", connectionOptions);
+				assert.strictEqual(result.length, 4);
+				assert.strictEqual(result[0].run, true);
+				assert.strictEqual(result[0].stepOrder, 1);
+				assert.strictEqual(result[0].success, true);
+				assert.ok(Object.hasOwn(result[0], "message"));
+			}
 		});
 
 		it(`should succeed at step 2 against mock server`, async function () {
-			this.timeout(10_000);
-			this.slow(2_000);
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
-			await using mockServerController = await MockServerController.createMockServer();
-			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
-			sinon.stub(sut, "ping").resolves(12);
-			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			assert.strictEqual(result.length, 4);
-			assert.strictEqual(result[1].run, true);
-			assert.strictEqual(result[1].stepOrder, 2);
-			assert.strictEqual(result[1].success, true);
-			assert.ok(Object.hasOwn(result[1], "message"));
+			if (RunsInCITests) {
+				this.skip();
+			} else {
+				this.timeout(10_000);
+				this.slow(2_000);
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
+				await using mockServerController = await MockServerController.createMockServer();
+				const connectionOptions = MockServerController.getMockServerConnectionOptions();
+				const sut = new ConnectionTest();
+				sinon.stub(sut, "ping").resolves(12);
+				const result = await sut.runTests("localhost", "velux123", connectionOptions);
+				assert.strictEqual(result.length, 4);
+				assert.strictEqual(result[1].run, true);
+				assert.strictEqual(result[1].stepOrder, 2);
+				assert.strictEqual(result[1].success, true);
+				assert.ok(Object.hasOwn(result[1], "message"));
+			}
 		});
 
 		it(`should succeed at step 3 against mock server`, async function () {
-			this.timeout(10_000);
-			this.slow(2_000);
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
-			await using mockServerController = await MockServerController.createMockServer();
-			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
-			sinon.stub(sut, "ping").resolves(12);
-			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			assert.strictEqual(result.length, 4);
-			assert.strictEqual(result[2].run, true);
-			assert.strictEqual(result[2].stepOrder, 3);
-			assert.strictEqual(result[2].success, true);
-			assert.ok(Object.hasOwn(result[2], "message"));
+			if (RunsInCITests) {
+				this.skip();
+			} else {
+				this.timeout(10_000);
+				this.slow(2_000);
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
+				await using mockServerController = await MockServerController.createMockServer();
+				const connectionOptions = MockServerController.getMockServerConnectionOptions();
+				const sut = new ConnectionTest();
+				sinon.stub(sut, "ping").resolves(12);
+				const result = await sut.runTests("localhost", "velux123", connectionOptions);
+				assert.strictEqual(result.length, 4);
+				assert.strictEqual(result[2].run, true);
+				assert.strictEqual(result[2].stepOrder, 3);
+				assert.strictEqual(result[2].success, true);
+				assert.ok(Object.hasOwn(result[2], "message"));
+			}
 		});
 
 		it(`should succeed at step 4 against mock server`, async function () {
-			this.timeout(10_000);
-			this.slow(2_000);
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
-			await using mockServerController = await MockServerController.createMockServer();
-			const connectionOptions = MockServerController.getMockServerConnectionOptions();
-			const sut = new ConnectionTest(new TranslationMock());
-			sinon.stub(sut, "ping").resolves(12);
-			const result = await sut.runTests("localhost", "velux123", connectionOptions);
-			assert.strictEqual(result.length, 4);
-			assert.strictEqual(result[3].run, true);
-			assert.strictEqual(result[3].stepOrder, 4);
-			assert.strictEqual(result[3].success, true);
-			assert.ok(Object.hasOwn(result[3], "message"));
+			if (RunsInCITests) {
+				this.skip();
+			} else {
+				this.timeout(10_000);
+				this.slow(2_000);
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars -- We need the side effect of having a process listening on localhost:51200
+				await using mockServerController = await MockServerController.createMockServer();
+				const connectionOptions = MockServerController.getMockServerConnectionOptions();
+				const sut = new ConnectionTest();
+				sinon.stub(sut, "ping").resolves(12);
+				const result = await sut.runTests("localhost", "velux123", connectionOptions);
+				assert.strictEqual(result.length, 4);
+				assert.strictEqual(result[3].run, true);
+				assert.strictEqual(result[3].stepOrder, 4);
+				assert.strictEqual(result[3].success, true);
+				assert.ok(Object.hasOwn(result[3], "message"));
+			}
 		});
 	});
 });

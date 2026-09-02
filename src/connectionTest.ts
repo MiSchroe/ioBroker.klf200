@@ -1,9 +1,9 @@
+import * as I18n from "@iobroker/adapter-core/i18n";
 import debugModule from "debug";
 import { Connection } from "klf-200-api";
 import { lookup } from "node:dns/promises";
 import { connect, type ConnectionOptions, type TLSSocket } from "node:tls";
 import ping from "ping";
-import type { Translate } from "./translate.js";
 import { convertErrorToString } from "./util/utils.js";
 
 const debug = debugModule("connectionTest");
@@ -90,13 +90,6 @@ export interface IConnectionTest {
  * Implements connection test operations for KLF-200 devices.
  */
 export class ConnectionTest implements IConnectionTest {
-	/**
-	 * Creates an instance of ConnectionTest.
-	 *
-	 * @param translation The translation service to use for messages.
-	 */
-	constructor(private readonly translation: Translate) {}
-
 	/**
 	 * Resolves the given hostname to an IP address.
 	 *
@@ -235,16 +228,16 @@ export class ConnectionTest implements IConnectionTest {
 		const result: ConnectionTestResult[] = [
 			{
 				stepOrder: 1,
-				stepName: await this.translation.translate("connection-test-step-name-name-lookup"),
+				stepName: I18n.translate("connection-test-step-name-name-lookup"),
 				run: false,
 			},
-			{ stepOrder: 2, stepName: await this.translation.translate("connection-test-step-name-ping"), run: false },
+			{ stepOrder: 2, stepName: I18n.translate("connection-test-step-name-ping"), run: false },
 			{
 				stepOrder: 3,
-				stepName: await this.translation.translate("connection-test-step-name-connection"),
+				stepName: I18n.translate("connection-test-step-name-connection"),
 				run: false,
 			},
-			{ stepOrder: 4, stepName: await this.translation.translate("connection-test-step-name-login"), run: false },
+			{ stepOrder: 4, stepName: I18n.translate("connection-test-step-name-login"), run: false },
 		];
 
 		const callProgressCallback = async function (): Promise<void> {
@@ -263,10 +256,7 @@ export class ConnectionTest implements IConnectionTest {
 				...result[0],
 				run: true,
 				success: true,
-				message: await this.translation.translate("connection-test-message-name-lookup-success", {
-					hostname: hostname,
-					ipaddress: ipaddress,
-				}),
+				message: I18n.translate("connection-test-message-name-lookup-success", hostname, ipaddress),
 				result: ipaddress,
 			};
 			await callProgressCallback();
@@ -279,9 +269,7 @@ export class ConnectionTest implements IConnectionTest {
 					run: true,
 					success: true,
 					// message: `Ping was successful after ${ms} milliseconds.`,
-					message: await this.translation.translate("connection-test-message-ping-success", {
-						ms: ms.toString(),
-					}),
+					message: I18n.translate("connection-test-message-ping-success", ms.toString()),
 					result: ms,
 				};
 				await callProgressCallback();
@@ -293,7 +281,7 @@ export class ConnectionTest implements IConnectionTest {
 						...result[2],
 						run: true,
 						success: true,
-						message: await this.translation.translate("connection-test-message-connection-success"),
+						message: I18n.translate("connection-test-message-connection-success"),
 					};
 					await callProgressCallback();
 
@@ -304,16 +292,14 @@ export class ConnectionTest implements IConnectionTest {
 							...result[3],
 							run: true,
 							success: true,
-							message: await this.translation.translate("connection-test-message-login-success"),
+							message: I18n.translate("connection-test-message-login-success"),
 						};
 					} catch (error) {
 						result[3] = {
 							...result[3],
 							run: true,
 							success: false,
-							message: await this.translation.translate("connection-test-message-login-failure", {
-								message: (error as Error).message,
-							}),
+							message: I18n.translate("connection-test-message-login-failure", (error as Error).message),
 							result: error as Error,
 						};
 					}
@@ -322,9 +308,7 @@ export class ConnectionTest implements IConnectionTest {
 						...result[2],
 						run: true,
 						success: false,
-						message: await this.translation.translate("connection-test-message-connection-failure", {
-							message: (error as Error).message,
-						}),
+						message: I18n.translate("connection-test-message-connection-failure", (error as Error).message),
 						result: error as Error,
 					};
 				}
@@ -333,10 +317,11 @@ export class ConnectionTest implements IConnectionTest {
 					...result[1],
 					run: true,
 					success: false,
-					message: await this.translation.translate("connection-test-message-ping-failure", {
-						ipaddress: ipaddress,
-						message: (error as Error).message,
-					}),
+					message: I18n.translate(
+						"connection-test-message-ping-failure",
+						ipaddress,
+						(error as Error).message,
+					),
 					result: error as Error,
 				};
 			}
@@ -345,9 +330,7 @@ export class ConnectionTest implements IConnectionTest {
 				...result[0],
 				run: true,
 				success: false,
-				message: await this.translation.translate("connection-test-message-name-lookup-failure", {
-					hostname: hostname,
-				}),
+				message: I18n.translate("connection-test-message-name-lookup-failure", hostname),
 				result: error as Error,
 			};
 		}
