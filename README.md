@@ -261,7 +261,7 @@ The values of the state provide multiple manipulation modes:
 	### __WORK IN PROGRESS__
 -->
 <!-- prettier-ignore -->
-### 1.4.0 (2026-09-02)
+### __WORK IN PROGRESS__
 
 - (Michael Schroeder) [#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Handle the outdated certificate in the connection test button.
 - (Michael Schroeder) [#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Added a connection test button to help identify connection problems.
