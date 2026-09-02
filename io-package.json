@@ -126,7 +126,7 @@
 		"licenseInformation": {
 			"license": "MIT",
 			"type": "free",
-			"link": "https://raw.githubusercontent.com/MiSchroe/ioBroker.klf200/master/LICENSE"
+			"link": "https://opensource.org/license/mit"
 		},
 		"platform": "Javascript/Node.js",
 		"icon": "klf200.png",

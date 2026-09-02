@@ -1,8 +1,6 @@
-import assert from "node:assert/strict";
 import { tests } from "@iobroker/testing";
 import type { TestHarness } from "@iobroker/testing/build/tests/integration/lib/harness.js";
 import crypto from "crypto";
-import { readFileSync } from "fs";
 import {
 	ActuatorAlias,
 	ActuatorType,
@@ -14,6 +12,8 @@ import {
 	StatusReply,
 	Velocity,
 } from "klf-200-api";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { MockServerController } from "./mocks/mockServerController.js";

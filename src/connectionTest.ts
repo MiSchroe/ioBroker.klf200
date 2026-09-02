@@ -1,6 +1,6 @@
 import debugModule from "debug";
-import { lookup } from "dns/promises";
 import { Connection } from "klf-200-api";
+import { lookup } from "node:dns/promises";
 import { connect, type ConnectionOptions, type TLSSocket } from "node:tls";
 import ping from "ping";
 import type { Translate } from "./translate.js";
