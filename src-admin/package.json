@@ -1,7 +1,7 @@
 {
 	"name": "iobroker-admin-component-klf200",
 	"private": true,
-	"version": "1.3.5",
+	"version": "1.3.7",
 	"type": "module",
 	"scripts": {
 		"start": "vite --port 4173",
@@ -39,11 +39,5 @@
 			"last 1 firefox version",
 			"last 1 safari version"
 		]
-	},
-	"allowScripts": {
-		"diskusage@1.2.0": true,
-		"esbuild@0.25.5": true,
-		"fsevents@2.3.3": true,
-		"unix-dgram@2.0.6": true
 	}
 }
