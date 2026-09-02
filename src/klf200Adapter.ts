@@ -1,7 +1,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from "@iobroker/adapter-core";
-import assert from "assert";
+import * as I18n from "@iobroker/adapter-core/i18n";
 import * as fs from "fs/promises";
 import {
 	CommandStatus,
@@ -152,11 +152,12 @@ import {
 	type Velocity,
 } from "klf-200-api";
 import { type Job, scheduleJob } from "node-schedule";
-import path from "path";
-import { env } from "process";
+import assert from "node:assert";
+import path from "node:path";
+import { env } from "node:process";
+import { checkServerIdentity as checkServerIdentityOriginal, type ConnectionOptions } from "node:tls";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { timeout } from "promise-timeout";
-import { checkServerIdentity as checkServerIdentityOriginal, type ConnectionOptions } from "tls";
-import { fileURLToPath, pathToFileURL } from "url";
 import { ConnectionTest, ConnectionTestResult } from "./connectionTest.js";
 import { KLF200DeviceManagement } from "./deviceManagement/klf200DeviceManagement.js";
 import { DisposalMap } from "./disposalMap.js";
@@ -166,12 +167,11 @@ import { Setup } from "./setup.js";
 import { SetupGroups } from "./setupGroups.js";
 import { SetupProducts } from "./setupProducts.js";
 import { SetupScenes } from "./setupScenes.js";
-import type { Translate } from "./translate.js";
 import { StateHelper } from "./util/stateHelper.js";
 import { ArrayCount, convertErrorToString, waitForSessionFinishedNtfAsync } from "./util/utils.js";
 
 // Load your modules here, e.g.:
-// import * as fs from "fs";
+// import * as fs from "node:fs";
 
 // Augment the adapter.config object with the actual types
 // TODO: delete this in the next version
@@ -198,10 +198,7 @@ type ConnectionWatchDogHandler = (hadError: boolean) => void;
 
 const refreshTimeoutMS = 120_000; // Wait max. 2 minutes for the notification.
 
-type ResponsiveProductResult = {
-	NodeID: number;
-	FPs: number[];
-};
+type ResponsiveProductResult = { NodeID: number; FPs: number[] };
 
 /**
  * The adapter instance.
@@ -240,7 +237,7 @@ export declare interface Klf200 {
 /**
  * The adapter class.
  */
-export class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProductsInterface, Translate {
+export class Klf200 extends utils.Adapter implements HasConnectionInterface, HasProductsInterface {
 	private disposables: Disposable[] = [];
 	private connectionWatchDogHandler: ConnectionWatchDogHandler;
 	private InShutdown: boolean;
@@ -318,10 +315,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * It sets up the event handlers for the adapter.
 	 */
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
-		super({
-			...options,
-			name: "klf200",
-		});
+		super({ ...options, name: "klf200" });
 
 		// Trace unhandled errors
 		process.on("unhandledRejection", this.onUnhandledRejection.bind(this));
@@ -345,205 +339,12 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		};
 	}
 
-	private languageFiles?: Partial<Omit<Record<ioBroker.Languages, Record<string, string>>, "en">> & {
-		en: Record<string, string>;
-	};
-
-	/**
-	 * Loads a language file of a given language into memory.
-	 *
-	 * @param language Language key of the language file that should be loaded into memory.
-	 */
-	private async loadLanguage(language: ioBroker.Languages): Promise<void> {
-		if (!this.languageFiles && language !== "en") {
-			// Load english language file first
-			await this.loadLanguage("en");
-		}
-
-		if (this.languageFiles && language in this.languageFiles) {
-			// If language is already loaded, do nothing
-			return;
-		}
-
-		// Load language file
-		const filePath = `${this.adapterDir}/admin/i18n/${language}/translations.json`;
-		try {
-			await fs.access(filePath, fs.constants.R_OK);
-		} catch (error) {
-			throw new Error(`Could not load language file ${filePath}.`, {
-				cause: error,
-			});
-		}
-		const translations = JSON.parse(await fs.readFile(filePath, { encoding: "utf8", flag: "r" })) as Record<
-			string,
-			string
-		>;
-
-		if (!this.languageFiles) {
-			assert(
-				language === "en",
-				`Language 'en' should be loaded first. Instead, it was tried to load ${language}.`,
-			);
-			this.languageFiles = { en: translations };
-			return;
-		}
-
-		this.languageFiles[language] = translations;
-	}
-
-	private replaceContext(text: string, context: Record<string, string>): string {
-		return text.replace(/\{(\w+)\}/g, (_, key: string) => context[key] || "");
-	}
-
-	/**
-	 * Returns the translated text of the given textKey in the given language.
-	 *
-	 * @param language Target language into which the text should be translated.
-	 * @param textKey Key of the text in the i18n json files that should be translated.
-	 * @param context Context object that should be used for substitutions in the translation.
-	 * @example
-	 * // ./admin/i18n/de/translations.json:
-	 * // {
-	 * //     "helloworld": "Hallo Welt!"
-	 * // }
-	 * // returns 'Hallo Welt!'
-	 * await translateTo('de', 'helloworld');
-	 * @example
-	 * // ./admin/i18n/de/translations.json:
-	 * // {
-	 * //     "helloworld-parameter": "Hallo {who}!"
-	 * // }
-	 * // returns 'Hallo Welt!'
-	 * await translateTo('de', 'helloworld-parameter', { who: 'Welt' });
-	 */
-	public async translateTo(
-		language: ioBroker.Languages,
-		textKey: string,
-		context?: Record<string, string>,
-	): Promise<string> {
-		await this.loadLanguage(language);
-		assert(this.languageFiles, `At least english language file should be loaded in memory.`);
-		assert(this.languageFiles[language], `Language file for language ${language} should be loaded in memory.`);
-
-		// Check if translation exists and throw an error if the language is english.
-		// Otherwise, fallback to english.
-		if (language === "en" && !(textKey in this.languageFiles.en)) {
-			throw new Error(`Could not find translation for ${textKey} in ${language}.`);
-		}
-		if (!(textKey in this.languageFiles[language])) {
-			// Write a warning into the log
-			this.log.warn(
-				`Could not find translation for ${textKey} in ${language}. Please help translate this adapter into another language and visit https://weblate.iobroker.net/ for more information.`,
-			);
-			// Fallback to english
-			return await this.translateTo("en", textKey, context);
-		}
-
-		// Return translation
-		const text = this.languageFiles[language][textKey];
-		if (context) {
-			return this.replaceContext(text, context);
-		}
-		return text;
-	}
-
-	/**
-	 * Returns the translated text of the given textKey in the system language.
-	 *
-	 * @param textKey Key of the text in the i18n json files that should be translated.
-	 * @param context Context object that should be used for substitutions in the translation.
-	 * @example
-	 * // ./admin/i18n/de/translations.json:
-	 * // {
-	 * //     "helloworld": "Hallo Welt!"
-	 * // }
-	 * // returns 'Hallo Welt!'
-	 * await translate('helloworld');
-	 * @example
-	 * // ./admin/i18n/de/translations.json:
-	 * // {
-	 * //     "helloworld-parameter": "Hallo {who}!"
-	 * // }
-	 * // returns 'Hallo Welt!'
-	 * await translate('helloworld-parameter', { who: 'Welt' });
-	 */
-	public async translate(textKey: string, context?: Record<string, string>): Promise<string> {
-		return this.translateTo(this.language || "en", textKey, context);
-	}
-
-	private allLanguagesLoaded = false;
-
-	/**
-	 * Returns an object containing all translations of the given textKey.
-	 *
-	 * @param textKey Key of the text in the i18n json files that should be translated.
-	 * @param context Context object that should be used for substitutions in the translation.
-	 * @example
-	 * // ./admin/i18n/en/translations.json:
-	 * // {
-	 * //     "helloworld": "Hello World!"
-	 * // }
-	 * // ./admin/i18n/de/translations.json:
-	 * // {
-	 * //     "helloworld": "Hallo Welt!"
-	 * // }
-	 * // returns {
-	 * //     en: 'Hello World!',
-	 * //     de: 'Hallo Welt!'
-	 * // }
-	 * await getTranslatedObject('helloworld');
-	 * @example
-	 * // ./admin/i18n/en/translations.json:
-	 * // {
-	 * //     "helloname-parameter": "Hello, {who}!"
-	 * // }
-	 * // ./admin/i18n/de/translations.json:
-	 * // {
-	 * //     "helloname-parameter": "Hallo, {who}!"
-	 * // }
-	 * // returns {
-	 * //     en: 'Hello, Jane Doe!',
-	 * //     de: 'Hallo, Jane Doe!'
-	 * // }
-	 * await getTranslatedObject('helloname-parameter', { who: 'Jane Doe' });
-	 */
-	public async getTranslatedObject(textKey: string, context?: Record<string, string>): Promise<ioBroker.Translated> {
-		const result: ioBroker.Translated = { en: textKey };
-
-		// Read languages only once
-		if (!this.allLanguagesLoaded) {
-			const readDirResults = await fs.readdir(`${this.adapterDir}/admin/i18n`, {
-				withFileTypes: false,
-				recursive: false,
-				encoding: "utf8",
-			});
-			for (const readDirResult of readDirResults) {
-				await this.loadLanguage(readDirResult as ioBroker.Languages);
-			}
-			this.allLanguagesLoaded = true;
-		}
-		assert(this.languageFiles, "languageFiles must be defined");
-
-		// Get the translation for all languages
-		for (const language of Object.keys(this.languageFiles)) {
-			result[language as ioBroker.Languages] = await this.translateTo(
-				language as ioBroker.Languages,
-				textKey,
-				context,
-			);
-		}
-		return result;
-	}
-
 	private async setupTestConnectionStates(): Promise<void> {
 		this.log.info("Setup objects for test connection.");
 
 		await this.setObjectNotExistsAsync("TestConnection", {
 			type: "channel",
-			common: {
-				name: "TestConnection",
-				expert: true,
-			},
+			common: { name: "TestConnection", expert: true },
 			native: {},
 		});
 
@@ -591,6 +392,8 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 			// Reset the connection indicator during startup
 			await this.setState("info.connection", false, true);
+
+			await I18n.init(path.join(this.adapterDir, "admin"), this);
 
 			// Decrypt password
 			if (!this.supportsFeature || !this.supportsFeature("ADAPTER_AUTO_DECRYPT_NATIVE")) {
@@ -911,7 +714,10 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			if (e instanceof Error && e.stack) {
 				this.log.debug(e.stack);
 			}
-			this.terminate ? this.terminate(result) : process.exit(1);
+			if (this.terminate) {
+				this.terminate(result);
+			}
+			throw new Error(result);
 		}
 	}
 
@@ -1114,7 +920,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 							[GatewayCommand.GW_SESSION_FINISHED_NTF, GatewayCommand.GW_STATUS_REQUEST_NTF],
 						);
 					} catch (error) {
-						reject(error as Error);
+						reject(error instanceof Error ? error : new Error(convertErrorToString(error)));
 					}
 				}),
 				30_000,
@@ -1504,7 +1310,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * Winks a product. This is used to identify a product, e.g. a window will move its handle, a roller shutter will move up and down a little bit.
 	 *
 	 * @param productId The ID of the product to wink.
-	 * @throws Error if the product is not found in the adapter.
+	 * @throws {Error} If the product is not found in the adapter.
 	 */
 	public async onWinkProduct(productId: number): Promise<void> {
 		const winkStateId = `products.${productId}.wink`;
@@ -1516,7 +1322,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 *
 	 * @param productId The ID of the product to rename.
 	 * @param newName The new name for the product.
-	 * @throws Error if the product is not found in the adapter.
+	 * @throws {Error} If the product is not found in the adapter.
 	 */
 	public async onRenameProduct(productId: number, newName: string): Promise<void> {
 		const product = this.Products?.Products[productId];
@@ -1702,7 +1508,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 					break;
 
 				default:
-					throw new Error(`Unknown status code: ${deleteSceneCfm.Status as number}.`);
+					throw new Error(`Unknown status code: ${deleteSceneCfm.Status}.`);
 			}
 			// Wait for product being removed from adapter
 			await removedSceneHandlerPromise;
@@ -1716,7 +1522,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 *
 	 * @param sceneId The scene ID to rename.
 	 * @param newName The new name to use for the scene.
-	 * @throws Error If the scene ID is invalid or if the new name is already in use.
+	 * @throws {Error} If the scene ID is invalid or if the new name is already in use.
 	 */
 	public async onRenameScene(sceneId: number, newName: string): Promise<void> {
 		const scene = this.Scenes?.Scenes[sceneId];
@@ -1750,8 +1556,8 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 	 * IDs of all products that could not be initialized.
 	 *
 	 * @returns A promise that resolves with an array of IDs of products that could not be initialized.
-	 * @throws If the system table is empty, or if the gateway is out of storage.
-	 * @throws If the initialization of the scene fails for any other reason.
+	 * @throws {Error} If the system table is empty, or if the gateway is out of storage.
+	 * @throws {Error} If the initialization of the scene fails for any other reason.
 	 */
 	public async onNewSceneInitialize(): Promise<number[]> {
 		let disposable: Disposable | undefined;
@@ -1827,7 +1633,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 				throw new Error("Not in scene recoding status.");
 
 			default:
-				throw new Error(`Unknown status code: ${cancelSceneInitializationCfm.Status as number}.`);
+				throw new Error(`Unknown status code: ${cancelSceneInitializationCfm.Status}.`);
 		}
 	}
 
@@ -1866,12 +1672,9 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 
 								default:
 									reject(
-										new Error(
-											`Unknown status code: ${(frame as GW_RECORD_SCENE_NTF).Status as number}.`,
-											{
-												cause: frame,
-											},
-										),
+										new Error(`Unknown status code: ${(frame as GW_RECORD_SCENE_NTF).Status}.`, {
+											cause: frame,
+										}),
 									);
 									break;
 							}
@@ -1889,7 +1692,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 						this.off("sceneAdded", onNewSceneHandler);
 						resolve();
 					} catch (error) {
-						reject(error as Error);
+						reject(error instanceof Error ? error : new Error(convertErrorToString(error)));
 					}
 				}).bind(this);
 				this.on("sceneAdded", onNewSceneHandler);
@@ -1905,7 +1708,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 					throw new Error("Not in scene recoding status.");
 
 				default:
-					throw new Error(`Unknown status code: ${recordSceneCfm.Status as number}.`);
+					throw new Error(`Unknown status code: ${recordSceneCfm.Status}.`);
 			}
 			const sceneId = await timeout(sceneNotificationReceivedPromise, 120_000);
 			await this.Scenes?.refreshScenesAsync();
@@ -1972,7 +1775,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		connectionOptions?: ConnectionOptions,
 		progressCallback?: (progress: ConnectionTestResult[]) => Promise<void>,
 	): Promise<ConnectionTestResult[]> {
-		const connectionTest = new ConnectionTest(this);
+		const connectionTest = new ConnectionTest();
 		return await connectionTest.runTests(hostname, password, connectionOptions, progressCallback);
 	}
 
@@ -2066,7 +1869,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			data.advancedSSLConfiguration?.sslFingerprint,
 		);
 		return {
-			rejectUnauthorized: true,
+			rejectUnauthorized: false,
 			ca: klf200Connection.CA,
 			checkServerIdentity: (host, cert) => {
 				if (cert.fingerprint === klf200Connection.fingerprint) {

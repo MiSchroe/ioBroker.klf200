@@ -1,15 +1,11 @@
+import assert from "node:assert/strict";
 import { type MockAdapter, utils } from "@iobroker/testing";
-import { expect, use } from "chai";
-import chaiAsPromised from "chai-as-promised";
+import { createAsserts } from "../test/asserts.js";
 import { Gateway, GatewayState, GatewaySubState, type IConnection, SoftwareVersion } from "klf-200-api";
 import sinon from "sinon";
-import sinonChai from "sinon-chai";
-import type { EventEmitter } from "stream";
-import { promisify } from "util";
+import type { EventEmitter } from "node:stream";
+import { promisify } from "node:util";
 import { Setup } from "./setup.js";
-
-use(sinonChai);
-use(chaiAsPromised);
 
 class MockConnect implements IConnection {
 	onFrameSent = sinon.stub();
@@ -25,7 +21,7 @@ const mockConnection = new MockConnect();
 describe("Setup", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
-	const { assertObjectExists } = utils.unit.createAsserts(database, adapter);
+	const { assertObjectExists } = createAsserts(database, adapter);
 
 	// Fake getChannelsOf
 	adapter.getChannelsOf = sinon.stub();
@@ -144,7 +140,7 @@ describe("Setup", function () {
 				});
 				const setup = Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 				try {
-					return setup.should.be.fulfilled;
+					await assert.doesNotReject(setup);
 				} finally {
 					(await setup).dispose();
 				}
@@ -179,7 +175,7 @@ describe("Setup", function () {
 			});
 			const setup = Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
-				return setup.should.be.fulfilled;
+				await assert.doesNotReject(setup);
 			} finally {
 				(await setup).dispose();
 			}
@@ -273,10 +269,11 @@ describe("Setup", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped writable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				setup.dispose();
 			}
@@ -334,10 +331,11 @@ describe("Setup", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				setup.dispose();
 			}

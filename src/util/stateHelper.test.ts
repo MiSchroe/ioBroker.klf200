@@ -1,17 +1,12 @@
 import { utils } from "@iobroker/testing";
-import { use } from "chai";
-import chaiAsPromised from "chai-as-promised";
-import sinonChai from "sinon-chai";
+import { createAsserts } from "../../test/asserts.js";
 import { StateHelper } from "./stateHelper.js";
-
-use(sinonChai);
-use(chaiAsPromised);
 
 describe("StateHelper", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
 
-	const { assertObjectExists, assertStateHasValue, assertStateIsAcked } = utils.unit.createAsserts(database, adapter);
+	const { assertObjectExists, assertStateHasValue, assertStateIsAcked } = createAsserts(database, adapter);
 
 	afterEach(() => {
 		// The mocks keep track of all method invocations - reset them after each single test

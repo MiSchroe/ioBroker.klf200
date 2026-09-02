@@ -1,8 +1,6 @@
 import { tests } from "@iobroker/testing";
 import type { TestHarness } from "@iobroker/testing/build/tests/integration/lib/harness.js";
-import { expect } from "chai";
 import crypto from "crypto";
-import { readFileSync } from "fs";
 import {
 	ActuatorAlias,
 	ActuatorType,
@@ -14,6 +12,8 @@ import {
 	StatusReply,
 	Velocity,
 } from "klf-200-api";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { MockServerController } from "./mocks/mockServerController.js";
@@ -36,7 +36,7 @@ tests.integration(path.join(__dirname, ".."), {
 
 			it("Should start", async function () {
 				this.timeout(60_000);
-				await expect(harness.startAdapterAndWait()).to.be.fulfilled;
+				await assert.doesNotReject(harness.startAdapterAndWait());
 			});
 		});
 
@@ -88,39 +88,39 @@ tests.integration(path.join(__dirname, ".."), {
 			describe("Simple startup checks", function () {
 				describe("No nodes", function () {
 					it("Should start without error", function () {
-						expect(harness.isAdapterRunning()).to.be.true;
+						assert.strictEqual(harness.isAdapterRunning(), true);
 					});
 
 					it("Gateway state should reflect having no products", async function () {
 						const sut = await Promise.resolve(
 							getState(harness, `${harness.adapterName}.0.gateway.GatewayState`),
 						);
-						expect(sut).to.have.property("val", GatewayState.GatewayMode_NoActuatorNodes);
-						expect(sut).to.have.property("ack", true);
+						assert.strictEqual(sut.val, GatewayState.GatewayMode_NoActuatorNodes);
+						assert.strictEqual(sut.ack, true);
 					});
 
 					it("Should have found no groups", async function () {
 						const sut = await Promise.resolve(
 							getState(harness, `${harness.adapterName}.0.groups.groupsFound`),
 						);
-						expect(sut).to.have.property("val", 0);
-						expect(sut).to.have.property("ack", true);
+						assert.strictEqual(sut.val, 0);
+						assert.strictEqual(sut.ack, true);
 					});
 
 					it("Should have found no products", async function () {
 						const sut = await Promise.resolve(
 							getState(harness, `${harness.adapterName}.0.products.productsFound`),
 						);
-						expect(sut).to.have.property("val", 0);
-						expect(sut).to.have.property("ack", true);
+						assert.strictEqual(sut.val, 0);
+						assert.strictEqual(sut.ack, true);
 					});
 
 					it("Should have found no scenes", async function () {
 						const sut = await Promise.resolve(
 							getState(harness, `${harness.adapterName}.0.scenes.scenesFound`),
 						);
-						expect(sut).to.have.property("val", 0);
-						expect(sut).to.have.property("ack", true);
+						assert.strictEqual(sut.val, 0);
+						assert.strictEqual(sut.ack, true);
 					});
 				});
 			});
@@ -220,39 +220,39 @@ tests.integration(path.join(__dirname, ".."), {
 			describe("Simple startup checks", function () {
 				describe("One node", function () {
 					it("Should start without error", function () {
-						expect(harness.isAdapterRunning()).to.be.true;
+						assert.strictEqual(harness.isAdapterRunning(), true);
 					});
 
 					it("Gateway state should reflect having no products", async function () {
 						const sut = await Promise.resolve(
 							getState(harness, `${harness.adapterName}.0.gateway.GatewayState`),
 						);
-						expect(sut).to.have.property("val", GatewayState.GatewayMode_WithActuatorNodes);
-						expect(sut).to.have.property("ack", true);
+						assert.strictEqual(sut.val, GatewayState.GatewayMode_WithActuatorNodes);
+						assert.strictEqual(sut.ack, true);
 					});
 
 					it("Should have found no groups", async function () {
 						const sut = await Promise.resolve(
 							getState(harness, `${harness.adapterName}.0.groups.groupsFound`),
 						);
-						expect(sut).to.have.property("val", 0);
-						expect(sut).to.have.property("ack", true);
+						assert.strictEqual(sut.val, 0);
+						assert.strictEqual(sut.ack, true);
 					});
 
 					it("Should have found one product", async function () {
 						const sut = await Promise.resolve(
 							getState(harness, `${harness.adapterName}.0.products.productsFound`),
 						);
-						expect(sut).to.have.property("val", 1);
-						expect(sut).to.have.property("ack", true);
+						assert.strictEqual(sut.val, 1);
+						assert.strictEqual(sut.ack, true);
 					});
 
 					it("Should have found no scenes", async function () {
 						const sut = await Promise.resolve(
 							getState(harness, `${harness.adapterName}.0.scenes.scenesFound`),
 						);
-						expect(sut).to.have.property("val", 0);
-						expect(sut).to.have.property("ack", true);
+						assert.strictEqual(sut.val, 0);
+						assert.strictEqual(sut.ack, true);
 					});
 				});
 			});
@@ -315,39 +315,39 @@ tests.integration(path.join(__dirname, ".."), {
 				describe("Simple startup checks", function () {
 					describe("Complete household", function () {
 						it("Should start without error", function () {
-							expect(harness.isAdapterRunning()).to.be.true;
+							assert.strictEqual(harness.isAdapterRunning(), true);
 						});
 
 						it("Gateway state should reflect having some products", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.gateway.GatewayState`),
 							);
-							expect(sut).to.have.property("val", GatewayState.GatewayMode_WithActuatorNodes);
-							expect(sut).to.have.property("ack", true);
+							assert.strictEqual(sut.val, GatewayState.GatewayMode_WithActuatorNodes);
+							assert.strictEqual(sut.ack, true);
 						});
 
 						it("Should have found some groups", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.groups.groupsFound`),
 							);
-							expect(sut).to.have.property("val", 2);
-							expect(sut).to.have.property("ack", true);
+							assert.strictEqual(sut.val, 2);
+							assert.strictEqual(sut.ack, true);
 						});
 
 						it("Should have found some products", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.products.productsFound`),
 							);
-							expect(sut).to.have.property("val", 4);
-							expect(sut).to.have.property("ack", true);
+							assert.strictEqual(sut.val, 4);
+							assert.strictEqual(sut.ack, true);
 						});
 
 						it("Should have found some scenes", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.scenes.scenesFound`),
 							);
-							expect(sut).to.have.property("val", 2);
-							expect(sut).to.have.property("ack", true);
+							assert.strictEqual(sut.val, 2);
+							assert.strictEqual(sut.ack, true);
 						});
 
 						describe("Products", function () {
@@ -356,16 +356,16 @@ tests.integration(path.join(__dirname, ".."), {
 									const sut = await Promise.resolve(
 										getState(harness, `${harness.adapterName}.0.products.${index}.runStatus`),
 									);
-									expect(sut).to.have.property("val", RunStatus.ExecutionCompleted);
-									expect(sut).to.have.property("ack", true);
+									assert.strictEqual(sut.val, RunStatus.ExecutionCompleted);
+									assert.strictEqual(sut.ack, true);
 								});
 
 								it(`Should have statusReply of OK at product ${index}`, async function () {
 									const sut = await Promise.resolve(
 										getState(harness, `${harness.adapterName}.0.products.${index}.statusReply`),
 									);
-									expect(sut).to.have.property("val", StatusReply.Ok);
-									expect(sut).to.have.property("ack", true);
+									assert.strictEqual(sut.val, StatusReply.Ok);
+									assert.strictEqual(sut.ack, true);
 								});
 
 								it(`Should have a limitationMPMinRaw state at product ${index}`, async function () {
@@ -375,8 +375,8 @@ tests.integration(path.join(__dirname, ".."), {
 											`${harness.adapterName}.0.products.${index}.limitationMPMinRaw`,
 										),
 									);
-									expect(sut).to.have.property("val");
-									expect(sut).to.have.property("ack", true);
+									assert.ok(Object.hasOwn(sut, "val"));
+									assert.strictEqual(sut.ack, true);
 								});
 
 								it(`Shouldn't have a limitationFP1MinRaw state at product ${index}`, async function () {
@@ -386,7 +386,7 @@ tests.integration(path.join(__dirname, ".."), {
 											`${harness.adapterName}.0.products.${index}.limitationFP1MinRaw`,
 										),
 									);
-									expect(sut).to.be.null;
+									assert.strictEqual(sut, null);
 								});
 							}
 						});
@@ -452,39 +452,39 @@ tests.integration(path.join(__dirname, ".."), {
 				describe("Simple startup checks", function () {
 					describe("Complete household", function () {
 						it("Should start without error", function () {
-							expect(harness.isAdapterRunning()).to.be.true;
+							assert.strictEqual(harness.isAdapterRunning(), true);
 						});
 
 						it("Gateway state should reflect having some products", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.gateway.GatewayState`),
 							);
-							expect(sut).to.have.property("val", GatewayState.GatewayMode_WithActuatorNodes);
-							expect(sut).to.have.property("ack", true);
+							assert.strictEqual(sut.val, GatewayState.GatewayMode_WithActuatorNodes);
+							assert.strictEqual(sut.ack, true);
 						});
 
 						it("Should have found no groups", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.groups.groupsFound`),
 							);
-							expect(sut).to.have.property("val", 0);
-							expect(sut).to.have.property("ack", true);
+							assert.strictEqual(sut.val, 0);
+							assert.strictEqual(sut.ack, true);
 						});
 
 						it("Should have found some products", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.products.productsFound`),
 							);
-							expect(sut).to.have.property("val", 2);
-							expect(sut).to.have.property("ack", true);
+							assert.strictEqual(sut.val, 2);
+							assert.strictEqual(sut.ack, true);
 						});
 
 						it("Should have found no scenes", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.scenes.scenesFound`),
 							);
-							expect(sut).to.have.property("val", 0);
-							expect(sut).to.have.property("ack", true);
+							assert.strictEqual(sut.val, 0);
+							assert.strictEqual(sut.ack, true);
 						});
 					});
 				});
@@ -586,49 +586,49 @@ tests.integration(path.join(__dirname, ".."), {
 				describe("Simple startup checks", function () {
 					describe("Complete household", function () {
 						it("Should start without error", function () {
-							expect(harness.isAdapterRunning()).to.be.true;
+							assert.strictEqual(harness.isAdapterRunning(), true);
 						});
 
 						it("Gateway state should reflect having some products", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.gateway.GatewayState`),
 							);
-							expect(sut).to.have.property("val", GatewayState.GatewayMode_WithActuatorNodes);
-							expect(sut).to.have.property("ack", true);
+							assert.strictEqual(sut.val, GatewayState.GatewayMode_WithActuatorNodes);
+							assert.strictEqual(sut.ack, true);
 						});
 
 						it("Should have found no groups", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.groups.groupsFound`),
 							);
-							expect(sut).to.have.property("val", 0);
-							expect(sut).to.have.property("ack", true);
+							assert.strictEqual(sut.val, 0);
+							assert.strictEqual(sut.ack, true);
 						});
 
 						it("Should have found some products", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.products.productsFound`),
 							);
-							expect(sut).to.have.property("val", 42);
-							expect(sut).to.have.property("ack", true);
+							assert.strictEqual(sut.val, 42);
+							assert.strictEqual(sut.ack, true);
 						});
 
 						it("Should have found no scenes", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.scenes.scenesFound`),
 							);
-							expect(sut).to.have.property("val", 0);
-							expect(sut).to.have.property("ack", true);
+							assert.strictEqual(sut.val, 0);
+							assert.strictEqual(sut.ack, true);
 						});
 
 						it("Should have limitation states for product 30", async function () {
 							const sut = await Promise.resolve(
 								getState(harness, `${harness.adapterName}.0.products.30.limitationMPMinRaw`),
 							);
-							expect(sut).not.to.be.undefined;
-							expect(sut).not.to.be.null;
-							expect(sut).to.be.an("object");
-							expect(sut).to.have.property("val");
+							assert.notStrictEqual(sut, undefined);
+							assert.notStrictEqual(sut, null);
+							assert.strictEqual(typeof sut, "object");
+							assert.ok(Object.hasOwn(sut, "val"));
 						});
 					});
 				});

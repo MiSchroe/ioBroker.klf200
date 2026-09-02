@@ -9,6 +9,10 @@ services:
         volumes:
             - ..:/workspace:cached
             - iobrokerdata-klf200:/opt/iobroker
+            # Keep node_modules Linux-native instead of the host's (macOS/Windows) bind-mounted copy,
+            # otherwise esbuild/vite fail with "wrong binary" errors.
+            - node_modules-klf200:/workspace/node_modules
+            - node_modules-src-admin-klf200:/workspace/src-admin/node_modules
         environment:
             - LANG=en_US.UTF-8
             - LANGUAGE=en_US:en
@@ -33,3 +37,5 @@ services:
 
 volumes:
     iobrokerdata-klf200:
+    node_modules-klf200:
+    node_modules-src-admin-klf200:

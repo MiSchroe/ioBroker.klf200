@@ -41,6 +41,5 @@
         "test/mocha.setup.js",
         "source-map-support/register"
     ],
-    "mochaExplorer.watch": "build/{**/*,*}.js",
-    "prettier.configPath": "./prettier.config.mjs"
+    "mochaExplorer.watch": "build/{**/*,*}.js"
 }

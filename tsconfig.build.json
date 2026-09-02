@@ -2,11 +2,13 @@
 	"extends": "./tsconfig.json",
 	// Modified config to only compile .ts-files in the src dir
 	"compilerOptions": {
-		"allowJs": false,
-		"checkJs": false,
 		"noEmit": false,
-		"declaration": false
+		"declaration": false,
+		"rootDir": "./src",
+		"outDir": "./build",
+		// The test runner globals aren't needed for the adapter sources.
+		"types": ["node", "@iobroker/types"]
 	},
-	"include": ["src/**/*.ts", "./types/**/*.d.ts"],
-	"exclude": ["src/**/*.test.ts", "src/*.test.ts", "test/**/*.ts", "test/**/*.js"]
+	"include": ["src/**/*.ts", "types/**/*.d.ts"],
+	"exclude": ["src/**/*.test.ts", "test/**"]
 }

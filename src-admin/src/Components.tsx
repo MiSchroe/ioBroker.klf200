@@ -1,3 +1,3 @@
-import ConnectionTestComponent from "./ConnectionTestComponent.jsx";
+import ConnectionTestComponent from "./ConnectionTestComponent";
 
 export default { ConnectionTestComponent };
