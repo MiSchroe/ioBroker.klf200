@@ -1,196 +1,205 @@
 {
-	"common": {
-		"name": "klf200",
-		"version": "1.3.7",
-		"news": {
-			"1.3.7": {
-				"en": "Fix findings by adapter checker.",
-				"de": "Fix-Ergebnisse durch Adapter-Checker.",
-				"ru": "Исправьте результаты с помощью Adapter Checker.",
-				"pt": "Corrigir as descobertas pelo verificador adaptador.",
-				"nl": "Repareer bevindingen door adaptercontrole.",
-				"fr": "Corriger les résultats par adaptateur-vérificateur.",
-				"it": "Fissare i risultati per adattatore checker.",
-				"es": "Arreglar los hallazgos mediante el control de adaptador.",
-				"pl": "Poprawianie wyników poprzez sprawdzanie adaptera.",
-				"uk": "Виправлення знахідок за допомогою адаптера.",
-				"zh-cn": "通过适配器检查器修复发现."
-			},
-			"1.3.6": {
-				"en": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) The outdated certificate of the KLF-200 will be accepted if its fingerprint matches.",
-				"de": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) Das veraltete Zertifikat des KLF-200 wird akzeptiert, wenn sein Fingerabdruck übereinstimmt.",
-				"ru": "[#479] (https://github.com/MiSchroe/ioBroker.klf200/issues/479) Устаревший сертификат КЛФ-200 будет принят, если его отпечатки пальцев совпадут.",
-				"pt": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) O certificado desatualizado do KLF-200 será aceito se sua impressão digital corresponder.",
-				"nl": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) Het verouderde certificaat van de KLF-200 wordt geaccepteerd als de vingerafdruk overeenkomt.",
-				"fr": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) Le certificat obsolète du KLF-200 sera accepté si ses empreintes digitales correspondent.",
-				"it": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) Il certificato obsoleto del KLF-200 sarà accettato se le sue impronte corrispondono.",
-				"es": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) El certificado anticuado del KLF-200 será aceptado si su huella coincide.",
-				"pl": "[# 479] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 479) Przedawnione świadectwo KLF- 200 zostanie zaakceptowane, jeśli jego odcisk pasuje.",
-				"uk": "[#479](https://github.com/MiSchroe/ioBroker.klf200/products/479) Випущений сертифікат KLF-200 буде прийнятий, якщо він відповідає відбиткам пальців.",
-				"zh-cn": "[479] (https://github.com/Mischroe/ioBroker.klf200/issues/479) (中文(简体) ). 如果KLF-200的指纹匹配,则将接受其过期的证书."
-			},
-			"1.3.5": {
-				"en": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Fixed an issue during startup of the adapter if more than 20 nodes are present.",
-				"de": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Ein Problem beim Start des Adapters wurde behoben, wenn mehr als 20 Knoten vorhanden sind.",
-				"ru": "[#264] (https://github.com/MiSchroe/ioBroker.klf200/issues/264) Исправлена проблема при запуске адаптера, если присутствует более 20 узлов.",
-				"pt": "[#264] (https://github.com/MiSchroe/ioBroker.klf200/issues/264) Corrigido um problema durante a inicialização do adaptador se mais de 20 nós estiverem presentes.",
-				"nl": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Een probleem opgelost tijdens het opstarten van de adapter als meer dan 20 knooppunten aanwezig zijn.",
-				"fr": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Correction d'un problème lors du démarrage de l'adaptateur si plus de 20 nœuds sont présents.",
-				"it": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Risolto un problema durante l'avvio dell'adattatore se sono presenti più di 20 nodi.",
-				"es": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Arreglado un problema durante la puesta en marcha del adaptador si están presentes más de 20 nodos.",
-				"pl": "[# 264] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 264) Naprawiono problem podczas uruchamiania adaptera, jeśli jest więcej niż 20 węzłów.",
-				"uk": "[#264](https://github.com/MiSchroe/ioBroker.klf200/products/264) Виправлено проблему при запуску адаптера, якщо присутні більше 20 вузлів.",
-				"zh-cn": "[#264] (https://github.com/miSchroe/ioBroker.klf200/issues/264) (中文(简体) ). 如果有20多个节点,则在适配器启动期间解决了一个问题."
-			},
-			"1.3.4": {
-				"en": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Fixed issues found by the adapter checker.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Fixed an issue during startup of the adapter if more than 20 nodes are present.",
-				"de": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Behobene Probleme des Adapter-Checkers.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Ein Problem beim Start des Adapters wurde behoben, wenn mehr als 20 Knoten vorhanden sind.",
-				"ru": "[#259] (https://github.com/MiSchroe/ioBroker.klf200/issues/259) Исправленные проблемы, найденные адаптером.\n[#262] (https://github.com/MiSchroe/ioBroker.klf200/issues/262) Исправлена проблема при запуске адаптера, если присутствует более 20 узлов.",
-				"pt": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Problemas corrigidos encontrados pelo verificador do adaptador.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Corrigido um problema durante a inicialização do adaptador se mais de 20 nós estiverem presentes.",
-				"nl": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Vaste problemen gevonden door de adapter checker.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Een probleem opgelost tijdens het opstarten van de adapter als meer dan 20 knooppunten aanwezig zijn.",
-				"fr": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Correction des problèmes trouvés par le vérificateur d'adaptateur.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Correction d'un problème lors du démarrage de l'adaptateur si plus de 20 nœuds sont présents.",
-				"it": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Problemi risolti trovati dall'adattatore checker.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Risolto un problema durante l'avvio dell'adattatore se sono presenti più di 20 nodi.",
-				"es": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Problemas fijos encontrados por el adaptador.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Arreglado un problema durante la puesta en marcha del adaptador si están presentes más de 20 nodos.",
-				"pl": "[# 259] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 259) Naprawiono problemy znalezione przez sprawdzacz adaptera.\n[# 262] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 262) Naprawiono problem podczas uruchamiania adaptera, jeśli jest więcej niż 20 węzłów.",
-				"uk": "[#259](https://github.com/MiSchroe/ioBroker.klf200/products/259) Виправлені питання, знайдені за допомогою перевірки адаптера.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/products/262) Виправлено проблему при запуску адаптера, якщо присутні більше 20 вузлів.",
-				"zh-cn": "[259] (https://github.com/Mischroe/ioBroker.klf200/issues/259) (中文(简体) ). 适配器检查器发现的固定问题.\n[262] (https://github.com/Mischroe/ioBroker.klf200/issues/262) (中文(简体) ). 如果有20多个节点,则在适配器启动期间解决了一个问题."
-			},
-			"1.3.3": {
-				"en": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Fixed an issue that the adapter didn't start when the product nodes weren't numbered from 0 onwards.",
-				"de": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Es wurde ein Problem behoben, dass der Adapter nicht gestartet wurde, wenn die Produktknoten nicht ab 0 nummeriert waren.",
-				"ru": "[#250] (https://github.com/MiSchroe/ioBroker.klf200/issues/250) Исправлена проблема, которую адаптер не начал, когда узлы продукта не были пронумерованы с 0 вперед.",
-				"pt": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Corrigido um problema que o adaptador não começou quando os nós do produto não foram contados a partir de 0 em diante.",
-				"nl": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Een probleem opgelost dat de adapter niet startte toen de productknooppunten niet vanaf 0 genummerd werden.",
-				"fr": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Correction d'un problème que l'adaptateur n'a pas commencé lorsque les nœuds du produit n'étaient pas numérotés à partir de 0.",
-				"it": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Risolto un problema che l'adattatore non ha iniziato quando i nodi del prodotto non sono stati numerati da 0 in poi.",
-				"es": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Arregló un problema que el adaptador no comenzó cuando los nodos del producto no estaban numerados de 0 hacia adelante.",
-				"pl": "[# 250] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 250) Naprawiono problem, że adapter nie zaczął się, gdy węzły produktu nie były numerowane od 0.",
-				"uk": "[#250](https://github.com/MiSchroe/ioBroker.klf200/products/250) Виправлено проблему, що перехідник не почався, коли вузли продукту не були зануреними з 0 навардії.",
-				"zh-cn": "[# 250] (https://github.com/Mischroe/ioBroker.klf200/issues/250) (中文(简体) ). 固定了一个问题,当产品节点从0开始没有编号时适配器没有开始."
-			},
-			"1.3.2": {
-				"en": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Fixed timeout error during adapter start in some special cases.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Fixed an issue that logged the same log entry multiple times.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Run integration tests against a virtual mock version of an KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Fixed findings of Adapter Checker.\nUpgrade dependencies",
-				"de": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Behobener Timeout-Fehler beim Adapterstart in einigen speziellen Fällen.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Es wurde ein Problem behoben, das den gleichen Log-Eintrag mehrfach protokolliert hat.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Integrationstests werden gegen eine virtuelle Mock-Version eines KLF-200 ausgeführt.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Ergebnisse des Adapter Checkers sind behoben.\nAbhängigkeiten aktualisiert",
-				"ru": "[#224] (https://github.com/MiSchroe/ioBroker.klf200/issues/224) Исправленная ошибка таймаута во время адаптера начинается в некоторых особых случаях.\n[#246] (https://github.com/MiSchroe/ioBroker.klf200/issues/246) Исправлена проблема, которая несколько раз регистрировала один и тот же вход.\n[#210] (https://github.com/MiSchroe/ioBroker.klf200/issues/210) Запустите интеграционные тесты против виртуальной версии KLF-200.\n[#233] (https://github.com/MiSchroe/ioBroker.klf200/issues/233) Исправленные результаты проверки адаптера.\nЗависимость от повышения качества",
-				"pt": "[#224] (https://github.com/MiSchroe/ioBroker.klf200/issues/224) O erro de tempo limite fixo durante o início do adaptador em alguns casos especiais.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Corrigido um problema que registrou a mesma entrada de log várias vezes.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Execute testes de integração contra uma versão virtual de um KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Achados fixos do verificador do adaptador.\nDependências de atualização",
-				"nl": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Vaste timeout fout tijdens adapter start in sommige speciale gevallen.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Een probleem opgelost dat dezelfde log invoer meerdere keren logde.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Voer integratietests uit tegen een virtuele schijnversie van een KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Vaste bevindingen van Adapter Checker.\nUpgrade afhankelijkheden",
-				"fr": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Erreur de timeout corrigée pendant le démarrage de l'adaptateur dans certains cas particuliers.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Correction d'un problème qui a enregistré la même entrée de journal plusieurs fois.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Exécutez des tests d'intégration contre une version virtuelle simulée d'un KLF-200.\n[#233] (https://github.com/MiSchroe/ioBroker.klf200/issues/233) Correction des résultats de la vérification de l'adaptateur.\nAmélioration des dépendances",
-				"it": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Errore di timeout fisso durante l'avvio dell'adattatore in alcuni casi speciali.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Risolto un problema che ha registrato la stessa voce di registro più volte.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Eseguire test di integrazione contro una versione virtuale mock di un KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Risultati fissi di Adattatore Checker.\nDipendenze di aggiornamento",
-				"es": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Error de tiempo fijo durante el inicio del adaptador en algunos casos especiales.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Arregló un problema que registró la misma entrada de registro varias veces.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Ejecute pruebas de integración contra una versión virtual de un KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Conclusiones fijas de Adapter Checker.\nAumentar las dependencias",
-				"pl": "[# 224] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 224) Naprawiono błąd timeout podczas uruchamiania adaptera w niektórych szczególnych przypadkach.\n[# 246] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 246) Naprawiono problem, który wielokrotnie zapisywał ten sam wpis.\n[# 210] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 210) Uruchom testy integracyjne na wirtualną wersję modelową KLF- 200.\n[# 233] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 233) Ustalone wyniki kontroli adaptera.\nUaktualnienie zależności",
-				"uk": "[#224](https://github.com/MiSchroe/ioBroker.klf200/products/224) Виправлена помилка часу при запуску адаптера в деяких спеціальних випадках.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/products/246) Виправлено проблему, що ввійшло той самий запис журналу кілька разів.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/products/210) Тести з інтеграції Run на віртуальну версію KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/products/233) Виправлені результати перевірки адаптера.\nПідвищення залежності",
-				"zh-cn": "[224] (https://github.com/Mischroe/ioBroker.klf200/issues/224) (中文(简体) ). 适配器期间的固定超时错误在一些特殊情况下启动.\n[246] (https://github.com/Mischroe/ioBroker.klf200/issues/246) (中文(简体) ). 解决了一个问题,多次登录同一日志条目.\n[210] (https://github.com/Mischroe/ioBroker.klf200/issues/210) (中文(简体) ). 针对虚拟模拟版本的KLF-200运行集成测试.\n[第233号](https://github.com/Mischroe/ioBroker.klf200/issues/233). 固定发现的适配器检查器.\n升级依赖关系"
-			},
-			"1.3.1": {
-				"en": "[#214](https://github.com/MiSchroe/ioBroker.klf200/issues/214) Fixed error while retrieving the version number of the klf-200-api package.\n[#215](https://github.com/MiSchroe/ioBroker.klf200/issues/215) Added a device manager tab to the settings dialog for managing devices, groups and scenes.\n[#217](https://github.com/MiSchroe/ioBroker.klf200/issues/217) Refresh statusReply after reading the limitations to show correct values.\n[#218](https://github.com/MiSchroe/ioBroker.klf200/issues/218) Refresh runStatus after reading the limitations to show correct values.",
-				"de": "[#214](https://github.com/MiSchroe/ioBroker.klf200/issues/214) Fehler beim Abrufen der Versionsnummer des klf-200-api-Pakets behoben.\n[#215](https://github.com/MiSchroe/ioBroker.klf200/issues/215) Hinzufügen eines Gerätemanager-Tab in den Einstellungen Dialog für die Verwaltung von Geräten, Gruppen und Szenen.\n[#217](https://github.com/MiSchroe/ioBroker.klf200/issues/217) Refresh statusReply nach dem Lesen der Einschränkungen, um korrekte Werte anzuzeigen.\n[#218](https://github.com/MiSchroe/ioBroker.klf200/issues/218) Refresh runStatus nach dem Lesen der Einschränkungen, um korrekte Werte anzuzeigen.",
-				"ru": "[#214] (https://github.com/MiSchroe/ioBroker.klf200/issues/214) Исправлена ошибка при извлечении номера версии пакета klf-200-api.\n[#215] (https://github.com/MiSchroe/ioBroker.klf200/issues/215) Добавлена вкладка менеджера устройства в диалог настроек для управления устройствами, группами и сценами.\n[#217] (https://github.com/MiSchroe/ioBroker.klf200/issues/217) Обновите статусРепли после прочтения ограничений, чтобы показать правильные значения.\n[#218] (https://github.com/MiSchroe/ioBroker.klf200/issues/218) Обновите RunStatus после прочтения ограничений, чтобы показать правильные значения.",
-				"pt": "[#214] (https://github.com/MiSchroe/ioBroker.klf200/issues/214) Corrigido erro ao recuperar o número de versão do pacote klf-200-api.\n[#215] (https://github.com/MiSchroe/ioBroker.klf200/issues/215) Adicionado um gerenciador de dispositivo guia para as configurações diálogo para gerenciar dispositivos, grupos e cenas.\n[#217] (https://github.com/MiSchroe/ioBroker.klf200/issues/217) Refresh statusReply após ler as limitações para mostrar valores corretos.\n[#218](https://github.com/MiSchroe/ioBroker.klf200/issues/218) Refresh runStatus depois de ler as limitações para mostrar valores corretos.",
-				"nl": "[#214](https://github.com/MiSchroe/ioBroker.klf200/issues/214) Fout bij het ophalen van het versienummer van het klf-200-api pakket.\n[#215](https://github.com/MiSchroe/ioBroker.klf200/issues/215) Een tabblad apparaatbeheer toegevoegd aan het instellingenvenster voor het beheren van apparaten, groepen en scènes.\n[#217](https://github.com/MiSchroe/ioBroker.klf200/issues/217) Status vernieuwenBeantwoorden na het lezen van de beperkingen om correcte waarden te tonen.\n[#218](https://github.com/MiSchroe/ioBroker.klf200/issues/218) Vernieuw runStatus na het lezen van de beperkingen om correcte waarden te tonen.",
-				"fr": "[#214](https://github.com/MiSchroe/ioBroker.klf200/issues/214) Erreur corrigée lors de la récupération du numéro de version du paquet klf-200-api.\n[#215] (https://github.com/MiSchroe/ioBroker.klf200/issues/215) Ajout d'un onglet gestionnaire de périphériques dans la boîte de dialogue des paramètres pour la gestion des périphériques, des groupes et des scènes.\n[#217](https://github.com/MiSchroe/ioBroker.klf200/issues/217) Actualiser le statutRépondre après avoir lu les limitations pour afficher les valeurs correctes.\n[#218](https://github.com/MiSchroe/ioBroker.klf200/issues/218) Rafraîchir l'exécutionStatut après avoir lu les limitations pour afficher les valeurs correctes.",
-				"it": "[#214](https://github.com/MiSchroe/ioBroker.klf200/issues/214) Errore fisso durante il recupero del numero di versione del pacchetto klf-200-api.\n[#215](https://github.com/MiSchroe/ioBroker.klf200/issues/215) Aggiunta una scheda del gestore del dispositivo alla finestra di dialogo impostazioni per la gestione di dispositivi, gruppi e scene.\n[#217](https://github.com/MiSchroe/ioBroker.klf200/issues/217) Aggiorna lo statoRipristina dopo aver letto i limiti per mostrare i valori corretti.\n[#218](https://github.com/MiSchroe/ioBroker.klf200/issues/218) Aggiornare runStatus dopo aver letto i limiti per mostrare i valori corretti.",
-				"es": "[#214](https://github.com/MiSchroe/ioBroker.klf200/issues/214) Error fijo al recuperar el número de versión del paquete klf-200-api.\n[#215](https://github.com/MiSchroe/ioBroker.klf200/issues/215) Se agregó una pestaña de administrador de dispositivos al diálogo de configuración para gestionar dispositivos, grupos y escenas.\n[#217](https://github.com/MiSchroe/ioBroker.klf200/issues/217) Estado de referenciaReply after reading the limitations to show correct values.\n[#218](https://github.com/MiSchroe/ioBroker.klf200/issues/218) Refresh runStatus después de leer las limitaciones para mostrar valores correctos.",
-				"pl": "[# 214] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 214) Naprawiono błąd podczas pobierania numeru wersji pakietu klf- 200- api.\n[# 215] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 215) Dodano zakładkę menedżer urządzeń do okna ustawień dla zarządzania urządzeniami, grupami i sceną.\n[# 217] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 217) Odśwież statusReply po przeczytaniu ograniczeń, aby pokazać prawidłowe wartości.\n[# 218] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 218) Odśwież runStatus po przeczytaniu ograniczeń, aby wyświetlić poprawne wartości.",
-				"uk": "[#214](https://github.com/MiSchroe/ioBroker.klf200/products/214) Виправлена помилка при перерозподілі версії пакета klf-200-api.\n[#215](https://github.com/MiSchroe/ioBroker.klf200/products/215) Додано вкладку адміністратора пристрою на налаштування діалогу для управління пристроями, групами та сценами.\n[#217](https://github.com/MiSchroe/ioBroker.klf200/products/217) Відновити статусВідновити після читання обмежень, щоб показати правильні значення.\n[#218](https://github.com/MiSchroe/ioBroker.klf200/products/218) Бібліотечний стан після читання обмежень, щоб показати правильні значення.",
-				"zh-cn": "[214] (https://github.com/Mischroe/ioBroker.klf200/issues/214) (中文(简体) ). 获取 klf- 200- api 软件包的版本号时出现固定错误 .\n[215] (https://github.com/Mischroe/ioBroker.klf200/issues/215) (中文(简体) ). 在设置对话框中添加了设备管理器标签, 用于管理设备、 组和场景 .\n[217] (https://github.com/Mischroe/ioBroker.klf200/issues217). 读取限制后刷新状态 .\n[218] (https://github.com/Mischroe/ioBroker.klf200/issues/218) (中文(简体) ). 读取限制后刷新运行状态以显示正确的值 ."
-			}
-		},
-		"titleLang": {
-			"en": "KLF-200",
-			"de": "KLF-200",
-			"ru": "KLF-200",
-			"pt": "KLF-200",
-			"nl": "KLF-200",
-			"fr": "KLF-200",
-			"it": "KLF-200",
-			"es": "KLF-200",
-			"pl": "KLF-200",
-			"zh-cn": "KLF-200",
-			"uk": "КЛФ-200"
-		},
-		"desc": {
-			"en": "Controls products and scenes connected to a KLF-200 interface",
-			"de": "Steuert Produkte und Szenen, die an eine KLF-200-Schnittstelle angeschlossen sind",
-			"ru": "Управляет продуктами и сценами, подключенными к интерфейсу KLF-200",
-			"pt": "Controla produtos e cenas conectadas a uma interface KLF-200",
-			"nl": "Bestuurt producten en scènes die zijn aangesloten op een KLF-200-interface",
-			"fr": "Contrôle des produits et des scènes connectés à une interface KLF-200",
-			"it": "Controlla i prodotti e le scene connesse a un'interfaccia KLF-200",
-			"es": "Controla productos y escenas conectadas a una interfaz KLF-200",
-			"pl": "Kontroluje produkty i sceny podłączone do interfejsu KLF-200",
-			"zh-cn": "控制连接到KLF-200接口的产品和场景",
-			"uk": "Керує продуктами та сценами, підключеними до інтерфейсу KLF-200"
-		},
-		"authors": ["Michael Schroeder <klf200@gmx.de>"],
-		"keywords": ["KLF-200", "VELUX"],
-		"licenseInformation": {
-			"license": "MIT",
-			"type": "free",
-			"link": "https://opensource.org/license/mit"
-		},
-		"platform": "Javascript/Node.js",
-		"icon": "klf200.png",
-		"enabled": true,
-		"extIcon": "https://raw.githubusercontent.com/MiSchroe/ioBroker.klf200/master/admin/klf200.png",
-		"readme": "https://github.com/MiSchroe/ioBroker.klf200/blob/master/README.md",
-		"loglevel": "info",
-		"mode": "daemon",
-		"type": "hardware",
-		"compact": true,
-		"connectionType": "local",
-		"dataSource": "push",
-		"adminUI": {
-			"config": "json"
-		},
-		"globalDependencies": [
-			{
-				"admin": ">=7.6.20"
-			}
-		],
-		"dependencies": [
-			{
-				"js-controller": ">=7.0.6"
-			}
-		],
-		"messagebox": true,
-		"supportedMessages": {
-			"deviceManager": true
-		},
-		"tier": 3
-	},
-	"native": {
-		"host": "velux-klf-",
-		"password": "",
-		"enableAutomaticReboot": true,
-		"automaticRebootCronTime": "0 3 * * *",
-		"advancedSSLConfiguration": false,
-		"SSLPublicKey": "",
-		"SSLFingerprint": ""
-	},
-	"protectedNative": ["password"],
-	"encryptedNative": ["password"],
-	"objects": [],
-	"instanceObjects": [
-		{
-			"_id": "info",
-			"type": "channel",
-			"common": {
-				"name": "Information"
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.connection",
-			"type": "state",
-			"common": {
-				"role": "indicator.connected",
-				"name": "Device or service connected",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		}
-	]
+  "common": {
+    "name": "klf200",
+    "version": "1.4.0",
+    "news": {
+      "1.4.0": {
+        "en": "[#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Handle the outdated certificate in the connection test button.\n[#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Added a connection test button to help identify connection problems.\n[#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Split the limitation originator state for min and max into separate ones.\n[#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Migrated to ESLint v9.\n[#248](https://github.com/MiSchroe/ioBroker.klf200/issues/248), [#294](https://github.com/MiSchroe/ioBroker.klf200/issues/294), [#297](https://github.com/MiSchroe/ioBroker.klf200/issues/297) Closed items regarding invalid jsonConfig.json. Fix must be provided by Admin adapter.\n[#254](https://github.com/MiSchroe/ioBroker.klf200/issues/254) Future-proof development: Converted adapter to ESM.\n[#292](https://github.com/MiSchroe/ioBroker.klf200/issues/292) Fixed findings from Adapter Checker.\n[#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Upgrade dependencies.\n[#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Switch using ping instead of net-ping for compatibility with Node v24.\n[#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Support Node V24.\nMigrated the admin configuration UI to React 19: replaced @iobroker/adapter-react-v5 by @iobroker/gui-components and upgraded to MUI 9 and Vite 8, so that the connection test component matches the current GUI API generation of the Admin adapter.\nMigrated the device management to @iobroker/dm-utils v3.\nSwitched the unit tests from chai to node:assert.\nRaised the timeout of the setupProducts test suite, which could abort the test run under load.\n[#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) Fixed findings from Adapter Checker and lint errors.",
+        "de": "[#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Umgang mit veralteten Zertifikaten im Verbindungstest-Button.\n[#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Es wurde eine Schaltfläche zum Verbindungstest hinzugefügt, um Verbindungsprobleme leichter identifizieren zu können.\n[#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Die Limitation Originator State-Werte für Min und Max sollten in separate Werte aufgeteilt werden.\n[#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Migration zu ESLint v9.\n[#248](https://github.com/MiSchroe/ioBroker.klf200/issues/248), [#294](https://github.com/MiSchroe/ioBroker.klf200/issues/294), [#297](https://github.com/MiSchroe/ioBroker.klf200/issues/297) Geschlossene Tickets bezüglich ungültiger jsonConfig.json-Dateien. Die Korrektur muss vom Admin-Adapter bereitgestellt werden.\n[#254](https://github.com/MiSchroe/ioBroker.klf200/issues/254) Zukunftssichere Entwicklung: Adapter auf ESM umgestellt.\n[#292](https://github.com/MiSchroe/ioBroker.klf200/issues/292) Behobene Fehler des Adapter Checkers.\n[#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Abhängigkeiten aktualisieren.\n[#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Umstellung auf ping statt net-ping für Kompatibilität mit Node v24.\n[#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Unterstützung für Node V24.\nDie Benutzeroberfläche für die Admin-Konfiguration wurde auf React 19 migriert: @iobroker/adapter-react-v5 wurde durch @iobroker/gui-components ersetzt und auf MUI 9 und Vite 8 aktualisiert, sodass die Komponente für den Verbindungstest der aktuellen GUI-API-Generation des Admin-Adapters entspricht.\nDie Geräteverwaltung wurde auf @iobroker/dm-utils v3 migriert.\nDie Unit-Tests wurden von chai auf node:assert umgestellt.\nDas Timeout der setupProducts-Testsuite wurde erhöht, wodurch der Testlauf unter Last abgebrochen werden konnte.\n[#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) Behobene Fehler des Adapter Checkers und Lint-Fehler.",
+        "ru": "[#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Обработка устаревшего сертификата в кнопке проверки соединения.\n[#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Добавлена кнопка проверки соединения для выявления проблем с подключением.\n[#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Разделите состояние инициатора ограничения для минимального и максимального значений на отдельные значения.\n[#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Перенесено на ESLint v9.\n[#248](https://github.com/MiSchroe/ioBroker.klf200/issues/248), [#294](https://github.com/MiSchroe/ioBroker.klf200/issues/294), [#297](https://github.com/MiSchroe/ioBroker.klf200/issues/297) Закрыты вопросы, касающиеся некорректного файла jsonConfig.json. Исправление должно быть предоставлено адаптером администратора.\n[#254](https://github.com/MiSchroe/ioBroker.klf200/issues/254) Разработка с учетом перспектив на будущее: Адаптер преобразован в ESM.\n[#292](https://github.com/MiSchroe/ioBroker.klf200/issues/292) Исправлены ошибки, выявленные Adapter Checker.\n[#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Обновить зависимости.\n[#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Для совместимости с Node v24 переключитесь на использование ping вместо net-ping.\n[#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Поддержка Node V24.\nПеренесли пользовательский интерфейс настройки администратора на React 19: заменили @iobroker/adapter-react-v5 на @iobroker/gui-components и обновили до MUI 9 и Vite 8, чтобы компонент проверки подключения соответствовал текущей генерации API графического интерфейса адаптера администратора.\nПеренесено управление устройствами на @iobroker/dm-utils v3.\nПереключил модульные тесты с chai на node:assert.\nУвеличено время ожидания набора тестов setupProducts, что может привести к прерыванию выполнения тестов под нагрузкой.\n[#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) Исправлены ошибки, выявленные Adapter Checker и lint.",
+        "pt": "[#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Lidar com o certificado desatualizado no botão de teste de conexão.\n[#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Adicionado um botão de teste de conexão para ajudar a identificar problemas de conexão.\n[#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Dividir o estado de origem da limitação para min e max em estados separados.\n[#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Migrado para ESLint v9.\n[#248](https://github.com/MiSchroe/ioBroker.klf200/issues/248), [#294](https://github.com/MiSchroe/ioBroker.klf200/issues/294), [#297](https://github.com/MiSchroe/ioBroker.klf200/issues/297) Itens fechados referentes a jsonConfig.json inválido. A correção deve ser fornecida pelo adaptador Admin.\n[#254](https://github.com/MiSchroe/ioBroker.klf200/issues/254) Desenvolvimento à prova de futuro: Adaptador convertido para ESM.\n[#292](https://github.com/MiSchroe/ioBroker.klf200/issues/292) Corrigidos resultados do Adapter Checker.\n[#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Atualizar dependências.\n[#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Alternar o uso de ping em vez de net-ping para compatibilidade com o Node v24.\n[#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Suporte ao Node V24.\nMigrei a interface de configuração administrativa para o React 19: substituí o @iobroker/adapter-react-v5 pelo @iobroker/gui-components e atualizei para o MUI 9 e o Vite 8, para que o componente de teste de conexão corresponda à geração atual da API da GUI do adaptador de administração.\nMigrei o gerenciamento de dispositivos para @iobroker/dm-utils v3.\nTroquei os testes unitários de chai para node:assert.\nAumentamos o tempo limite do conjunto de testes setupProducts, o que poderia interromper a execução dos testes sob carga.\n[#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) Corrigidos os resultados do Adapter Checker e os erros de lint.",
+        "nl": "[#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Verwerk het verouderde certificaat in de verbindingstestknop.\n[#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Er is een knop voor verbindingstests toegevoegd om verbindingsproblemen te helpen identificeren.\n[#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Splits de status van de limiet-oorspronker voor min en max in aparte statussen.\n[#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Migratie naar ESLint v9.\n[#248](https://github.com/MiSchroe/ioBroker.klf200/issues/248), [#294](https://github.com/MiSchroe/ioBroker.klf200/issues/294), [#297](https://github.com/MiSchroe/ioBroker.klf200/issues/297) Gesloten items met betrekking tot ongeldig jsonConfig.json. De oplossing moet worden geleverd door de Admin-adapter.\n[#254](https://github.com/MiSchroe/ioBroker.klf200/issues/254) Toekomstbestendige ontwikkeling: Adapter geconverteerd naar ESM.\n[#292](https://github.com/MiSchroe/ioBroker.klf200/issues/292) Opgeloste bevindingen van Adapter Checker.\n[#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Afhankelijkheden upgraden.\n[#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Schakel over naar ping in plaats van net-ping voor compatibiliteit met Node v24.\n[#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Ondersteuning voor Node V24.\nDe gebruikersinterface voor de beheerdersconfiguratie is gemigreerd naar React 19: @iobroker/adapter-react-v5 is vervangen door @iobroker/gui-components en er is een upgrade uitgevoerd naar MUI 9 en Vite 8, zodat de component voor de verbindingstest overeenkomt met de huidige GUI API-generatie van de beheerdersadapter.\nHet apparaatbeheer is gemigreerd naar @iobroker/dm-utils v3.\nDe unit tests zijn overgezet van chai naar node:assert.\nDe time-out van de setupProducts-testsuite is verhoogd, waardoor de test onder belasting kan worden afgebroken.\n[#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) Opgeloste bevindingen van Adapter Checker en lintfouten.",
+        "fr": "[#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Gérer le certificat obsolète dans le bouton de test de connexion.\n[#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Ajout d'un bouton de test de connexion pour aider à identifier les problèmes de connexion.\n[#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Séparer l'état d'origine de la limitation pour min et max en deux états distincts.\n[#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Migré vers ESLint v9.\n[#248](https://github.com/MiSchroe/ioBroker.klf200/issues/248), [#294](https://github.com/MiSchroe/ioBroker.klf200/issues/294), [#297](https://github.com/MiSchroe/ioBroker.klf200/issues/297) : Ces tickets concernant un fichier jsonConfig.json invalide ont été clôturés. La correction doit être apportée par l'adaptateur d'administration.\n[#254](https://github.com/MiSchroe/ioBroker.klf200/issues/254) Développement à l'épreuve du temps : adaptateur converti en ESM.\n[#292](https://github.com/MiSchroe/ioBroker.klf200/issues/292) Correction des résultats de l'Adapter Checker.\n[#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Mise à niveau des dépendances.\n[#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Utiliser ping au lieu de net-ping pour la compatibilité avec Node v24.\n[#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Prise en charge de Node V24.\nMigration de l'interface utilisateur de configuration d'administration vers React 19 : remplacement de @iobroker/adapter-react-v5 par @iobroker/gui-components et mise à niveau vers MUI 9 et Vite 8, afin que le composant de test de connexion corresponde à la génération actuelle de l'API GUI de l'adaptateur d'administration.\nLa gestion des périphériques a été migrée vers @iobroker/dm-utils v3.\nJ'ai remplacé les tests unitaires de chai par node:assert.\nAugmentation du délai d'expiration de la suite de tests setupProducts, qui pouvait interrompre l'exécution des tests en cas de charge importante.\n[#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) Correction des résultats de l'Adapter Checker et des erreurs de lint.",
+        "it": "[#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Gestisci il certificato obsoleto nel pulsante di test della connessione.\n[#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Aggiunto un pulsante di test della connessione per aiutare a identificare i problemi di connessione.\n[#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Suddividere lo stato dell'origine della limitazione per min e max in stati separati.\n[#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Migrato a ESLint v9.\n[#248](https://github.com/MiSchroe/ioBroker.klf200/issues/248), [#294](https://github.com/MiSchroe/ioBroker.klf200/issues/294), [#297](https://github.com/MiSchroe/ioBroker.klf200/issues/297) Chiusi gli elementi relativi a jsonConfig.json non valido. La correzione deve essere fornita dall'adattatore Admin.\n[#254](https://github.com/MiSchroe/ioBroker.klf200/issues/254) Sviluppo a prova di futuro: adattatore convertito in ESM.\n[#292](https://github.com/MiSchroe/ioBroker.klf200/issues/292) Risolti i problemi rilevati da Adapter Checker.\n[#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Aggiornamento delle dipendenze.\n[#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Passaggio all'utilizzo di ping invece di net-ping per la compatibilità con Node v24.\n[#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Supporto per Node V24.\nHo migrato l'interfaccia utente di configurazione amministrativa a React 19: ho sostituito @iobroker/adapter-react-v5 con @iobroker/gui-components e ho aggiornato a MUI 9 e Vite 8, in modo che il componente di test della connessione corrisponda all'attuale generazione dell'API GUI dell'adattatore Admin.\nGestione dei dispositivi migrata a @iobroker/dm-utils v3.\nHo cambiato i test unitari da chai a node:assert.\nÈ stato aumentato il timeout della suite di test setupProducts, che potrebbe interrompere l'esecuzione del test sotto carico.\n[#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) Risolti i problemi rilevati da Adapter Checker ed errori di lint.",
+        "es": "[#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Gestionar el certificado obsoleto en el botón de prueba de conexión.\n[#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Se agregó un botón de prueba de conexión para ayudar a identificar problemas de conexión.\n[#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Dividir el estado del originador de la limitación para min y max en estados separados.\n[#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Migrado a ESLint v9.\n[#248](https://github.com/MiSchroe/ioBroker.klf200/issues/248), [#294](https://github.com/MiSchroe/ioBroker.klf200/issues/294), [#297](https://github.com/MiSchroe/ioBroker.klf200/issues/297) Elementos cerrados relacionados con jsonConfig.json no válido. La solución debe ser proporcionada por el adaptador de administración.\n[#254](https://github.com/MiSchroe/ioBroker.klf200/issues/254) Desarrollo a prueba de futuro: Adaptador convertido a ESM.\n[#292](https://github.com/MiSchroe/ioBroker.klf200/issues/292) Se corrigieron los hallazgos del Comprobador de adaptadores.\n[#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Actualizar dependencias.\n[#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Cambiar a ping en lugar de net-ping para compatibilidad con Node v24.\n[#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Compatibilidad con Node V24.\nSe migró la interfaz de usuario de configuración de administración a React 19: se reemplazó @iobroker/adapter-react-v5 por @iobroker/gui-components y se actualizó a MUI 9 y Vite 8, de modo que el componente de prueba de conexión coincida con la generación actual de la API de la interfaz gráfica de usuario del adaptador de administración.\nSe migró la gestión de dispositivos a @iobroker/dm-utils v3.\nCambié las pruebas unitarias de chai a node:assert.\nSe aumentó el tiempo de espera del conjunto de pruebas setupProducts, lo que podría provocar la interrupción de la ejecución de la prueba bajo carga.\n[#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) Se corrigieron los hallazgos del Comprobador de adaptadores y los errores de lint.",
+        "pl": "[#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Obsłuż nieaktualny certyfikat w przycisku testu połączenia.\n[#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Dodano przycisk testu połączenia, aby pomóc w identyfikowaniu problemów z połączeniem.\n[#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Podziel stan twórcy ograniczenia dla min. i maks. na osobne.\n[#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Migracja do ESLint v9.\n[#248](https://github.com/MiSchroe/ioBroker.klf200/issues/248), [#294](https://github.com/MiSchroe/ioBroker.klf200/issues/294), [#297](https://github.com/MiSchroe/ioBroker.klf200/issues/297) Zamknięto zgłoszenia dotyczące nieprawidłowego pliku jsonConfig.json. Poprawka musi zostać dostarczona przez adapter administracyjny.\n[#254](https://github.com/MiSchroe/ioBroker.klf200/issues/254) Rozwój odporny na przyszłość: Konwersja adaptera na ESM.\n[#292](https://github.com/MiSchroe/ioBroker.klf200/issues/292) Naprawiono wyniki z Adapter Checker.\n[#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Zależności aktualizacji.\n[#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Zmień używanie polecenia ping na net-ping, aby zapewnić zgodność z Node v24.\n[#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Węzeł wsparcia V24.\nPrzeniesiono interfejs użytkownika konfiguracji administratora do React 19: zastąpiono @iobroker/adapter-react-v5 przez @iobroker/gui-components i zaktualizowano do MUI 9 i Vite 8, tak aby komponent testu połączenia był zgodny z bieżącą generacją interfejsu API graficznego adaptera administratora.\nPrzeniesiono zarządzanie urządzeniami do @iobroker/dm-utils v3.\nZmieniono testy jednostkowe z chai na node:assert.\nPodniesiono limit czasu zestawu testów setupProducts, co mogło spowodować przerwanie testu pod obciążeniem.\n[#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) Naprawiono wyniki wyszukiwania Adapter Checker i błędy lint.",
+        "uk": "[#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Обробляти застарілий сертифікат у кнопці перевірки з’єднання.\n[#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) Додано кнопку перевірки з’єднання, яка допомагає виявляти проблеми з підключенням.\n[#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) Розділити стан ініціатора обмеження для min та max на окремі стани.\n[#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) Перенесено на ESLint версії 9.\n[#248](https://github.com/MiSchroe/ioBroker.klf200/issues/248), [#294](https://github.com/MiSchroe/ioBroker.klf200/issues/294), [#297](https://github.com/MiSchroe/ioBroker.klf200/issues/297) Закрито питання щодо недійсного файлу jsonConfig.json. Виправлення має надати адміністратор.\n[#254](https://github.com/MiSchroe/ioBroker.klf200/issues/254) Розробка, орієнтована на майбутнє: адаптер перетворено на ESM.\n[#292](https://github.com/MiSchroe/ioBroker.klf200/issues/292) Виправлено проблеми, виявлені засобом перевірки адаптерів.\n[#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) Оновлення залежностей.\n[#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) Перемикання за допомогою ping замість net-ping для сумісності з Node v24.\n[#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) Підтримка вузла V24.\nІнтерфейс конфігурації адміністратора перенесено до React 19: @iobroker/adapter-react-v5 замінено на @iobroker/gui-components та оновлено до MUI 9 та Vite 8, щоб компонент перевірки підключення відповідав поточному поколінню GUI API адаптера адміністратора.\nПеренесено керування пристроями до @iobroker/dm-utils версії 3.\nПереключив модульні тести з chai на node:assert.\nЗбільшено час очікування набору тестів setupProducts, що могло перервати тестовий запуск під навантаженням.\n[#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) Виправлено помилки перевірки адаптерів та lint.",
+        "zh-cn": "[#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) 处理连接测试按钮中的过期证书。\n[#130](https://github.com/MiSchroe/ioBroker.klf200/issues/130) 添加了连接测试按钮，以帮助识别连接问题。\n[#278](https://github.com/MiSchroe/ioBroker.klf200/issues/278) 将最小值和最大值的限制发起者状态拆分为单独的状态。\n[#268](https://github.com/MiSchroe/ioBroker.klf200/issues/268) 已迁移到 ESLint v9。\n[#248](https://github.com/MiSchroe/ioBroker.klf200/issues/248)、[#294](https://github.com/MiSchroe/ioBroker.klf200/issues/294)、[#297](https://github.com/MiSchroe/ioBroker.klf200/issues/297) 已关闭，涉及无效的 jsonConfig.json 文件。修复程序必须由管理适配器提供。\n[#254](https://github.com/MiSchroe/ioBroker.klf200/issues/254)面向未来的开发：将适配器转换为 ESM。\n[#292](https://github.com/MiSchroe/ioBroker.klf200/issues/292) 修复了适配器检查器的结果。\n[#310](https://github.com/MiSchroe/ioBroker.klf200/issues/310) 升级依赖项。\n[#317](https://github.com/MiSchroe/ioBroker.klf200/issues/317) 为了与 Node v24 兼容，切换使用 ping 而不是 net-ping。\n[#309](https://github.com/MiSchroe/ioBroker.klf200/issues/309), [#316](https://github.com/MiSchroe/ioBroker.klf200/issues/316) 支持 Node V24。\n将管理配置 UI 迁移到 React 19：将 @iobroker/adapter-react-v5 替换为 @iobroker/gui-components，并升级到 MUI 9 和 Vite 8，以便连接测试组件与管理适配器的当前 GUI API 生成相匹配。\n已将设备管理迁移到 @iobroker/dm-utils v3。\n将单元测试从 chai 切换到 node:assert。\n提高了 setupProducts 测试套件的超时时间，这可能会导致在负载过高的情况下测试运行中止。\n[#478](https://github.com/MiSchroe/ioBroker.klf200/issues/478) 修复了适配器检查器和代码检查错误中发现的问题。"
+      },
+      "1.3.7": {
+        "en": "Fix findings by adapter checker.",
+        "de": "Fix-Ergebnisse durch Adapter-Checker.",
+        "ru": "Исправьте результаты с помощью Adapter Checker.",
+        "pt": "Corrigir as descobertas pelo verificador adaptador.",
+        "nl": "Repareer bevindingen door adaptercontrole.",
+        "fr": "Corriger les résultats par adaptateur-vérificateur.",
+        "it": "Fissare i risultati per adattatore checker.",
+        "es": "Arreglar los hallazgos mediante el control de adaptador.",
+        "pl": "Poprawianie wyników poprzez sprawdzanie adaptera.",
+        "uk": "Виправлення знахідок за допомогою адаптера.",
+        "zh-cn": "通过适配器检查器修复发现."
+      },
+      "1.3.6": {
+        "en": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) The outdated certificate of the KLF-200 will be accepted if its fingerprint matches.",
+        "de": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) Das veraltete Zertifikat des KLF-200 wird akzeptiert, wenn sein Fingerabdruck übereinstimmt.",
+        "ru": "[#479] (https://github.com/MiSchroe/ioBroker.klf200/issues/479) Устаревший сертификат КЛФ-200 будет принят, если его отпечатки пальцев совпадут.",
+        "pt": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) O certificado desatualizado do KLF-200 será aceito se sua impressão digital corresponder.",
+        "nl": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) Het verouderde certificaat van de KLF-200 wordt geaccepteerd als de vingerafdruk overeenkomt.",
+        "fr": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) Le certificat obsolète du KLF-200 sera accepté si ses empreintes digitales correspondent.",
+        "it": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) Il certificato obsoleto del KLF-200 sarà accettato se le sue impronte corrispondono.",
+        "es": "[#479](https://github.com/MiSchroe/ioBroker.klf200/issues/479) El certificado anticuado del KLF-200 será aceptado si su huella coincide.",
+        "pl": "[# 479] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 479) Przedawnione świadectwo KLF- 200 zostanie zaakceptowane, jeśli jego odcisk pasuje.",
+        "uk": "[#479](https://github.com/MiSchroe/ioBroker.klf200/products/479) Випущений сертифікат KLF-200 буде прийнятий, якщо він відповідає відбиткам пальців.",
+        "zh-cn": "[479] (https://github.com/Mischroe/ioBroker.klf200/issues/479) (中文(简体) ). 如果KLF-200的指纹匹配,则将接受其过期的证书."
+      },
+      "1.3.5": {
+        "en": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Fixed an issue during startup of the adapter if more than 20 nodes are present.",
+        "de": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Ein Problem beim Start des Adapters wurde behoben, wenn mehr als 20 Knoten vorhanden sind.",
+        "ru": "[#264] (https://github.com/MiSchroe/ioBroker.klf200/issues/264) Исправлена проблема при запуске адаптера, если присутствует более 20 узлов.",
+        "pt": "[#264] (https://github.com/MiSchroe/ioBroker.klf200/issues/264) Corrigido um problema durante a inicialização do adaptador se mais de 20 nós estiverem presentes.",
+        "nl": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Een probleem opgelost tijdens het opstarten van de adapter als meer dan 20 knooppunten aanwezig zijn.",
+        "fr": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Correction d'un problème lors du démarrage de l'adaptateur si plus de 20 nœuds sont présents.",
+        "it": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Risolto un problema durante l'avvio dell'adattatore se sono presenti più di 20 nodi.",
+        "es": "[#264](https://github.com/MiSchroe/ioBroker.klf200/issues/264) Arreglado un problema durante la puesta en marcha del adaptador si están presentes más de 20 nodos.",
+        "pl": "[# 264] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 264) Naprawiono problem podczas uruchamiania adaptera, jeśli jest więcej niż 20 węzłów.",
+        "uk": "[#264](https://github.com/MiSchroe/ioBroker.klf200/products/264) Виправлено проблему при запуску адаптера, якщо присутні більше 20 вузлів.",
+        "zh-cn": "[#264] (https://github.com/miSchroe/ioBroker.klf200/issues/264) (中文(简体) ). 如果有20多个节点,则在适配器启动期间解决了一个问题."
+      },
+      "1.3.4": {
+        "en": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Fixed issues found by the adapter checker.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Fixed an issue during startup of the adapter if more than 20 nodes are present.",
+        "de": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Behobene Probleme des Adapter-Checkers.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Ein Problem beim Start des Adapters wurde behoben, wenn mehr als 20 Knoten vorhanden sind.",
+        "ru": "[#259] (https://github.com/MiSchroe/ioBroker.klf200/issues/259) Исправленные проблемы, найденные адаптером.\n[#262] (https://github.com/MiSchroe/ioBroker.klf200/issues/262) Исправлена проблема при запуске адаптера, если присутствует более 20 узлов.",
+        "pt": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Problemas corrigidos encontrados pelo verificador do adaptador.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Corrigido um problema durante a inicialização do adaptador se mais de 20 nós estiverem presentes.",
+        "nl": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Vaste problemen gevonden door de adapter checker.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Een probleem opgelost tijdens het opstarten van de adapter als meer dan 20 knooppunten aanwezig zijn.",
+        "fr": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Correction des problèmes trouvés par le vérificateur d'adaptateur.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Correction d'un problème lors du démarrage de l'adaptateur si plus de 20 nœuds sont présents.",
+        "it": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Problemi risolti trovati dall'adattatore checker.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Risolto un problema durante l'avvio dell'adattatore se sono presenti più di 20 nodi.",
+        "es": "[#259](https://github.com/MiSchroe/ioBroker.klf200/issues/259) Problemas fijos encontrados por el adaptador.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/issues/262) Arreglado un problema durante la puesta en marcha del adaptador si están presentes más de 20 nodos.",
+        "pl": "[# 259] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 259) Naprawiono problemy znalezione przez sprawdzacz adaptera.\n[# 262] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 262) Naprawiono problem podczas uruchamiania adaptera, jeśli jest więcej niż 20 węzłów.",
+        "uk": "[#259](https://github.com/MiSchroe/ioBroker.klf200/products/259) Виправлені питання, знайдені за допомогою перевірки адаптера.\n[#262](https://github.com/MiSchroe/ioBroker.klf200/products/262) Виправлено проблему при запуску адаптера, якщо присутні більше 20 вузлів.",
+        "zh-cn": "[259] (https://github.com/Mischroe/ioBroker.klf200/issues/259) (中文(简体) ). 适配器检查器发现的固定问题.\n[262] (https://github.com/Mischroe/ioBroker.klf200/issues/262) (中文(简体) ). 如果有20多个节点,则在适配器启动期间解决了一个问题."
+      },
+      "1.3.3": {
+        "en": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Fixed an issue that the adapter didn't start when the product nodes weren't numbered from 0 onwards.",
+        "de": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Es wurde ein Problem behoben, dass der Adapter nicht gestartet wurde, wenn die Produktknoten nicht ab 0 nummeriert waren.",
+        "ru": "[#250] (https://github.com/MiSchroe/ioBroker.klf200/issues/250) Исправлена проблема, которую адаптер не начал, когда узлы продукта не были пронумерованы с 0 вперед.",
+        "pt": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Corrigido um problema que o adaptador não começou quando os nós do produto não foram contados a partir de 0 em diante.",
+        "nl": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Een probleem opgelost dat de adapter niet startte toen de productknooppunten niet vanaf 0 genummerd werden.",
+        "fr": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Correction d'un problème que l'adaptateur n'a pas commencé lorsque les nœuds du produit n'étaient pas numérotés à partir de 0.",
+        "it": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Risolto un problema che l'adattatore non ha iniziato quando i nodi del prodotto non sono stati numerati da 0 in poi.",
+        "es": "[#250](https://github.com/MiSchroe/ioBroker.klf200/issues/250) Arregló un problema que el adaptador no comenzó cuando los nodos del producto no estaban numerados de 0 hacia adelante.",
+        "pl": "[# 250] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 250) Naprawiono problem, że adapter nie zaczął się, gdy węzły produktu nie były numerowane od 0.",
+        "uk": "[#250](https://github.com/MiSchroe/ioBroker.klf200/products/250) Виправлено проблему, що перехідник не почався, коли вузли продукту не були зануреними з 0 навардії.",
+        "zh-cn": "[# 250] (https://github.com/Mischroe/ioBroker.klf200/issues/250) (中文(简体) ). 固定了一个问题,当产品节点从0开始没有编号时适配器没有开始."
+      },
+      "1.3.2": {
+        "en": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Fixed timeout error during adapter start in some special cases.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Fixed an issue that logged the same log entry multiple times.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Run integration tests against a virtual mock version of an KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Fixed findings of Adapter Checker.\nUpgrade dependencies",
+        "de": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Behobener Timeout-Fehler beim Adapterstart in einigen speziellen Fällen.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Es wurde ein Problem behoben, das den gleichen Log-Eintrag mehrfach protokolliert hat.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Integrationstests werden gegen eine virtuelle Mock-Version eines KLF-200 ausgeführt.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Ergebnisse des Adapter Checkers sind behoben.\nAbhängigkeiten aktualisiert",
+        "ru": "[#224] (https://github.com/MiSchroe/ioBroker.klf200/issues/224) Исправленная ошибка таймаута во время адаптера начинается в некоторых особых случаях.\n[#246] (https://github.com/MiSchroe/ioBroker.klf200/issues/246) Исправлена проблема, которая несколько раз регистрировала один и тот же вход.\n[#210] (https://github.com/MiSchroe/ioBroker.klf200/issues/210) Запустите интеграционные тесты против виртуальной версии KLF-200.\n[#233] (https://github.com/MiSchroe/ioBroker.klf200/issues/233) Исправленные результаты проверки адаптера.\nЗависимость от повышения качества",
+        "pt": "[#224] (https://github.com/MiSchroe/ioBroker.klf200/issues/224) O erro de tempo limite fixo durante o início do adaptador em alguns casos especiais.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Corrigido um problema que registrou a mesma entrada de log várias vezes.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Execute testes de integração contra uma versão virtual de um KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Achados fixos do verificador do adaptador.\nDependências de atualização",
+        "nl": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Vaste timeout fout tijdens adapter start in sommige speciale gevallen.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Een probleem opgelost dat dezelfde log invoer meerdere keren logde.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Voer integratietests uit tegen een virtuele schijnversie van een KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Vaste bevindingen van Adapter Checker.\nUpgrade afhankelijkheden",
+        "fr": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Erreur de timeout corrigée pendant le démarrage de l'adaptateur dans certains cas particuliers.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Correction d'un problème qui a enregistré la même entrée de journal plusieurs fois.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Exécutez des tests d'intégration contre une version virtuelle simulée d'un KLF-200.\n[#233] (https://github.com/MiSchroe/ioBroker.klf200/issues/233) Correction des résultats de la vérification de l'adaptateur.\nAmélioration des dépendances",
+        "it": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Errore di timeout fisso durante l'avvio dell'adattatore in alcuni casi speciali.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Risolto un problema che ha registrato la stessa voce di registro più volte.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Eseguire test di integrazione contro una versione virtuale mock di un KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Risultati fissi di Adattatore Checker.\nDipendenze di aggiornamento",
+        "es": "[#224](https://github.com/MiSchroe/ioBroker.klf200/issues/224) Error de tiempo fijo durante el inicio del adaptador en algunos casos especiales.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/issues/246) Arregló un problema que registró la misma entrada de registro varias veces.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/issues/210) Ejecute pruebas de integración contra una versión virtual de un KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/issues/233) Conclusiones fijas de Adapter Checker.\nAumentar las dependencias",
+        "pl": "[# 224] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 224) Naprawiono błąd timeout podczas uruchamiania adaptera w niektórych szczególnych przypadkach.\n[# 246] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 246) Naprawiono problem, który wielokrotnie zapisywał ten sam wpis.\n[# 210] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 210) Uruchom testy integracyjne na wirtualną wersję modelową KLF- 200.\n[# 233] (https: / / github.com / MiSchroe / ioBroker.klf200 / issues / 233) Ustalone wyniki kontroli adaptera.\nUaktualnienie zależności",
+        "uk": "[#224](https://github.com/MiSchroe/ioBroker.klf200/products/224) Виправлена помилка часу при запуску адаптера в деяких спеціальних випадках.\n[#246](https://github.com/MiSchroe/ioBroker.klf200/products/246) Виправлено проблему, що ввійшло той самий запис журналу кілька разів.\n[#210](https://github.com/MiSchroe/ioBroker.klf200/products/210) Тести з інтеграції Run на віртуальну версію KLF-200.\n[#233](https://github.com/MiSchroe/ioBroker.klf200/products/233) Виправлені результати перевірки адаптера.\nПідвищення залежності",
+        "zh-cn": "[224] (https://github.com/Mischroe/ioBroker.klf200/issues/224) (中文(简体) ). 适配器期间的固定超时错误在一些特殊情况下启动.\n[246] (https://github.com/Mischroe/ioBroker.klf200/issues/246) (中文(简体) ). 解决了一个问题,多次登录同一日志条目.\n[210] (https://github.com/Mischroe/ioBroker.klf200/issues/210) (中文(简体) ). 针对虚拟模拟版本的KLF-200运行集成测试.\n[第233号](https://github.com/Mischroe/ioBroker.klf200/issues/233). 固定发现的适配器检查器.\n升级依赖关系"
+      }
+    },
+    "titleLang": {
+      "en": "KLF-200",
+      "de": "KLF-200",
+      "ru": "KLF-200",
+      "pt": "KLF-200",
+      "nl": "KLF-200",
+      "fr": "KLF-200",
+      "it": "KLF-200",
+      "es": "KLF-200",
+      "pl": "KLF-200",
+      "zh-cn": "KLF-200",
+      "uk": "КЛФ-200"
+    },
+    "desc": {
+      "en": "Controls products and scenes connected to a KLF-200 interface",
+      "de": "Steuert Produkte und Szenen, die an eine KLF-200-Schnittstelle angeschlossen sind",
+      "ru": "Управляет продуктами и сценами, подключенными к интерфейсу KLF-200",
+      "pt": "Controla produtos e cenas conectadas a uma interface KLF-200",
+      "nl": "Bestuurt producten en scènes die zijn aangesloten op een KLF-200-interface",
+      "fr": "Contrôle des produits et des scènes connectés à une interface KLF-200",
+      "it": "Controlla i prodotti e le scene connesse a un'interfaccia KLF-200",
+      "es": "Controla productos y escenas conectadas a una interfaz KLF-200",
+      "pl": "Kontroluje produkty i sceny podłączone do interfejsu KLF-200",
+      "zh-cn": "控制连接到KLF-200接口的产品和场景",
+      "uk": "Керує продуктами та сценами, підключеними до інтерфейсу KLF-200"
+    },
+    "authors": [
+      "Michael Schroeder <klf200@gmx.de>"
+    ],
+    "keywords": [
+      "KLF-200",
+      "VELUX"
+    ],
+    "licenseInformation": {
+      "license": "MIT",
+      "type": "free",
+      "link": "https://opensource.org/license/mit"
+    },
+    "platform": "Javascript/Node.js",
+    "icon": "klf200.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/MiSchroe/ioBroker.klf200/master/admin/klf200.png",
+    "readme": "https://github.com/MiSchroe/ioBroker.klf200/blob/master/README.md",
+    "loglevel": "info",
+    "mode": "daemon",
+    "type": "hardware",
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "adminUI": {
+      "config": "json"
+    },
+    "globalDependencies": [
+      {
+        "admin": ">=7.6.20"
+      }
+    ],
+    "dependencies": [
+      {
+        "js-controller": ">=7.0.6"
+      }
+    ],
+    "messagebox": true,
+    "supportedMessages": {
+      "deviceManager": true
+    },
+    "tier": 3
+  },
+  "native": {
+    "host": "velux-klf-",
+    "password": "",
+    "enableAutomaticReboot": true,
+    "automaticRebootCronTime": "0 3 * * *",
+    "advancedSSLConfiguration": false,
+    "SSLPublicKey": "",
+    "SSLFingerprint": ""
+  },
+  "protectedNative": [
+    "password"
+  ],
+  "encryptedNative": [
+    "password"
+  ],
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
 }
