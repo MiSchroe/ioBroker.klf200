@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { afterEach, beforeEach, describe, it, mock } from "node:test";
 // Don't delete this line otherwise on save some weird changes will be introduced!
 import { utils } from "@iobroker/testing";
 import {
@@ -9,7 +10,6 @@ import {
 	type IGW_FRAME_RCV,
 	type Listener,
 } from "klf-200-api";
-import sinon from "sinon";
 import { ArrayCount, convertErrorToString, waitForSessionFinishedNtfAsync } from "./utils.js";
 
 class MockDisposable implements Disposable {
@@ -18,10 +18,12 @@ class MockDisposable implements Disposable {
 
 class MockConnect implements IConnection {
 	private _onHandler!: Listener<IGW_FRAME_RCV>;
-	onFrameSent = sinon.stub();
-	loginAsync = sinon.stub();
-	logoutAsync = sinon.stub();
-	sendFrameAsync = sinon.stub();
+	onFrameSent = mock.fn<(handler: Listener<any>, filter?: GatewayCommand[]) => Disposable>(
+		() => new MockDisposable(),
+	);
+	loginAsync = mock.fn<(password: string) => Promise<void>>(async () => {});
+	logoutAsync = mock.fn<(timeout?: number) => Promise<void>>(async () => {});
+	sendFrameAsync = mock.fn<any>(async () => {});
 	public on(handler: Listener<IGW_FRAME_RCV>, _filter?: GatewayCommand[]): Disposable {
 		this._onHandler = handler;
 		return new MockDisposable();
@@ -76,13 +78,11 @@ describe("utils", function () {
 		// Create mocks and asserts
 		const { adapter, database } = utils.unit.createMocks({});
 
-		let clock: sinon.SinonFakeTimers;
-
-		this.beforeEach(() => {
-			clock = sinon.useFakeTimers();
+		beforeEach(() => {
+			mock.timers.enable({ apis: ["setTimeout"] });
 			// Mock timer functions
-			adapter.setTimeout = sinon.stub().callsFake(setTimeout);
-			adapter.clearTimeout = sinon.stub().callsFake(clearTimeout);
+			adapter.setTimeout = mock.fn(setTimeout);
+			adapter.clearTimeout = mock.fn(clearTimeout);
 		});
 
 		afterEach(() => {
@@ -90,12 +90,11 @@ describe("utils", function () {
 			adapter.resetMockHistory();
 			// We want to start each test with a fresh database
 			database.clear();
-			clock.restore();
+			mock.timers.reset();
 		});
 
 		it("should be fulfilled when the notification is sent", async function () {
-			const mockFrame = sinon.createStubInstance(GW_SESSION_FINISHED_NTF);
-			sinon.define(mockFrame, "SessionID", 42);
+			const mockFrame = Object.assign(Object.create(GW_SESSION_FINISHED_NTF.prototype), { SessionID: 42 });
 			const testPromise = waitForSessionFinishedNtfAsync(
 				adapter as unknown as ioBroker.Adapter,
 				mockConnection,
@@ -104,20 +103,19 @@ describe("utils", function () {
 			);
 			// Send notification
 			mockConnection.sendEvent(mockFrame);
-			clock.runAll();
+			mock.timers.tick(10000);
 			return assert.doesNotReject(testPromise);
 		});
 
 		it("should be rejected when the notification is not sent", async function () {
-			const mockFrame = sinon.createStubInstance(GW_SESSION_FINISHED_NTF);
-			sinon.define(mockFrame, "SessionID", 42);
+			Object.assign(Object.create(GW_SESSION_FINISHED_NTF.prototype), { SessionID: 42 });
 			const testPromise = waitForSessionFinishedNtfAsync(
 				adapter as unknown as ioBroker.Adapter,
 				mockConnection,
 				42,
 				10000,
 			);
-			clock.runAll();
+			mock.timers.tick(10000);
 			return assert.rejects(testPromise, { message: "Timeout error" });
 		});
 	});
