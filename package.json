@@ -72,6 +72,7 @@
 		"test:integrationjunit": "cross-env NODE_OPTIONS='--dns-result-order=ipv4first' mocha --config test/mocharc.integration.json test/integration.ts --exit --reporter mocha-junit-reporter",
 		"test": "npm run test:tstap && npm run test:packagetap",
 		"test:unit": "npm run test:ts",
+		"test:watch": "cross-env NODE_OPTIONS='--dns-result-order=ipv4first' node --enable-source-maps --import tsx --test --watch 'src/**/*.test.ts' 'src/*.test.ts'",
 		"check": "tsc -p tsconfig.json --noEmit",
 		"coverage": "cross-env NODE_OPTIONS='--dns-result-order=ipv4first' node --enable-source-maps --import tsx --test --experimental-test-coverage 'src/**/*.test.ts' 'src/*.test.ts'",
 		"coveragejunit": "cross-env NODE_OPTIONS='--dns-result-order=ipv4first' node --enable-source-maps --import tsx --test --experimental-test-coverage --test-reporter=spec --test-reporter=junit --test-reporter-destination=stdout --test-reporter-destination=test-results.xml 'src/**/*.test.ts' 'src/*.test.ts'",
