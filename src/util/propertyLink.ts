@@ -1,7 +1,7 @@
 "use strict";
 
-import type { EventEmitter } from "node:events";
 import type { Component, Disposable, PropertyChangedEvent } from "klf-200-api";
+import type { EventEmitter } from "node:events";
 import { PromiseQueue } from "./promiseQueue.js";
 import type { AsyncMethodName, AsyncMethodParameters, AsyncMethodType } from "./utils.js";
 
@@ -22,13 +22,13 @@ export function MapAnyPropertyToState<T>(propertyValue: T): string | number | bo
 
 	switch (typeof propertyValue) {
 		case "boolean":
-			return propertyValue as boolean;
+			return propertyValue;
 
 		case "number":
-			return propertyValue as number;
+			return propertyValue;
 
 		case "string":
-			return propertyValue as string;
+			return propertyValue;
 
 		default:
 			if (propertyValue) {
@@ -286,7 +286,7 @@ export abstract class BaseStateChangeHandler implements StateChangedEventHandler
 	 *
 	 * @param _state The new state or null if the state was deleted.
 	 * @returns A promise that resolves when the event has been handled.
-	 * @throws Error If the method is called without being implemented by a subclass.
+	 * @throws {Error} If the method is called without being implemented by a subclass.
 	 */
 	async onStateChange(_state: ioBroker.State | null | undefined): Promise<void> {
 		return Promise.reject(new Error("Method not implemented."));

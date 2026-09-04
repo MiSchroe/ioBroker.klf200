@@ -958,7 +958,7 @@ export class SetupProducts {
 
 				let limitationTime = NaN;
 				try {
-					limitationTime = product.getLimitationTime(parameter) || NaN;
+					limitationTime = product.getLimitationTime(parameter) ?? NaN;
 				} catch (error) {
 					if (error instanceof Error && error.message === "Lock time value out of range.") {
 						limitationTime = NaN;
@@ -1334,7 +1334,7 @@ export class SetupProducts {
 
 					let limitationTime = NaN;
 					try {
-						limitationTime = Math.round((product.getLimitationTime(parameter) || NaN) * 100);
+						limitationTime = Math.round((product.getLimitationTime(parameter) ?? NaN) * 100);
 					} catch (error) {
 						if (error instanceof Error && error.message === "Lock time value out of range.") {
 							limitationTime = NaN;

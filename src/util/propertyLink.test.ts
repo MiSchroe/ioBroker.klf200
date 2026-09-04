@@ -1,8 +1,9 @@
-import { type MockAdapter, utils } from "@iobroker/testing";
-import { expect } from "chai";
-import { Component } from "klf-200-api";
-import sinon from "sinon";
+import assert from "node:assert/strict";
+import { afterEach, beforeEach, describe, it, mock } from "node:test";
 import { promisify } from "node:util";
+import { type MockAdapter, utils } from "@iobroker/testing";
+import { Component } from "klf-200-api";
+import { createAsserts } from "../../test/asserts.js";
 import { setState } from "../../test/mockHelper.js";
 import { DisposalMap } from "../disposalMap.js";
 import {
@@ -68,7 +69,7 @@ class TestComponent extends Component {
 describe("PropertyLink", function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
-	const { assertStateHasValue, assertStateIsAcked } = utils.unit.createAsserts(database, adapter);
+	const { assertStateHasValue, assertStateIsAcked } = createAsserts(database, adapter);
 
 	// Promisify additional methods
 	for (const method of ["unsubscribeStates"]) {
@@ -82,10 +83,10 @@ describe("PropertyLink", function () {
 
 	// Stub additional methods
 	if (!adapter.getMaxListeners) {
-		adapter.getMaxListeners = sinon.stub().returns(100);
+		adapter.getMaxListeners = mock.fn(() => 100);
 	}
 	if (!adapter.setMaxListeners) {
-		adapter.setMaxListeners = sinon.stub();
+		adapter.setMaxListeners = mock.fn();
 	}
 
 	afterEach(() => {
@@ -120,7 +121,7 @@ describe("PropertyLink", function () {
 				const testComponent = new TestComponent();
 				const expectedResult = testCase.ExpectedTypeName;
 				const result = typeof MapAnyPropertyToState(testComponent[testCase.TestPropertyName]);
-				expect(result).to.be.equal(expectedResult);
+				assert.strictEqual(result, expectedResult);
 			});
 		});
 	}
@@ -170,7 +171,7 @@ describe("PropertyLink", function () {
 			const stateID = "NumberValue";
 			const testComponent = new TestComponent();
 			const expectedResult = 43;
-			const handler = sinon.stub<[TestComponent[keyof TestComponent]], Promise<void>>();
+			const handler = mock.fn<(value: TestComponent[keyof TestComponent]) => Promise<void>>(async () => {});
 			await adapter.setObjectNotExistsAsync(stateID, {
 				type: "state",
 				common: {
@@ -196,7 +197,8 @@ describe("PropertyLink", function () {
 			try {
 				await testComponent.setNumberValueAsync(expectedResult);
 
-				expect(handler.calledOnceWithExactly(expectedResult)).to.be.true;
+				assert.strictEqual(handler.mock.callCount(), 1);
+				assert.strictEqual(handler.mock.calls[0].arguments[0], expectedResult);
 			} finally {
 				SUT.dispose();
 			}
@@ -207,7 +209,7 @@ describe("PropertyLink", function () {
 		const stateID = "NumberValue";
 		const testComponent = new TestComponent();
 
-		this.beforeEach(async () => {
+		beforeEach(async () => {
 			// Setup state
 			await adapter.setObjectNotExistsAsync(stateID, {
 				type: "state",
@@ -241,7 +243,7 @@ describe("PropertyLink", function () {
 
 				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
-				expect(testComponent.NumberValue).to.be.equal(expectedResult);
+				assert.strictEqual(testComponent.NumberValue, expectedResult);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -264,7 +266,7 @@ describe("PropertyLink", function () {
 
 				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
-				expect(testComponent.NumberValue).to.be.equal(expectedResult);
+				assert.strictEqual(testComponent.NumberValue, expectedResult);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -275,7 +277,7 @@ describe("PropertyLink", function () {
 		const stateID = "NumberValue";
 		const testComponent = new TestComponent();
 
-		this.beforeEach(async () => {
+		beforeEach(async () => {
 			// Setup state
 			await adapter.setObjectNotExistsAsync(stateID, {
 				type: "state",
@@ -296,7 +298,7 @@ describe("PropertyLink", function () {
 		it("should call the provided handly exaclty once.", async function () {
 			const expectedResult = 43;
 
-			const handler = sinon.stub<[ioBroker.State | null | undefined], Promise<void>>();
+			const handler = mock.fn<(state: ioBroker.State | null | undefined) => Promise<void>>(async () => {});
 			const disposalMap = new DisposalMap();
 			try {
 				const SUT = new ComplexStateChangeHandler(adapter as unknown as ioBroker.Adapter, stateID, handler);
@@ -305,7 +307,7 @@ describe("PropertyLink", function () {
 
 				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
-				expect(handler.calledOnce).to.be.true;
+				assert.strictEqual(handler.mock.callCount(), 1);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -316,7 +318,7 @@ describe("PropertyLink", function () {
 		const stateID = "NumberValue";
 		const testComponent = new TestComponent();
 
-		this.beforeEach(async () => {
+		beforeEach(async () => {
 			// Setup state
 			await adapter.setObjectNotExistsAsync(stateID, {
 				type: "state",
@@ -335,7 +337,7 @@ describe("PropertyLink", function () {
 		});
 
 		it("should call the function TestComponent.runAMethod with parameters 1, 2, '3'.", async function () {
-			const methodSpy = sinon.spy(testComponent, "runAMethod");
+			const methodSpy = mock.method(testComponent, "runAMethod");
 			try {
 				const SUT = new MethodCallStateChangeHandler(
 					adapter as unknown as ioBroker.Adapter,
@@ -355,12 +357,13 @@ describe("PropertyLink", function () {
 						lc: 0,
 						from: stateID,
 					});
-					expect(methodSpy).to.be.calledOnceWithExactly(1, 2, "3");
+					assert.strictEqual(methodSpy.mock.callCount(), 1);
+					assert.deepStrictEqual(methodSpy.mock.calls[0].arguments, [1, 2, "3"]);
 				} finally {
 					await SUT.dispose();
 				}
 			} finally {
-				methodSpy.restore();
+				methodSpy.mock.restore();
 			}
 		});
 	});

@@ -1,11 +1,19 @@
 import { type MockAdapter, utils } from "@iobroker/testing";
-import { expect, use } from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { type Disposable, type IConnection, ParameterActive, Scene, Scenes, Velocity } from "klf-200-api";
-import sinon from "sinon";
-import sinonChai from "sinon-chai";
+import {
+	type Disposable,
+	type GatewayCommand,
+	type IConnection,
+	type Listener,
+	ParameterActive,
+	Scene,
+	Scenes,
+	Velocity,
+} from "klf-200-api";
+import assert from "node:assert/strict";
 import type { EventEmitter } from "node:stream";
+import { afterEach, beforeEach, describe, it, mock } from "node:test";
 import { promisify } from "node:util";
+import { createAsserts } from "../test/asserts.js";
 import { setState } from "../test/mockHelper.js";
 import { DisposalMap } from "./disposalMap.js";
 import { SetupScenes } from "./setupScenes.js";
@@ -15,15 +23,18 @@ import {
 	SimplePropertyChangedHandler,
 } from "./util/propertyLink.js";
 
-use(sinonChai);
-use(chaiAsPromised);
+class MockDisposable implements Disposable {
+	dispose(): void {}
+}
 
 class MockConnect implements IConnection {
-	onFrameSent = sinon.stub();
-	loginAsync = sinon.stub();
-	logoutAsync = sinon.stub();
-	sendFrameAsync = sinon.stub();
-	on = sinon.stub();
+	onFrameSent = mock.fn<(handler: Listener<any>, filter?: GatewayCommand[]) => Disposable>(
+		() => new MockDisposable(),
+	);
+	loginAsync = mock.fn<(password: string) => Promise<void>>(async () => {});
+	logoutAsync = mock.fn<(timeout?: number) => Promise<void>>(async () => {});
+	sendFrameAsync = mock.fn<any>(async () => {});
+	on = mock.fn<(handler: Listener<any>, filter?: GatewayCommand[]) => Disposable>(() => new MockDisposable());
 	KLF200SocketProtocol = undefined;
 }
 
@@ -52,15 +63,14 @@ mockScene.Products.push(
 
 let mockScenes: Scenes;
 
-describe("setupScenes", function () {
+describe("setupScenes", { concurrency: 1 }, function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
 	const { assertObjectExists, assertStateExists, assertStateHasValue, assertStateIsAcked, assertObjectCommon } =
-		utils.unit.createAsserts(database, adapter);
+		createAsserts(database, adapter);
 
 	// Fake getChannelsOf
-	adapter.getChannelsOf = sinon.stub();
-	adapter.getChannelsOf.callsFake(
+	adapter.getChannelsOf = mock.fn(
 		(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
 			callback(null, [
 				{
@@ -74,8 +84,7 @@ describe("setupScenes", function () {
 			] as ioBroker.ChannelObject[]),
 	);
 	// Fake deleteChannel
-	adapter.deleteChannel = sinon.stub();
-	adapter.deleteChannel.callsFake((parentDevice, channelId, callback) => {
+	adapter.deleteChannel = mock.fn((parentDevice: string, channelId: string, callback: any) => {
 		// Delete sub-objects first
 		adapter.getObjectList(
 			{
@@ -93,38 +102,45 @@ describe("setupScenes", function () {
 	});
 
 	// Fake recursive delObject:
-	const delObjectStub = sinon.stub(adapter, "delObject");
-	delObjectStub.withArgs(sinon.match.any, { recursive: true }).callsFake((id, recursive: any, callback) => {
-		// Delete sub-objects first
-		adapter.getObjectList(
-			{
-				startKey: `${adapter.namespace}.${id}`,
-				endkey: `${adapter.namespace}.${id}.\u9999`,
-			},
-			(err: any, res: { rows: { id: string; obj: any; doc: any }[] }) => {
-				for (const row of res.rows) {
-					adapter.delObject(row.id);
-				}
-
-				adapter.delObject(id, callback);
-			},
-		);
+	const origDelObject = adapter.delObject.bind(adapter);
+	adapter.delObject = mock.fn((id: string, ...args: any[]) => {
+		const callback = typeof args[args.length - 1] === "function" ? args[args.length - 1] : undefined;
+		const options = typeof args[0] === "object" ? args[0] : undefined;
+		if (options?.recursive) {
+			adapter.getObjectList(
+				{
+					startKey: `${adapter.namespace}.${id}`,
+					endkey: `${adapter.namespace}.${id}.\u9999`,
+				},
+				(err: any, res: { rows: { id: string; obj: any; doc: any }[] }) => {
+					for (const row of res.rows) {
+						origDelObject(row.id);
+					}
+					if (callback) {
+						origDelObject(id, callback);
+					} else {
+						origDelObject(id);
+					}
+				},
+			);
+		} else {
+			origDelObject(id, ...args);
+		}
 	});
-	delObjectStub.callThrough();
 
 	// Promisify additional methods
 	for (const method of ["unsubscribeStates", "getChannelsOf", "deleteChannel", "delObject"]) {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
-			value: promisify(adapter[method as keyof MockAdapter]),
+			value: (...args: any[]) => promisify(adapter[method as keyof MockAdapter])(...args),
 			writable: true,
 		});
 	}
 
 	// Mock some EventEmitter functions
-	(adapter as EventEmitter).getMaxListeners = sinon.stub<[], number>().returns(100);
-	(adapter as EventEmitter).setMaxListeners = sinon.stub<[number], EventEmitter>();
+	(adapter as EventEmitter).getMaxListeners = mock.fn(() => 100);
+	(adapter as EventEmitter).setMaxListeners = mock.fn();
 
 	afterEach(() => {
 		// The mocks keep track of all method invocations - reset them after each single test
@@ -253,8 +269,8 @@ describe("setupScenes", function () {
 				try {
 					const state = (await adapter.getObjectAsync(
 						`test.0.scenes.0.${expectedState}`,
-					)) as ioBroker.GetObjectPromise;
-					expect(state).to.have.nested.property("common.def", expectedDefaultValue);
+					)) as ioBroker.StateObject;
+					assert.strictEqual(state.common.def, expectedDefaultValue);
 				} finally {
 					await disposalMap.disposeAll();
 				}
@@ -270,48 +286,57 @@ describe("setupScenes", function () {
 		];
 
 		for (const test of testCasesForChanges) {
-			let disposalMap: DisposalMap;
-			this.beforeEach(async function () {
-				disposalMap = new DisposalMap();
-				await SetupScenes.createSceneAsync(adapter as unknown as ioBroker.Adapter, mockScene, disposalMap);
-			});
-			this.afterEach(async function () {
-				await disposalMap.disposeAll();
-			});
-
-			it(`should write the ${test.state} state with '${test.value}' after change notificiation`, async function () {
-				const expectedState = test.state;
-				await (adapter as unknown as ioBroker.Adapter).setState(`scenes.0.${test.state}`, test.value, false);
-				assertStateIsAcked(`test.0.scenes.0.${expectedState}`, false);
-
-				// Mock the object property to reflect the desired change
-				const stubGetter = sinon.stub(mockScene, test.propertyName as keyof Scene).get(() => {
-					return test.value;
+			describe(`changes on ${test.state}`, function () {
+				let disposalMap: DisposalMap;
+				beforeEach(async function () {
+					disposalMap = new DisposalMap();
+					await SetupScenes.createSceneAsync(adapter as unknown as ioBroker.Adapter, mockScene, disposalMap);
+				});
+				afterEach(async function () {
+					await disposalMap.disposeAll();
 				});
 
-				try {
+				it(`should write the ${test.state} state with '${test.value}' after change notificiation`, async function () {
+					const expectedState = test.state;
+					await (adapter as unknown as ioBroker.Adapter).setState(
+						`scenes.0.${test.state}`,
+						test.value,
+						false,
+					);
+					assertStateIsAcked(`test.0.scenes.0.${expectedState}`, false);
+
+					// Mock the object property to reflect the desired change
+					const stubGetter = mock.method(mockScene, test.propertyName as keyof Scene, () => test.value, {
+						getter: true,
+					});
+
+					try {
+						await mockScene.propertyChangedEvent.emit({
+							o: mockScene,
+							propertyName: test.propertyName,
+							propertyValue: test.value,
+						});
+						assertStateHasValue(`test.0.scenes.0.${expectedState}`, test.value);
+					} finally {
+						stubGetter.mock.restore();
+					}
+				});
+
+				it(`should write the ${test.state} state ack after change notificiation`, async function () {
+					const expectedState = test.state;
+					await (adapter as unknown as ioBroker.Adapter).setState(
+						`scenes.0.${test.state}`,
+						test.value,
+						false,
+					);
+					assertStateIsAcked(`test.0.scenes.0.${expectedState}`, false);
 					await mockScene.propertyChangedEvent.emit({
 						o: mockScene,
 						propertyName: test.propertyName,
 						propertyValue: test.value,
 					});
-					assertStateHasValue(`test.0.scenes.0.${expectedState}`, test.value);
-				} finally {
-					stubGetter.reset();
-					stubGetter.restore();
-				}
-			});
-
-			it(`should write the ${test.state} state ack after change notificiation`, async function () {
-				const expectedState = test.state;
-				await (adapter as unknown as ioBroker.Adapter).setState(`scenes.0.${test.state}`, test.value, false);
-				assertStateIsAcked(`test.0.scenes.0.${expectedState}`, false);
-				await mockScene.propertyChangedEvent.emit({
-					o: mockScene,
-					propertyName: test.propertyName,
-					propertyValue: test.value,
+					assertStateIsAcked(`test.0.scenes.0.${expectedState}`, true);
 				});
-				assertStateIsAcked(`test.0.scenes.0.${expectedState}`, true);
 			});
 		}
 
@@ -354,10 +379,11 @@ describe("setupScenes", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped writable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -411,10 +437,11 @@ describe("setupScenes", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -423,10 +450,8 @@ describe("setupScenes", function () {
 		it(`Running a scene should use the velocity to start the scene.`, async function () {
 			const sessionId = 42;
 			const expectedVelocity = Velocity.Fast;
-			const runAsyncStub = sinon.stub(mockScene, "runAsync");
+			const runAsyncStub = mock.method(mockScene, "runAsync", async () => Promise.resolve(sessionId));
 			try {
-				runAsyncStub.resolves(sessionId);
-
 				const disposalMap = new DisposalMap();
 				await SetupScenes.createSceneAsync(adapter as unknown as ioBroker.Adapter, mockScene, disposalMap);
 				try {
@@ -453,29 +478,28 @@ describe("setupScenes", function () {
 						setTimeout(resolve, 0);
 					});
 
-					expect(runAsyncStub).to.be.calledOnce;
-					expect(runAsyncStub).to.be.calledOnceWith(expectedVelocity);
+					assert.strictEqual(runAsyncStub.mock.callCount(), 1);
+					assert.deepStrictEqual(runAsyncStub.mock.calls[0].arguments, [expectedVelocity]);
 				} finally {
 					await disposalMap.disposeAll();
 				}
 			} finally {
-				runAsyncStub.restore();
+				runAsyncStub.mock.restore();
 			}
 		});
 	});
 
 	describe("createScenesAsync", function () {
-		let sandbox: sinon.SinonSandbox;
+		let refreshScenesMock: any;
 
-		this.beforeEach(async function () {
-			sandbox = sinon.createSandbox();
-			sandbox.stub(Scenes.prototype, "refreshScenesAsync");
+		beforeEach(async function () {
+			refreshScenesMock = mock.method(Scenes.prototype, "refreshScenesAsync", async () => {});
 			mockScenes = await Scenes.createScenesAsync(mockConnection);
-			sandbox.stub(mockScenes, "Scenes").value([mockScene]);
+			(mockScenes as any).Scenes = [mockScene];
 		});
 
-		this.afterEach(function () {
-			sandbox.restore();
+		afterEach(function () {
+			refreshScenesMock?.mock.restore();
 		});
 
 		it("should have 1 in the value of scenes.scenesFound state", async function () {
@@ -503,11 +527,11 @@ describe("setupScenes", function () {
 			const states: string[] = ["productsCount", "run", "stop"];
 			database.publishStateObjects(
 				...states.map(state => {
-					return { _id: `${adapter.namespace}.scenes.42.${state}` } as ioBroker.PartialObject;
+					return { _id: `${adapter.namespace}.scenes.42.${state}` };
 				}),
 			);
 
-			adapter.getChannelsOf.callsFake(
+			adapter.getChannelsOf = mock.fn(
 				(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
 					callback(null, [
 						{
@@ -528,10 +552,10 @@ describe("setupScenes", function () {
 			await SetupScenes.createScenesAsync(adapter as unknown as ioBroker.Adapter, mockScenes, disposalMap);
 			try {
 				states.forEach(state =>
-					expect(
+					assert.throws(
 						() => assertObjectExists(`${adapter.namespace}.scenes.42.${state}`),
 						`Object ${adapter.namespace}.scenes.42.${state} shouldn't exist anymore.`,
-					).to.throw(),
+					),
 				);
 			} finally {
 				await disposalMap.disposeAll();
@@ -552,25 +576,10 @@ describe("setupScenes", function () {
 			const disposalMap = new DisposalMap();
 			await SetupScenes.createScenesAsync(adapter as unknown as ioBroker.Adapter, mockScenes, disposalMap);
 			try {
-				const currentCalls = (mockScenes.refreshScenesAsync as unknown as sinon.SinonStub).callCount;
+				const currentCalls = (mockScenes.refreshScenesAsync as any).mock?.callCount() ?? 0;
 				await setState(adapter, `scenes.refreshScenes`, true, disposalMap, false);
-				// for (const disposable of disposables) {
-				// 	if (disposable instanceof BaseStateChangeHandler && disposable.StateId === `scenes.refreshScenes`) {
-				// 		await disposable.onStateChange({
-				// 			val: true,
-				// 			ack: false,
-				// 			ts: 12345,
-				// 			lc: 12345,
-				// 			from: "system.adapter.test.0",
-				// 		});
-				// 	}
-				// }
-				// /* Let it run */
-				// await new Promise((resolve) => {
-				// 	setTimeout(resolve, 0);
-				// });
-				const callsAfterSetState = (mockScenes.refreshScenesAsync as unknown as sinon.SinonStub).callCount;
-				expect(callsAfterSetState - currentCalls).to.be.equal(1);
+				const callsAfterSetState = (mockScenes.refreshScenesAsync as any).mock?.callCount() ?? 0;
+				assert.strictEqual(callsAfterSetState - currentCalls, 1);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -580,14 +589,14 @@ describe("setupScenes", function () {
 			const disposalMap = new DisposalMap();
 			await SetupScenes.createScenesAsync(adapter as unknown as ioBroker.Adapter, mockScenes, disposalMap);
 			try {
-				expect(disposalMap.size).to.be.not.equal(0);
+				assert.notStrictEqual(disposalMap.size, 0);
 			} finally {
 				await disposalMap.disposeAll();
 			}
 		});
 
 		it(`should have no pending disposables for scene 0 after deleting the last scene`, async function () {
-			adapter.getChannelsOf.callsFake(
+			adapter.getChannelsOf = mock.fn(
 				(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
 					callback(null, [
 						{
@@ -600,11 +609,12 @@ describe("setupScenes", function () {
 						},
 					] as ioBroker.ChannelObject[]),
 			);
+
 			const disposalMap = new DisposalMap();
 			await SetupScenes.createScenesAsync(adapter as unknown as ioBroker.Adapter, mockScenes, disposalMap);
 			try {
 				mockScenes = await Scenes.createScenesAsync(mockConnection);
-				sandbox.stub(mockScenes, "Scenes").value([]);
+				(mockScenes as any).Scenes = [];
 				await SetupScenes.createScenesAsync(adapter as unknown as ioBroker.Adapter, mockScenes, disposalMap);
 				const remainingEntries: string[] = [];
 				for (const key of disposalMap.keys()) {
@@ -612,10 +622,11 @@ describe("setupScenes", function () {
 						remainingEntries.push(key);
 					}
 				}
-				expect(
+				assert.strictEqual(
 					remainingEntries.length,
+					0,
 					`disposalMap should be empty for scenes.0, but has the following entries: ${JSON.stringify(Array.from(disposalMap.keys()))}`,
-				).to.be.equal(0);
+				);
 			} finally {
 				await disposalMap.disposeAll();
 			}

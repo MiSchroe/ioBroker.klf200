@@ -1,10 +1,10 @@
-import { expect } from "chai";
 import type { Disposable } from "klf-200-api";
-import Sinon from "sinon";
+import assert from "node:assert/strict";
+import { describe, it, mock } from "node:test";
 import { DisposalMap } from "./disposalMap.js";
 
 class DisposableSpy implements Disposable {
-	public DisposeSpy = Sinon.spy();
+	public DisposeSpy = mock.fn();
 	dispose(): void {
 		this.DisposeSpy();
 	}
@@ -17,8 +17,8 @@ describe("disposalMap", () => {
 			const a_b_c = new DisposableSpy();
 			sut.set("a.b.c", a_b_c);
 			await sut.disposeId("a.b.c");
-			expect(a_b_c.DisposeSpy, "a_b_c called").to.be.calledOnce;
-			expect(sut.size, "Size of disposal map").to.be.equal(0);
+			assert.strictEqual(a_b_c.DisposeSpy.mock.callCount(), 1, "a_b_c called");
+			assert.strictEqual(sut.size, 0, "Size of disposal map");
 		});
 
 		it(`should call and remove 2 entries`, async function () {
@@ -28,9 +28,9 @@ describe("disposalMap", () => {
 			sut.set("a.b.c", a_b_c);
 			sut.set("a.b.d", a_b_d);
 			await sut.disposeId("a.b");
-			expect(a_b_c.DisposeSpy, "a_b_c called").to.be.calledOnce;
-			expect(a_b_d.DisposeSpy, "a_b_d called").to.be.calledOnce;
-			expect(sut.size, "Size of disposal map").to.be.equal(0);
+			assert.strictEqual(a_b_c.DisposeSpy.mock.callCount(), 1, "a_b_c called");
+			assert.strictEqual(a_b_d.DisposeSpy.mock.callCount(), 1, "a_b_d called");
+			assert.strictEqual(sut.size, 0, "Size of disposal map");
 		});
 
 		it(`should call and remove 2 entries but should leave the remaining entries`, async function () {
@@ -44,11 +44,11 @@ describe("disposalMap", () => {
 			sut.set("b.c.d", b_c_d);
 			sut.set("b.c.e", b_c_e);
 			await sut.disposeId("a.b");
-			expect(a_b_c.DisposeSpy, "a_b_c called").to.be.calledOnce;
-			expect(a_b_d.DisposeSpy, "a_b_d called").to.be.calledOnce;
-			expect(b_c_d.DisposeSpy, "b_c_d called").not.to.be.called;
-			expect(b_c_e.DisposeSpy, "b_c_e called").not.to.be.called;
-			expect(sut.size, "Size of disposal map").to.be.equal(2);
+			assert.strictEqual(a_b_c.DisposeSpy.mock.callCount(), 1, "a_b_c called");
+			assert.strictEqual(a_b_d.DisposeSpy.mock.callCount(), 1, "a_b_d called");
+			assert.strictEqual(b_c_d.DisposeSpy.mock.callCount(), 0, "b_c_d called");
+			assert.strictEqual(b_c_e.DisposeSpy.mock.callCount(), 0, "b_c_e called");
+			assert.strictEqual(sut.size, 2, "Size of disposal map");
 		});
 	});
 
@@ -64,11 +64,11 @@ describe("disposalMap", () => {
 			sut.set("b.c.d", b_c_d);
 			sut.set("b.c.e", b_c_e);
 			await sut.disposeAll();
-			expect(a_b_c.DisposeSpy, "a_b_c called").to.be.calledOnce;
-			expect(a_b_d.DisposeSpy, "a_b_d called").to.be.calledOnce;
-			expect(b_c_d.DisposeSpy, "b_c_d called").to.be.calledOnce;
-			expect(b_c_e.DisposeSpy, "b_c_e called").to.be.calledOnce;
-			expect(sut.size, "Size of disposal map").to.be.equal(0);
+			assert.strictEqual(a_b_c.DisposeSpy.mock.callCount(), 1, "a_b_c called");
+			assert.strictEqual(a_b_d.DisposeSpy.mock.callCount(), 1, "a_b_d called");
+			assert.strictEqual(b_c_d.DisposeSpy.mock.callCount(), 1, "b_c_d called");
+			assert.strictEqual(b_c_e.DisposeSpy.mock.callCount(), 1, "b_c_e called");
+			assert.strictEqual(sut.size, 0, "Size of disposal map");
 		});
 	});
 });
