@@ -19,7 +19,6 @@
 		// inclusion of global type packages, so every one of them has to be listed here.
 		"types": [
 			"node",
-			"mocha",
 			"@iobroker/types"
 		]
 	},

@@ -1,3 +1,4 @@
+import { afterEach, describe, it } from "node:test";
 import { utils } from "@iobroker/testing";
 import { createAsserts } from "../../test/asserts.js";
 import { StateHelper } from "./stateHelper.js";

@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { type MockAdapter, utils } from "@iobroker/testing";
-import { createAsserts } from "../../test/asserts.js";
-import { Component } from "klf-200-api";
-import sinon from "sinon";
+import { afterEach, beforeEach, describe, it, mock } from "node:test";
 import { promisify } from "node:util";
+import { type MockAdapter, utils } from "@iobroker/testing";
+import { Component } from "klf-200-api";
+import { createAsserts } from "../../test/asserts.js";
 import { setState } from "../../test/mockHelper.js";
 import { DisposalMap } from "../disposalMap.js";
 import {
@@ -83,10 +83,10 @@ describe("PropertyLink", function () {
 
 	// Stub additional methods
 	if (!adapter.getMaxListeners) {
-		adapter.getMaxListeners = sinon.stub().returns(100);
+		adapter.getMaxListeners = mock.fn(() => 100);
 	}
 	if (!adapter.setMaxListeners) {
-		adapter.setMaxListeners = sinon.stub();
+		adapter.setMaxListeners = mock.fn();
 	}
 
 	afterEach(() => {
@@ -171,7 +171,7 @@ describe("PropertyLink", function () {
 			const stateID = "NumberValue";
 			const testComponent = new TestComponent();
 			const expectedResult = 43;
-			const handler = sinon.stub<[TestComponent[keyof TestComponent]], Promise<void>>();
+			const handler = mock.fn<(value: TestComponent[keyof TestComponent]) => Promise<void>>(async () => {});
 			await adapter.setObjectNotExistsAsync(stateID, {
 				type: "state",
 				common: {
@@ -197,7 +197,8 @@ describe("PropertyLink", function () {
 			try {
 				await testComponent.setNumberValueAsync(expectedResult);
 
-				assert.strictEqual(handler.calledOnceWithExactly(expectedResult), true);
+				assert.strictEqual(handler.mock.callCount(), 1);
+				assert.strictEqual(handler.mock.calls[0].arguments[0], expectedResult);
 			} finally {
 				SUT.dispose();
 			}
@@ -208,7 +209,7 @@ describe("PropertyLink", function () {
 		const stateID = "NumberValue";
 		const testComponent = new TestComponent();
 
-		this.beforeEach(async () => {
+		beforeEach(async () => {
 			// Setup state
 			await adapter.setObjectNotExistsAsync(stateID, {
 				type: "state",
@@ -276,7 +277,7 @@ describe("PropertyLink", function () {
 		const stateID = "NumberValue";
 		const testComponent = new TestComponent();
 
-		this.beforeEach(async () => {
+		beforeEach(async () => {
 			// Setup state
 			await adapter.setObjectNotExistsAsync(stateID, {
 				type: "state",
@@ -297,7 +298,7 @@ describe("PropertyLink", function () {
 		it("should call the provided handly exaclty once.", async function () {
 			const expectedResult = 43;
 
-			const handler = sinon.stub<[ioBroker.State | null | undefined], Promise<void>>();
+			const handler = mock.fn<(state: ioBroker.State | null | undefined) => Promise<void>>(async () => {});
 			const disposalMap = new DisposalMap();
 			try {
 				const SUT = new ComplexStateChangeHandler(adapter as unknown as ioBroker.Adapter, stateID, handler);
@@ -306,7 +307,7 @@ describe("PropertyLink", function () {
 
 				await setState(adapter, stateID, expectedResult, disposalMap, false);
 
-				assert.strictEqual(handler.calledOnce, true);
+				assert.strictEqual(handler.mock.callCount(), 1);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -317,7 +318,7 @@ describe("PropertyLink", function () {
 		const stateID = "NumberValue";
 		const testComponent = new TestComponent();
 
-		this.beforeEach(async () => {
+		beforeEach(async () => {
 			// Setup state
 			await adapter.setObjectNotExistsAsync(stateID, {
 				type: "state",
@@ -336,7 +337,7 @@ describe("PropertyLink", function () {
 		});
 
 		it("should call the function TestComponent.runAMethod with parameters 1, 2, '3'.", async function () {
-			const methodSpy = sinon.spy(testComponent, "runAMethod");
+			const methodSpy = mock.method(testComponent, "runAMethod");
 			try {
 				const SUT = new MethodCallStateChangeHandler(
 					adapter as unknown as ioBroker.Adapter,
@@ -356,12 +357,13 @@ describe("PropertyLink", function () {
 						lc: 0,
 						from: stateID,
 					});
-					assert.ok(methodSpy.calledOnceWithExactly(1, 2, "3"));
+					assert.strictEqual(methodSpy.mock.callCount(), 1);
+					assert.deepStrictEqual(methodSpy.mock.calls[0].arguments, [1, 2, "3"]);
 				} finally {
 					await SUT.dispose();
 				}
 			} finally {
-				methodSpy.restore();
+				methodSpy.mock.restore();
 			}
 		});
 	});

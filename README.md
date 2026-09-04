@@ -261,6 +261,10 @@ The values of the state provide multiple manipulation modes:
 	### __WORK IN PROGRESS__
 -->
 <!-- prettier-ignore -->
+### __WORK IN PROGRESS__
+
+- (Michael Schroeder) [#512](https://github.com/MiSchroe/ioBroker.klf200/issues/512) Changed unit tests to [node:test](https://nodejs.org/docs/latest-v22.x/api/test.html)
+
 ### 1.4.0 (2026-09-02)
 
 - (Michael Schroeder) [#498](https://github.com/MiSchroe/ioBroker.klf200/issues/498) Handle the outdated certificate in the connection test button.

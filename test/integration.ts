@@ -1,3 +1,4 @@
+/// <reference types="mocha" />
 import { tests } from "@iobroker/testing";
 import type { TestHarness } from "@iobroker/testing/build/tests/integration/lib/harness.js";
 import crypto from "crypto";

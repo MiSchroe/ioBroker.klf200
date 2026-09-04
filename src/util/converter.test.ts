@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { ActuatorType } from "klf-200-api";
 import { EnumConverter, levelConverter, roleConverter } from "./converter.js";
 
