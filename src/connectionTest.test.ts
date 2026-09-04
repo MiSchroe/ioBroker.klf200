@@ -343,7 +343,7 @@ describe("connectionTest", function () {
 			assert.strictEqual(progressCallback.mock.callCount(), 4);
 		});
 
-		it(`should succeed at step 1 against mock server`, async function () {
+		it(`should succeed at step 1 against mock server`, async function (t) {
 			if (RunsInCITests) {
 				t.skip();
 			} else {
