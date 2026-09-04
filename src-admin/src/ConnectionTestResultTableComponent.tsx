@@ -1,3 +1,5 @@
+import type { JSX } from "react";
+
 import {
 	Table,
 	TableHead,
@@ -9,9 +11,19 @@ import {
 	useTheme,
 	Stack,
 	Divider,
-	Grid2,
+	Grid,
 } from "@mui/material";
-import { I18n } from "@iobroker/adapter-react-v5";
+import { I18n } from "@iobroker/gui-components";
+
+const styles = {
+	// MUI 9 dropped the system props on `Grid`, so the layout lives in `sx` now
+	headerCell: {
+		display: "flex",
+		justifyContent: "left",
+		alignItems: "left",
+		fontWeight: "bold",
+	},
+};
 
 class ConnectionTestResult {
 	/**
@@ -94,51 +106,39 @@ const ConnectionTestResultTableComponent = ({ testResults }: { testResults: Conn
 			sx={{ marginTop: 1, overflow: "auto", height: "100%" }}
 		>
 			{testResults.map(testResult => (
-				<Grid2
+				<Grid
 					container
 					key={testResult.stepOrder}
 				>
-					<Grid2
+					<Grid
 						size={{ xs: 6 }}
-						display="flex"
-						justifyContent="left"
-						alignItems="left"
-						fontWeight={"bold"}
+						sx={styles.headerCell}
 					>
 						{I18n.t("custom_klf200_test_connection_step_name_header")}
-					</Grid2>
-					<Grid2 size={{ xs: 6 }}>{testResult.stepName}</Grid2>
-					<Grid2
+					</Grid>
+					<Grid size={{ xs: 6 }}>{testResult.stepName}</Grid>
+					<Grid
 						size={{ xs: 6 }}
-						display="flex"
-						justifyContent="left"
-						alignItems="left"
-						fontWeight={"bold"}
+						sx={styles.headerCell}
 					>
 						{I18n.t("custom_klf200_test_connection_status_header")}
-					</Grid2>
-					<Grid2 size={{ xs: 6 }}>{testResult.run ? (testResult.success ? "✅" : "❌") : ""}</Grid2>
-					<Grid2
+					</Grid>
+					<Grid size={{ xs: 6 }}>{testResult.run ? (testResult.success ? "✅" : "❌") : ""}</Grid>
+					<Grid
 						size={{ xs: 6 }}
-						display="flex"
-						justifyContent="left"
-						alignItems="left"
-						fontWeight={"bold"}
+						sx={styles.headerCell}
 					>
 						{I18n.t("custom_klf200_test_connection_result_header")}
-					</Grid2>
-					<Grid2 size={{ xs: 6 }}>{String(testResult.result ?? "")}</Grid2>
-					<Grid2
+					</Grid>
+					<Grid size={{ xs: 6 }}>{String(testResult.result ?? "")}</Grid>
+					<Grid
 						size={{ xs: 6 }}
-						display="flex"
-						justifyContent="left"
-						alignItems="left"
-						fontWeight={"bold"}
+						sx={styles.headerCell}
 					>
 						{I18n.t("custom_klf200_test_connection_message_header")}
-					</Grid2>
-					<Grid2 size={{ xs: 6 }}>{testResult.message ?? ""}</Grid2>
-				</Grid2>
+					</Grid>
+					<Grid size={{ xs: 6 }}>{testResult.message ?? ""}</Grid>
+				</Grid>
 			))}
 		</Stack>
 	);

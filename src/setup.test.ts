@@ -1,35 +1,45 @@
 import { type MockAdapter, utils } from "@iobroker/testing";
-import { expect, use } from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { Gateway, GatewayState, GatewaySubState, type IConnection, SoftwareVersion } from "klf-200-api";
-import sinon from "sinon";
-import sinonChai from "sinon-chai";
+import {
+	type Disposable,
+	Gateway,
+	type GatewayCommand,
+	GatewayState,
+	GatewaySubState,
+	type IConnection,
+	type Listener,
+	SoftwareVersion,
+} from "klf-200-api";
+import assert from "node:assert/strict";
 import type { EventEmitter } from "node:stream";
+import { afterEach, describe, it, mock } from "node:test";
 import { promisify } from "node:util";
+import { createAsserts } from "../test/asserts.js";
 import { Setup } from "./setup.js";
 
-use(sinonChai);
-use(chaiAsPromised);
+class MockDisposable implements Disposable {
+	dispose(): void {}
+}
 
 class MockConnect implements IConnection {
-	onFrameSent = sinon.stub();
-	loginAsync = sinon.stub();
-	logoutAsync = sinon.stub();
-	sendFrameAsync = sinon.stub();
-	on = sinon.stub();
+	onFrameSent = mock.fn<(handler: Listener<any>, filter?: GatewayCommand[]) => Disposable>(
+		() => new MockDisposable(),
+	);
+	loginAsync = mock.fn<(password: string) => Promise<void>>(async () => {});
+	logoutAsync = mock.fn<(timeout?: number) => Promise<void>>(async () => {});
+	sendFrameAsync = mock.fn<any>(async () => {});
+	on = mock.fn<(handler: Listener<any>, filter?: GatewayCommand[]) => Disposable>(() => new MockDisposable());
 	KLF200SocketProtocol = undefined;
 }
 
 const mockConnection = new MockConnect();
 
-describe("Setup", function () {
+describe("Setup", { concurrency: 1 }, function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
-	const { assertObjectExists } = utils.unit.createAsserts(database, adapter);
+	const { assertObjectExists } = createAsserts(database, adapter);
 
 	// Fake getChannelsOf
-	adapter.getChannelsOf = sinon.stub();
-	adapter.getChannelsOf.callsFake(
+	adapter.getChannelsOf = mock.fn(
 		(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
 			callback(null, [
 				{
@@ -43,8 +53,7 @@ describe("Setup", function () {
 			] as ioBroker.ChannelObject[]),
 	);
 	// Fake deleteChannel
-	adapter.deleteChannel = sinon.stub();
-	adapter.deleteChannel.callsFake((parentDevice, channelId, callback) => {
+	adapter.deleteChannel = mock.fn((parentDevice: string, channelId: string, callback: any) => {
 		// Delete sub-objects first
 		adapter.getObjectList(
 			{
@@ -62,31 +71,38 @@ describe("Setup", function () {
 	});
 
 	// Fake recursive delObject:
-	const delObjectStub = sinon.stub(adapter, "delObject");
-	delObjectStub.withArgs(sinon.match.any, { recursive: true }).callsFake((id, recursive: any, callback) => {
-		// Delete sub-objects first
-		adapter.getObjectList(
-			{
-				startKey: `${adapter.namespace}.${id}`,
-				endkey: `${adapter.namespace}.${id}.\u9999`,
-			},
-			(err: any, res: { rows: { id: string; obj: any; doc: any }[] }) => {
-				for (const row of res.rows) {
-					adapter.delObject(row.id);
-				}
-
-				adapter.delObject(id, callback);
-			},
-		);
+	const origDelObject = adapter.delObject.bind(adapter);
+	adapter.delObject = mock.fn((id: string, ...args: any[]) => {
+		const callback = typeof args[args.length - 1] === "function" ? args[args.length - 1] : undefined;
+		const options = typeof args[0] === "object" ? args[0] : undefined;
+		if (options?.recursive) {
+			adapter.getObjectList(
+				{
+					startKey: `${adapter.namespace}.${id}`,
+					endkey: `${adapter.namespace}.${id}.\u9999`,
+				},
+				(err: any, res: { rows: { id: string; obj: any; doc: any }[] }) => {
+					for (const row of res.rows) {
+						origDelObject(row.id);
+					}
+					if (callback) {
+						origDelObject(id, callback);
+					} else {
+						origDelObject(id);
+					}
+				},
+			);
+		} else {
+			origDelObject(id, ...args);
+		}
 	});
-	delObjectStub.callThrough();
 
 	// Promisify additional methods
 	for (const method of ["unsubscribeStates", "getChannelsOf", "deleteChannel", "delObject"]) {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
-			value: promisify(adapter[method as keyof MockAdapter]),
+			value: (...args: any[]) => promisify(adapter[method as keyof MockAdapter])(...args),
 			writable: true,
 		});
 	}
@@ -94,27 +110,27 @@ describe("Setup", function () {
 	// Mock the gateway
 	const mockGateway = new Gateway(mockConnection);
 
-	sinon.stub(mockGateway, "getProtocolVersionAsync").callsFake(async () => {
-		return Promise.resolve({ MajorVersion: 1, MinorVersion: 2 });
-	});
-	sinon.stub(mockGateway, "getStateAsync").callsFake(async () => {
-		return Promise.resolve({
+	mock.method(mockGateway, "getProtocolVersionAsync", async () =>
+		Promise.resolve({ MajorVersion: 1, MinorVersion: 2 }),
+	);
+	mock.method(mockGateway, "getStateAsync", async () =>
+		Promise.resolve({
 			GatewayState: GatewayState.GatewayMode_WithActuatorNodes,
 			SubState: GatewaySubState.Idle,
-		});
-	});
-	sinon.stub(mockGateway, "getVersionAsync").callsFake(async () => {
-		return Promise.resolve({
+		}),
+	);
+	mock.method(mockGateway, "getVersionAsync", async () =>
+		Promise.resolve({
 			SoftwareVersion: new SoftwareVersion(0, 2, 0, 0, 7, 1),
 			HardwareVersion: 1,
 			ProductGroup: 14,
 			ProductType: 3,
-		});
-	});
+		}),
+	);
 
 	// Mock some EventEmitter functions
-	(adapter as EventEmitter).getMaxListeners = sinon.stub<[], number>().returns(100);
-	(adapter as EventEmitter).setMaxListeners = sinon.stub<[number], EventEmitter>();
+	(adapter as EventEmitter).getMaxListeners = mock.fn(() => 100);
+	(adapter as EventEmitter).setMaxListeners = mock.fn();
 
 	afterEach(() => {
 		// The mocks keep track of all method invocations - reset them after each single test
@@ -144,7 +160,7 @@ describe("Setup", function () {
 				});
 				const setup = Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 				try {
-					return setup.should.be.fulfilled;
+					await assert.doesNotReject(setup);
 				} finally {
 					(await setup).dispose();
 				}
@@ -179,7 +195,7 @@ describe("Setup", function () {
 			});
 			const setup = Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
-				return setup.should.be.fulfilled;
+				await assert.doesNotReject(setup);
 			} finally {
 				(await setup).dispose();
 			}
@@ -273,10 +289,11 @@ describe("Setup", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped writable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				setup.dispose();
 			}
@@ -334,10 +351,11 @@ describe("Setup", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				setup.dispose();
 			}

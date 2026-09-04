@@ -1,12 +1,12 @@
 import { type MockAdapter, utils } from "@iobroker/testing";
-import { expect, use } from "chai";
-import chaiAsPromised from "chai-as-promised";
 import {
 	ActuatorType,
 	type Disposable,
+	type GatewayCommand,
 	GW_GET_ALL_NODES_INFORMATION_NTF,
 	type IConnection,
 	type KLF200SocketProtocol,
+	type Listener,
 	NodeOperatingState,
 	NodeVariation,
 	ParameterActive,
@@ -16,24 +16,28 @@ import {
 	StatusReply,
 	Velocity,
 } from "klf-200-api";
-import sinon from "sinon";
-import sinonChai from "sinon-chai";
+import assert from "node:assert/strict";
 import type { EventEmitter } from "node:stream";
+import { afterEach, beforeEach, describe, it, mock } from "node:test";
 import { promisify } from "node:util";
+import { createAsserts } from "../test/asserts.js";
 import { DisposalMap } from "./disposalMap.js";
 import { SetupProducts } from "./setupProducts.js";
 import { BaseStateChangeHandler, SimplePropertyChangedHandler } from "./util/propertyLink.js";
 import { StateHelper } from "./util/stateHelper.js";
 
-use(sinonChai);
-use(chaiAsPromised);
+class MockDisposable implements Disposable {
+	dispose(): void {}
+}
 
 class MockConnect implements IConnection {
-	onFrameSent = sinon.stub();
-	loginAsync = sinon.stub();
-	logoutAsync = sinon.stub();
-	sendFrameAsync = sinon.stub();
-	on = sinon.stub();
+	onFrameSent = mock.fn<(handler: Listener<any>, filter?: GatewayCommand[]) => Disposable>(
+		() => new MockDisposable(),
+	);
+	loginAsync = mock.fn<(password: string) => Promise<void>>(async () => {});
+	logoutAsync = mock.fn<(timeout?: number) => Promise<void>>(async () => {});
+	sendFrameAsync = mock.fn<any>(async () => {});
+	on = mock.fn<(handler: Listener<any>, filter?: GatewayCommand[]) => Disposable>(() => new MockDisposable());
 	KLF200SocketProtocol?: KLF200SocketProtocol = undefined;
 }
 
@@ -57,19 +61,21 @@ const mockProduct = new Product(
 
 const mockProducts = [mockProduct];
 
-describe("setupProducts", function () {
+describe("setupProducts", { timeout: 30_000, concurrency: 1 }, function () {
 	// Create mocks and asserts
 	const { adapter, database } = utils.unit.createMocks({});
 
 	const { assertObjectExists, assertStateExists, assertStateHasValue, assertStateIsAcked, assertObjectCommon } =
-		utils.unit.createAsserts(database, adapter);
+		createAsserts(database, adapter);
 
 	// Fake getChannelsOf
-	adapter.getChannelsOf = sinon.stub();
+	adapter.getChannelsOf = mock.fn(
+		(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
+			callback(null, [] as ioBroker.ChannelObject[]),
+	);
 
 	// Fake deleteChannel
-	adapter.deleteChannel = sinon.stub();
-	adapter.deleteChannel.callsFake((parentDevice, channelId, callback) => {
+	adapter.deleteChannel = mock.fn((parentDevice: string, channelId: string, callback: any) => {
 		// Delete sub-objects first
 		adapter.getObjectList(
 			{
@@ -87,39 +93,45 @@ describe("setupProducts", function () {
 	});
 
 	// Fake recursive delObject:
-	const delObjectStub = sinon.stub(adapter, "delObject");
-	delObjectStub.withArgs(sinon.match.any, { recursive: true }).callsFake((id, recursive: any, callback) => {
-		// Delete sub-objects first
-		adapter.getObjectList(
-			{
-				startKey: `${adapter.namespace}.${id}`,
-				endkey: `${adapter.namespace}.${id}.\u9999`,
-			},
-			(err: any, res: { rows: { id: string; obj: any; doc: any }[] }) => {
-				for (const row of res.rows) {
-					adapter.delObject(row.id);
-				}
-
-				adapter.delObject(id, callback);
-			},
-		);
+	const origDelObject = adapter.delObject.bind(adapter);
+	adapter.delObject = mock.fn((id: string, ...args: any[]) => {
+		const callback = typeof args[args.length - 1] === "function" ? args[args.length - 1] : undefined;
+		const options = typeof args[0] === "object" ? args[0] : undefined;
+		if (options?.recursive) {
+			adapter.getObjectList(
+				{
+					startKey: `${adapter.namespace}.${id}`,
+					endkey: `${adapter.namespace}.${id}.\u9999`,
+				},
+				(err: any, res: { rows: { id: string; obj: any; doc: any }[] }) => {
+					for (const row of res.rows) {
+						origDelObject(row.id);
+					}
+					if (callback) {
+						origDelObject(id, callback);
+					} else {
+						origDelObject(id);
+					}
+				},
+			);
+		} else {
+			origDelObject(id, ...args);
+		}
 	});
-	delObjectStub.callThrough();
 
 	// Promisify additional methods
 	for (const method of ["unsubscribeStates", "getChannelsOf", "deleteChannel", "delObject"]) {
 		Object.defineProperty(adapter, `${method}Async`, {
 			configurable: true,
 			enumerable: true,
-
-			value: promisify(adapter[method as keyof MockAdapter]),
+			value: (...args: any[]) => promisify(adapter[method as keyof MockAdapter])(...args),
 			writable: true,
 		});
 	}
 
 	// Mock some EventEmitter functions
-	(adapter as EventEmitter).getMaxListeners = sinon.stub<[], number>().returns(100);
-	(adapter as EventEmitter).setMaxListeners = sinon.stub<[number], EventEmitter>();
+	(adapter as EventEmitter).getMaxListeners = mock.fn(() => 100);
+	(adapter as EventEmitter).setMaxListeners = mock.fn();
 
 	afterEach(() => {
 		// The mocks keep track of all method invocations - reset them after each single test
@@ -128,7 +140,7 @@ describe("setupProducts", function () {
 		database.clear();
 	});
 
-	describe("createProductAsync", function () {
+	describe("createProductAsync", { concurrency: 1 }, function () {
 		it("should create the channel for product ID 0", async function () {
 			const disposalMap = new DisposalMap();
 			await SetupProducts.createProductAsync(
@@ -700,40 +712,42 @@ describe("setupProducts", function () {
 		];
 
 		for (const test of testCasesForChanges) {
-			let disposalMap: DisposalMap;
-			this.beforeEach(async function () {
-				disposalMap = new DisposalMap();
-				await SetupProducts.createProductAsync(
-					adapter as unknown as ioBroker.Adapter,
-					mockProduct,
-					disposalMap,
-					new Set<string>(),
-				);
-			});
-			this.afterEach(async function () {
-				await disposalMap.disposeAll();
-			});
-
-			it(`should write the ${test.state} state with '${
-				test.expectedValue ?? test.value
-			}' after change notificiation`, async function () {
-				const expectedState = test.state;
-				await mockProduct.propertyChangedEvent.emit({
-					o: mockProduct,
-					propertyName: test.propertyName,
-					propertyValue: test.value,
+			describe(`changes on ${test.state}`, function () {
+				let disposalMap: DisposalMap;
+				beforeEach(async function () {
+					disposalMap = new DisposalMap();
+					await SetupProducts.createProductAsync(
+						adapter as unknown as ioBroker.Adapter,
+						mockProduct,
+						disposalMap,
+						new Set<string>(),
+					);
 				});
-				assertStateHasValue(`test.0.products.0.${expectedState}`, test.expectedValue ?? test.value);
-			});
-
-			it(`should write the ${test.state} state ack after change notificiation`, async function () {
-				const expectedState = test.state;
-				await mockProduct.propertyChangedEvent.emit({
-					o: mockProduct,
-					propertyName: test.propertyName,
-					propertyValue: test.value,
+				afterEach(async function () {
+					await disposalMap.disposeAll();
 				});
-				assertStateIsAcked(`test.0.products.0.${expectedState}`, true);
+
+				it(`should write the ${test.state} state with '${
+					test.expectedValue ?? test.value
+				}' after change notificiation`, async function () {
+					const expectedState = test.state;
+					await mockProduct.propertyChangedEvent.emit({
+						o: mockProduct,
+						propertyName: test.propertyName,
+						propertyValue: test.value,
+					});
+					assertStateHasValue(`test.0.products.0.${expectedState}`, test.expectedValue ?? test.value);
+				});
+
+				it(`should write the ${test.state} state ack after change notificiation`, async function () {
+					const expectedState = test.state;
+					await mockProduct.propertyChangedEvent.emit({
+						o: mockProduct,
+						propertyName: test.propertyName,
+						propertyValue: test.value,
+					});
+					assertStateIsAcked(`test.0.products.0.${expectedState}`, true);
+				});
 			});
 		}
 
@@ -781,10 +795,11 @@ describe("setupProducts", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped writable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				await disposalMap.disposeAll();
 			}
@@ -910,20 +925,20 @@ describe("setupProducts", function () {
 					})
 					.filter(value => value !== undefined);
 
-				expect(
+				assert.deepStrictEqual(
 					unmappedWritableStates,
+					[],
 					`There are unmapped readable states: ${JSON.stringify(unmappedWritableStates)}`,
-				).to.be.an("Array").empty;
+				);
 			} finally {
 				await disposalMap.disposeAll();
 			}
 		});
 
 		it("should call setTargetPositionAsync without functional parameters", async function () {
-			const mock = sinon.mock(mockProduct);
-			mock.expects("setTargetPositionAsync")
-				.once()
-				.withExactArgs(0.5, undefined, undefined, undefined, undefined);
+			const setTargetPositionSpy = mock.method(mockProduct, "setTargetPositionAsync", async () =>
+				Promise.resolve(0),
+			);
 
 			const disposalMap = new DisposalMap();
 			await SetupProducts.createProductAsync(
@@ -951,22 +966,24 @@ describe("setupProducts", function () {
 					setTimeout(resolve, 0);
 				});
 
-				mock.verify();
+				assert.strictEqual(setTargetPositionSpy.mock.callCount(), 1);
+				assert.deepStrictEqual(setTargetPositionSpy.mock.calls[0].arguments, [
+					0.5,
+					undefined,
+					undefined,
+					undefined,
+					undefined,
+				]);
 			} finally {
+				setTargetPositionSpy.mock.restore();
 				await disposalMap.disposeAll();
 			}
 		});
 
 		it("should call setTargetPositionAsync with functional parameters", async function () {
-			const mock = sinon.mock(mockProduct);
-			mock.expects("setTargetPositionAsync")
-				.once()
-				.withExactArgs(0.5, undefined, undefined, undefined, [
-					{
-						ID: 2,
-						Value: 42,
-					},
-				]);
+			const setTargetPositionSpy = mock.method(mockProduct, "setTargetPositionAsync", async () =>
+				Promise.resolve(0),
+			);
 
 			const disposalMap = new DisposalMap();
 			await SetupProducts.createProductAsync(
@@ -995,8 +1012,21 @@ describe("setupProducts", function () {
 					setTimeout(resolve, 0);
 				});
 
-				mock.verify();
+				assert.strictEqual(setTargetPositionSpy.mock.callCount(), 1);
+				assert.deepStrictEqual(setTargetPositionSpy.mock.calls[0].arguments, [
+					0.5,
+					undefined,
+					undefined,
+					undefined,
+					[
+						{
+							ID: 2,
+							Value: 42,
+						},
+					],
+				]);
 			} finally {
+				setTargetPositionSpy.mock.restore();
 				await disposalMap.disposeAll();
 			}
 		});
@@ -1065,14 +1095,14 @@ describe("setupProducts", function () {
 					new Set<string>([JSON.stringify([0, ParameterActive.FP1])]),
 				);
 				try {
-					expect(database.hasObject(`test.0.products.0.${expectedState}`)).to.be.false;
+					assert.strictEqual(database.hasObject(`test.0.products.0.${expectedState}`), false);
 				} finally {
 					await disposalMap.disposeAll();
 				}
 			});
 
 			it(`shouldn't remove an existing state for ${expectedState} of FP1`, async function () {
-				database.publishState(`test.0.products.0.${expectedState}`, {});
+				database.publishStateObjects({ _id: `test.0.products.0.${expectedState}` });
 				assertObjectExists(`test.0.products.0.${expectedState}`);
 
 				const disposalMap = new DisposalMap();
@@ -1083,7 +1113,7 @@ describe("setupProducts", function () {
 					new Set<string>([JSON.stringify([0, ParameterActive.FP1])]),
 				);
 				try {
-					expect(database.hasObject(`test.0.products.0.${expectedState}`)).to.be.false;
+					assert.strictEqual(database.hasObject(`test.0.products.0.${expectedState}`), false);
 				} finally {
 					await disposalMap.disposeAll();
 				}
@@ -1093,7 +1123,7 @@ describe("setupProducts", function () {
 
 	describe("createProductsAsync", function () {
 		it("should have 1 in the value of products.productsFound state", async function () {
-			adapter.getChannelsOf.callsFake(
+			adapter.getChannelsOf = mock.fn(
 				(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
 					callback(null, [
 						{
@@ -1136,14 +1166,14 @@ describe("setupProducts", function () {
 			const states: string[] = ["currentPosition", "targetPosition"];
 			database.publishStateObjects(
 				...states.map(state => {
-					return { _id: `${adapter.namespace}.products.42.${state}` } as ioBroker.PartialObject;
+					return { _id: `${adapter.namespace}.products.42.${state}` };
 				}),
 			);
 
 			// Check, that old states exist
 			states.forEach(state => assertObjectExists(`${adapter.namespace}.products.42.${state}`));
 
-			adapter.getChannelsOf.callsFake(
+			adapter.getChannelsOf = mock.fn(
 				(_parentDevice: string, callback: ioBroker.GetObjectsCallback3<ioBroker.ChannelObject>) =>
 					callback(null, [
 						{
@@ -1166,10 +1196,10 @@ describe("setupProducts", function () {
 			);
 			try {
 				states.forEach(state =>
-					expect(
+					assert.throws(
 						() => assertObjectExists(`${adapter.namespace}.products.42.${state}`),
 						`Object ${adapter.namespace}.products.42.${state} shouldn't exist anymore.`,
-					).to.throw(),
+					),
 				);
 			} finally {
 				await disposalMap.disposeAll();

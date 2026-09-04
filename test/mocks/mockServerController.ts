@@ -2,8 +2,8 @@ import { type ChildProcess, fork } from "child_process";
 import { randomUUID } from "crypto";
 import debugModule from "debug";
 import deepEqual from "deep-eql";
-import { readFileSync } from "fs";
 import { Connection, type IConnection } from "klf-200-api";
+import { readFileSync } from "node:fs";
 import path, { join } from "path";
 import { timeout } from "promise-timeout";
 import type { ConnectionOptions } from "tls";
@@ -18,12 +18,14 @@ const __dirname = path.dirname(__filename); // get the name of the directory
 export class MockServerController {
 	serverProcess: ChildProcess;
 
-	private constructor() {
-		this.serverProcess = fork(join(__dirname, "mockServer/mockServer")); //, { stdio: "ignore" });
+	private constructor(useExpiredCert: boolean = false) {
+		this.serverProcess = fork(join(__dirname, "mockServer/mockServer"), [], {
+			env: { ...process.env, USE_EXPIRED_CERT: useExpiredCert.toString() },
+		}); //, { stdio: "ignore" });
 	}
 
-	static async createMockServer(): Promise<MockServerController> {
-		const mockServer = new MockServerController();
+	static async createMockServer(useExpiredCert: boolean = false): Promise<MockServerController> {
+		const mockServer = new MockServerController(useExpiredCert);
 		await new Promise<void>(resolve => {
 			const onMessage = function (message: string | number | bigint | boolean | object): void {
 				if (message === "ready") {
@@ -39,9 +41,9 @@ export class MockServerController {
 		return await Promise.resolve(mockServer);
 	}
 
-	static getMockServerConnectionOptions(): ConnectionOptions {
+	static getMockServerConnectionOptions(useExpiredCert: boolean = false): ConnectionOptions {
 		return {
-			rejectUnauthorized: true,
+			rejectUnauthorized: !useExpiredCert,
 			requestCert: true,
 			ca: readFileSync(join(__dirname, "mockServer", "ca-crt.pem")),
 			key: readFileSync(join(__dirname, "mockServer", "client1-key.pem")),

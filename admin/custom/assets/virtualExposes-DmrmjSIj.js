@@ -1,0 +1,1 @@
+import{t as e}from"./virtual_mf-exposes___mfe_internal__ConfigCustomKlf200Set__customComponents_js-DHD-cIxb.js";export{e as default};

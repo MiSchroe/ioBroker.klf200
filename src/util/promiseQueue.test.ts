@@ -1,11 +1,11 @@
-import { expect } from "chai";
-import sinon from "sinon";
+import assert from "node:assert/strict";
+import { describe, it, mock } from "node:test";
 import { PromiseQueue } from "./promiseQueue.js";
 
 describe("PromiseQueue", function () {
 	describe("push", function () {
 		it("should be able to push different types of return values including void.", async function () {
-			const callSpy = sinon.spy();
+			const callSpy = mock.fn();
 
 			const testFunc1 = async (): Promise<number> => {
 				callSpy();
@@ -27,13 +27,13 @@ describe("PromiseQueue", function () {
 
 			await result;
 
-			expect(callSpy.calledThrice).to.be.true;
+			assert.strictEqual(callSpy.mock.callCount(), 3);
 
-			return expect(result).to.eventually.be.fulfilled;
+			return assert.doesNotReject(result);
 		});
 
 		it("should be able to run subsequent calls with a rejected promise in the middle.", async function () {
-			const callSpy = sinon.spy();
+			const callSpy = mock.fn();
 
 			const testFunc1 = async (): Promise<number> => {
 				callSpy();
@@ -55,13 +55,13 @@ describe("PromiseQueue", function () {
 
 			await result;
 
-			expect(callSpy.calledThrice).to.be.true;
+			assert.strictEqual(callSpy.mock.callCount(), 3);
 
-			return expect(result).to.eventually.be.fulfilled;
+			return assert.doesNotReject(result);
 		});
 
 		it("should be rejected with a rejected promise at the end.", async function () {
-			const callSpy = sinon.spy();
+			const callSpy = mock.fn();
 
 			const testFunc1 = async (): Promise<number> => {
 				callSpy();
@@ -81,7 +81,7 @@ describe("PromiseQueue", function () {
 
 			const result = SUT.waitAsync();
 
-			return expect(result).to.eventually.be.rejected;
+			return assert.rejects(result);
 		});
 	});
 });

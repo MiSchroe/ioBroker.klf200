@@ -34,7 +34,7 @@ export class Setup implements Disposable {
 		});
 	}
 
-	private _stateTimer?: ReturnType<typeof setTimeout>;
+	private _stateTimer?: ReturnType<typeof this.adapter.setTimeout>;
 
 	/**
 	 * Start the state timer if it is not already running.
@@ -48,7 +48,7 @@ export class Setup implements Disposable {
 	 */
 	public startStateTimer(): void {
 		if (this._stateTimer === undefined) {
-			this._stateTimer = setTimeout(
+			this._stateTimer = this.adapter.setTimeout(
 				(adapter, gateway) => {
 					(async () => {
 						this._stateTimer = undefined; // Timer has fired -> delete timer id
@@ -76,7 +76,7 @@ export class Setup implements Disposable {
 	public stopStateTimer(): void {
 		if (this._stateTimer !== undefined) {
 			try {
-				clearTimeout(this._stateTimer);
+				this.adapter.clearTimeout(this._stateTimer);
 			} finally {
 				this._stateTimer = undefined;
 			}
@@ -393,7 +393,7 @@ export class Setup implements Disposable {
 					newSetup.adapter.log.info("Rebooting the adapter, connection will be lost.");
 					await gateway.rebootAsync();
 					newSetup.adapter.log.info("Waiting 2 seconds after reboot for restart.");
-					await new Promise(resolve => setTimeout(resolve, 2000));
+					await new Promise<void>(resolve => adapter.setTimeout(() => resolve(), 2000));
 					newSetup.adapter.log.info("Adapter will be restartet.");
 					newSetup.adapter.restart();
 				}

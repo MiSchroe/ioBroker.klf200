@@ -34,12 +34,24 @@ export default [
 		},
 	},
 	{
-		files: ["test/**/*.ts"],
+		files: ["test/**/*.ts", "src/**/*.test.ts"],
 		rules: {
 			"jsdoc/require-jsdoc": "off",
 			"jsdoc/require-param-description": "off",
 			"jsdoc/require-returns-description": "off",
 			"jsdoc/require-returns-check": "off",
+			"@typescript-eslint/no-floating-promises": [
+				"error",
+				{
+					allowForKnownSafeCalls: [
+						{
+							from: "package",
+							name: ["describe", "it", "suite", "test"],
+							package: "node:test",
+						},
+					],
+				},
+			],
 		},
 	},
 ];

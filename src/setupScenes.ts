@@ -244,8 +244,7 @@ export class SetupScenes {
 					if (!scene.IsRunning) {
 						// Get the velocity
 						const velocity = (await adapter.getStateAsync(`scenes.${scene.SceneID}.velocity`))?.val as
-							| Velocity
-							| Velocity.Default;
+							Velocity | Velocity.Default;
 						// Run the scene
 						await scene.runAsync(velocity);
 					}
