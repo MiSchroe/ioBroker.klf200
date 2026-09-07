@@ -46,7 +46,7 @@ export default [
 					allowForKnownSafeCalls: [
 						{
 							from: "package",
-							name: ["describe", "it", "suite", "test"],
+							name: ["describe", "it", "suite", "test", "skip", "only"],
 							package: "node:test",
 						},
 					],
