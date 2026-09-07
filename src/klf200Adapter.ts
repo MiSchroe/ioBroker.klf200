@@ -2,7 +2,6 @@
 // you need to create an adapter
 import * as utils from "@iobroker/adapter-core";
 import * as I18n from "@iobroker/adapter-core/i18n";
-import * as fs from "fs/promises";
 import {
 	CommandStatus,
 	Connection,
@@ -153,6 +152,7 @@ import {
 } from "klf-200-api";
 import { type Job, scheduleJob } from "node-schedule";
 import assert from "node:assert";
+import * as fs from "node:fs/promises";
 import path from "node:path";
 import { env } from "node:process";
 import { checkServerIdentity as checkServerIdentityOriginal, type ConnectionOptions } from "node:tls";
@@ -814,11 +814,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 							);
 							await product.refreshLimitationAsync(limitationType, parameterActive);
 						} catch (error) {
-							if (
-								error instanceof Error &&
-								(error.message.startsWith("Unexpected node ID") ||
-									error.message.startsWith("Unexpected parameter ID"))
-							) {
+							if (error instanceof Error) {
 								this.log.debug(
 									`Skipping product limitation for ${product.NodeID}:${ParameterActive[parameterActive]}: ${error.message}`,
 								);
