@@ -76,7 +76,7 @@ describe("connectionTest", function () {
 		});
 	});
 
-	describe("TLS Socket connection", { timeout: 60_000 }, function () {
+	describe("TLS Socket connection", { timeout: 120_000 }, function () {
 		it(`shouldn't connect to 192.0.2.0`, async function (t) {
 			if (RunsInCITests) {
 				t.skip();

@@ -264,6 +264,7 @@ The values of the state provide multiple manipulation modes:
 ### __WORK IN PROGRESS__
 
 - (Michael Schroeder) [#512](https://github.com/MiSchroe/ioBroker.klf200/issues/512) Changed unit tests to [node:test](https://nodejs.org/docs/latest-v22.x/api/test.html)
+- (Michael Schroeder) [#515](https://github.com/MiSchroe/ioBroker.klf200/issues/515) Fixed an error during the startup of the adapter when reading unsupported limitations.
 
 ### 1.4.0 (2026-09-02)
 
