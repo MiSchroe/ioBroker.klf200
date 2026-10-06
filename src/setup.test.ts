@@ -160,7 +160,7 @@ describe("Setup", { concurrency: 1 }, function () {
 				});
 				const setup = Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 				try {
-					await assert.doesNotReject(setup);
+					await setup;
 				} finally {
 					(await setup).dispose();
 				}
@@ -195,7 +195,7 @@ describe("Setup", { concurrency: 1 }, function () {
 			});
 			const setup = Setup.setupGlobalAsync(adapter as unknown as ioBroker.Adapter, mockGateway);
 			try {
-				await assert.doesNotReject(setup);
+				await setup;
 			} finally {
 				(await setup).dispose();
 			}

@@ -53,7 +53,7 @@ describe("connectionTest", function () {
 				t.skip();
 			} else {
 				const sut = new ConnectionTest();
-				await assert.doesNotReject(sut.ping("127.0.0.1"));
+				await sut.ping("127.0.0.1");
 			}
 		});
 
@@ -62,7 +62,7 @@ describe("connectionTest", function () {
 				t.skip();
 			} else {
 				const sut = new ConnectionTest();
-				await assert.doesNotReject(sut.ping("localhost"));
+				await sut.ping("localhost");
 			}
 		});
 
@@ -71,7 +71,7 @@ describe("connectionTest", function () {
 				t.skip();
 			} else {
 				const sut = new ConnectionTest();
-				await assert.doesNotReject(sut.ping("8.8.8.8"));
+				await sut.ping("8.8.8.8");
 			}
 		});
 	});
@@ -94,9 +94,7 @@ describe("connectionTest", function () {
 			debug("Creating connection options");
 			const sut = new ConnectionTest();
 			debug("Connecting to localhost");
-			await assert.doesNotReject(
-				sut.connectTlsSocket("localhost", 51200, MockServerController.getMockServerConnectionOptions()),
-			);
+			await sut.connectTlsSocket("localhost", 51200, MockServerController.getMockServerConnectionOptions());
 			debug("Connected to localhost");
 		});
 
@@ -110,13 +108,11 @@ describe("connectionTest", function () {
 			debug("Connecting with correct fingerprint on expired certificate");
 			// When a certificate is expired but the fingerprint matches the pinned fingerprint,
 			// the connection should be accepted (this simulates the VELUX gateway scenario)
-			await assert.doesNotReject(
-				sut.connectTlsSocket(
-					"localhost",
-					51200,
-					connectionOptions,
-					"78:0E:43:3D:ED:C7:59:17:0C:CF:14:9A:DB:D5:5C:1C:BC:7D:17:BB",
-				),
+			await sut.connectTlsSocket(
+				"localhost",
+				51200,
+				connectionOptions,
+				"78:0E:43:3D:ED:C7:59:17:0C:CF:14:9A:DB:D5:5C:1C:BC:7D:17:BB",
 			);
 			debug("Connection succeeded with correct fingerprint");
 		});
@@ -158,7 +154,7 @@ describe("connectionTest", function () {
 			await using mockServerController = await MockServerController.createMockServer();
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
 			const sut = new ConnectionTest();
-			await assert.doesNotReject(sut.login("localhost", "velux123", connectionOptions));
+			await sut.login("localhost", "velux123", connectionOptions);
 		});
 	});
 
@@ -168,7 +164,7 @@ describe("connectionTest", function () {
 			await using mockServerController = await MockServerController.createMockServer();
 			const connectionOptions = MockServerController.getMockServerConnectionOptions();
 			const sut = new ConnectionTest();
-			await assert.doesNotReject(sut.runTests("localhost", "velux123", connectionOptions));
+			await sut.runTests("localhost", "velux123", connectionOptions);
 		});
 
 		it(`should return 4 steps`, async function () {
