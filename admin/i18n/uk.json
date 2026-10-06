@@ -52,7 +52,7 @@
     "dm-instance-createscene-form-label": "Назва сцени",
     "dm-instance-createscene-form-title": "Додати сцену",
     "dm-instance-createscene-form-unique-name-condition": "Назва сцени має бути унікальною.",
-    "dm-instance-createscene-progress-initialization": "Ініціалізація вузлів...",
+    "dm-instance-createscene-progress-initialization": "Ініціалізація продуктів…",
     "dm-instance-createscene-progress-use-remote": "Використовуйте пульт дистанційного керування, щоб керувати продуктами, щоб налаштувати сцену.",
     "dm-instance-createscene-progress-use-remote-with-failed-nodes": "Використовуйте пульт дистанційного керування, щоб керувати продуктами, щоб налаштувати сцену. Деякі вузли вийшли з ладу під час ініціалізації: %s.",
     "dm-instance-discover": "Відкрийте для себе нові пристрої",
