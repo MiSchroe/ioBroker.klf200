@@ -1,0 +1,1 @@
+import{s as e}from"./rolldown-runtime-BcKkbAw3.js";import{n as t}from"./_virtual_mf___mfe_internal__ConfigCustomKlf200Set__mf_owner__1__loadShare__react_mf_2_dom_mf_1_client__loadShare__.js-D6_Fk1wa.js";var n=e(t()),r=Reflect.get(n,`default`)??n;export{r as default};

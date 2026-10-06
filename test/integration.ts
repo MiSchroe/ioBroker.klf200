@@ -1,7 +1,6 @@
 /// <reference types="mocha" />
 import { tests } from "@iobroker/testing";
 import type { TestHarness } from "@iobroker/testing/build/tests/integration/lib/harness.js";
-import crypto from "crypto";
 import {
 	ActuatorAlias,
 	ActuatorType,
@@ -37,7 +36,8 @@ tests.integration(path.join(__dirname, ".."), {
 
 			it("Should start", async function () {
 				this.timeout(60_000);
-				await assert.doesNotReject(harness.startAdapterAndWait());
+				// Test that the adapter starts without throwing an error
+				await harness.startAdapterAndWait();
 			});
 		});
 
@@ -55,14 +55,11 @@ tests.integration(path.join(__dirname, ".."), {
 
 				// Setup adapter configuration
 
-				const data = await harness.objects.getObjectAsync(`system.config`);
-
-				const systemSecret: string = data?.native?.secret;
 				await harness.changeAdapterConfig(harness.adapterName, {
 					native: {
 						host: "localhost",
 						// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
-						password: encrypt(systemSecret, "velux123"),
+						password: "velux123",
 						enableAutomaticReboot: false,
 						advancedSSLConfiguration: true,
 						SSLConnectionOptions: {
@@ -185,14 +182,11 @@ tests.integration(path.join(__dirname, ".."), {
 
 				// Setup adapter configuration
 
-				const data = await harness.objects.getObjectAsync(`system.config`);
-
-				const systemSecret: string = data?.native?.secret;
 				await harness.changeAdapterConfig(harness.adapterName, {
 					native: {
 						host: "localhost",
 						// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
-						password: encrypt(systemSecret, "velux123"),
+						password: "velux123",
 						enableAutomaticReboot: false,
 						advancedSSLConfiguration: true,
 						SSLConnectionOptions: {
@@ -280,14 +274,11 @@ tests.integration(path.join(__dirname, ".."), {
 
 					// Setup adapter configuration
 
-					const data = await harness.objects.getObjectAsync(`system.config`);
-
-					const systemSecret: string = data?.native?.secret;
 					await harness.changeAdapterConfig(harness.adapterName, {
 						native: {
 							host: "localhost",
 							// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
-							password: encrypt(systemSecret, "velux123"),
+							password: "velux123",
 							enableAutomaticReboot: false,
 							advancedSSLConfiguration: true,
 							SSLConnectionOptions: {
@@ -417,14 +408,11 @@ tests.integration(path.join(__dirname, ".."), {
 
 					// Setup adapter configuration
 
-					const data = await harness.objects.getObjectAsync(`system.config`);
-
-					const systemSecret: string = data?.native?.secret;
 					await harness.changeAdapterConfig(harness.adapterName, {
 						native: {
 							host: "localhost",
 							// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
-							password: encrypt(systemSecret, "velux123"),
+							password: "velux123",
 							enableAutomaticReboot: false,
 							advancedSSLConfiguration: true,
 							SSLConnectionOptions: {
@@ -551,14 +539,11 @@ tests.integration(path.join(__dirname, ".."), {
 
 					// Setup adapter configuration
 
-					const data = await harness.objects.getObjectAsync(`system.config`);
-
-					const systemSecret: string = data?.native?.secret;
 					await harness.changeAdapterConfig(harness.adapterName, {
 						native: {
 							host: "localhost",
 							// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
-							password: encrypt(systemSecret, "velux123"),
+							password: "velux123",
 							enableAutomaticReboot: false,
 							advancedSSLConfiguration: true,
 							SSLConnectionOptions: {
@@ -641,13 +626,4 @@ tests.integration(path.join(__dirname, ".."), {
 /* Helper functions */
 async function getState(harness: TestHarness, stateName: string): Promise<ioBroker.State> {
 	return (await Promise.resolve(harness.states.getStateAsync(stateName))) as ioBroker.State;
-}
-
-function encrypt(key: string, value: string): string {
-	const iv = crypto.randomBytes(16);
-	const cipher = crypto.createCipheriv("aes-192-cbc", Buffer.from(key, "hex"), iv);
-
-	const encrypted = Buffer.concat([cipher.update(value), cipher.final()]);
-
-	return `$/aes-192-cbc:${iv.toString("hex")}:${encrypted.toString("hex")}`;
 }

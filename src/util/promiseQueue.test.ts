@@ -28,8 +28,6 @@ describe("PromiseQueue", function () {
 			await result;
 
 			assert.strictEqual(callSpy.mock.callCount(), 3);
-
-			return assert.doesNotReject(result);
 		});
 
 		it("should be able to run subsequent calls with a rejected promise in the middle.", async function () {
@@ -56,8 +54,6 @@ describe("PromiseQueue", function () {
 			await result;
 
 			assert.strictEqual(callSpy.mock.callCount(), 3);
-
-			return assert.doesNotReject(result);
 		});
 
 		it("should be rejected with a rejected promise at the end.", async function () {
@@ -81,7 +77,7 @@ describe("PromiseQueue", function () {
 
 			const result = SUT.waitAsync();
 
-			return assert.rejects(result);
+			await assert.rejects(result);
 		});
 	});
 });

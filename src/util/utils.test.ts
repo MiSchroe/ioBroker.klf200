@@ -104,7 +104,7 @@ describe("utils", function () {
 			// Send notification
 			mockConnection.sendEvent(mockFrame);
 			mock.timers.tick(10000);
-			return assert.doesNotReject(testPromise);
+			await testPromise;
 		});
 
 		it("should be rejected when the notification is not sent", async function () {
@@ -116,7 +116,7 @@ describe("utils", function () {
 				10000,
 			);
 			mock.timers.tick(10000);
-			return assert.rejects(testPromise, { message: "Timeout error" });
+			await assert.rejects(testPromise, { message: "Timeout error" });
 		});
 	});
 });
