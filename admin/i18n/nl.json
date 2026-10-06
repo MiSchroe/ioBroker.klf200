@@ -52,7 +52,7 @@
     "dm-instance-createscene-form-label": "Naam van de scène",
     "dm-instance-createscene-form-title": "Scène toevoegen",
     "dm-instance-createscene-form-unique-name-condition": "De scènenaam moet uniek zijn.",
-    "dm-instance-createscene-progress-initialization": "Knooppunten initialiseren...",
+    "dm-instance-createscene-progress-initialization": "Producten initialiseren…",
     "dm-instance-createscene-progress-use-remote": "Gebruik uw afstandsbediening om uw producten te bedienen en uw scène in te stellen.",
     "dm-instance-createscene-progress-use-remote-with-failed-nodes": "Gebruik uw afstandsbediening om uw producten te bedienen en uw scène in te stellen. Sommige knooppunten zijn mislukt tijdens de initialisatie: %s.",
     "dm-instance-discover": "Ontdek nieuwe apparaten",
