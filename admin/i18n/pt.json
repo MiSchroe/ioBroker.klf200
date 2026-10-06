@@ -52,7 +52,7 @@
     "dm-instance-createscene-form-label": "Nome da cena",
     "dm-instance-createscene-form-title": "Adicionar cena",
     "dm-instance-createscene-form-unique-name-condition": "O nome da cena deve ser exclusivo.",
-    "dm-instance-createscene-progress-initialization": "Inicializando nós...",
+    "dm-instance-createscene-progress-initialization": "Inicializando produtos…",
     "dm-instance-createscene-progress-use-remote": "Use seu controle remoto para controlar seus produtos e configurar sua cena.",
     "dm-instance-createscene-progress-use-remote-with-failed-nodes": "Use seu controle remoto para controlar seus produtos e configurar sua cena. Alguns nós falharam durante a inicialização: %s.",
     "dm-instance-discover": "Descubra novos dispositivos",
