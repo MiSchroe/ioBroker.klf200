@@ -52,7 +52,7 @@
     "dm-instance-createscene-form-label": "Nom de la scène",
     "dm-instance-createscene-form-title": "Ajouter une scène",
     "dm-instance-createscene-form-unique-name-condition": "Le nom de la scène doit être unique.",
-    "dm-instance-createscene-progress-initialization": "Initialisation des nœuds...",
+    "dm-instance-createscene-progress-initialization": "Initialisation des produits…",
     "dm-instance-createscene-progress-use-remote": "Utilisez votre télécommande pour contrôler vos produits afin de configurer votre scène.",
     "dm-instance-createscene-progress-use-remote-with-failed-nodes": "Utilisez votre télécommande pour contrôler vos produits afin de configurer votre scène. Certains nœuds ont échoué lors de l'initialisation: %s.",
     "dm-instance-discover": "Découvrez de nouveaux appareils",
