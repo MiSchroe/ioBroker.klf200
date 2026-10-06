@@ -52,7 +52,7 @@
     "dm-instance-createscene-form-label": "Nazwa sceny",
     "dm-instance-createscene-form-title": "Dodaj scenę",
     "dm-instance-createscene-form-unique-name-condition": "Nazwa sceny musi być unikalna.",
-    "dm-instance-createscene-progress-initialization": "Inicjowanie węzłów...",
+    "dm-instance-createscene-progress-initialization": "Inicjowanie produktów…",
     "dm-instance-createscene-progress-use-remote": "Użyj pilota do sterowania produktami i skonfigurowania sceny.",
     "dm-instance-createscene-progress-use-remote-with-failed-nodes": "Użyj pilota do sterowania produktami i skonfigurowania sceny. Niektóre węzły uległy awarii podczas inicjalizacji: %s.",
     "dm-instance-discover": "Odkryj nowe urządzenia",
