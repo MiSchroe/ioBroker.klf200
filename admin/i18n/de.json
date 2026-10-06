@@ -61,7 +61,7 @@
     "dm-instance-receivefromremote": "Von der Fernbedienung empfangen",
     "dm-instance-sendtoremote": "Auf Fernbedienung kopieren",
     "host": "Host",
-    "host-help": "Host-Name oder IP-Adresse ohne http(s)://",
+    "host-help": "Hostname oder IP-Adresse ohne http(s)://",
     "klf200 adapter settings": "klf200 Adaptereinstellungen",
     "on save adapter restarts with new config immediately": "Beim Speichern wird der Adapter sofort mit der neuen Konfiguration neu gestartet.",
     "optionstab": "Optionen",
