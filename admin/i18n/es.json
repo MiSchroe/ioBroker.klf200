@@ -52,7 +52,7 @@
     "dm-instance-createscene-form-label": "Nombre de la escena",
     "dm-instance-createscene-form-title": "Agregar escena",
     "dm-instance-createscene-form-unique-name-condition": "El nombre de la escena debe ser único.",
-    "dm-instance-createscene-progress-initialization": "Inicializando nodos...",
+    "dm-instance-createscene-progress-initialization": "Inicializando productos…",
     "dm-instance-createscene-progress-use-remote": "Utilice su control remoto para controlar sus productos y configurar su escena.",
     "dm-instance-createscene-progress-use-remote-with-failed-nodes": "Utilice su control remoto para controlar sus productos y configurar su escena. Algunos nodos fallaron durante la inicialización: %s.",
     "dm-instance-discover": "Descubre nuevos dispositivos",

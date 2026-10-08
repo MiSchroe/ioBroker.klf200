@@ -52,7 +52,7 @@
     "dm-instance-createscene-form-label": "Nome della scena",
     "dm-instance-createscene-form-title": "Aggiungi scena",
     "dm-instance-createscene-form-unique-name-condition": "Il nome della scena deve essere univoco.",
-    "dm-instance-createscene-progress-initialization": "Inizializzazione dei nodi...",
+    "dm-instance-createscene-progress-initialization": "Inizializzazione dei prodotti…",
     "dm-instance-createscene-progress-use-remote": "Usa il telecomando per controllare i tuoi prodotti e impostare la scena.",
     "dm-instance-createscene-progress-use-remote-with-failed-nodes": "Usa il telecomando per controllare i tuoi prodotti e impostare la scena. Si è verificato un errore in alcuni nodi durante l'inizializzazione: %s.",
     "dm-instance-discover": "Scopri nuovi dispositivi",
