@@ -1896,10 +1896,18 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 		const data: ConnectionTestMessage = obj.message as ConnectionTestMessage;
 		this.log.info(`Starting connection test...`);
 
+		let result: ConnectionTestResult[] = [];
+		let cleansedResult: ConnectionTestResult[] = [];
+
 		try {
+			try {
+				await this.setState("TestConnection.running", false, true);
+			} catch (error: any) {
+				this.log.error(`Error during connection test: ${(error as Error).message}`);
+			}
 			await this.setState("TestConnection.testResults", "[]", true);
 			await this.setState("TestConnection.running", true, true);
-			const result = await this.runConnectionTests(
+			result = await this.runConnectionTests(
 				data.hostname,
 				this.decrypt(data.password),
 				this.createConnectionOptions(data),
@@ -1915,13 +1923,33 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			);
 			// Send the final result
 			this.logLastConnectionTestResultStep(result);
-			const cleansedResult = this.convertProgressErrors(result);
-			await this.setState("TestConnection.testResults", JSON.stringify(cleansedResult), true);
-			this.sendTo(obj.from, obj.command, cleansedResult, obj.callback);
 		} catch (error: any) {
 			this.log.error(`Error during connection test: ${(error as Error).message}`);
 		} finally {
-			await this.setState("TestConnection.running", false, true);
+			try {
+				cleansedResult = this.convertProgressErrors(result);
+			} catch (error: any) {
+				this.log.error(`Error during connection test: ${(error as Error).message}`);
+				cleansedResult = [];
+			}
+
+			try {
+				this.sendTo(obj.from, obj.command, cleansedResult, obj.callback);
+			} catch (error: any) {
+				this.log.error(`Error during connection test: ${(error as Error).message}`);
+			}
+
+			try {
+				await this.setState("TestConnection.testResults", JSON.stringify(cleansedResult), true);
+			} catch (error: any) {
+				this.log.error(`Error during connection test: ${(error as Error).message}`);
+			}
+
+			try {
+				await this.setState("TestConnection.running", false, true);
+			} catch (error: any) {
+				this.log.error(`Error during connection test: ${(error as Error).message}`);
+			}
 		}
 	}
 
