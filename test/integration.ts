@@ -27,6 +27,60 @@ tests.integration(path.join(__dirname, ".."), {
 	// allowedExitCodes: [11],
 
 	defineAdditionalTests({ suite }) {
+		suite("ConnectionTest message contract", getHarness => {
+			let harness: TestHarness;
+			let mockServerController: MockServerController;
+
+			before(async function () {
+				this.timeout(60_000);
+
+				harness = getHarness();
+				mockServerController = await MockServerController.createMockServer();
+
+				await harness.changeAdapterConfig(harness.adapterName, {
+					native: {
+						host: "localhost",
+						// line deepcode ignore NoHardcodedPasswords/test: Dummy password in unit tests.
+						password: "velux123",
+						enableAutomaticReboot: false,
+						advancedSSLConfiguration: true,
+						SSLConnectionOptions: {
+							rejectUnauthorized: true,
+							requestCert: true,
+							ca: readFileSync(path.join(__dirname, "mocks/mockServer", "ca-crt.pem"), "utf8"),
+							key: readFileSync(path.join(__dirname, "mocks/mockServer", "client1-key.pem"), "utf8"),
+							cert: readFileSync(path.join(__dirname, "mocks/mockServer", "client1-crt.pem"), "utf8"),
+						},
+					},
+				});
+
+				await harness.startAdapterAndWait(true);
+				await harness.enableSendTo();
+			});
+
+			after(async function () {
+				await harness.stopAdapter();
+				if (mockServerController) {
+					await mockServerController[Symbol.asyncDispose]();
+				}
+			});
+
+			it("should return an array payload for ConnectionTest via sendTo (repro for e.map is not a function)", async function () {
+				this.timeout(60_000);
+
+				const result = await sendToAsync(harness, `${harness.adapterName}.0`, "ConnectionTest", {
+					hostname: "localhost",
+					password: "velux123",
+					advancedSSLConfiguration: {
+						// Trigger adapter-side error path in createConnectionOptions before runConnectionTests
+						sslPublicKey: { invalid: true },
+					},
+				});
+
+				assert.ok(Array.isArray(result), "Expected sendTo callback payload to be an array for safe .map() use");
+			});
+		});
+
 		suite("Regular test without mock server", getHarness => {
 			let harness: TestHarness;
 
@@ -626,4 +680,15 @@ tests.integration(path.join(__dirname, ".."), {
 /* Helper functions */
 async function getState(harness: TestHarness, stateName: string): Promise<ioBroker.State> {
 	return (await Promise.resolve(harness.states.getStateAsync(stateName))) as ioBroker.State;
+}
+
+async function sendToAsync(harness: TestHarness, target: string, command: string, message: any): Promise<any> {
+	return await new Promise((resolve, reject) => {
+		const timeout = setTimeout(() => reject(new Error(`sendTo timeout for ${target} / ${command}`)), 10_000);
+
+		harness.sendTo(target, command, message, response => {
+			clearTimeout(timeout);
+			resolve(response);
+		});
+	});
 }
