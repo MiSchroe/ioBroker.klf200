@@ -1865,6 +1865,7 @@ export class Klf200 extends utils.Adapter implements HasConnectionInterface, Has
 			data.advancedSSLConfiguration?.sslFingerprint,
 		);
 		return {
+			// codeql[js/disabling-certificate-validation] -- The connection checks the CA and Gateway-Fingerprint.
 			rejectUnauthorized: false,
 			ca: klf200Connection.CA,
 			checkServerIdentity: (host, cert) => {
