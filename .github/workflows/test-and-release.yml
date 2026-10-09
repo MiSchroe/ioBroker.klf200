@@ -47,6 +47,7 @@ jobs:
                 os: [ubuntu-latest, windows-latest, macos-latest]
 
         steps:
+            - run: mkdir -p ./coverage
             - uses: ioBroker/testing-action-adapter@v1
               with:
                   node-version: ${{ matrix.node-version }}
@@ -54,6 +55,13 @@ jobs:
                   # Uncomment the following line if your adapter cannot be installed using 'npm ci'
                   install-command: "npm ci --no-audit"
                   build: true
+            - name: Upload coverage reports to Codecov
+              uses: codecov/codecov-action@v7
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  slug: MiSchroe/iobroker.klf200
+                  disable_search: true
+                  files: ./coverage/lcov.info
 
     # TODO: To enable automatic npm releases, create a token on npmjs.org
     # Enter this token as a GitHub secret (with name NPM_TOKEN) in the repository options
